@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# ListenAPI key
+app/src/main/java/com/greencom/android/podcasts/network/ListenApiKey.kt
