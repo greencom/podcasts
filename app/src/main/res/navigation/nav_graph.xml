@@ -10,15 +10,37 @@
         android:id="@+id/homeFragment"
         android:name="com.greencom.android.podcasts.ui.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_testFragment"
+            app:destination="@id/testFragment" />
+    </fragment>
     <fragment
-        android:id="@+id/discoverFragment"
-        android:name="com.greencom.android.podcasts.ui.discover.DiscoverFragment"
-        android:label="fragment_discover"
-        tools:layout="@layout/fragment_discover" />
+        android:id="@+id/exploreFragment"
+        android:name="com.greencom.android.podcasts.ui.explore.ExploreFragment"
+        android:label="fragment_explore"
+        tools:layout="@layout/fragment_explore" >
+        <action
+            android:id="@+id/action_exploreFragment_to_testFragment"
+            app:destination="@id/testFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.greencom.android.podcasts.ui.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
+    <action
+        android:id="@+id/action_global_homeFragment"
+        app:destination="@id/homeFragment" />
+    <action
+        android:id="@+id/action_global_exploreFragment"
+        app:destination="@id/exploreFragment" />
+    <action
+        android:id="@+id/action_global_profileFragment"
+        app:destination="@id/profileFragment" />
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="com.greencom.android.podcasts.ui.home.TestFragment"
+        android:label="fragment_test"
+        tools:layout="@layout/fragment_test" />
 </navigation>
