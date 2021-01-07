@@ -1,9 +1,12 @@
 package com.greencom.android.podcasts
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -27,17 +30,28 @@ class MainActivity : AppCompatActivity() {
         val bottomNavBar = binding.bottomNavBar
         bottomNavBar.setupWithNavController(navController)
 
-        // Prevent fragment reloading due to reselecting current one
-//        bottomNavBar.setOnNavigationItemReselectedListener {
-//            val x = navHostFragment.childFragmentManager.fragments[0].toString()
-//                .contains("${it.title}Fragment")
-//            if (!x) {
-//                when (it.title) {
-//                    "Home" -> navController.navigate(R.id.action_global_homeFragment)
-//                    "Explore" -> navController.navigate(R.id.action_global_exploreFragment)
-//                    "Profile" -> navController.navigate(R.id.action_global_profileFragment)
-//                }
-//            }
-//        }
+        // TODO: Disable reloading on bottom menu item reselected
+        bottomNavBar.setOnNavigationItemReselectedListener {
+            Toast.makeText(this, "${it.title}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // TODO: Disable reloading on bottom menu item reselected
+    private fun disableReloadingOnBottomItemReselected(
+            navHostFragment: NavHostFragment,
+            navController: NavController,
+            bottomNavBar: BottomNavigationView,
+    ) {
+        bottomNavBar.setOnNavigationItemReselectedListener {
+            val x = navHostFragment.childFragmentManager.fragments[0].toString()
+                    .contains("${it.title}Fragment")
+            if (!x) {
+                when (it.title) {
+                    "Home" -> navController.navigate(R.id.action_global_homeFragment)
+                    "Explore" -> navController.navigate(R.id.action_global_exploreFragment)
+                    "Profile" -> navController.navigate(R.id.action_global_profileFragment)
+                }
+            }
+        }
     }
 }

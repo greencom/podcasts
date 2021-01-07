@@ -10,20 +10,12 @@
         android:id="@+id/homeFragment"
         android:name="com.greencom.android.podcasts.ui.home.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" >
-        <action
-            android:id="@+id/action_homeFragment_to_testFragment"
-            app:destination="@id/testFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.greencom.android.podcasts.ui.explore.ExploreFragment"
         android:label="fragment_explore"
-        tools:layout="@layout/fragment_explore" >
-        <action
-            android:id="@+id/action_exploreFragment_to_testFragment"
-            app:destination="@id/testFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_explore" />
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.greencom.android.podcasts.ui.profile.ProfileFragment"
@@ -38,9 +30,4 @@
     <action
         android:id="@+id/action_global_profileFragment"
         app:destination="@id/profileFragment" />
-    <fragment
-        android:id="@+id/testFragment"
-        android:name="com.greencom.android.podcasts.ui.home.TestFragment"
-        android:label="fragment_test"
-        tools:layout="@layout/fragment_test" />
 </navigation>
