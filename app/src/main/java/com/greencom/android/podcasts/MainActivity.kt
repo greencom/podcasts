@@ -29,15 +29,15 @@ class MainActivity : AppCompatActivity() {
         val bottomNavBar = binding.bottomNavBar
         bottomNavBar.setupWithNavController(navController)
 
-        // Prevent reloading on bottom item reselected
-        disableReloadingOnBottomItemReselected(navHostFragment, navController, bottomNavBar)
+        // Handle behavior when the bottom navigation item is reselected
+        handleBehaviorOnBottomItemReselected(navHostFragment, navController, bottomNavBar)
     }
 
     /**
      * Prevent start fragment reloading when the corresponding bottom
      * navigation item is reselected.
      */
-    private fun disableReloadingOnBottomItemReselected(
+    private fun handleBehaviorOnBottomItemReselected(
             navHostFragment: NavHostFragment,
             navController: NavController,
             bottomNavBar: BottomNavigationView,
@@ -49,9 +49,8 @@ class MainActivity : AppCompatActivity() {
 
             if (isReloadingNeeded) {
                 navigateToTab(currentTab, navController)
-            } else {
-                // TODO: Implement behavior
             }
+            // TODO: Implement custom behavior
         }
     }
 
@@ -60,9 +59,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getTab(title: CharSequence): String {
         return when (title) {
-            "Home", "Главная" -> "HomeFragment"
-            "Explore", "Поиск" -> "ExploreFragment"
-            "Profile", "Профиль" -> "ProfileFragment"
+            this.getString(R.string.home) -> "HomeFragment"
+            this.getString(R.string.explore) -> "ExploreFragment"
+            this.getString(R.string.profile) -> "ProfileFragment"
             else -> "Nothing"
         }
     }
