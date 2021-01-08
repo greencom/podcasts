@@ -1,7 +1,6 @@
 package com.greencom.android.podcasts
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -30,28 +29,52 @@ class MainActivity : AppCompatActivity() {
         val bottomNavBar = binding.bottomNavBar
         bottomNavBar.setupWithNavController(navController)
 
-        // TODO: Disable reloading on bottom menu item reselected
-        bottomNavBar.setOnNavigationItemReselectedListener {
-            Toast.makeText(this, "${it.title}", Toast.LENGTH_SHORT).show()
-        }
+        // Prevent reloading on bottom item reselected
+        disableReloadingOnBottomItemReselected(navHostFragment, navController, bottomNavBar)
     }
 
-    // TODO: Disable reloading on bottom menu item reselected
+    /**
+     * Prevent start fragment reloading when the corresponding bottom
+     * navigation item is reselected.
+     */
     private fun disableReloadingOnBottomItemReselected(
             navHostFragment: NavHostFragment,
             navController: NavController,
             bottomNavBar: BottomNavigationView,
     ) {
         bottomNavBar.setOnNavigationItemReselectedListener {
-            val x = navHostFragment.childFragmentManager.fragments[0].toString()
-                    .contains("${it.title}Fragment")
-            if (!x) {
-                when (it.title) {
-                    "Home" -> navController.navigate(R.id.action_global_homeFragment)
-                    "Explore" -> navController.navigate(R.id.action_global_exploreFragment)
-                    "Profile" -> navController.navigate(R.id.action_global_profileFragment)
-                }
+            val currentFragment = navHostFragment.childFragmentManager.fragments[0].toString()
+            val currentTab = getTab(it.title)
+            val isReloadingNeeded = !currentFragment.contains(currentTab)
+
+            if (isReloadingNeeded) {
+                navigateToTab(currentTab, navController)
+            } else {
+                // TODO: Implement behavior
             }
+        }
+    }
+
+    /**
+     * Return name of the fragment associated with selected tab.
+     */
+    private fun getTab(title: CharSequence): String {
+        return when (title) {
+            "Home", "Главная" -> "HomeFragment"
+            "Explore", "Поиск" -> "ExploreFragment"
+            "Profile", "Профиль" -> "ProfileFragment"
+            else -> "Nothing"
+        }
+    }
+
+    /**
+     * Navigate start fragment depending on selected tab.
+     */
+    private fun navigateToTab(tab: String, navController: NavController) {
+        when (tab) {
+            "HomeFragment" -> navController.navigate(R.id.action_global_homeFragment)
+            "ExploreFragment" -> navController.navigate(R.id.action_global_exploreFragment)
+            "ProfileFragment" -> navController.navigate(R.id.action_global_profileFragment)
         }
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Podcasts</string>
+
+    <!-- Bottom navigation menu -->
+    <!-- TODO: Could be better -->
+    <string name="home">Главная</string>
+    <string name="explore">Поиск</string>
+    <string name="profile">Профиль</string>
+</resources>

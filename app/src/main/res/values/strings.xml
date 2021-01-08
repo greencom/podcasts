@@ -2,6 +2,7 @@
     <string name="app_name">Podcasts</string>
 
     <!-- Bottom navigation menu -->
+    <!-- Add localized strings to MainActivity.getTab() -->
     <string name="home">Home</string>
     <string name="explore">Explore</string>
     <string name="profile">Profile</string>
