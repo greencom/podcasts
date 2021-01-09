@@ -15,8 +15,6 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: HomeViewModel by navGraphViewModels(R.id.nav_graph)
-//    private val viewModel: HomeViewModel by activityViewModels()
-//    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

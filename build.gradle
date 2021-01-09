@@ -29,4 +29,7 @@ ext {
     lifecycle_version = '2.2.0'
     navigation_version = '2.3.2'
     room_version = '2.2.6'
+    retrofit_version = '2.9.0'
+    retrofit_logging_version = '4.9.0'
+    moshi_version = '1.11.0'
 }
