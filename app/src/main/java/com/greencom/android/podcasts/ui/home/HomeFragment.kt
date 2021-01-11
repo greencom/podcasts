@@ -27,13 +27,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.number.observe(viewLifecycleOwner) {
-            binding.homeButton.text = it.toString()
-        }
 
-        binding.homeButton.setOnClickListener {
-            viewModel.add()
-        }
     }
 
     override fun onDestroyView() {

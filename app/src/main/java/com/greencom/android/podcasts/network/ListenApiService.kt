@@ -29,7 +29,9 @@ private val retrofit = Retrofit.Builder()
 
 interface ListenApiService {
 
-    // TODO: Improve
+    /**
+     * Returns [BestPodcasts] from ListenAPI based on overall rating.
+     */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")
     suspend fun getBestPodcasts(
@@ -38,11 +40,13 @@ interface ListenApiService {
         @Query("safe_mode") safeMode: Int = 0,
     ): BestPodcasts
 
-    // TODO: Improve
+    /**
+     * Returns [BestPodcasts] from ListenAPI by genre ID.
+     */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")
-    suspend fun getBestPodcastsByGenre(
-        @Query("genre_id") genreId: Int = 111,
+    suspend fun getBestPodcasts(
+        @Query("genre_id") genreId: Int,
         @Query("page") page: Int = 1,
         @Query("region") region: String = "ru",
         @Query("safe_mode") safeMode: Int = 0,
@@ -53,7 +57,7 @@ object ListenApi {
     val retrofitService: ListenApiService by lazy { retrofit.create(ListenApiService::class.java) }
 }
 
-// TODO: Temp
+// TODO: Temporary for now, move to separate model class
 data class BestPodcasts(
 //        @Json(name = "id") val genreId: Int,
 //        @Json(name = "name") val genreName: String,

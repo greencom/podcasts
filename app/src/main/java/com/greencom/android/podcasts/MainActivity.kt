@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             if (isReloadingNeeded) {
                 navigateToTab(currentTab, navController)
             }
-            // TODO: Implement custom behavior
+            // TODO: Implement custom behavior (scroll etc.)
         }
     }
 
