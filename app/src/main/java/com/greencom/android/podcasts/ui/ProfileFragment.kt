@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.profile
+package com.greencom.android.podcasts.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater

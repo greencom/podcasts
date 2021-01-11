@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.explore
+package com.greencom.android.podcasts.utils
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.network.Podcast
+import com.greencom.android.podcasts.data.Podcast
 
 class BestPodcastsAdapter :
     ListAdapter<Podcast, BestPodcastsAdapter.ViewHolder>(PodcastsComparator()) {

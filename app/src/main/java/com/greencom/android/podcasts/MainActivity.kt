@@ -12,7 +12,7 @@ import com.greencom.android.podcasts.databinding.ActivityMainBinding
 private const val HOME_TAB = "HomeFragment"
 private const val EXPLORE_TAB = "ExploreFragment"
 private const val PROFILE_TAB = "ProfileFragment"
-private const val NO_TAB = "NEVER_USED"
+private const val NEVER_USED = "NEVER_USED"
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,44 +36,45 @@ class MainActivity : AppCompatActivity() {
         bottomNavBar.setupWithNavController(navController)
 
         // Handle behavior when the bottom navigation item is reselected
-        handleBehaviorOnBottomItemReselected(navHostFragment, navController, bottomNavBar)
+        setupOnBottomItemReselectedBehavior(navHostFragment, navController, bottomNavBar)
     }
 
     /**
-     * Prevent start fragment reloading when the corresponding bottom
-     * navigation item is reselected.
+     * Handle behavior when the bottom navigation item is reselected.
+     *
+     * Check if the current fragment is the starting one. If not, navigate to the starting one.
+     * Otherwise, prevent fragment reloading.
      */
-    private fun handleBehaviorOnBottomItemReselected(
+    private fun setupOnBottomItemReselectedBehavior(
             navHostFragment: NavHostFragment,
             navController: NavController,
             bottomNavBar: BottomNavigationView,
     ) {
         bottomNavBar.setOnNavigationItemReselectedListener {
             val currentFragment = navHostFragment.childFragmentManager.fragments[0].toString()
-            val currentTab = getTab(it.title)
+            val currentTab = getCurrentTab(it.title)
             val isReloadingNeeded = !currentFragment.contains(currentTab)
 
             if (isReloadingNeeded) {
                 navigateToTab(currentTab, navController)
             }
-            // TODO: Implement custom behavior (scroll etc.)
         }
     }
 
     /**
-     * Return name of the start fragment associated with the selected tab.
+     * Return the tag of the start fragment associated with the selected tab.
      */
-    private fun getTab(title: CharSequence): String {
+    private fun getCurrentTab(title: CharSequence): String {
         return when (title) {
             this.getString(R.string.home) -> HOME_TAB
             this.getString(R.string.explore) -> EXPLORE_TAB
             this.getString(R.string.profile) -> PROFILE_TAB
-            else -> NO_TAB
+            else -> NEVER_USED
         }
     }
 
     /**
-     * Navigate to start fragment depending on the selected tab.
+     * Navigate to the start fragment associated with the selected tab.
      */
     private fun navigateToTab(tab: String, navController: NavController) {
         when (tab) {

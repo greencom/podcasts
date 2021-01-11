@@ -1,6 +1,6 @@
 package com.greencom.android.podcasts.network
 
-import com.squareup.moshi.Json
+import com.greencom.android.podcasts.data.*
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -30,93 +30,97 @@ private val retrofit = Retrofit.Builder()
 interface ListenApiService {
 
     /**
-     * Returns [BestPodcasts] from ListenAPI based on overall rating.
+     * Search for episodes.
+     *
+     * @param query search query. Double quotes can be used to do verbatim match,
+     *              e.g., `"game of thrones"`. Otherwise, it is fuzzy search.
+     * @param sortByDate sort by date or not. If `0`, then sort by relevance. If `1`,
+     *                   then sort by date. Default value is `0`.
+     * @param type what type of contents to search for. Note: always `episode`,
+     *             if needed to search for podcasts, use [ListenApiService.searchPodcast]
+     *             instead.
+     * @param offset offset for pagination. Use `nextOffset` from response for this parameter.
+     *               Default value is `0`.
+     * @param onlyIn a comma-delimited string to search only in specific fields.
+     *               Allowed values are title, description, author, and audio.
+     *               Default value is `title,description,author`.
+     * @param safeMode whether or not to exclude podcasts with explicit language.
+     *                 1 is yes, and 0 is no. Default value is `0`.
+     * @return [SearchEpisodeResult]
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
-    @GET("best_podcasts")
-    suspend fun getBestPodcasts(
-        @Query("page") page: Int = 1,
-        @Query("region") region: String = "ru",
-        @Query("safe_mode") safeMode: Int = 0,
-    ): BestPodcasts
+    @GET("search")
+    // TODO: Check
+    suspend fun searchEpisode(
+            @Query("q") query: String,
+            @Query("sort_by_date") sortByDate: Int = 0,
+            @Query("type") type: String = "episode",
+            @Query("offset") offset: Int = 0,
+            @Query("only_in") onlyIn: String = "title,description,author",
+            @Query("safe_mode") safeMode: Int = 0,
+    ): SearchEpisodeResult
 
     /**
-     * Returns [BestPodcasts] from ListenAPI by genre ID.
+     * Search for podcasts.
+     *
+     * @param query search query. Double quotes can be used to do verbatim match,
+     *              e.g., `"game of thrones"`. Otherwise, it is fuzzy search.
+     * @param sortByDate sort by date or not. If `0`, then sort by relevance. If `1`,
+     *                   then sort by date. Default value is `0`.
+     * @param type what type of contents to search for. Note: always `podcast`,
+     *             if needed to search for episodes, use [ListenApiService.searchEpisode]
+     *             instead.
+     * @param offset offset for pagination. Use `nextOffset` from response for this parameter.
+     *               Default value is `0`.
+     * @param onlyIn a comma-delimited string to search only in specific fields.
+     *               Allowed values are title, description, author, and audio.
+     *               Default value is `title,description,author`.
+     * @param safeMode whether or not to exclude podcasts with explicit language.
+     *                 1 is yes, and 0 is no. Default value is `0`.
+     * @return [SearchPodcastResult]
+     */
+    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @GET("search")
+    // TODO: Check
+    suspend fun searchPodcast(
+            @Query("q") query: String,
+            @Query("sort_by_date") sortByDate: Int = 0,
+            @Query("type") type: String = "podcast",
+            @Query("offset") offset: Int = 0,
+            @Query("only_in") onlyIn: String = "title,description,author",
+            @Query("safe_mode") safeMode: Int = 0,
+    ): SearchPodcastResult
+
+    /**
+     * Get podcast [Genres] that are supported in Listen Notes. The [Genre] id can be
+     * passed to other endpoints as a parameter to get podcasts in a specific [Genre].
+     * @return [Genres]
+     */
+    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @GET("genres")
+    suspend fun getGenres(): Genres
+
+    /**
+     * Get a list of curated [BestPodcasts] by genre. If `genreId` is not specified,
+     * returns overall [BestPodcasts].
+     *
+     * @param genreId what genre podcasts to get. Default value is `0`.
+     * @param page page number of response. Default value is `1`.
+     * @param region filter best podcasts by country/region. Default value is `ru`.
+     * @param safeMode whether or not to exclude podcasts with explicit language.
+     *                 1 is yes, and 0 is no. Default value is `0`.
+     * @return [BestPodcasts]
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")
     suspend fun getBestPodcasts(
-        @Query("genre_id") genreId: Int,
-        @Query("page") page: Int = 1,
-        @Query("region") region: String = "ru",
-        @Query("safe_mode") safeMode: Int = 0,
+            @Query("genre_id") genreId: Int = 0,
+            @Query("page") page: Int = 1,
+            @Query("region") region: String = "ru",
+            @Query("safe_mode") safeMode: Int = 0,
     ): BestPodcasts
 }
 
 object ListenApi {
     val retrofitService: ListenApiService by lazy { retrofit.create(ListenApiService::class.java) }
 }
-
-// TODO: Temporary for now, move to separate model class
-data class BestPodcasts(
-//        @Json(name = "id") val genreId: Int,
-//        @Json(name = "name") val genreName: String,
-//        @Json(name = "total") val podcastCount: Int,
-//        @Json(name = "has_next") val hasNextPage: Boolean,
-        val podcasts: List<Podcast>,
-//        @Json(name = "parent_id") val parentGenreId: Int?,
-//        @Json(name = "page_number") val pageNumber: Int,
-//        @Json(name = "has_previous") val hasPreviousPage: Boolean,
-//        @Json(name = "listennotes_url") val listennotesUrl: String,
-//        @Json(name = "next_page_number") val nextPageNumber: Int,
-//        @Json(name = "previous_page_number") val previousPageNumber: Int,
-)
-
-data class Podcast(
-        val id: String,
-//        val rss: String,
-//        val type: String,
-//        val email: String,
-//        val extra: Extra,
-        val image: String,
-        val title: String,
-//        val country: String,
-//        val website: String?,
-        val language: String,
-        @Json(name = "genre_ids") val genreIds: List<Int>,
-//        @Json(name = "itunes_id") val itunesId: Long,
-        val publisher: String,
-//        val thumbnail: String,
-//        @Json(name = "is_claimed") val isClaimed: Boolean,
-        val description: String,
-//        @Json(name = "looking_for") val lookingFor: LookingFor,
-//        @Json(name = "listen_score") val listenScore: Int?,
-        @Json(name = "total_episodes") val episodesCount: Int,
-//        @Json(name = "listennotes_url") val listennotesUrl: String,
-        @Json(name = "explicit_content") val explicitContent: Boolean,
-//        @Json(name = "latest_pub_date_ms") val latestPubDateMs: Long,
-//        @Json(name = "earliest_pub_date_ms") val earliestPubDateMs: Long,
-//        @Json(name = "listen_score_global_rank") val listenScoreGlobalRank: String?,
-)
-
-data class Extra(
-        val url1: String,
-        val url2: String,
-        val url3: String,
-        @Json(name = "google_url") val googleUrl: String,
-        @Json(name = "spotify_url") val spotifyUrl: String,
-        @Json(name = "youtube_url") val youtubeUrl: String,
-        @Json(name = "linkedin_url") val linkedinUrl: String,
-//        @Json(name = "wechat_handle") val wechatHandle: String,
-        @Json(name = "patreon_handle") val patreonHandle: String,
-        @Json(name = "twitter_handle") val twitterHandle: String,
-        @Json(name = "facebook_handle") val facebookHandle: String,
-        @Json(name = "instagram_handle") val instagramHandle: String,
-)
-
-data class LookingFor(
-        val guests: Boolean,
-        val cohosts: Boolean,
-        val sponsors: Boolean,
-        @Json(name = "cross_promotion") val crossPromotion: Boolean,
-)
