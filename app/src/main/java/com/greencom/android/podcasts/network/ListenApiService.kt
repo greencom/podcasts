@@ -50,7 +50,6 @@ interface ListenApiService {
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("search")
-    // TODO: Check
     suspend fun searchEpisode(
             @Query("q") query: String,
             @Query("sort_by_date") sortByDate: Int = 0,
@@ -81,7 +80,6 @@ interface ListenApiService {
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("search")
-    // TODO: Check
     suspend fun searchPodcast(
             @Query("q") query: String,
             @Query("sort_by_date") sortByDate: Int = 0,
