@@ -34,9 +34,8 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         val bottomNavBar = binding.bottomNavBar
         bottomNavBar.setupWithNavController(navController)
-
         // Handle behavior when the bottom navigation item is reselected
-        setupOnBottomItemReselectedBehavior(navHostFragment, navController, bottomNavBar)
+        bottomNavBar.setupOnBottomItemReselectedBehavior(navHostFragment, navController)
     }
 
     /**
@@ -45,12 +44,11 @@ class MainActivity : AppCompatActivity() {
      * Check if the current fragment is the starting one. If not, navigate to the starting one.
      * Otherwise, prevent fragment reloading.
      */
-    private fun setupOnBottomItemReselectedBehavior(
+    private fun BottomNavigationView.setupOnBottomItemReselectedBehavior(
             navHostFragment: NavHostFragment,
             navController: NavController,
-            bottomNavBar: BottomNavigationView,
     ) {
-        bottomNavBar.setOnNavigationItemReselectedListener {
+        setOnNavigationItemReselectedListener {
             val currentFragment = navHostFragment.childFragmentManager.fragments[0].toString()
             val currentTab = getCurrentTab(it.title)
             val isReloadingNeeded = !currentFragment.contains(currentTab)
