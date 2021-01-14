@@ -1,11 +1,14 @@
 package com.greencom.android.podcasts
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 
 // Tags for navigation tabs
@@ -36,6 +39,27 @@ class MainActivity : AppCompatActivity() {
         bottomNavBar.setupWithNavController(navController)
         // Handle behavior when the bottom navigation item is reselected
         bottomNavBar.setupOnBottomItemReselectedBehavior(navHostFragment, navController)
+
+        // Player bottom sheet setup
+        val playerBottomSheetBehavior = BottomSheetBehavior
+                .from(binding.included.playerBottomSheet)
+        playerBottomSheetBehavior.setupBottomSheetBehavior()
+    }
+
+    /**
+     * TODO: Complete and write documentation
+     */
+    private fun BottomSheetBehavior<CardView>.setupBottomSheetBehavior() {
+        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+        }
+        addBottomSheetCallback(bottomSheetCallback)
     }
 
     /**
