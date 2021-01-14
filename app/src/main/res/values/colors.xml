@@ -10,4 +10,6 @@
     <!-- Custom colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey_light">#FAFAFA</color>
+    <color name="grey_dark">#F5F5F5</color>
 </resources>
