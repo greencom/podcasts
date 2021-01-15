@@ -3,7 +3,6 @@ package com.greencom.android.podcasts
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.navigation.NavController
@@ -24,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var onBackPressedCallback: OnBackPressedCallback
+    private lateinit var playerBottomSheetBehavior: BottomSheetBehavior<CardView>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,27 +50,28 @@ class MainActivity : AppCompatActivity() {
         binding.included.contentExpanded.alpha = 0f
 
         // Player bottom sheet setup
-        val playerBottomSheetBehavior = BottomSheetBehavior
+        playerBottomSheetBehavior = BottomSheetBehavior
                 .from(binding.included.playerBottomSheet)
         playerBottomSheetBehavior.setupBottomSheetBehavior(bottomNavBarHeight)
 
         // TODO: Open player bottom sheet on click
 
-        // TODO: Change onBackPressed() behavior to close player bottom sheet at first, if it is open
-        onBackPressedCallback = object : OnBackPressedCallback(false) {
-            @SuppressLint("SwitchIntDef")
-            override fun handleOnBackPressed() {
-                when (playerBottomSheetBehavior.state) {
-                    BottomSheetBehavior.STATE_DRAGGING ->
-                        playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    BottomSheetBehavior.STATE_SETTLING ->
-                        playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                    BottomSheetBehavior.STATE_EXPANDED ->
-                        playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
-            }
+    }
+
+    /**
+     * TODO: Write documentation
+     */
+    @SuppressLint("SwitchIntDef")
+    override fun onBackPressed() {
+        when (playerBottomSheetBehavior.state) {
+            BottomSheetBehavior.STATE_DRAGGING ->
+                playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            BottomSheetBehavior.STATE_SETTLING ->
+                playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            BottomSheetBehavior.STATE_EXPANDED ->
+                playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            BottomSheetBehavior.STATE_COLLAPSED -> super.onBackPressed()
         }
-        onBackPressedDispatcher.addCallback(onBackPressedCallback)
     }
 
     /**
@@ -79,9 +79,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun BottomSheetBehavior<CardView>.setupBottomSheetBehavior(bottomNavBarHeight: Float) {
         val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
-            @SuppressLint("SwitchIntDef")
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-                updateOnBackPressedCallback(newState)
+
             }
 
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
@@ -89,18 +88,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
         addBottomSheetCallback(bottomSheetCallback)
-    }
-
-    /**
-     * TODO: Complete and write documentation
-     */
-    private fun updateOnBackPressedCallback(bottomSheetState: Int) {
-        when (bottomSheetState) {
-            BottomSheetBehavior.STATE_COLLAPSED -> onBackPressedCallback.isEnabled = false
-            BottomSheetBehavior.STATE_DRAGGING -> onBackPressedCallback.isEnabled = true
-            BottomSheetBehavior.STATE_SETTLING -> onBackPressedCallback.isEnabled = true
-            BottomSheetBehavior.STATE_EXPANDED -> onBackPressedCallback.isEnabled = true
-        }
     }
 
     /**
