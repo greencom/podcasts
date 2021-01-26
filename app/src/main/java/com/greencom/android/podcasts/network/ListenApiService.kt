@@ -11,9 +11,10 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
+/** ListenAPI base URL. */
 private const val BASE_URL = "https://listen-api.listennotes.com/api/v2/"
 
-// Logging
+/** Log setup. */
 private val logging = HttpLoggingInterceptor().apply { setLevel(HttpLoggingInterceptor.Level.BODY) }
 private val httpClient = OkHttpClient.Builder().apply { addInterceptor(logging) }
 
@@ -24,7 +25,7 @@ private val moshi = Moshi.Builder()
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(BASE_URL)
-    .client(httpClient.build()) // Logging
+    .client(httpClient.build()) // Log.
     .build()
 
 interface ListenApiService {
@@ -46,6 +47,7 @@ interface ListenApiService {
      *               Default value is `title,description,author`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 1 is yes, and 0 is no. Default value is `0`.
+     *
      * @return [SearchEpisodeResult]
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -76,6 +78,7 @@ interface ListenApiService {
      *               Default value is `title,description,author`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 1 is yes, and 0 is no. Default value is `0`.
+     *
      * @return [SearchPodcastResult]
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -92,6 +95,7 @@ interface ListenApiService {
     /**
      * Get podcast [Genres] that are supported in Listen Notes. The [Genre] id can be
      * passed to other endpoints as a parameter to get podcasts in a specific [Genre].
+     *
      * @return [Genres]
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -107,6 +111,7 @@ interface ListenApiService {
      * @param region filter best podcasts by country/region. Default value is `ru`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 1 is yes, and 0 is no. Default value is `0`.
+     *
      * @return [BestPodcasts]
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -119,6 +124,7 @@ interface ListenApiService {
     ): BestPodcasts
 }
 
+/** ListenAPI service object. */
 object ListenApi {
     val retrofitService: ListenApiService by lazy { retrofit.create(ListenApiService::class.java) }
 }

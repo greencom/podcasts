@@ -9,11 +9,3 @@ import android.content.Context
 fun Context.convertDpToPx(dp: Int): Float {
     return dp * resources.displayMetrics.density
 }
-
-/**
- * Convert `dp` to `px`.
- * @param dp dp in `Float`.
- */
-fun Context.convertDpToPx(dp: Float): Float {
-    return dp * resources.displayMetrics.density
-}

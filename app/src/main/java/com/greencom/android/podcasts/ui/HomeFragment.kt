@@ -12,15 +12,19 @@ import com.greencom.android.podcasts.viewmodels.HomeViewModel
 
 class HomeFragment : Fragment() {
 
+    /** Nullable HomeFragment View binding. Use [binding] instead. */
     private var _binding: FragmentHomeBinding? = null
+    /** Non-null HomeFragment View binding. */
     private val binding get() = _binding!!
 
+    /** HomeViewModel. */
     private val viewModel: HomeViewModel by navGraphViewModels(R.id.nav_graph)
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View {
+        /** HomeFragment View binding setup. */
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,6 +37,7 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Clear HomeFragment View binding.
         _binding = null
     }
 }

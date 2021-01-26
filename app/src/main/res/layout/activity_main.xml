@@ -1,33 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Used to dim screen behind the player. -->
+    <FrameLayout
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="@color/background_behind_player"
+        android:elevation="128dp" />
+
     <!-- Ignore fragment tag replacement hint for now because of bug -->
-    <!-- or use NavHostFragment.navController in Activity instead of findNavController() -->
+    <!-- or use NavHostFragment.navController in Activity instead of findNavController(). -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="112dp"
-        app:navGraph="@navigation/nav_graph"
-        app:defaultNavHost="true" />
+        android:layout_marginBottom="@dimen/player_bottom_sheet_peek_height"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
 
+    <!-- Player internal shadow. -->
+    <View
+        android:id="@+id/player_shadow_external"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_gravity="top"
+        android:background="@drawable/shape_player_shadow_external"
+        app:layout_anchor="@id/player" />
+
+    <!-- Player external shadow. -->
+    <View
+        android:id="@+id/player_shadow_internal"
+        android:layout_width="match_parent"
+        android:layout_height="16dp"
+        android:layout_gravity="bottom"
+        android:alpha="1"
+        android:background="@drawable/shape_player_shadow_internal"
+        app:layout_anchor="@id/player"
+        app:layout_anchorGravity="top" />
+
+    <!-- Player bottom sheet. -->
     <include
-        android:id="@+id/included"
-        layout="@layout/player_bottom_sheet_content" />
+        android:id="@+id/player"
+        layout="@layout/player_bottom_sheet" />
 
-    <!-- layout_height is explicitly specified as 56dp -->
+    <!-- layout_height is explicitly specified as 56dp. -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav_bar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="bottom"
+        android:background="?attr/bottomNavigationViewColor"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Default colors -->
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
 
-    <!-- Custom colors -->
+    <!-- Global colors. -->
     <color name="transparent">#00FFFFFF</color>
+    <color name="shadows">#0D000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="grey_light">#F5F5F5</color>
-    <color name="grey_dark">#E0E0E0</color>
+    <color name="background_behind_player">#80000000</color>
+
+    <!-- Light colors. -->
+    <color name="blue_bright">#1976D2</color>
+    <color name="error_light">#B00020</color>
+    <color name="surface_light">#FFFFFFFF</color>
+
+    <color name="player_pill_light">#E8EAED</color>
+    <color name="player_collapsed_background_light">#F8F9FA</color>
+    <color name="player_primary_light">#3C4043</color>
+    <color name="player_secondary_light">#5F6368</color>
+    <color name="player_slider_inactive_light">#E8EAED</color>
+
+    <!-- Dark colors. -->
+    <color name="blue_pale">#8AB4F8</color>
+    <color name="error_dark">#CF6679</color>
+    <color name="surface_dark">#222222</color>
+    <color name="bottom_navigation_view_dark">#222223</color>
+
+    <color name="player_pill_dark">#969BA1</color>
+    <color name="player_collapsed_background_dark">#2E3235</color>
+    <color name="player_primary_dark">#DADCE0</color>
+    <color name="player_secondary_dark">#969BA1</color>
+    <color name="player_slider_inactive_dark">#0E1723</color>
+
 </resources>

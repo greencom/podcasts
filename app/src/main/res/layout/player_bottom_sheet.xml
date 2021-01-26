@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/transparent"
+    android:elevation="8dp"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="@dimen/player_bottom_sheet_peek_height"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <include
+        android:id="@+id/background"
+        layout="@layout/player_background" />
+
+    <include
+        android:id="@+id/collapsed"
+        layout="@layout/player_collapsed" />
+
+    <include
+        android:id="@+id/expanded"
+        layout="@layout/player_expanded" />
+
+</FrameLayout>

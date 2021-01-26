@@ -12,15 +12,19 @@ import com.greencom.android.podcasts.viewmodels.ExploreViewModel
 
 class ExploreFragment : Fragment() {
 
+    /** Nullable ExploreFragment View binding. Use [binding] instead. */
     private var _binding: FragmentExploreBinding? = null
+    /** Non-null ExploreFragment View binding. */
     private val binding get() = _binding!!
 
+    /** ExploreViewModel. */
     private val viewModel: ExploreViewModel by navGraphViewModels(R.id.nav_graph)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        /** ExploreFragment View binding setup. */
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,6 +37,7 @@ class ExploreFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        // Clear ExploreFragment View binding.
         _binding = null
     }
 }

@@ -1,105 +1,101 @@
 package com.greencom.android.podcasts
 
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
+import com.greencom.android.podcasts.ui.ExploreFragment
+import com.greencom.android.podcasts.ui.HomeFragment
+import com.greencom.android.podcasts.ui.ProfileFragment
+import com.greencom.android.podcasts.utils.OnSwipeListener
 import com.greencom.android.podcasts.utils.convertDpToPx
-
-// Tags for navigation tabs
-private const val HOME_TAB = "HomeFragment"
-private const val EXPLORE_TAB = "ExploreFragment"
-private const val PROFILE_TAB = "ProfileFragment"
-private const val NEVER_USED = "NEVER_USED"
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
 
+    /** MainActivity View binding. */
     private lateinit var binding: ActivityMainBinding
-
-    private lateinit var playerBottomSheetBehavior: BottomSheetBehavior<CardView>
+    /** [BottomSheetBehavior] plugin of the player bottom sheet. */
+    private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // View Binding setup
+        /** MainActivity View binding setup. */
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-        // Bottom navigation bar setup
-        // - Use NavHostFragment.navController instead of findNavController()
-        //   because of FragmentContainerView bug
+        /** Bottom navigation bar setup. */
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // Use NavHostFragment.navController instead of findNavController() for now
+        // because of FragmentContainerView bug.
         val navController = navHostFragment.navController
         val bottomNavBar = binding.bottomNavBar
         bottomNavBar.setupWithNavController(navController)
-        // Handle behavior when the bottom navigation item is reselected
+        // Handle Navigation behavior when the bottom navigation item is reselected.
         bottomNavBar.setupOnBottomItemReselectedBehavior(navHostFragment, navController)
-        // Convert bottom navigation bar from dp to px
-        val bottomNavBarHeight = convertDpToPx(56)
 
-        // TODO: Make main part of player bottom sheet invisible at start
-        binding.included.contentExpanded.alpha = 0f
+        /** Player [BottomSheetBehavior] setup. */
+        playerBehavior = BottomSheetBehavior.from(binding.player.root)
+        playerBehavior.setupBottomSheetBehavior(convertDpToPx(57))
 
-        // Player bottom sheet setup
-        playerBottomSheetBehavior = BottomSheetBehavior
-                .from(binding.included.playerBottomSheet)
-        playerBottomSheetBehavior.setupBottomSheetBehavior(bottomNavBarHeight)
-
-        // TODO: Open player bottom sheet on click
-
+        /** Player content setup. */
+        setupPlayer()
     }
 
-    /**
-     * TODO: Write documentation
-     */
+    /** Make player closable on back pressed. */
     @SuppressLint("SwitchIntDef")
     override fun onBackPressed() {
-        when (playerBottomSheetBehavior.state) {
-            BottomSheetBehavior.STATE_DRAGGING ->
-                playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            BottomSheetBehavior.STATE_SETTLING ->
-                playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            BottomSheetBehavior.STATE_EXPANDED ->
-                playerBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            BottomSheetBehavior.STATE_COLLAPSED -> super.onBackPressed()
+        if (
+                playerBehavior.state == BottomSheetBehavior.STATE_DRAGGING ||
+                playerBehavior.state == BottomSheetBehavior.STATE_SETTLING ||
+                playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED
+        ) {
+            playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        } else {
+            super.onBackPressed()
         }
     }
 
-    /**
-     * TODO: Complete and write documentation
-     */
-    private fun BottomSheetBehavior<CardView>.setupBottomSheetBehavior(bottomNavBarHeight: Float) {
-        val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
+    /** Make player closable on outside click. */
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (ev.action == MotionEvent.ACTION_DOWN &&
+                playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
 
-            }
+            // Create a new empty Rect with [0,0,0,0] values for [left,top,right,bottom].
+            val outRect = Rect()
+            // Assign to the outRect the values corresponding to the coordinates of the player
+            // bottom sheet within the global coordinate system starting at the left top corner
+            // (corresponding to the screen resolution).
+            // For example, for Galaxy S7 the values of player's Rect are [0,172,1080,1920]
+            // for [left,top,right,bottom].
+            binding.player.root.getGlobalVisibleRect(outRect)
 
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                animatePlayerBottomSheetContentOnSlide(slideOffset, bottomNavBarHeight)
+            // If user touches the screen outside the player, close it.
+            // Return true, which means the event was handled.
+            if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
+                playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                return true
             }
         }
-        addBottomSheetCallback(bottomSheetCallback)
-    }
-
-    /**
-     * TODO: Complete and write documentation
-     */
-    private fun animatePlayerBottomSheetContentOnSlide(
-            slideOffset: Float,
-            bottomNavBarHeight: Float
-    ) {
-        binding.included.contentCollapsed.alpha = 1f - slideOffset * 7
-        binding.included.contentExpanded.alpha = slideOffset - 0.2f
-        binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 7
+        // Return super.dispatchTouchEvent() to handle default behavior.
+        return super.dispatchTouchEvent(ev)
     }
 
     /**
@@ -107,42 +103,246 @@ class MainActivity : AppCompatActivity() {
      *
      * Check if the current fragment is the starting one. If not, navigate to the starting one.
      * Otherwise, prevent fragment reloading.
+     *
+     * The starting fragments are fragments associated with bottom navigation items (tabs).
      */
     private fun BottomNavigationView.setupOnBottomItemReselectedBehavior(
-            navHostFragment: NavHostFragment,
-            navController: NavController,
+        navHostFragment: NavHostFragment,
+        navController: NavController,
     ) {
         setOnNavigationItemReselectedListener {
-            val currentFragment = navHostFragment.childFragmentManager.fragments[0].toString()
-            val currentTab = getCurrentTab(it.title)
-            val isReloadingNeeded = !currentFragment.contains(currentTab)
-
-            if (isReloadingNeeded) {
-                navigateToTab(currentTab, navController)
+            val currentFragment = navHostFragment.childFragmentManager.fragments[0]
+            val isNavigatingNeeded = !currentFragment.isStarting()
+            if (isNavigatingNeeded) {
+                navController.navigateToStartingFragment(it.title)
             }
         }
     }
 
     /**
-     * Return the tag of the start fragment associated with the selected tab.
+     * Set up and add the callback to the player [BottomSheetBehavior] to control the player UI
+     * behavior when [BottomSheetBehavior] state and slideOffset change.
+     *
+     * @param bottomNavBarHeight the height of the bottom navigation bar in `px`.
+     *        Used to calculate the distance the bottom navigation bar needs to be displaced.
      */
-    private fun getCurrentTab(title: CharSequence): String {
-        return when (title) {
-            this.getString(R.string.home) -> HOME_TAB
-            this.getString(R.string.explore) -> EXPLORE_TAB
-            this.getString(R.string.profile) -> PROFILE_TAB
-            else -> NEVER_USED
+    private fun BottomSheetBehavior<FrameLayout>
+            .setupBottomSheetBehavior(bottomNavBarHeight: Float) {
+
+        val callback = object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                controlPlayerOnBottomSheetStateChanged(newState)
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                controlPlayerOnBottomSheetSlide(slideOffset, bottomNavBarHeight)
+            }
+        }
+        addBottomSheetCallback(callback)
+    }
+
+    /** Control state of the player content when the player [BottomSheetBehavior] state change. */
+    private fun controlPlayerOnBottomSheetStateChanged(newState: Int) {
+        when (newState) {
+            // Disable the player expanded content when the player is collapsed.
+            BottomSheetBehavior.STATE_COLLAPSED -> {
+                binding.player.collapsed.root.isEnabled = true
+                binding.player.collapsed.playPause.isClickable = true
+                binding.player.expanded.cover.isClickable = false
+            }
+            // Disable the player collapsed content when the player is expanded.
+            BottomSheetBehavior.STATE_EXPANDED -> {
+                binding.player.collapsed.root.isEnabled = false
+                binding.player.collapsed.playPause.isClickable = false
+                binding.player.expanded.cover.isClickable = true
+            }
+        }
+    }
+
+    /** Player content setup. */
+    private fun setupPlayer() {
+
+        // Select text views to make them auto scrollable, if needed.
+        binding.player.expanded.title.isSelected = true
+        binding.player.expanded.publisher.isSelected = true
+        binding.player.collapsed.title.isSelected = true
+
+        // Set listeners for the player content.
+        setCollapsedContentListeners()
+        setExpandedContentListeners()
+    }
+
+    /**
+     * Animate the player content and background shadows when the player [BottomSheetBehavior]
+     * slide offset change.
+     */
+    private fun controlPlayerOnBottomSheetSlide(
+            slideOffset: Float,
+            bottomNavBarHeight: Float
+    ) {
+        // Animate alpha of the player collapsed content. VERIFIED.
+        binding.player.collapsed.root.alpha = 1f - slideOffset * 10
+        binding.player.collapsed.progressBar.alpha = 1f - slideOffset * 100
+
+        // Animate alpha of the player expanded content. VERIFIED.
+        binding.player.expanded.root.alpha = (slideOffset * 1.5f) - 0.15f
+
+        // Animate the displacement of the bottomNavBar along the y-axis. VERIFIED.
+        binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
+
+        // Change elevations of the player and bottomNavBar to overlap the background. VERIFIED.
+        if (slideOffset >= 0.01f) {
+            binding.player.root.translationZ = 500f
+            binding.bottomNavBar.translationZ = 500f
+        } else {
+            binding.player.root.translationZ = 0f
+            binding.bottomNavBar.translationZ = 0f
+        }
+
+        // Animate player shadow. VERIFIED.
+        binding.playerShadowExternal.alpha = 1f - slideOffset * 3
+        binding.playerShadowInternal.alpha = 1f - slideOffset * 3
+
+        // Animate alpha of the background behind player. VERIFIED.
+        binding.background.alpha = slideOffset
+    }
+
+    /** Set listeners for the collapsed content of the player. */
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setCollapsedContentListeners() {
+
+
+
+        /** Actions that expand the player. */
+        // Expand the player on the frame click.
+        binding.player.collapsed.root.setOnClickListener {
+            if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+        // Expand the player on the play/pause button click.
+        binding.player.collapsed.playPause.setOnClickListener {
+            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+        }
+        // Expand the player on frame swipe.
+        binding.player.collapsed.root.setOnTouchListener(object : OnSwipeListener(this) {
+            override fun onSwipeTop() {
+                if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+        })
+        // Expand the player on play/pause button swipe.
+        binding.player.collapsed.playPause.setOnTouchListener(object : OnSwipeListener(this) {
+            override fun onSwipeTop() {
+                if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                    playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                }
+            }
+        })
+    }
+
+    /** Set listeners for the expanded content of the player. */
+    private fun setExpandedContentListeners() {
+
+        /** Slider listeners. */
+        // OnChangeListener
+        binding.player.expanded.slider.addOnChangeListener { slider, value, fromUser ->
+
+        }
+
+        // OnSliderTouchListener is used for animating slider thumb radius.
+        val onTouchListener = object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                val increaseThumb = ObjectAnimator.ofInt(
+                        binding.player.expanded.slider,
+                        "thumbRadius",
+                        slider.thumbRadius,
+                        convertDpToPx(8).roundToInt()
+                ).apply {
+                    duration = 120
+                    setAutoCancel(true)
+                }
+                increaseThumb.start()
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                val decreaseThumb = ObjectAnimator.ofInt(
+                        binding.player.expanded.slider,
+                        "thumbRadius",
+                        slider.thumbRadius,
+                        convertDpToPx(5).roundToInt()
+                ).apply {
+                    duration = 120
+                    setAutoCancel(true)
+                }
+                decreaseThumb.start()
+            }
+        }
+        binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
+
+        /** Cover listener. */
+        // The expanded content of the player is not disabled at application start
+        // (because of bug?), so prevent random click on the invisible podcast cover
+        // by checking the state of player bottom sheet. If player is collapsed, expand it.
+        binding.player.expanded.cover.setOnClickListener {
+            if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            } else {
+                Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        binding.player.expanded.playPause.setOnClickListener {
+            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.backward.setOnClickListener {
+            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.forward.setOnClickListener {
+            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.title.setOnClickListener {
+            Toast.makeText(this, "Title clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.title.setOnClickListener {
+            Toast.makeText(this, "Title clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.publisher.setOnClickListener {
+            Toast.makeText(this, "Publisher clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.speed.setOnClickListener {
+            Toast.makeText(this, "Speed clicked", Toast.LENGTH_SHORT).show()
+        }
+        binding.player.expanded.options.setOnClickListener {
+            Toast.makeText(this, "Options clicked", Toast.LENGTH_SHORT).show()
         }
     }
 
     /**
-     * Navigate to the start fragment associated with the selected tab.
+     * Return `true` if the fragment is the starting one. Otherwise return `false`.
+     *
+     * The starting fragments are fragments associated with bottom navigation items (tabs).
      */
-    private fun navigateToTab(tab: String, navController: NavController) {
-        when (tab) {
-            HOME_TAB -> navController.navigate(R.id.action_global_homeFragment)
-            EXPLORE_TAB -> navController.navigate(R.id.action_global_exploreFragment)
-            PROFILE_TAB -> navController.navigate(R.id.action_global_profileFragment)
+    private fun Fragment.isStarting(): Boolean {
+        return when (this) {
+            is HomeFragment -> true
+            is ExploreFragment -> true
+            is ProfileFragment -> true
+            else -> false
+        }
+    }
+
+    /**
+     * Navigate to the starting fragment associated with the reselected bottom navigation item.
+     *
+     * @param title title of the reselected bottom navigation item (tab).
+     */
+    private fun NavController.navigateToStartingFragment(title: CharSequence) {
+        when (title) {
+            resources.getString(R.string.home) -> navigate(R.id.action_global_homeFragment)
+            resources.getString(R.string.explore) -> navigate(R.id.action_global_exploreFragment)
+            resources.getString(R.string.profile) -> navigate(R.id.action_global_profileFragment)
         }
     }
 }

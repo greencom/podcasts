@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- NoActionBar instead of DarkActionBar. -->
     <style name="Theme.Podcasts" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -6,8 +7,9 @@
         <item name="android:statusBarColor">@color/surface_light</item>
         <item name="android:windowLightStatusBar">true</item>
 
-        <!-- System navigation bar color setup is moved to v27 versions of themes because
-        android:windowLightNavigationBar attribute is available only on API 27 and above. -->
+        <!-- System navigation bar. -->
+        <item name="android:navigationBarColor">@color/surface_light</item>
+        <item name="android:windowLightNavigationBar">true</item>
 
         <!-- Default colors. -->
         <item name="colorPrimary">@color/blue_bright</item>

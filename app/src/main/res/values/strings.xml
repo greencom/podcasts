@@ -1,8 +1,16 @@
 <resources>
     <string name="app_name">Podcasts</string>
 
-    <!-- Bottom navigation menu -->
+    <!-- Bottom navigation menu. -->
     <string name="home">Home</string>
     <string name="explore">Explore</string>
     <string name="profile">Profile</string>
+
+    <!-- Player. -->
+    <string name="cover_description">Cover</string>
+    <string name="play_description">Play</string>
+    <string name="pause_description">Pause</string>
+    <string name="backward_description">Backward</string>
+    <string name="forward_description">Forward</string>
+    <string name="options_description">Options</string>
 </resources>
