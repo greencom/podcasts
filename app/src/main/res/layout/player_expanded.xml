@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:alpha="0"
-    android:background="@color/transparent"
     android:paddingBottom="8dp">
 
     <View
@@ -94,7 +93,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/publisher"
-        app:thumbRadius="5dp"
+        app:thumbRadius="@dimen/player_slider_thumb_default"
         app:trackColorInactive="?attr/playerSliderInactiveColor"
         app:trackHeight="2dp" />
 

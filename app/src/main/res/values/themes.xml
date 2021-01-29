@@ -6,8 +6,8 @@
         <item name="android:statusBarColor">@color/surface_light</item>
         <item name="android:windowLightStatusBar">true</item>
 
-        <!-- System navigation bar color setup is moved to v27 versions of themes because
-        android:windowLightNavigationBar attribute is available only on API 27 and above. -->
+        <!-- System navigation bar color setup is moved to v27 versions of themes.xml because
+        the android:windowLightNavigationBar attribute is available only on API 27 and above. -->
 
         <!-- Default colors. -->
         <item name="colorPrimary">@color/blue_bright</item>
@@ -21,7 +21,6 @@
 
         <!-- Custom colors. -->
         <item name="bottomNavigationViewColor">@color/surface_light</item>
-
         <item name="playerCollapsedBackgroundColor">@color/player_collapsed_background_light</item>
         <item name="playerExpandedBackgroundColor">@color/surface_light</item>
         <item name="playerPillColor">@color/player_pill_light</item>

@@ -23,7 +23,6 @@
 
         <!-- Custom colors. -->
         <item name="bottomNavigationViewColor">@color/surface_light</item>
-
         <item name="playerCollapsedBackgroundColor">@color/player_collapsed_background_light</item>
         <item name="playerExpandedBackgroundColor">@color/surface_light</item>
         <item name="playerPillColor">@color/player_pill_light</item>

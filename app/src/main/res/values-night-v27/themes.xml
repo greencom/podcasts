@@ -23,7 +23,6 @@
 
         <!-- Custom colors. -->
         <item name="bottomNavigationViewColor">@color/bottom_navigation_view_dark</item>
-
         <item name="playerCollapsedBackgroundColor">@color/player_collapsed_background_dark</item>
         <item name="playerExpandedBackgroundColor">@color/player_collapsed_background_dark</item>
         <item name="playerPillColor">@color/player_pill_dark</item>

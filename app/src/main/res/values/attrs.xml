@@ -13,4 +13,5 @@
     <attr name="playerSecondaryColor" format="color" />
     <attr name="playerCollapsedProgressBarBackgroundColor" format="color" />
     <attr name="playerSliderInactiveColor" format="color" />
+
 </resources>

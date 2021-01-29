@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui
+package com.greencom.android.podcasts.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater

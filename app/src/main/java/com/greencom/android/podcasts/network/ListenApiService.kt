@@ -48,7 +48,7 @@ interface ListenApiService {
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 1 is yes, and 0 is no. Default value is `0`.
      *
-     * @return [SearchEpisodeResult]
+     * @return A [SearchEpisodeResult] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("search")
@@ -79,7 +79,7 @@ interface ListenApiService {
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 1 is yes, and 0 is no. Default value is `0`.
      *
-     * @return [SearchPodcastResult]
+     * @return A [SearchPodcastResult] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("search")
@@ -96,7 +96,7 @@ interface ListenApiService {
      * Get podcast [Genres] that are supported in Listen Notes. The [Genre] id can be
      * passed to other endpoints as a parameter to get podcasts in a specific [Genre].
      *
-     * @return [Genres]
+     * @return A [Genres] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("genres")
@@ -112,7 +112,7 @@ interface ListenApiService {
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 1 is yes, and 0 is no. Default value is `0`.
      *
-     * @return [BestPodcasts]
+     * @return A [BestPodcasts] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")

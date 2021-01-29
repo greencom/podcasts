@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Подкасты</string>
 
-    <!-- Bottom navigation menu. -->
+    <!-- Global strings. -->
+    <string name="app_name">Подкасты</string>
     <string name="home">Главная</string>
     <string name="explore">Поиск</string>
     <string name="profile">Профиль</string>
 
-    <!-- Player. -->
+    <!-- Player strings. -->
     <string name="cover_description">Обложка</string>
     <string name="play_description">Играть</string>
     <string name="pause_description">Пауза</string>
     <string name="backward_description">Назад</string>
     <string name="forward_description">Вперёд</string>
     <string name="options_description">Настройки</string>
+
 </resources>

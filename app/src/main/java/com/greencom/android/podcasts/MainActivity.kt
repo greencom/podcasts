@@ -18,13 +18,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
-import com.greencom.android.podcasts.ui.ExploreFragment
-import com.greencom.android.podcasts.ui.HomeFragment
-import com.greencom.android.podcasts.ui.ProfileFragment
+import com.greencom.android.podcasts.fragments.ExploreFragment
+import com.greencom.android.podcasts.fragments.HomeFragment
+import com.greencom.android.podcasts.fragments.ProfileFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
-import com.greencom.android.podcasts.utils.convertDpToPx
 import kotlin.math.roundToInt
 
+private const val LOG_TAG = "MainActivity"
+
+/**
+ * This class is the entry point for the app. This is where the Navigation component,
+ * bottom navigation bar, and player bottom sheet are configured.
+ */
 class MainActivity : AppCompatActivity() {
 
     /** MainActivity View binding. */
@@ -40,20 +45,23 @@ class MainActivity : AppCompatActivity() {
         val view = binding.root
         setContentView(view)
 
-        /** Bottom navigation bar setup. */
+        /** Navigation component setup. */
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         // Use NavHostFragment.navController instead of findNavController() for now
         // because of FragmentContainerView bug.
         val navController = navHostFragment.navController
-        val bottomNavBar = binding.bottomNavBar
-        bottomNavBar.setupWithNavController(navController)
-        // Handle Navigation behavior when the bottom navigation item is reselected.
-        bottomNavBar.setupOnBottomItemReselectedBehavior(navHostFragment, navController)
+        binding.bottomNavBar.apply {
+            // Associate the bottom nav bar items with navigation graph actions.
+            setupWithNavController(navController)
+            // Handle Navigation behavior when the bottom navigation item is reselected.
+            setupOnBottomItemReselectedBehavior(navHostFragment, navController)
+        }
 
         /** Player [BottomSheetBehavior] setup. */
-        playerBehavior = BottomSheetBehavior.from(binding.player.root)
-        playerBehavior.setupBottomSheetBehavior(convertDpToPx(57))
+        playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
+            setupBottomSheetBehavior(resources.getDimension(R.dimen.bottom_nav_bar_height))
+        }
 
         /** Player content setup. */
         setupPlayer()
@@ -246,19 +254,23 @@ class MainActivity : AppCompatActivity() {
     private fun setExpandedContentListeners() {
 
         /** Slider listeners. */
-        // OnChangeListener
         binding.player.expanded.slider.addOnChangeListener { slider, value, fromUser ->
 
         }
 
         // OnSliderTouchListener is used for animating slider thumb radius.
+        val thumbRadiusDefault = resources
+                .getDimension(R.dimen.player_slider_thumb_default).roundToInt()
+        val thumbRadiusIncreased = resources
+                .getDimension(R.dimen.player_slider_thumb_increased).roundToInt()
+
         val onTouchListener = object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 val increaseThumb = ObjectAnimator.ofInt(
                         binding.player.expanded.slider,
                         "thumbRadius",
                         slider.thumbRadius,
-                        convertDpToPx(8).roundToInt()
+                        thumbRadiusIncreased
                 ).apply {
                     duration = 120
                     setAutoCancel(true)
@@ -271,7 +283,7 @@ class MainActivity : AppCompatActivity() {
                         binding.player.expanded.slider,
                         "thumbRadius",
                         slider.thumbRadius,
-                        convertDpToPx(5).roundToInt()
+                        thumbRadiusDefault
                 ).apply {
                     duration = 120
                     setAutoCancel(true)

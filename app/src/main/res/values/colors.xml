@@ -12,7 +12,6 @@
     <color name="blue_bright">#1976D2</color>
     <color name="error_light">#B00020</color>
     <color name="surface_light">#FFFFFFFF</color>
-
     <color name="player_pill_light">#E8EAED</color>
     <color name="player_collapsed_background_light">#F8F9FA</color>
     <color name="player_primary_light">#3C4043</color>
@@ -24,7 +23,6 @@
     <color name="error_dark">#CF6679</color>
     <color name="surface_dark">#222222</color>
     <color name="bottom_navigation_view_dark">#222223</color>
-
     <color name="player_pill_dark">#969BA1</color>
     <color name="player_collapsed_background_dark">#2E3235</color>
     <color name="player_primary_dark">#DADCE0</color>
