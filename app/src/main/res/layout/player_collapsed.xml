@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="57dp"
-    android:background="?attr/playerCollapsedBackgroundColor">
+    android:background="?attr/colorPlayerCollapsedBackground">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cover_card"
@@ -39,7 +39,7 @@
         android:paddingHorizontal="8dp"
         android:singleLine="true"
         android:text="Герта Мюллер — Чёрный парк"
-        android:textColor="?attr/playerPrimaryColor"
+        android:textColor="?attr/colorOnSurfaceSecondary"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/play_pause"
@@ -55,7 +55,7 @@
         android:layout_marginBottom="1dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/play_description"
-        android:tint="?attr/playerPrimaryColor"
+        android:tint="?attr/colorOnSurfaceSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:progress="40"
-        android:progressBackgroundTint="?attr/playerCollapsedProgressBarBackgroundColor"
+        android:progressBackgroundTint="?attr/colorPlayerCollapsedBackground"
         android:progressTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

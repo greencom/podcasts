@@ -17,10 +17,10 @@
         android:label="fragment_explore"
         tools:layout="@layout/fragment_explore" />
     <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.greencom.android.podcasts.fragments.ProfileFragment"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        android:id="@+id/activityFragment"
+        android:name="com.greencom.android.podcasts.fragments.ActivityFragment"
+        android:label="fragment_activity"
+        tools:layout="@layout/fragment_activity" />
     <action
         android:id="@+id/action_global_homeFragment"
         app:destination="@id/homeFragment" />
@@ -28,6 +28,6 @@
         android:id="@+id/action_global_exploreFragment"
         app:destination="@id/exploreFragment" />
     <action
-        android:id="@+id/action_global_profileFragment"
-        app:destination="@id/profileFragment" />
+        android:id="@+id/action_global_activityFragment"
+        app:destination="@id/activityFragment" />
 </navigation>

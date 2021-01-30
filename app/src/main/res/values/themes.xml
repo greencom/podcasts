@@ -10,7 +10,7 @@
         the android:windowLightNavigationBar attribute is available only on API 27 and above. -->
 
         <!-- Default colors. -->
-        <item name="colorPrimary">@color/blue_bright</item>
+        <item name="colorPrimary">@color/blue_light</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/surface_light</item>
         <item name="colorOnSurface">@color/black</item>
@@ -20,15 +20,16 @@
         <item name="colorOnError">@color/white</item>
 
         <!-- Custom colors. -->
-        <item name="bottomNavigationViewColor">@color/surface_light</item>
-        <item name="playerCollapsedBackgroundColor">@color/player_collapsed_background_light</item>
-        <item name="playerExpandedBackgroundColor">@color/surface_light</item>
-        <item name="playerPillColor">@color/player_pill_light</item>
-        <item name="playerPrimaryColor">@color/player_primary_light</item>
-        <item name="playerPrimaryVariantColor">@color/player_primary_light</item>
-        <item name="playerSecondaryColor">@color/player_secondary_light</item>
-        <item name="playerCollapsedProgressBarBackgroundColor">@color/player_collapsed_background_light</item>
-        <item name="playerSliderInactiveColor">@color/player_slider_inactive_light</item>
+        <item name="colorOnSurfacePrimary">@color/grey_light_900</item>
+        <item name="colorOnSurfaceSecondary">@color/grey_light_700</item>
+        <item name="colorOnSurfaceTertiary">@color/grey_light_500</item>
+        <item name="colorOnSurfaceHint">@color/grey_light_300</item>
+        <item name="colorOnSurfaceUtil">@color/grey_light_100</item>
+        <item name="colorBottomNavViewBackground">@color/surface_light</item>
+        <item name="colorPlayerBackground">@color/surface_light</item>
+        <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
+        <item name="colorPlayerPlay">@color/grey_light_700</item>
+        <item name="colorOutlinedButtonRipple">@color/outlined_button_ripple_light</item>
 
     </style>
 </resources>

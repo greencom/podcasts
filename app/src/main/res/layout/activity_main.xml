@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0"
-        android:background="@color/background_behind_player"
+        android:background="@color/background_scrim"
         android:elevation="128dp" />
 
     <!-- Ignore fragment tag replacement hint for now because of bug -->
@@ -57,7 +57,9 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_bar_height"
         android:layout_gravity="bottom"
-        android:background="?attr/bottomNavigationViewColor"
+        android:background="?attr/colorBottomNavViewBackground"
+        app:itemIconTint="@color/bottom_nav_view_item"
+        app:itemTextColor="@color/bottom_nav_view_item"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

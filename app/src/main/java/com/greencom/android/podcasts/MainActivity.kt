@@ -20,7 +20,7 @@ import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.fragments.ExploreFragment
 import com.greencom.android.podcasts.fragments.HomeFragment
-import com.greencom.android.podcasts.fragments.ProfileFragment
+import com.greencom.android.podcasts.fragments.ActivityFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import kotlin.math.roundToInt
 
@@ -340,7 +340,7 @@ class MainActivity : AppCompatActivity() {
         return when (this) {
             is HomeFragment -> true
             is ExploreFragment -> true
-            is ProfileFragment -> true
+            is ActivityFragment -> true
             else -> false
         }
     }
@@ -354,7 +354,7 @@ class MainActivity : AppCompatActivity() {
         when (title) {
             resources.getString(R.string.home) -> navigate(R.id.action_global_homeFragment)
             resources.getString(R.string.explore) -> navigate(R.id.action_global_exploreFragment)
-            resources.getString(R.string.profile) -> navigate(R.id.action_global_profileFragment)
+            resources.getString(R.string.activity) -> navigate(R.id.action_global_activityFragment)
         }
     }
 }

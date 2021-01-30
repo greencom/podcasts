@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_search_24"
         android:title="@string/explore" />
     <item
-        android:id="@+id/profileFragment"
+        android:id="@+id/activityFragment"
         android:icon="@drawable/ic_profile_24"
-        android:title="@string/profile" />
+        android:title="@string/activity" />
 </menu>

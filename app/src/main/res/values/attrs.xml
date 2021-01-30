@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global attributes. -->
-    <attr name="bottomNavigationViewColor" format="color" />
+    <!-- Global attrs. -->
+    <attr name="colorOnSurfacePrimary" format="color" />
+    <attr name="colorOnSurfaceSecondary" format="color" />
+    <attr name="colorOnSurfaceTertiary" format="color" />
+    <attr name="colorOnSurfaceHint" format="color" />
+    <attr name="colorOnSurfaceUtil" format="color" />
+    <attr name="colorBottomNavViewBackground" format="color" />
+    <attr name="colorOutlinedButtonRipple" format="color" />
 
-    <!-- Player attributes. -->
-    <attr name="playerCollapsedBackgroundColor" format="color" />
-    <attr name="playerExpandedBackgroundColor" format="color" />
-    <attr name="playerPillColor" format="color" />
-    <attr name="playerPrimaryColor" format="color" />
-    <attr name="playerPrimaryVariantColor" format="color" />
-    <attr name="playerSecondaryColor" format="color" />
-    <attr name="playerCollapsedProgressBarBackgroundColor" format="color" />
-    <attr name="playerSliderInactiveColor" format="color" />
+    <!-- Player attrs. -->
+    <attr name="colorPlayerBackground" format="color" />
+    <attr name="colorPlayerCollapsedBackground" format="color" />
+    <attr name="colorPlayerPlay" format="color" />
 
 </resources>

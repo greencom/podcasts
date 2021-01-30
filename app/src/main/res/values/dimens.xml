@@ -9,4 +9,7 @@
     <dimen name="player_slider_thumb_default">5dp</dimen>
     <dimen name="player_slider_thumb_increased">8dp</dimen>
 
+    <!-- Explore dimens. -->
+    <dimen name="search_button_height">60dp</dimen>
+
 </resources>

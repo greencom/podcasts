@@ -3,30 +3,34 @@
 
     <!-- Global colors. -->
     <color name="transparent">#00FFFFFF</color>
-    <color name="shadows">#0D000000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="background_behind_player">#80000000</color>
+    <color name="background_scrim">#80000000</color>
+    <color name="shadows">#0D000000</color>
 
     <!-- Light colors. -->
-    <color name="blue_bright">#1976D2</color>
+    <color name="blue_light">#1976D2</color>
     <color name="error_light">#B00020</color>
     <color name="surface_light">#FFFFFFFF</color>
-    <color name="player_pill_light">#E8EAED</color>
+    <color name="grey_light_900">#212121</color>
+    <color name="grey_light_700">#3C4043</color>
+    <color name="grey_light_500">#5F6368</color>
+    <color name="grey_light_300">#80868B</color>
+    <color name="grey_light_100">#DADCE0</color>
     <color name="player_collapsed_background_light">#F8F9FA</color>
-    <color name="player_primary_light">#3C4043</color>
-    <color name="player_secondary_light">#5F6368</color>
-    <color name="player_slider_inactive_light">#E8EAED</color>
+    <color name="outlined_button_ripple_light">#D8D9D9</color>
 
     <!-- Dark colors. -->
-    <color name="blue_pale">#8AB4F8</color>
+    <color name="blue_dark">#8AB4F8</color>
     <color name="error_dark">#CF6679</color>
     <color name="surface_dark">#222222</color>
-    <color name="bottom_navigation_view_dark">#222223</color>
-    <color name="player_pill_dark">#969BA1</color>
-    <color name="player_collapsed_background_dark">#2E3235</color>
-    <color name="player_primary_dark">#DADCE0</color>
-    <color name="player_secondary_dark">#969BA1</color>
-    <color name="player_slider_inactive_dark">#0E1723</color>
+    <color name="grey_dark_900">#FFFFFF</color>
+    <color name="grey_dark_700">#DADCE0</color>
+    <color name="grey_dark_500">#BDC1C6</color>
+    <color name="grey_dark_300">#969BA1</color>
+    <color name="grey_dark_100">#424548</color>
+    <color name="bottom_nav_view_background_dark">#222223</color>
+    <color name="player_background_dark">#303134</color>
+    <color name="outlined_button_ripple_dark">#46464A</color>
 
 </resources>

@@ -4,7 +4,8 @@
     <string name="app_name">Podcasts</string>
     <string name="home">Home</string>
     <string name="explore">Explore</string>
-    <string name="profile">Profile</string>
+    <string name="activity">Activity</string>
+    <string name="search">Search</string>
 
     <!-- Player strings. -->
     <string name="cover_description">Cover</string>
