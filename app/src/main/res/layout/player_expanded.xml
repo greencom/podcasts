@@ -94,7 +94,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/publisher"
-        app:thumbRadius="@dimen/player_slider_thumb_default"
+        app:thumbRadius="@dimen/slider_thumb_default"
         app:trackColorInactive="?attr/colorOnSurfaceUtil"
         app:trackHeight="2dp" />
 
@@ -191,6 +191,6 @@
         android:tint="?attr/colorOnSurfaceSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_options_24" />
+        app:srcCompat="@drawable/ic_options_horizontal_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
