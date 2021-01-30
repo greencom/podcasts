@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     /** MainActivity View binding. */
     private lateinit var binding: ActivityMainBinding
+
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 

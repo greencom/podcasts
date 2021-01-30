@@ -11,5 +11,6 @@
 
     <!-- Explore dimens. -->
     <dimen name="search_button_height">60dp</dimen>
+    <dimen name="tab_layout_margin_top">54dp</dimen>
 
 </resources>
