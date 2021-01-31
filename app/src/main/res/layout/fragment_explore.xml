@@ -7,7 +7,7 @@
     tools:context=".fragments.ExploreFragment">
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/view_pager_2"
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
@@ -72,6 +72,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/search_button"
+                app:tabGravity="center"
                 app:tabIndicator="@drawable/shape_tab_indicator"
                 app:tabIndicatorAnimationMode="elastic"
                 app:tabIndicatorFullWidth="false"
