@@ -14,5 +14,7 @@
     <string name="backward_description">Backward</string>
     <string name="forward_description">Forward</string>
     <string name="options_description">Options</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
