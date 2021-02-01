@@ -5,16 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.navGraphViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import com.greencom.android.podcasts.viewmodels.ExploreViewModel
-
-private const val NUM_PAGES = 5
 
 class ExploreFragment : Fragment() {
 
@@ -33,7 +29,7 @@ class ExploreFragment : Fragment() {
         /** ExploreFragment View binding setup. */
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
-        val pagerAdapter = PagerAdapter(childFragmentManager, lifecycle)
+        val pagerAdapter = PagerAdapter(this)
         binding.pager.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
@@ -61,11 +57,8 @@ class ExploreFragment : Fragment() {
         _binding = null
     }
 
-    private inner class PagerAdapter(
-            fm: FragmentManager,
-            lifecycle: Lifecycle
-    ) : FragmentStateAdapter(fm, lifecycle) {
-        override fun getItemCount(): Int = NUM_PAGES
+    private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+        override fun getItemCount(): Int = 5
 
         override fun createFragment(position: Int): Fragment {
             return if (position == 0) {

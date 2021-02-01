@@ -21,6 +21,9 @@ class ExplorePrimaryPageFragment : Fragment() {
     ): View {
         /** ExplorePrimaryPageFragment View binding setup. */
         _binding = FragmentExplorePrimaryPageBinding.inflate(inflater, container, false)
+
+        binding.textView.text = resources.getString(R.string.long_string)
+
         return binding.root
     }
 

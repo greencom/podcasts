@@ -20,7 +20,7 @@
         <item name="colorOnBackground">@color/white</item>
         <item name="colorError">@color/error_dark</item>
         <item name="colorOnError">@color/black</item>
-        <item name="android:colorEdgeEffect">@color/grey_dark_100</item>
+        <item name="android:colorEdgeEffect">@color/grey_dark_300</item>
 
         <!-- Custom colors. -->
         <item name="colorOnSurfacePrimary">@color/grey_dark_900</item>

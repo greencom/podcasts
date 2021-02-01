@@ -24,8 +24,6 @@ import com.greencom.android.podcasts.fragments.ActivityFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import kotlin.math.roundToInt
 
-private const val LOG_TAG = "MainActivity"
-
 /**
  * This class is the entry point for the app. This is where the Navigation component,
  * bottom navigation bar, and player bottom sheet are configured.

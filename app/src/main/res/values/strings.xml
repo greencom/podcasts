@@ -14,7 +14,11 @@
     <string name="backward_description">Backward</string>
     <string name="forward_description">Forward</string>
     <string name="options_description">Options</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="long_string">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla gravida vel mauris vitae interdum. Morbi felis magna, rhoncus ut quam in, hendrerit viverra orci. Duis hendrerit venenatis elementum. Sed iaculis erat ac magna finibus viverra. Duis tortor orci, dapibus eleifend hendrerit et, faucibus non erat. Mauris viverra scelerisque pretium. Pellentesque pharetra blandit dolor, ut egestas ipsum efficitur at. Aliquam rutrum malesuada molestie.
+
+Praesent porttitor, elit et ornare maximus, arcu arcu vestibulum sem, eu gravida quam nunc id quam. Curabitur aliquet vulputate scelerisque. Ut non orci id nibh sodales dictum a ut leo. Nunc efficitur, elit vitae fermentum placerat, elit lectus vestibulum est, molestie feugiat dolor quam ut lorem. Fusce posuere enim orci, eu sagittis sem efficitur a. Ut non interdum dui, a lobortis odio. Sed placerat id ligula vitae tempus. Proin mollis massa tellus, non porttitor libero suscipit eu. Curabitur luctus, erat in interdum malesuada, ex odio varius tortor, a aliquam libero ligula vitae purus. Curabitur rutrum sollicitudin metus, non condimentum quam elementum ut. Curabitur laoreet porta lacus, nec fermentum eros dignissim eu. Sed faucibus dolor vel tortor pulvinar pulvinar. Cras nisi est, tincidunt vitae orci non, vehicula blandit metus. Morbi placerat varius arcu. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris elementum cursus turpis, ac scelerisque nisi rutrum eu.
+
+Proin porttitor efficitur nibh, ac aliquet quam ultrices ut. Suspendisse dapibus mauris erat, id ultricies felis malesuada in. Fusce id orci vel ipsum ornare elementum a ut dolor. Donec non rhoncus massa. Nunc lectus eros, auctor at nunc non, mollis laoreet nibh. Vivamus malesuada suscipit augue, in mollis odio molestie ac. Integer sodales vehicula ultricies. Donec eget nisi egestas, consectetur mauris in, vulputate lacus. Nunc ornare leo pulvinar pharetra finibus. Nam ac lorem ut diam tempus aliquam. Nullam auctor risus non euismod eleifend. Vestibulum.</string>
 
 </resources>
