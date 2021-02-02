@@ -9,8 +9,4 @@
     <dimen name="slider_thumb_default">5dp</dimen>
     <dimen name="slider_thumb_increased">8dp</dimen>
 
-    <!-- Explore dimens. -->
-    <dimen name="search_button_height">60dp</dimen>
-    <dimen name="tab_layout_margin_top">54dp</dimen>
-
 </resources>
