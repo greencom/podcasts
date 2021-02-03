@@ -8,6 +8,8 @@
     <string name="activity">Активность</string>
     <string name="search">Поиск</string>
 
+    <string name="night_mode">Тёмная тема</string>
+
     <!-- Player strings. -->
     <string name="cover_description">Обложка</string>
     <string name="play_description">Играть</string>

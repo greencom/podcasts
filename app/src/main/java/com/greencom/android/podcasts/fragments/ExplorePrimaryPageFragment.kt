@@ -8,18 +8,19 @@ import androidx.fragment.app.Fragment
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePrimaryPageBinding
 
+/** TODO: Documentation */
 class ExplorePrimaryPageFragment : Fragment() {
 
-    /** Nullable ExplorePrimaryPageFragment View binding. Use [binding] instead. */
+    /** Nullable View binding. Use [binding] instead. */
     private var _binding: FragmentExplorePrimaryPageBinding? = null
-    /** Non-null ExplorePrimaryPageFragment View binding. */
+    /** Non-null View binding. */
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /** ExplorePrimaryPageFragment View binding setup. */
+        /** View binding setup. */
         _binding = FragmentExplorePrimaryPageBinding.inflate(inflater, container, false)
 
         binding.textView.text = resources.getString(R.string.long_string)
@@ -29,7 +30,7 @@ class ExplorePrimaryPageFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Clear ExplorePrimaryPageFragment View binding.
+        // Clear View binding.
         _binding = null
     }
 }

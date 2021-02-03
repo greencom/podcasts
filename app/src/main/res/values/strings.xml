@@ -7,6 +7,8 @@
     <string name="activity">Activity</string>
     <string name="search">Search</string>
 
+    <string name="night_mode">Night mode</string>
+
     <!-- Player strings. -->
     <string name="cover_description">Cover</string>
     <string name="play_description">Play</string>

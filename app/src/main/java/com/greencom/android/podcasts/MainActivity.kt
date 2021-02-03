@@ -18,9 +18,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
+import com.greencom.android.podcasts.fragments.ActivityFragment
 import com.greencom.android.podcasts.fragments.ExploreFragment
 import com.greencom.android.podcasts.fragments.HomeFragment
-import com.greencom.android.podcasts.fragments.ActivityFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import kotlin.math.roundToInt
 
@@ -30,7 +30,7 @@ import kotlin.math.roundToInt
  */
 class MainActivity : AppCompatActivity() {
 
-    /** MainActivity View binding. */
+    /** View binding. */
     private lateinit var binding: ActivityMainBinding
 
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
@@ -41,8 +41,7 @@ class MainActivity : AppCompatActivity() {
 
         /** MainActivity View binding setup. */
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
 
         /** Navigation component setup. */
         val navHostFragment = supportFragmentManager
@@ -108,10 +107,11 @@ class MainActivity : AppCompatActivity() {
     /**
      * Handle behavior when the bottom navigation item is reselected.
      *
-     * Check if the current fragment is the starting one. If not, navigate to the starting one.
-     * Otherwise, prevent fragment reloading.
+     * Check if the current fragment is the starting one. If not, navigate
+     * to the starting one. Otherwise, prevent fragment reloading.
      *
-     * The starting fragments are fragments associated with bottom navigation items (tabs).
+     * The starting fragments are fragments associated with bottom navigation
+     * items (tabs).
      */
     private fun BottomNavigationView.setupOnBottomItemReselectedBehavior(
         navHostFragment: NavHostFragment,
@@ -127,11 +127,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Set up and add the callback to the player [BottomSheetBehavior] to control the player UI
-     * behavior when [BottomSheetBehavior] state and slideOffset change.
+     * Set up and add the callback to the player [BottomSheetBehavior] to control
+     * the player UI behavior when [BottomSheetBehavior] state and slideOffset change.
      *
      * @param bottomNavBarHeight the height of the bottom navigation bar in `px`.
-     *        Used to calculate the distance the bottom navigation bar needs to be displaced.
+     *        Used to calculate the distance the bottom navigation bar needs to be
+     *        displaced.
      */
     private fun BottomSheetBehavior<FrameLayout>
             .setupBottomSheetBehavior(bottomNavBarHeight: Float) {
@@ -148,7 +149,10 @@ class MainActivity : AppCompatActivity() {
         addBottomSheetCallback(callback)
     }
 
-    /** Control state of the player content when the player [BottomSheetBehavior] state change. */
+    /**
+     * Control the state of the player content when the player [BottomSheetBehavior]
+     * state change.
+     */
     private fun controlPlayerOnBottomSheetStateChanged(newState: Int) {
         when (newState) {
             // Disable the player expanded content when the player is collapsed.
@@ -180,8 +184,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Animate the player content and background shadows when the player [BottomSheetBehavior]
-     * slide offset change.
+     * Animate the player content and background shadows when the player
+     * [BottomSheetBehavior] slide offset change.
      */
     private fun controlPlayerOnBottomSheetSlide(
             slideOffset: Float,
@@ -232,7 +236,8 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
         }
         // Expand the player on frame swipe.
-        binding.player.collapsed.root.setOnTouchListener(object : OnSwipeListener(this) {
+        binding.player.collapsed.root
+            .setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeTop() {
                 if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                     playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -240,7 +245,8 @@ class MainActivity : AppCompatActivity() {
             }
         })
         // Expand the player on play/pause button swipe.
-        binding.player.collapsed.playPause.setOnTouchListener(object : OnSwipeListener(this) {
+        binding.player.collapsed.playPause
+            .setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeTop() {
                 if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                     playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -333,7 +339,8 @@ class MainActivity : AppCompatActivity() {
     /**
      * Return `true` if the fragment is the starting one. Otherwise return `false`.
      *
-     * The starting fragments are fragments associated with bottom navigation items (tabs).
+     * The starting fragments are fragments associated with bottom navigation
+     * items (tabs).
      */
     private fun Fragment.isStarting(): Boolean {
         return when (this) {
@@ -345,7 +352,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Navigate to the starting fragment associated with the reselected bottom navigation item.
+     * Navigate to the starting fragment associated with the reselected bottom
+     * navigation item.
      *
      * @param title title of the reselected bottom navigation item (tab).
      */

@@ -12,11 +12,12 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import com.greencom.android.podcasts.viewmodels.ExploreViewModel
 
+/** TODO: Documentation */
 class ExploreFragment : Fragment() {
 
-    /** Nullable ExploreFragment View binding. Use [binding] instead. */
+    /** Nullable View binding. Use [binding] instead. */
     private var _binding: FragmentExploreBinding? = null
-    /** Non-null ExploreFragment View binding. */
+    /** Non-null View binding. */
     private val binding get() = _binding!!
 
     /** ExploreViewModel. */
@@ -26,9 +27,10 @@ class ExploreFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /** ExploreFragment View binding setup. */
+        /** View binding setup. */
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
+        /** TabLayout and ViewPager2 setup. */
         val pagerAdapter = PagerAdapter(this)
         binding.pager.adapter = pagerAdapter
 
@@ -53,10 +55,11 @@ class ExploreFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Clear ExploreFragment View binding.
+        // Clear View binding.
         _binding = null
     }
 
+    /** TODO: Documentation */
     private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
         override fun getItemCount(): Int = 5
 
