@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.viewmodels
+package com.greencom.android.podcasts.ui.home
 
 import androidx.lifecycle.ViewModel
 

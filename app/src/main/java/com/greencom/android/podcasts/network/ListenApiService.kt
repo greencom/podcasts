@@ -29,6 +29,7 @@ private val retrofit = Retrofit.Builder()
     .client(httpClient.build()) // Log.
     .build()
 
+/** Interface that defines methods for interacting with ListenAPI. */
 interface ListenApiService {
 
     /**
@@ -132,8 +133,7 @@ interface ListenApiService {
  * - [ListenApiService.searchEpisode] and [ListenApiService.searchPodcast] are used
  *   for searching.
  * - [ListenApiService.getGenres] returns genre list.
- * - [ListenApiService.getBestPodcasts] returns a list of the best podcast for a
- *   specified genre.
+ * - [ListenApiService.getBestPodcasts] returns a list of the best podcast by genre.
  */
 object ListenApi {
     val service: ListenApiService by lazy { retrofit.create(ListenApiService::class.java) }

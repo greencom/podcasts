@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.fragments
+package com.greencom.android.podcasts.ui.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.navGraphViewModels
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
-import com.greencom.android.podcasts.viewmodels.HomeViewModel
 
 /** TODO: Documentation */
 class HomeFragment : Fragment() {

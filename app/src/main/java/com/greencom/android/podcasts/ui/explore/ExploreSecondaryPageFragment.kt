@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.fragments
+package com.greencom.android.podcasts.ui.explore
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,22 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.databinding.FragmentExplorePrimaryPageBinding
+import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 
 /** TODO: Documentation */
-class ExplorePrimaryPageFragment : Fragment() {
+class ExploreSecondaryPageFragment : Fragment() {
 
     /** Nullable View binding. Use [binding] instead. */
-    private var _binding: FragmentExplorePrimaryPageBinding? = null
+    private var _binding: FragmentExploreSecondaryPageBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
         /** View binding setup. */
-        _binding = FragmentExplorePrimaryPageBinding.inflate(inflater, container, false)
+        _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 
         binding.textView.text = resources.getString(R.string.long_string)
 

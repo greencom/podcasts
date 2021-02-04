@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts
+package com.greencom.android.podcasts.ui
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
@@ -17,15 +17,16 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
-import com.greencom.android.podcasts.fragments.ActivityFragment
-import com.greencom.android.podcasts.fragments.ExploreFragment
-import com.greencom.android.podcasts.fragments.HomeFragment
+import com.greencom.android.podcasts.ui.activity.ActivityFragment
+import com.greencom.android.podcasts.ui.explore.ExploreFragment
+import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import kotlin.math.roundToInt
 
 /**
- * This class is the entry point for the app. This is where the Navigation component,
+ * MainActivity is the entry point for the app. This is where the Navigation component,
  * bottom navigation bar, and player bottom sheet are configured.
  */
 class MainActivity : AppCompatActivity() {

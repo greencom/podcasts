@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.fragments
+package com.greencom.android.podcasts.ui.explore
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
-import com.greencom.android.podcasts.viewmodels.ExploreViewModel
 
 /** TODO: Documentation */
 class ExploreFragment : Fragment() {
