@@ -36,7 +36,6 @@
         android:ellipsize="marquee"
         android:fontFamily="@font/roboto_medium"
         android:gravity="center_vertical"
-        android:letterSpacing="0.0125"
         android:paddingHorizontal="8dp"
         android:singleLine="true"
         android:text="Герта Мюллер — Чёрный парк"

@@ -35,7 +35,7 @@ class ExploreFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             when (position) {
-                0 -> tab.text = "For You"
+                0 -> tab.text = "All"
                 1 -> tab.text = "News"
                 2 -> tab.text = "Culture"
                 3 -> tab.text = "Education"

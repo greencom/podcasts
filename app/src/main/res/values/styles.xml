@@ -4,7 +4,6 @@
     <!-- Tab text for TabLayout. -->
     <style name="Tab.Text" parent="TextAppearance.AppCompat.Body1">
         <item name="fontFamily">@font/roboto_medium</item>
-        <item name="android:letterSpacing">0.035</item>
     </style>
 
 </resources>
