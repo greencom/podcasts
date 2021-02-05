@@ -63,7 +63,7 @@
                 app:tabIndicator="@drawable/shape_tab_indicator"
                 app:tabIndicatorAnimationMode="elastic"
                 app:tabIndicatorFullWidth="false"
-                app:tabIndicatorHeight="3dp"
+                app:tabIndicatorHeight="4dp"
                 app:tabMode="scrollable"
                 app:tabPaddingEnd="16dp"
                 app:tabPaddingStart="16dp"

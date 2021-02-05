@@ -6,5 +6,6 @@ import androidx.room.RoomDatabase
 @Database(entities = [GenreEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
+    /** TODO: Documentation */
     abstract fun genreDao(): GenreDao
 }
