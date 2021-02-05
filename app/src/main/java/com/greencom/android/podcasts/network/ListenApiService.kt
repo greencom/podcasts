@@ -48,7 +48,7 @@ interface ListenApiService {
      *               Allowed values are title, description, author, and audio.
      *               Default value is `title,description,author`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
-     *                 1 is yes, and 0 is no. Default value is `0`.
+     *                 `1` is yes, and `0` is no. Default value is `0`.
      *
      * @return A [SearchEpisodeResponse] object.
      */
@@ -79,7 +79,7 @@ interface ListenApiService {
      *               Allowed values are title, description, author, and audio.
      *               Default value is `title,description,author`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
-     *                 1 is yes, and 0 is no. Default value is `0`.
+     *                 `1` is yes, and `0` is no. Default value is `0`.
      *
      * @return A [SearchPodcastResponse] object.
      */
@@ -98,11 +98,17 @@ interface ListenApiService {
      * Get podcast genres that are supported in Listen Notes. The genre id can be
      * passed to other endpoints as a parameter to get podcasts in a specific genre.
      *
+     * @param topLevelOnly whether or not to get only top level genres. `1` is get
+     *                     only top level genres, `0` is get all genres. Default
+     *                     value is `0`.
+     *
      * @return A [GenresResponse] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("genres")
-    suspend fun getGenres(): GenresResponse
+    suspend fun getGenres(
+            @Query("top_level_only") topLevelOnly: Int = 0
+    ): GenresResponse
 
     /**
      * Get a list of curated best podcasts by genre. If `genreId` is not specified,
@@ -112,7 +118,7 @@ interface ListenApiService {
      * @param page page number of response. Default value is `1`.
      * @param region filter best podcasts by country/region. Default value is `ru`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
-     *                 1 is yes, and 0 is no. Default value is `0`.
+     *                 `1` is yes, and `0` is no. Default value is `0`.
      *
      * @return A [BestPodcastsResponse] object.
      */

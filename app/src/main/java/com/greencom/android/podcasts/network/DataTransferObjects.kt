@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.network
 
+import com.greencom.android.podcasts.data.database.GenreEntity
 import com.squareup.moshi.Json
 
 /** Model class for `ListenApiService.searchEpisode` response. */
@@ -184,3 +185,18 @@ data class SingleGenreResponse(
     @Json(name = "parent_id")
     val parentId: Int?,
 )
+
+/**
+ * Convert [GenresResponse] object to a [GenreEntity] list.
+ *
+ * If [SingleGenreResponse.parentId] is `null`, assign `-1` to [GenreEntity.parentId]
+ * property. `-1` means that there is no parent genre.
+ */
+fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
+    return genres.map {
+        GenreEntity(id = it.id,
+                name = it.name,
+                parentId = it.parentId ?: -1,
+        )
+    }
+}
