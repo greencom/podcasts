@@ -47,4 +47,5 @@ ext {
     jUnit_version = '4.13.1'
     jetpackJUnit_version = '1.1.2'
     jetpackEspresso_version = '3.3.0'
+    hiltJetpack_version = '1.0.0-alpha03'
 }

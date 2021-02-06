@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.navGraphViewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 /** TODO: Documentation */
+@AndroidEntryPoint
 class ExploreFragment : Fragment() {
 
     /** Nullable View binding. Use [binding] instead. */
@@ -20,7 +22,7 @@ class ExploreFragment : Fragment() {
     private val binding get() = _binding!!
 
     /** ExploreViewModel. */
-    private val viewModel: ExploreViewModel by navGraphViewModels(R.id.nav_graph)
+    private val viewModel: ExploreViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

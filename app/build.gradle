@@ -72,6 +72,10 @@ dependencies {
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    // Integration with Jetpack
+    kapt "androidx.hilt:hilt-compiler:$hiltJetpack_version"
+    // Integration with Navigation
+    implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpack_version"
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

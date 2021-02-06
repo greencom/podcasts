@@ -23,12 +23,14 @@ import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
  * bottom navigation bar, and player bottom sheet are configured.
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     /** View binding. */

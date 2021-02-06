@@ -16,11 +16,11 @@ interface GenreDao {
 
     /** Get a [GenreEntity] list that includes only top level genres. */
     @Query("SELECT * FROM genres WHERE parentId = 67")
-    suspend fun getTopLevelOnly(): List<GenreEntity>
+    suspend fun getTopLevelOnly(): List<GenreEntity>?
 
     /** Get a [GenreEntity] list that includes all genres. */
     @Query("SELECT * FROM genres")
-    suspend fun getAll(): List<GenreEntity>
+    suspend fun getAll(): List<GenreEntity>?
 
     /** Clear whole `genres` table. */
     @Query("DELETE FROM genres")
