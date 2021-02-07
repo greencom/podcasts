@@ -8,13 +8,24 @@ import androidx.fragment.app.Fragment
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 
+private const val ARG_PARAM = "param"
+
 /** TODO: Documentation */
 class ExploreSecondaryPageFragment : Fragment() {
+
+    private var param: String? = null
 
     /** Nullable View binding. Use [binding] instead. */
     private var _binding: FragmentExploreSecondaryPageBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            param = it.getString(ARG_PARAM)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,7 +34,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         /** View binding setup. */
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 
-        binding.textView.text = resources.getString(R.string.long_string)
+        binding.textView.text = param
 
         return binding.root
     }
@@ -32,5 +43,15 @@ class ExploreSecondaryPageFragment : Fragment() {
         super.onDestroy()
         // Clear View binding.
         _binding = null
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(param: String) =
+            ExplorePrimaryPageFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM, param)
+                }
+            }
     }
 }

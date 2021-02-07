@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -12,7 +13,8 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import dagger.hilt.android.AndroidEntryPoint
 
-const val PAGES_NUMBER = 11
+/** TODO: Documentation */
+const val PAGES_COUNT = 11
 
 /** TODO: Documentation */
 @AndroidEntryPoint
@@ -70,13 +72,16 @@ class ExploreFragment : Fragment() {
 
     /** TODO: Documentation */
     private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = PAGES_NUMBER
 
+        /** TODO: Documentation */
+        override fun getItemCount(): Int = PAGES_COUNT
+
+        /** TODO: Documentation */
         override fun createFragment(position: Int): Fragment {
             return if (position == 0) {
-                ExplorePrimaryPageFragment()
+                ExplorePrimaryPageFragment.newInstance(binding.tabLayout.getTabAt(position)?.text.toString())
             } else {
-                ExploreSecondaryPageFragment()
+                ExploreSecondaryPageFragment.newInstance(binding.tabLayout.getTabAt(position)?.text.toString())
             }
         }
     }
