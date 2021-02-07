@@ -51,6 +51,9 @@ dependencies {
     // Moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
 
+    // Timber
+    implementation "com.jakewharton.timber:timber:$timber_version"
+
     // ViewPager2
     implementation "androidx.viewpager2:viewpager2:$viewpager2_version"
 
