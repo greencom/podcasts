@@ -12,6 +12,8 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import dagger.hilt.android.AndroidEntryPoint
 
+const val PAGES_NUMBER = 11
+
 /** TODO: Documentation */
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
@@ -37,11 +39,17 @@ class ExploreFragment : Fragment() {
 
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             when (position) {
-                0 -> tab.text = "All"
-                1 -> tab.text = "News"
-                2 -> tab.text = "Culture"
-                3 -> tab.text = "Education"
-                4 -> tab.text = "Business"
+                0 -> tab.text = resources.getString(R.string.all)
+                1 -> tab.text = resources.getString(R.string.news)
+                2 -> tab.text = resources.getString(R.string.society_culture)
+                3 -> tab.text = resources.getString(R.string.education)
+                4 -> tab.text = resources.getString(R.string.science)
+                5 -> tab.text = resources.getString(R.string.technology)
+                6 -> tab.text = resources.getString(R.string.business)
+                7 -> tab.text = resources.getString(R.string.history)
+                8 -> tab.text = resources.getString(R.string.arts)
+                9 -> tab.text = resources.getString(R.string.sports)
+                10 -> tab.text = resources.getString(R.string.health_fitness)
             }
         }.attach()
 
@@ -62,7 +70,7 @@ class ExploreFragment : Fragment() {
 
     /** TODO: Documentation */
     private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-        override fun getItemCount(): Int = 5
+        override fun getItemCount(): Int = PAGES_NUMBER
 
         override fun createFragment(position: Int): Fragment {
             return if (position == 0) {

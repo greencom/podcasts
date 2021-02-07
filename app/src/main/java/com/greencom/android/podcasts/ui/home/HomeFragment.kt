@@ -6,11 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.navigation.navGraphViewModels
+import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 /** TODO: Documentation */
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     /** Nullable View binding. Use [binding] instead. */
@@ -19,7 +21,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     /** HomeViewModel. */
-    private val viewModel: HomeViewModel by navGraphViewModels(R.id.nav_graph)
+    private val viewModel: HomeViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +29,10 @@ class HomeFragment : Fragment() {
     ): View {
         /** View binding setup. */
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+
+        /** Update genres. */
+        viewModel.updateGenres()
+
         return binding.root
     }
 

@@ -8,6 +8,7 @@
     <string name="activity">Активность</string>
     <string name="search">Поиск</string>
 
+    <!-- Temporary strings. -->
     <string name="night_mode">Тёмная тема</string>
 
     <!-- Player strings. -->
@@ -17,5 +18,18 @@
     <string name="backward_description">Назад</string>
     <string name="forward_description">Вперёд</string>
     <string name="options_description">Дополнительно</string>
+
+    <!-- TabLayout strings. -->
+    <string name="all">Главное</string>
+    <string name="news">Новости</string>
+    <string name="society_culture">Общество и Культура</string>
+    <string name="education">Образование</string>
+    <string name="science">Наука</string>
+    <string name="technology">Технологии</string>
+    <string name="business">Бизнес</string>
+    <string name="history">История</string>
+    <string name="arts">Искусство</string>
+    <string name="sports">Спорт</string>
+    <string name="health_fitness">Здоровье и Фитнес</string>
 
 </resources>

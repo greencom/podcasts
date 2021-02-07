@@ -19,7 +19,7 @@ class ExploreSecondaryPageFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         /** View binding setup. */
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 

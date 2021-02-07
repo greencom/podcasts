@@ -7,6 +7,7 @@
     <string name="activity">Activity</string>
     <string name="search">Search</string>
 
+    <!-- Temporary strings. -->
     <string name="night_mode">Night mode</string>
 
     <!-- Player strings. -->
@@ -16,6 +17,19 @@
     <string name="backward_description">Backward</string>
     <string name="forward_description">Forward</string>
     <string name="options_description">Options</string>
+
+    <!-- TabLayout strings. -->
+    <string name="all">All</string>
+    <string name="news">News</string>
+    <string name="society_culture">Society &amp; Culture</string>
+    <string name="education">Education</string>
+    <string name="science">Science</string>
+    <string name="technology">Technology</string>
+    <string name="business">Business</string>
+    <string name="history">History</string>
+    <string name="arts">Arts</string>
+    <string name="sports">Sports</string>
+    <string name="health_fitness">Health &amp; Fitness</string>
 
     <string name="long_string">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla gravida vel mauris vitae interdum. Morbi felis magna, rhoncus ut quam in, hendrerit viverra orci. Duis hendrerit venenatis elementum. Sed iaculis erat ac magna finibus viverra. Duis tortor orci, dapibus eleifend hendrerit et, faucibus non erat. Mauris viverra scelerisque pretium. Pellentesque pharetra blandit dolor, ut egestas ipsum efficitur at. Aliquam rutrum malesuada molestie.
 
