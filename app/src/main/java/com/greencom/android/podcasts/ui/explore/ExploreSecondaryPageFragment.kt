@@ -19,7 +19,7 @@ private const val GENRE_NAME = "genre_name"
  */
 class ExploreSecondaryPageFragment : Fragment() {
 
-    private var param: String? = null
+    private var genreName: String? = null
 
     /** Nullable View binding. Use [binding] instead. */
     private var _binding: FragmentExploreSecondaryPageBinding? = null
@@ -29,9 +29,8 @@ class ExploreSecondaryPageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         arguments?.let {
-            param = it.getString(GENRE_NAME)
+            genreName = it.getString(GENRE_NAME)
         }
     }
 
@@ -42,7 +41,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         /** View binding setup. */
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 
-        binding.textView.text = param
+        binding.textView.text = genreName
 
         return binding.root
     }
@@ -59,13 +58,13 @@ class ExploreSecondaryPageFragment : Fragment() {
          * Use this factory method to create a new instance of
          * the fragment using the provided parameters.
          *
-         * @param param Parameter.
+         * @param genreName Name of the genre.
          *
          * @return A new instance of [ExploreSecondaryPageFragment].
          */
         @JvmStatic
         fun newInstance(genreName: String) =
-            ExplorePrimaryPageFragment().apply {
+            ExploreSecondaryPageFragment().apply {
                 arguments = Bundle().apply {
                     putString(GENRE_NAME, genreName)
                 }

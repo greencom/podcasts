@@ -25,7 +25,7 @@ class ExplorePrimaryPageFragment : Fragment() {
         /** View binding setup. */
         _binding = FragmentExplorePrimaryPageBinding.inflate(inflater, container, false)
 
-        binding.textView.text = "0"
+        binding.textView.text = "All"
 
         return binding.root
     }
