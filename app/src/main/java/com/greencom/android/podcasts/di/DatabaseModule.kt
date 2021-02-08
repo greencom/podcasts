@@ -11,12 +11,12 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-/** TODO: Documentation */
+/** Hilt module that provides database-related components. */
 @InstallIn(SingletonComponent::class)
 @Module
 object DatabaseModule {
 
-    /** TODO: Documentation */
+    /** Provides a singleton of the [AppDatabase]. */
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
@@ -27,7 +27,7 @@ object DatabaseModule {
         ).build()
     }
 
-    /** TODO: Documentation */
+    /** Provides an instance of the [GenreDao]. */
     @Provides
     fun provideGenreDao(database: AppDatabase): GenreDao {
         return database.genreDao()

@@ -3,10 +3,10 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-/** TODO: Documentation */
+/** App database. */
 @Database(entities = [GenreEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 
-    /** TODO: Documentation */
+    /** Data access object for the `genres` table. */
     abstract fun genreDao(): GenreDao
 }

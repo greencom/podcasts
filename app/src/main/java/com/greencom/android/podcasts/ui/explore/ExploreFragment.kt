@@ -4,19 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.exploreGenreList
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import dagger.hilt.android.AndroidEntryPoint
 
-/** TODO: Documentation */
-const val PAGES_COUNT = 11
-
-/** TODO: Documentation */
+/**
+ * Contains lists of the best podcasts for different genres implemented as tabs for
+ * the TabLayout and provides a way for searching.
+ */
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
 
@@ -38,7 +38,7 @@ class ExploreFragment : Fragment() {
         /** TabLayout and ViewPager2 setup. */
         val pagerAdapter = PagerAdapter(this)
         binding.pager.adapter = pagerAdapter
-
+        // Bind the TabLayout with the ViewPager2.
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             when (position) {
                 0 -> tab.text = resources.getString(R.string.all)
@@ -73,15 +73,17 @@ class ExploreFragment : Fragment() {
     /** TODO: Documentation */
     private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-        /** TODO: Documentation */
-        override fun getItemCount(): Int = PAGES_COUNT
+        /** Number of the pages for the TabLayout. */
+        val pageCount = 11
 
-        /** TODO: Documentation */
+        override fun getItemCount(): Int = pageCount
+
         override fun createFragment(position: Int): Fragment {
             return if (position == 0) {
-                ExplorePrimaryPageFragment.newInstance(binding.tabLayout.getTabAt(position)?.text.toString())
+                ExplorePrimaryPageFragment()
             } else {
-                ExploreSecondaryPageFragment.newInstance(binding.tabLayout.getTabAt(position)?.text.toString())
+                val genreName = exploreGenreList[position - 1]
+                ExploreSecondaryPageFragment.newInstance(genreName)
             }
         }
     }

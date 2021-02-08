@@ -11,7 +11,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    /** TODO: Documentation */
+    /** Fetch genres from ListenAPI and insert them into the `genres` table. */
     fun updateGenres() = viewModelScope.launch {
         repository.updateGenres()
     }

@@ -16,6 +16,9 @@ data class Genre(
      * that this genre does not have a parent genre.
      */
     val parentId: Int,
+
+    /** Is the genre used as the tab in the ExploreFragment TabLayout. */
+    val inExplore: Boolean
 ) {
     companion object {
 
@@ -23,3 +26,17 @@ data class Genre(
         const val NO_PARENT_GENRE = -1
     }
 }
+
+/** List of the [Genre]s' names used as the tabs in the ExploreFragment TabLayout. */
+val exploreGenreList = listOf(
+    "News",
+    "Society & Culture",
+    "Education",
+    "Science",
+    "Technology",
+    "Business",
+    "History",
+    "Arts",
+    "Sports",
+    "Health & Fitness"
+)

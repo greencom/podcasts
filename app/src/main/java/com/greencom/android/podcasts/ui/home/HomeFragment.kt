@@ -30,9 +30,6 @@ class HomeFragment : Fragment() {
         /** View binding setup. */
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        /** Update genres. */
-        viewModel.updateGenres()
-
         return binding.root
     }
 

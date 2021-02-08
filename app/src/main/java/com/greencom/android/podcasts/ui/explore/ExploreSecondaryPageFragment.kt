@@ -5,12 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 
-private const val ARG_PARAM = "param"
+// The fragment initialization parameters.
+private const val GENRE_NAME = "genre_name"
 
-/** TODO: Documentation */
+/**
+ * Represents all pages of the ViewPager2 in the ExploreFragment except the first one.
+ * Each page contains a large list of podcasts for the specified genre.
+ *
+ * Use [ExploreSecondaryPageFragment.newInstance] to create a new instance
+ * of the fragment using the provided parameters.
+ */
 class ExploreSecondaryPageFragment : Fragment() {
 
     private var param: String? = null
@@ -22,8 +28,10 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         arguments?.let {
-            param = it.getString(ARG_PARAM)
+            param = it.getString(GENRE_NAME)
         }
     }
 
@@ -46,11 +54,20 @@ class ExploreSecondaryPageFragment : Fragment() {
     }
 
     companion object {
+
+        /**
+         * Use this factory method to create a new instance of
+         * the fragment using the provided parameters.
+         *
+         * @param param Parameter.
+         *
+         * @return A new instance of [ExploreSecondaryPageFragment].
+         */
         @JvmStatic
-        fun newInstance(param: String) =
+        fun newInstance(genreName: String) =
             ExplorePrimaryPageFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM, param)
+                    putString(GENRE_NAME, genreName)
                 }
             }
     }

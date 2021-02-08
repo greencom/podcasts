@@ -7,12 +7,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-/** TODO: Documentation */
+/** Hilt module that provides network-related components. */
 @InstallIn(SingletonComponent::class)
 @Module
 object NetworkModule {
 
-    /** TODO: Documentation */
+    /** Provides a singleton of the [ListenApi]. */
     @Provides
     @Singleton
     fun provideListenApi(): ListenApi {

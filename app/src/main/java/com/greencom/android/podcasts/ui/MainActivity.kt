@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -22,6 +23,7 @@ import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
+import com.greencom.android.podcasts.ui.home.HomeViewModel
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity() {
     /** View binding. */
     private lateinit var binding: ActivityMainBinding
 
+    /** HomeViewModel. */
+    private val homeViewModel: HomeViewModel by viewModels()
+
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
@@ -45,6 +50,9 @@ class MainActivity : AppCompatActivity() {
         /** MainActivity View binding setup. */
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        /** Update the `genres` table of the app database, if it is empty. */
+        homeViewModel.updateGenres()
 
         /** Navigation component setup. */
         val navHostFragment = supportFragmentManager

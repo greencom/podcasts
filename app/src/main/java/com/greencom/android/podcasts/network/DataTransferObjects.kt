@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.network
 
 import com.greencom.android.podcasts.data.database.GenreEntity
 import com.greencom.android.podcasts.data.domain.Genre
+import com.greencom.android.podcasts.data.domain.exploreGenreList
 import com.squareup.moshi.Json
 
 /** Model class for `ListenApiService.searchEpisode` response. */
@@ -192,6 +193,9 @@ data class SingleGenreResponse(
  *
  * If [SingleGenreResponse.parentId] is `null`, assign [Genre.NO_PARENT_GENRE] value
  * to [GenreEntity.parentId] property.
+ *
+ * Check if the [SingleGenreResponse.name] is in the [exploreGenreList] to assign the
+ * appropriate value to the [GenreEntity.inExplore] property.
  */
 fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
     return genres.map {
@@ -199,6 +203,7 @@ fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
             id = it.id,
             name = it.name,
             parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
+            inExplore = it.name in exploreGenreList
         )
     }
 }

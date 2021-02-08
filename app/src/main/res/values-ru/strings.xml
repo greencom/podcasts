@@ -19,7 +19,7 @@
     <string name="forward_description">Вперёд</string>
     <string name="options_description">Дополнительно</string>
 
-    <!-- TabLayout strings. -->
+    <!-- TabLayout tabs strings. -->
     <string name="all">Главное</string>
     <string name="news">Новости</string>
     <string name="society_culture">Общество и Культура</string>

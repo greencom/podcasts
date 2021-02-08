@@ -13,7 +13,7 @@ import retrofit2.http.Query
 /** ListenAPI base URL. */
 private const val BASE_URL = "https://listen-api.listennotes.com/api/v2/"
 
-/** Log setup. */
+// Logging setup.
 private val logging = HttpLoggingInterceptor().apply {
     setLevel(HttpLoggingInterceptor.Level.BODY)
 }
@@ -26,7 +26,7 @@ private val moshi = Moshi.Builder()
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(BASE_URL)
-    .client(httpClient.build()) // Log.
+    .client(httpClient.build()) // Logging.
     .build()
 
 /** Interface that defines methods for interacting with ListenAPI. */

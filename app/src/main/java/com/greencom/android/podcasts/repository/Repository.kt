@@ -9,14 +9,17 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
-/** TODO: Documentation */
+/** App repository. */
 @Singleton
 class Repository @Inject constructor(
     private val genreDao: GenreDao,
     private val listenApi: ListenApi
 ) {
 
-    /** TODO: Documentation */
+    /**
+     * Fetch genres from ListenAPI and insert them into the `genres` table,
+     * if the table is empty.
+     */
     suspend fun updateGenres() = withContext(Dispatchers.IO) {
         Timber.d("updateGenres() called. Size of the genres table is ${genreDao.getSize()}")
         if (genreDao.getSize() == 0) {
