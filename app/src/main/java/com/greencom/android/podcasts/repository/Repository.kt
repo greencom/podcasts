@@ -21,14 +21,11 @@ class Repository @Inject constructor(
      * if the table is empty.
      */
     suspend fun updateGenres() = withContext(Dispatchers.IO) {
-        Timber.d("updateGenres() called. Size of the genres table is ${genreDao.getSize()}")
         if (genreDao.getSize() == 0) {
-            Timber.d("`If` statement passed")
             try {
                 val genres = listenApi.service.getGenres().asDatabaseModel()
-                Timber.d("Genres are fetched from ListenAPI")
                 genreDao.insertAll(genres)
-                Timber.d("Genres are inserted into the database")
+                Timber.d("Genres updated")
             } catch (e: Exception) {
                 Timber.d("Error caught: ${e.message}")
             }

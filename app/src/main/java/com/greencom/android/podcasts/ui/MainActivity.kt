@@ -9,9 +9,9 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -20,12 +20,13 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
+import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
-import com.greencom.android.podcasts.ui.home.HomeViewModel
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
 /**
@@ -38,11 +39,18 @@ class MainActivity : AppCompatActivity() {
     /** View binding. */
     private lateinit var binding: ActivityMainBinding
 
-    /** HomeViewModel. */
-    private val homeViewModel: HomeViewModel by viewModels()
+    /** App repository. */
+    @Inject lateinit var repository: Repository
 
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
+
+    init {
+        /** Update the `genres` table, if it is empty. */
+        lifecycleScope.launchWhenCreated {
+            repository.updateGenres()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,9 +58,6 @@ class MainActivity : AppCompatActivity() {
         /** MainActivity View binding setup. */
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        /** Update the `genres` table of the app database, if it is empty. */
-        homeViewModel.updateGenres()
 
         /** Navigation component setup. */
         val navHostFragment = supportFragmentManager

@@ -28,7 +28,7 @@ data class Genre(
 }
 
 /** List of the [Genre]s' names used as the tabs in the ExploreFragment TabLayout. */
-val exploreGenreList = listOf(
+val exploreGenreNames = listOf(
     "News",
     "Society & Culture",
     "Education",

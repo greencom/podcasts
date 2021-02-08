@@ -9,7 +9,7 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.exploreGenreList
+import com.greencom.android.podcasts.data.domain.exploreGenreNames
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -82,7 +82,7 @@ class ExploreFragment : Fragment() {
             return if (position == 0) {
                 ExplorePrimaryPageFragment()
             } else {
-                val genreName = exploreGenreList[position - 1]
+                val genreName = exploreGenreNames[position - 1]
                 ExploreSecondaryPageFragment.newInstance(genreName)
             }
         }
