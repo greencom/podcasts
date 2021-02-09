@@ -1,62 +1,28 @@
 package com.greencom.android.podcasts.utils
 
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-
 /**
- * Used as a wrapper for data that is exposed via a LiveData that represents an event.
+ * Used as a wrapper for data. Contains event [Status] and [Error] (if needed).
+ * Use factory methods [success], [loading], [error] to get an instance that matches
+ * needs.
  */
-class Event<out T>(private val content: T) {
-
-    /** Whether the event has been handled. */
-    @Suppress("MemberVisibilityCanBePrivate")
-    var hasBeenHandled = false
-        private set // Allow external read but not write
-
-    /** Returns the content and prevents its use again. */
-    fun getContentIfNotHandled(): T? {
-        return if (hasBeenHandled) {
-            null
-        } else {
-            hasBeenHandled = true
-            content
-        }
-    }
-
-    /** Returns the content, even if it has already been handled. */
-    fun peekContent(): T = content
-}
-
-/**
- * An [Observer] for [Event]s, simplifying the pattern of checking if the [Event]'s content has
- * already been handled.
- *
- * [onEventUnhandledContent] is *only* called if the [Event]'s contents has not been handled.
- *
- * Alternative for the [observeEvent] method.
- *
- * Usage:
- * `liveData.observe(lifecycleOwner, EventObserver {  })`
- */
-class EventObserver<T>(private val onEventUnhandledContent: (T) -> Unit) : Observer<Event<T>> {
-    override fun onChanged(event: Event<T>?) {
-        event?.getContentIfNotHandled()?.let(onEventUnhandledContent)
-    }
-}
-
-/**
- * Used as replacement for the default [LiveData.observe] method to observing [Event]'s.
- * Simplifying the pattern of checking if the [Event]'s content has already been handled.
- *
- * Alternative for the [EventObserver] class.
- *
- * Usage:
- * `liveData.observeEvent(lifecycleOwner) {  }`
- */
-inline fun <T> LiveData<Event<T>>.observeEvent(
-        owner: LifecycleOwner,
-        crossinline onEventUnhandledContent: (T) -> Unit
+data class Event<out T>(
+    val status: Status,
+    val data: T?,
+    val error: Error?
 ) {
-    observe(owner) { it?.getContentIfNotHandled()?.let(onEventUnhandledContent) }
+    companion object {
+        /** Returns the [Event] instance represents the loading event. */
+        fun <T> loading(): Event<T> = Event(Status.LOADING, null, null)
+        /** Returns the [Event] instance represents the success event. */
+        fun <T> success(data: T?): Event<T> = Event(Status.SUCCESS, data, null)
+        /** Returns the [Event] instance represents the event with error. */
+        fun <T> error(error: Error): Event<T> = Event(Status.ERROR, null, error)
+    }
+}
+
+/** Enum class that describes the status of the event. */
+enum class Status {
+    SUCCESS,
+    ERROR,
+    LOADING
 }
