@@ -16,7 +16,7 @@ data class SearchEpisodeResponse(
 
     /** A list of search results. */
     @Json(name = "results")
-    val episodes: List<SingleEpisodeResponse>,
+    val episodes: List<Item>,
 
     /**
      * Pass this value to the `offset` parameter of `searchEpisode()` to do
@@ -24,56 +24,56 @@ data class SearchEpisodeResponse(
      */
     @Json(name = "next_offset")
     val nextOffset: Int,
-)
+) {
 
-/** Model class for single episode object in the [SearchEpisodeResponse.episodes] list. */
-data class SingleEpisodeResponse(
+    /** Model class for a single episode object in the [SearchEpisodeResponse.episodes] list. */
+    data class Item(
 
-    /** Episode ID. */
-    val id: String,
+        /** Episode ID. */
+        val id: String,
 
-    /** Episode title. */
-    @Json(name = "title_original")
-    val title: String,
+        /** Episode title. */
+        @Json(name = "title_original")
+        val title: String,
 
-    /** Episode description. */
-    @Json(name = "description_original")
-    val description: String,
+        /** Episode description. */
+        @Json(name = "description_original")
+        val description: String,
 
-    /** Image URL for this episode. */
-    val image: String,
+        /** Image URL for this episode. */
+        val image: String,
 
-    /** Whether this podcast contains explicit language. */
-    @Json(name = "explicit_content")
-    val explicitContent: Boolean,
+        /** Whether this podcast contains explicit language. */
+        @Json(name = "explicit_content")
+        val explicitContent: Boolean,
 
-    /** Audio URL for this episode. */
-    val audio: String,
+        /** Audio URL for this episode. */
+        val audio: String,
 
-    /** Audio length of this episode in seconds. */
-    @Json(name = "audio_length_sec")
-    val audioLengthSec: Int,
+        /** Audio length of this episode in seconds. */
+        @Json(name = "audio_length_sec")
+        val audioLengthSec: Int,
 
-    /** Published date for this episode in millisecond. */
-    @Json(name = "pub_date_ms")
-    val pubDateMs: Long,
+        /** Published date for this episode in millisecond. */
+        @Json(name = "pub_date_ms")
+        val pubDateMs: Long,
 
-    /** The podcast that this episode belongs to. */
-    val podcast: ParentPodcastResponse,
-)
+        /** The podcast that this episode belongs to. */
+        val podcast: ItemParent,
+    ) {
 
-/** Model class for [SingleEpisodeResponse.podcast] object. */
-data class ParentPodcastResponse(
+        /** Model class for a [SearchEpisodeResponse.Item.podcast] object. */
+        data class ItemParent(
 
-    /** Podcast ID. */
-    val id: String,
+            /** Podcast ID. */
+            val id: String,
 
-    /** Podcast name. */
-    @Json(name = "title_original")
-    val title: String,
-)
-
-
+            /** Podcast name. */
+            @Json(name = "title_original")
+            val title: String,
+        )
+    }
+}
 
 
 
@@ -88,7 +88,7 @@ data class SearchPodcastResponse(
 
     /** A list of search results. */
     @Json(name = "results")
-    val podcasts: List<SinglePodcastResponse>,
+    val podcasts: List<Item>,
 
     /**
      * Pass this value to the `offset` parameter of `searchPodcast()` to do
@@ -96,35 +96,34 @@ data class SearchPodcastResponse(
      */
     @Json(name = "next_offset")
     val nextOffset: Int,
-)
+) {
 
-/** Model class for single podcast object in the [SearchPodcastResponse.podcasts] list. */
-data class SinglePodcastResponse(
+    /** Model class for a single podcast object in the [SearchPodcastResponse.podcasts] list. */
+    data class Item(
 
-    /** Podcast ID. */
-    val id: String,
+        /** Podcast ID. */
+        val id: String,
 
-    /** Podcast name. */
-    @Json(name = "title_original")
-    val title: String,
+        /** Podcast name. */
+        @Json(name = "title_original")
+        val title: String,
 
-    /** Podcast description. */
-    @Json(name = "description_original")
-    val description: String,
+        /** Podcast description. */
+        @Json(name = "description_original")
+        val description: String,
 
-    /** Image URL for this podcast. */
-    val image: String,
+        /** Image URL for this podcast. */
+        val image: String,
 
-    /** Whether this podcast contains explicit language. */
-    @Json(name = "explicit_content")
-    val explicitContent: Boolean,
+        /** Whether this podcast contains explicit language. */
+        @Json(name = "explicit_content")
+        val explicitContent: Boolean,
 
-    /** Podcast publisher. */
-    @Json(name = "publisher_original")
-    val publisher: String,
-)
-
-
+        /** Podcast publisher. */
+        @Json(name = "publisher_original")
+        val publisher: String,
+    )
+}
 
 
 
@@ -132,7 +131,7 @@ data class SinglePodcastResponse(
 data class BestPodcastsResponse(
 
     /** A list of search results. */
-    val podcasts: List<SingleBestPodcastResponse>,
+    val podcasts: List<Item>,
 
     /** Genre ID. */
     @Json(name = "id")
@@ -145,56 +144,56 @@ data class BestPodcastsResponse(
     /** Whether there is the next page of response. */
     @Json(name = "has_next")
     val hasNextPage: Boolean,
-)
+) {
 
-/** Model class for single podcast object in the [BestPodcastsResponse.podcasts] list. */
-data class SingleBestPodcastResponse(
+    /** Model class for a single podcast object in the [BestPodcastsResponse.podcasts] list. */
+    data class Item(
 
-    /** Podcast ID. */
-    val id: String,
+        /** Podcast ID. */
+        val id: String,
 
-    /** Podcast name. */
-    val title: String,
+        /** Podcast name. */
+        val title: String,
 
-    /** Image URL for this podcast. */
-    val image: String,
+        /** Image URL for this podcast. */
+        val image: String,
 
-    /** Podcast publisher. */
-    val publisher: String,
+        /** Podcast publisher. */
+        val publisher: String,
 
-    /** Whether this podcast contains explicit language. */
-    @Json(name = "explicit_content")
-    val explicitContent: Boolean,
-)
-
-
+        /** Whether this podcast contains explicit language. */
+        @Json(name = "explicit_content")
+        val explicitContent: Boolean,
+    )
+}
 
 
 
 /** Model class for `ListenApiService.getGenres()` response. */
-data class GenresResponse(val genres: List<SingleGenreResponse>)
+data class GenresResponse(val genres: List<Item>) {
 
-/** Model class for single genre object in the [GenresResponse.genres] list. */
-data class SingleGenreResponse(
+    /** Model class for a single genre object in the [GenresResponse.genres] list. */
+    data class Item(
 
-    /** Genre ID. */
-    val id: Int,
+        /** Genre ID. */
+        val id: Int,
 
-    /** Genre name. */
-    val name: String,
+        /** Genre name. */
+        val name: String,
 
-    /** Parent genre ID. */
-    @Json(name = "parent_id")
-    val parentId: Int?,
-)
+        /** Parent genre ID. */
+        @Json(name = "parent_id")
+        val parentId: Int?,
+    )
+}
 
 /**
  * Convert [GenresResponse] object to a [GenreEntity] list.
  *
- * If [SingleGenreResponse.parentId] is `null`, assign [Genre.NO_PARENT_GENRE] value
+ * If [GenresResponse.Item.parentId] is `null`, assign [Genre.NO_PARENT_GENRE] value
  * to [GenreEntity.parentId] property.
  *
- * Check if the [SingleGenreResponse.name] is in the [exploreGenreNames] to assign the
+ * Check if the [GenresResponse.Item.name] is in the [exploreGenreNames] to assign the
  * appropriate value to the [GenreEntity.inExplore] property.
  */
 fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
