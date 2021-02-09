@@ -16,7 +16,7 @@ data class SearchEpisodeResponse(
 
     /** A list of search results. */
     @Json(name = "results")
-    val episodes: List<Item>,
+    val episodes: List<Episode>,
 
     /**
      * Pass this value to the `offset` parameter of `searchEpisode()` to do
@@ -27,7 +27,7 @@ data class SearchEpisodeResponse(
 ) {
 
     /** Model class for a single episode object in the [SearchEpisodeResponse.episodes] list. */
-    data class Item(
+    data class Episode(
 
         /** Episode ID. */
         val id: String,
@@ -59,11 +59,11 @@ data class SearchEpisodeResponse(
         val pubDateMs: Long,
 
         /** The podcast that this episode belongs to. */
-        val podcast: ItemParent,
+        val podcast: ParentPodcast,
     ) {
 
-        /** Model class for a [SearchEpisodeResponse.Item.podcast] object. */
-        data class ItemParent(
+        /** Model class for a [SearchEpisodeResponse.Episode.podcast] object. */
+        data class ParentPodcast(
 
             /** Podcast ID. */
             val id: String,
@@ -88,7 +88,7 @@ data class SearchPodcastResponse(
 
     /** A list of search results. */
     @Json(name = "results")
-    val podcasts: List<Item>,
+    val podcasts: List<Podcast>,
 
     /**
      * Pass this value to the `offset` parameter of `searchPodcast()` to do
@@ -99,7 +99,7 @@ data class SearchPodcastResponse(
 ) {
 
     /** Model class for a single podcast object in the [SearchPodcastResponse.podcasts] list. */
-    data class Item(
+    data class Podcast(
 
         /** Podcast ID. */
         val id: String,
@@ -131,7 +131,7 @@ data class SearchPodcastResponse(
 data class BestPodcastsResponse(
 
     /** A list of search results. */
-    val podcasts: List<Item>,
+    val podcasts: List<Podcast>,
 
     /** Genre ID. */
     @Json(name = "id")
@@ -147,7 +147,7 @@ data class BestPodcastsResponse(
 ) {
 
     /** Model class for a single podcast object in the [BestPodcastsResponse.podcasts] list. */
-    data class Item(
+    data class Podcast(
 
         /** Podcast ID. */
         val id: String,
@@ -170,10 +170,10 @@ data class BestPodcastsResponse(
 
 
 /** Model class for `ListenApiService.getGenres()` response. */
-data class GenresResponse(val genres: List<Item>) {
+data class GenresResponse(val genres: List<Genre>) {
 
     /** Model class for a single genre object in the [GenresResponse.genres] list. */
-    data class Item(
+    data class Genre(
 
         /** Genre ID. */
         val id: Int,
@@ -190,10 +190,10 @@ data class GenresResponse(val genres: List<Item>) {
 /**
  * Convert [GenresResponse] object to a [GenreEntity] list.
  *
- * If [GenresResponse.Item.parentId] is `null`, assign [Genre.NO_PARENT_GENRE] value
+ * If [GenresResponse.Genre.parentId] is `null`, assign [Genre.NO_PARENT_GENRE] value
  * to [GenreEntity.parentId] property.
  *
- * Check if the [GenresResponse.Item.name] is in the [exploreGenreNames] to assign the
+ * Check if the [GenresResponse.Genre.name] is in the [exploreGenreNames] to assign the
  * appropriate value to the [GenreEntity.inExplore] property.
  */
 fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
