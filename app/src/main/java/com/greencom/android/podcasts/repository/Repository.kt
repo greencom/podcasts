@@ -1,7 +1,7 @@
 package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.GenreDao
-import com.greencom.android.podcasts.network.ListenApi
+import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.asDatabaseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,7 +13,8 @@ import javax.inject.Singleton
 @Singleton
 class Repository @Inject constructor(
     private val genreDao: GenreDao,
-    private val listenApi: ListenApi
+//    private val listenApi: ListenApi,
+    private val listenApi: ListenApiService,
 ) {
 
     /**
@@ -23,7 +24,7 @@ class Repository @Inject constructor(
     suspend fun updateGenres() = withContext(Dispatchers.IO) {
         if (genreDao.getSize() == 0) {
             try {
-                val genres = listenApi.service.getGenres().asDatabaseModel()
+                val genres = listenApi.getGenres().asDatabaseModel()
                 genreDao.insertAll(genres)
                 Timber.d("Genres updated")
             } catch (e: Exception) {

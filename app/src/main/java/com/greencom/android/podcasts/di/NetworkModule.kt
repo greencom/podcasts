@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.di
 
 import com.greencom.android.podcasts.network.ListenApi
+import com.greencom.android.podcasts.network.ListenApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,10 +13,20 @@ import javax.inject.Singleton
 @Module
 object NetworkModule {
 
-    /** Provides a singleton of the [ListenApi]. */
+//    /** Provides a singleton of the [ListenApi]. */
+//    @Provides
+//    @Singleton
+//    fun provideListenApi(): ListenApi {
+//        return ListenApi
+//    }
+
+    /**
+     * Provides a singleton of the [ListenApi.service] instance that implements
+     * [ListenApiService] interface.
+     */
     @Provides
     @Singleton
-    fun provideListenApi(): ListenApi {
-        return ListenApi
+    fun provideListenApiService(): ListenApiService {
+        return ListenApi.service
     }
 }

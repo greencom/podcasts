@@ -9,8 +9,8 @@ import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.exploreGenreNames
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
+import com.greencom.android.podcasts.network.exploreGenreNames
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
