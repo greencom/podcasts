@@ -26,17 +26,3 @@ data class Genre(
         const val NO_PARENT_GENRE = -1
     }
 }
-
-/** List of the [Genre]s' names used as the tabs in the ExploreFragment TabLayout. */
-val exploreGenreNames = listOf(
-    "News",
-    "Society & Culture",
-    "Education",
-    "Science",
-    "Technology",
-    "Business",
-    "History",
-    "Arts",
-    "Sports",
-    "Health & Fitness"
-)

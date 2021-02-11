@@ -2,7 +2,6 @@ package com.greencom.android.podcasts.network
 
 import com.greencom.android.podcasts.data.database.GenreEntity
 import com.greencom.android.podcasts.data.domain.Genre
-import com.greencom.android.podcasts.data.domain.exploreGenreNames
 import com.squareup.moshi.Json
 
 /** Model class for `ListenApiService.searchEpisode` response. */
@@ -16,7 +15,7 @@ data class SearchEpisodeResponse(
 
     /** A list of search results. */
     @Json(name = "results")
-    val episodes: List<Episode>,
+    val episodes: List<SearchEpisodeResponseItem>,
 
     /**
      * Pass this value to the `offset` parameter of `searchEpisode()` to do
@@ -27,7 +26,7 @@ data class SearchEpisodeResponse(
 ) {
 
     /** Model class for a single episode object in the [SearchEpisodeResponse.episodes] list. */
-    data class Episode(
+    data class SearchEpisodeResponseItem(
 
         /** Episode ID. */
         val id: String,
@@ -59,11 +58,11 @@ data class SearchEpisodeResponse(
         val pubDateMs: Long,
 
         /** The podcast that this episode belongs to. */
-        val podcast: ParentPodcast,
+        val podcast: SearchEpisodeResponseItemPodcast,
     ) {
 
-        /** Model class for a [SearchEpisodeResponse.Episode.podcast] object. */
-        data class ParentPodcast(
+        /** Model class for a [SearchEpisodeResponse.SearchEpisodeResponseItem.podcast] object. */
+        data class SearchEpisodeResponseItemPodcast(
 
             /** Podcast ID. */
             val id: String,
@@ -88,7 +87,7 @@ data class SearchPodcastResponse(
 
     /** A list of search results. */
     @Json(name = "results")
-    val podcasts: List<Podcast>,
+    val podcasts: List<SearchPodcastResponseItem>,
 
     /**
      * Pass this value to the `offset` parameter of `searchPodcast()` to do
@@ -99,7 +98,7 @@ data class SearchPodcastResponse(
 ) {
 
     /** Model class for a single podcast object in the [SearchPodcastResponse.podcasts] list. */
-    data class Podcast(
+    data class SearchPodcastResponseItem(
 
         /** Podcast ID. */
         val id: String,
@@ -131,7 +130,7 @@ data class SearchPodcastResponse(
 data class BestPodcastsResponse(
 
     /** A list of search results. */
-    val podcasts: List<Podcast>,
+    val podcasts: List<BestPodcastsResponseItem>,
 
     /** Genre ID. */
     @Json(name = "id")
@@ -147,7 +146,7 @@ data class BestPodcastsResponse(
 ) {
 
     /** Model class for a single podcast object in the [BestPodcastsResponse.podcasts] list. */
-    data class Podcast(
+    data class BestPodcastsResponseItem(
 
         /** Podcast ID. */
         val id: String,
@@ -170,10 +169,10 @@ data class BestPodcastsResponse(
 
 
 /** Model class for `ListenApiService.getGenres()` response. */
-data class GenresResponse(val genres: List<Genre>) {
+data class GenresResponse(val genres: List<GenresResponseItem>) {
 
     /** Model class for a single genre object in the [GenresResponse.genres] list. */
-    data class Genre(
+    data class GenresResponseItem(
 
         /** Genre ID. */
         val id: Int,
@@ -190,11 +189,11 @@ data class GenresResponse(val genres: List<Genre>) {
 /**
  * Convert [GenresResponse] object to a [GenreEntity] list.
  *
- * If [GenresResponse.Genre.parentId] is `null`, assign [Genre.NO_PARENT_GENRE] value
- * to [GenreEntity.parentId] property.
+ * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
+ * value to [GenreEntity.parentId] property.
  *
- * Check if the [GenresResponse.Genre.name] is in the [exploreGenreNames] to assign the
- * appropriate value to the [GenreEntity.inExplore] property.
+ * Check if the [GenresResponse.GenresResponseItem.name] is in the [exploreGenreNames] to
+ * assign the appropriate value to the [GenreEntity.inExplore] property.
  */
 fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
     return genres.map {
@@ -206,3 +205,20 @@ fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
         )
     }
 }
+
+/**
+ * List of the [Genre]s' names used as the tabs in the ExploreFragment TabLayout.
+ * Matches the names of the genres in ListenAPI database.
+ */
+val exploreGenreNames = listOf(
+    "News",
+    "Society & Culture",
+    "Education",
+    "Science",
+    "Technology",
+    "Business",
+    "History",
+    "Arts",
+    "Sports",
+    "Health & Fitness"
+)
