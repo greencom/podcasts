@@ -65,6 +65,7 @@ class ExploreFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
         // Clear View binding.
         _binding = null
     }
@@ -72,7 +73,7 @@ class ExploreFragment : Fragment() {
     /** TODO: Documentation */
     private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-        /** List of the genre names used as tabs in the TabLayout. */
+        /** List of the genre names used for genre-specific tabs in the TabLayout. */
         val genreNames = listOf(
             "News",
             "Society & Culture",

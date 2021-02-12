@@ -26,6 +26,7 @@ class ActivityFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+
         // Clear View binding.
         _binding = null
     }

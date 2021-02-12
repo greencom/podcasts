@@ -55,6 +55,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+
         // Clear View binding.
         _binding = null
     }

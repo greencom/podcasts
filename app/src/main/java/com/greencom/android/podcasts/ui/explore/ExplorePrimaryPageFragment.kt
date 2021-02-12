@@ -39,6 +39,7 @@ class ExplorePrimaryPageFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+
         // Clear View binding.
         _binding = null
     }
