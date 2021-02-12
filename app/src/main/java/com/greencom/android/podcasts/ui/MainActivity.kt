@@ -39,18 +39,8 @@ class MainActivity : AppCompatActivity() {
     /** View binding. */
     private lateinit var binding: ActivityMainBinding
 
-    /** App repository. */
-    @Inject lateinit var repository: Repository
-
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
-
-    init {
-        /** Update the `genres` table, if it is empty. */
-        lifecycleScope.launchWhenCreated {
-            repository.updateGenres()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
