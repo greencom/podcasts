@@ -13,13 +13,6 @@ import javax.inject.Singleton
 @Module
 object NetworkModule {
 
-//    /** Provides a singleton of the [ListenApi]. */
-//    @Provides
-//    @Singleton
-//    fun provideListenApi(): ListenApi {
-//        return ListenApi
-//    }
-
     /**
      * Provides a singleton of the [ListenApi.service] instance that implements
      * [ListenApiService] interface.

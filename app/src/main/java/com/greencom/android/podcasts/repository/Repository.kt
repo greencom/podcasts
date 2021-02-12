@@ -13,7 +13,6 @@ import javax.inject.Singleton
 @Singleton
 class Repository @Inject constructor(
     private val genreDao: GenreDao,
-//    private val listenApi: ListenApi,
     private val listenApi: ListenApiService,
 ) {
 
