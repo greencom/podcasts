@@ -22,9 +22,6 @@ data class GenreEntity(
      * that this genre does not have a parent genre.
      */
     val parentId: Int,
-
-    /** Is the genre used as the tab in the ExploreFragment TabLayout. */
-    val inExplore: Boolean
 )
 
 /** Convert [GenreEntity] list to a list of [Genre]s. */
@@ -34,7 +31,6 @@ fun List<GenreEntity>.asDomainModel(): List<Genre> {
             id = it.id,
             name = it.name,
             parentId = it.parentId,
-            inExplore = it.inExplore
         )
     }
 }

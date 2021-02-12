@@ -6,10 +6,8 @@ import android.content.Context
  * Convert `dp` to `px`.
  *
  * @param dp a value in `Float`.
- *
- * @return A float value to represent `px` equivalent to `dp` depending on device density.
  */
-fun Context.convertDpToPx(dp: Float): Float {
+fun Context.dpToPx(dp: Float): Float {
     return dp * resources.displayMetrics.density
 }
 
@@ -17,9 +15,7 @@ fun Context.convertDpToPx(dp: Float): Float {
  * Convert `px` to `dp`.
  *
  * @param px a value in `Float`.
- *
- * @return A float value to represent `dp` equivalent to `px` depending on device density.
  */
-fun Context.convertPxToDp(px: Float): Float {
+fun Context.pxToDp(px: Float): Float {
     return px / resources.displayMetrics.density
 }

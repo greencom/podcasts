@@ -17,13 +17,6 @@ interface GenreDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(genres: List<GenreEntity>)
 
-    /**
-     * Get a [GenreEntity] list that includes only genres used as the tabs
-     * in the ExploreFragment TabLayout.
-     */
-    @Query("SELECT * FROM genres WHERE inExplore = 1")
-    suspend fun getExploreOnly(): List<GenreEntity>
-
     /** Clear whole `genres` table. */
     @Query("DELETE FROM genres")
     suspend fun deleteAll()

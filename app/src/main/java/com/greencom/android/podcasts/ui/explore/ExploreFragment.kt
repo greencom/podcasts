@@ -10,7 +10,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
-import com.greencom.android.podcasts.network.exploreGenreNames
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -73,16 +72,27 @@ class ExploreFragment : Fragment() {
     /** TODO: Documentation */
     private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-        /** Number of the pages for the TabLayout. */
-        val pageCount = 11
+        /** List of the genre names used as tabs in the TabLayout. */
+        val genreNames = listOf(
+            "News",
+            "Society & Culture",
+            "Education",
+            "Science",
+            "Technology",
+            "Business",
+            "History",
+            "Arts",
+            "Sports",
+            "Health & Fitness",
+        )
 
-        override fun getItemCount(): Int = pageCount
+        override fun getItemCount(): Int = genreNames.size + 1
 
         override fun createFragment(position: Int): Fragment {
             return if (position == 0) {
                 ExplorePrimaryPageFragment()
             } else {
-                val genreName = exploreGenreNames[position - 1]
+                val genreName = genreNames[position - 1]
                 ExploreSecondaryPageFragment.newInstance(genreName)
             }
         }

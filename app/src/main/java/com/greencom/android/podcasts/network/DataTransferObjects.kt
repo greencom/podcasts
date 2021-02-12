@@ -191,9 +191,6 @@ data class GenresResponse(val genres: List<GenresResponseItem>) {
  *
  * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
  * value to [GenreEntity.parentId] property.
- *
- * Check if the [GenresResponse.GenresResponseItem.name] is in the [exploreGenreNames] to
- * assign the appropriate value to the [GenreEntity.inExplore] property.
  */
 fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
     return genres.map {
@@ -201,24 +198,6 @@ fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
             id = it.id,
             name = it.name,
             parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
-            inExplore = it.name in exploreGenreNames
         )
     }
 }
-
-/**
- * List of the [Genre]s' names used as the tabs in the ExploreFragment TabLayout.
- * Matches the names of the genres in ListenAPI database.
- */
-val exploreGenreNames = listOf(
-    "News",
-    "Society & Culture",
-    "Education",
-    "Science",
-    "Technology",
-    "Business",
-    "History",
-    "Arts",
-    "Sports",
-    "Health & Fitness"
-)

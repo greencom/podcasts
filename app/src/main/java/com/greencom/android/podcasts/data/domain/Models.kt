@@ -16,9 +16,6 @@ data class Genre(
      * that this genre does not have a parent genre.
      */
     val parentId: Int,
-
-    /** Is the genre used as the tab in the ExploreFragment TabLayout. */
-    val inExplore: Boolean
 ) {
     companion object {
 

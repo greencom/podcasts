@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-// The fragment initialization parameters.
+// The fragment initialization parameter.
 private const val GENRE_NAME = "genre_name"
 
 /**
@@ -17,14 +19,19 @@ private const val GENRE_NAME = "genre_name"
  * Use [ExploreSecondaryPageFragment.newInstance] to create a new instance
  * of the fragment using the provided parameters.
  */
+@AndroidEntryPoint
 class ExploreSecondaryPageFragment : Fragment() {
 
+    /** The name of the genre associated with this fragment. */
     private var genreName: String? = null
 
     /** Nullable View binding. Use [binding] instead. */
     private var _binding: FragmentExploreSecondaryPageBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!
+
+    /** ExploreViewModel. */
+    private val viewModel: ExploreViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
