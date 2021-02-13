@@ -12,8 +12,8 @@ data class Genre(
     /**
      * Parent genre ID.
      *
-     * If the property has the [Genre.NO_PARENT_GENRE] value, it means
-     * that this genre does not have a parent genre.
+     * If the property is [Genre.NO_PARENT_GENRE], it means that this genre
+     * does not have a parent genre.
      */
     val parentId: Int,
 ) {

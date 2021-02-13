@@ -35,7 +35,7 @@ class ExploreFragment : Fragment() {
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
         /** TabLayout and ViewPager2 setup. */
-        val pagerAdapter = PagerAdapter(this)
+        val pagerAdapter = ExplorePagerAdapter(this)
         binding.pager.adapter = pagerAdapter
         // Bind the TabLayout with the ViewPager2.
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
@@ -68,34 +68,5 @@ class ExploreFragment : Fragment() {
 
         // Clear View binding.
         _binding = null
-    }
-
-    /** TODO: Documentation */
-    private inner class PagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
-
-        /** List of the genre names used for genre-specific tabs in the TabLayout. */
-        val genreNames = listOf(
-            "News",
-            "Society & Culture",
-            "Education",
-            "Science",
-            "Technology",
-            "Business",
-            "History",
-            "Arts",
-            "Sports",
-            "Health & Fitness",
-        )
-
-        override fun getItemCount(): Int = genreNames.size + 1
-
-        override fun createFragment(position: Int): Fragment {
-            return if (position == 0) {
-                ExplorePrimaryPageFragment()
-            } else {
-                val genreName = genreNames[position - 1]
-                ExploreSecondaryPageFragment.newInstance(genreName)
-            }
-        }
     }
 }
