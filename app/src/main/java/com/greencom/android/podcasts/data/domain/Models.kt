@@ -18,7 +18,6 @@ data class Genre(
     val parentId: Int,
 ) {
     companion object {
-
         /** Constant that means the genre does not have a parent genre. */
         const val NO_PARENT_GENRE = -1
     }

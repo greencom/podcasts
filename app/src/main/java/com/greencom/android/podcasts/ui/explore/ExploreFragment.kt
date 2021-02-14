@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
@@ -26,6 +25,12 @@ class ExploreFragment : Fragment() {
 
     /** ExploreViewModel. */
     private val viewModel: ExploreViewModel by hiltNavGraphViewModels(R.id.nav_graph)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        viewModel.loadGenres()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

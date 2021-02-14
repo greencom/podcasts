@@ -3,7 +3,6 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-/** App database. */
 @Database(entities = [GenreEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
 

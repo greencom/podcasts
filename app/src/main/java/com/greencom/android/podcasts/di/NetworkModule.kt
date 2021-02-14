@@ -14,7 +14,7 @@ import javax.inject.Singleton
 object NetworkModule {
 
     /**
-     * Provides a singleton of the [ListenApi.service] instance that implements
+     * Provides the [ListenApi.service] singleton that implements the
      * [ListenApiService] interface.
      */
     @Provides

@@ -1,11 +1,23 @@
 package com.greencom.android.podcasts.utils
 
+// File that contains classes representing the states of various events.
+
+/**
+ * Sealed class that represents the state of loading genres. Available states: [Loading],
+ * [Success] and [Error]. [Init] state is used only as initial value for StateFlow.
+ */
+sealed class GenresState {
+    object Init : GenresState()
+    object Loading : GenresState()
+    object Success : GenresState()
+    data class Error(val exception: Throwable) : GenresState()
+}
+
 /**
  * Used as a wrapper for data. Contains event [Status] and [Throwable] (if needed).
  * Use factory methods [loading], [success], [error] to get an instance that matches
  * needs.
  */
-// TODO: Rename
 data class StateExample<out T>(
     val status: Status,
     val data: T?,
