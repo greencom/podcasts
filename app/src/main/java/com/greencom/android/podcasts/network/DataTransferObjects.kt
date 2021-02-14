@@ -42,23 +42,23 @@ data class SearchEpisodeResponse(
         /** Image URL for this episode. */
         val image: String,
 
-        /** Whether this podcast contains explicit language. */
-        @Json(name = "explicit_content")
-        val explicitContent: Boolean,
-
         /** Audio URL for this episode. */
         val audio: String,
 
         /** Audio length of this episode in seconds. */
         @Json(name = "audio_length_sec")
-        val audioLengthSec: Int,
-
-        /** Published date for this episode in millisecond. */
-        @Json(name = "pub_date_ms")
-        val pubDateMs: Long,
+        val audioLength: Int,
 
         /** The podcast that this episode belongs to. */
         val podcast: SearchEpisodeResponseItemPodcast,
+
+        /** Whether this podcast contains explicit language. */
+        @Json(name = "explicit_content")
+        val explicitContent: Boolean,
+
+        /** Published date in millisecond. */
+        @Json(name = "pub_date_ms")
+        val date: Long,
     ) {
 
         /** Model class for a [SearchEpisodeResponse.SearchEpisodeResponseItem.podcast] object. */
@@ -70,6 +70,13 @@ data class SearchEpisodeResponse(
             /** Podcast name. */
             @Json(name = "title_original")
             val title: String,
+
+            /** Image URL. */
+            val image: String,
+
+            /** Podcast publisher. */
+            @Json(name = "publisher_original")
+            val publisher: String,
         )
     }
 }
@@ -114,13 +121,29 @@ data class SearchPodcastResponse(
         /** Image URL for this podcast. */
         val image: String,
 
+        /** Podcast publisher. */
+        @Json(name = "publisher_original")
+        val publisher: String,
+
         /** Whether this podcast contains explicit language. */
         @Json(name = "explicit_content")
         val explicitContent: Boolean,
 
-        /** Podcast publisher. */
-        @Json(name = "publisher_original")
-        val publisher: String,
+        /** Total number of episodes in this podcast. */
+        @Json(name = "total_episodes")
+        val episodeCount: Int,
+
+        /** Podcast genre ids. */
+        @Json(name = "genre_ids")
+        val genreIds: List<Int>,
+
+        /**
+         * The estimated popularity score of a podcast compared to all other
+         * podcasts in the world on a scale from 0 to 100. If the score is not
+         * available, it'll be null.
+         */
+        @Json(name = "listen_score")
+        val score: Int?,
     )
 }
 
@@ -154,6 +177,9 @@ data class BestPodcastsResponse(
         /** Podcast name. */
         val title: String,
 
+        /** Podcast description. */
+        val description: String,
+
         /** Image URL for this podcast. */
         val image: String,
 
@@ -163,6 +189,22 @@ data class BestPodcastsResponse(
         /** Whether this podcast contains explicit language. */
         @Json(name = "explicit_content")
         val explicitContent: Boolean,
+
+        /** Total number of episodes in this podcast. */
+        @Json(name = "total_episodes")
+        val episodeCount: Int,
+
+        /** Podcast genre ids. */
+        @Json(name = "genre_ids")
+        val genreIds: List<Int>,
+
+        /**
+         * The estimated popularity score of a podcast compared to all other
+         * podcasts in the world on a scale from 0 to 100. If the score is not
+         * available, it'll be null.
+         */
+        @Json(name = "listen_score")
+        val score: Int?,
     )
 }
 
