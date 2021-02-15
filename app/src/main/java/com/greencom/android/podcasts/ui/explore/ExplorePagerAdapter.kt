@@ -4,7 +4,13 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 /**
- * TODO: Documentation
+ * Adapter for the ViewPager2 implementation inside [ExploreFragment].
+ * Creates the [ExplorePrimaryPageFragment] for the first page and
+ * genre-specific [ExploreSecondaryPageFragment] for every other page.
+ *
+ * To change the order and/or genres for pages edit the [genreNames] list.
+ * Note that the list must match the TabLayout TabConfigurationStrategy
+ * inside the [ExploreFragment].
  */
 class ExplorePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
