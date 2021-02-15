@@ -31,9 +31,6 @@ data class PodcastEntity(
     /** Total number of episodes in this podcast. */
     val episodeCount: Int,
 
-    /** Podcast genre ids. */
-//    val genreIds: List<Int>,
-
     /**
      * The genre ID for which the podcast is featured on the best list.
      *
@@ -41,12 +38,6 @@ data class PodcastEntity(
      * is not on the best list for any genre.
      */
     val inBestForGenre: Int,
-
-    /**
-     * The estimated popularity score of a podcast compared to all other
-     * podcasts in the world on a scale from 0 to 100.
-     */
-    val score: Int,
 )
 
 /** Convert a [PodcastEntity] object to a [Podcast]. */
@@ -59,9 +50,7 @@ fun PodcastEntity.asPodcast(): Podcast {
         publisher = this.publisher,
         explicitContent = this.explicitContent,
         episodeCount = this.episodeCount,
-//        genreIds = this.genreIds,
         inBestForGenre = this.inBestForGenre,
-        score = this.score
     )
 }
 
@@ -76,9 +65,7 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
             publisher = it.publisher,
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
-//            genreIds = it.genreIds,
             inBestForGenre = it.inBestForGenre,
-            score = it.score
         )
     }
 }

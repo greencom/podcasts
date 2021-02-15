@@ -23,7 +23,7 @@ private const val GENRE_NAME = "genre_name"
 class ExploreSecondaryPageFragment : Fragment() {
 
     /** The name of the genre associated with this fragment. */
-    private var genreName: String? = null
+    private lateinit var genreName: String
 
     /** Nullable View binding. Use [binding] instead. */
     private var _binding: FragmentExploreSecondaryPageBinding? = null
@@ -37,7 +37,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            genreName = it.getString(GENRE_NAME)
+            genreName = it.getString(GENRE_NAME)!!
         }
     }
 
