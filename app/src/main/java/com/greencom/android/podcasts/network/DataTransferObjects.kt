@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.network
 
 import com.greencom.android.podcasts.data.database.GenreEntity
+import com.greencom.android.podcasts.data.database.PodcastEntity
 import com.greencom.android.podcasts.data.domain.Genre
 import com.squareup.moshi.Json
 
@@ -155,7 +156,7 @@ data class BestPodcastsResponse(
     /** A list of search results. */
     val podcasts: List<BestPodcastsResponseItem>,
 
-    /** Genre ID. */
+    /** Genre ID for which the best podcasts list is made for. */
     @Json(name = "id")
     val genreId: Int,
 
@@ -208,6 +209,29 @@ data class BestPodcastsResponse(
     )
 }
 
+/**
+ * Convert [BestPodcastsResponse] object to a [PodcastEntity] list.
+ *
+ * If [BestPodcastsResponse.BestPodcastsResponseItem.score] is `null`, assign `0`
+ * to the [PodcastEntity.score] property.
+ */
+fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
+    return podcasts.map {
+        PodcastEntity(
+            id = it.id,
+            title = it.title,
+            description = it.description,
+            image = it.image,
+            publisher = it.publisher,
+            explicitContent = it.explicitContent,
+            episodeCount = it.episodeCount,
+            genreIds = it.genreIds,
+            inBestForGenre = this.genreId,
+            score = it.score ?: 0
+        )
+    }
+}
+
 
 
 /** Model class for `ListenApiService.getGenres()` response. */
@@ -232,7 +256,7 @@ data class GenresResponse(val genres: List<GenresResponseItem>) {
  * Convert [GenresResponse] object to a [GenreEntity] list.
  *
  * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
- * value to [GenreEntity.parentId] property.
+ * value to the [GenreEntity.parentId] property.
  */
 fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
     return genres.map {

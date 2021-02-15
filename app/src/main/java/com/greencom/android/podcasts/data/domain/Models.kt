@@ -29,6 +29,7 @@ data class Podcast(
 
     /**
      * The genre ID for which the podcast is featured on the best list.
+     *
      * If the value is [Podcast.NOT_IN_BEST], it means that the podcast
      * is not on the best list for any genre.
      */

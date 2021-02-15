@@ -36,6 +36,7 @@ data class PodcastEntity(
 
     /**
      * The genre ID for which the podcast is featured on the best list.
+     *
      * If the value is [Podcast.NOT_IN_BEST], it means that the podcast
      * is not on the best list for any genre.
      */
@@ -47,6 +48,40 @@ data class PodcastEntity(
      */
     val score: Int,
 )
+
+/** Convert a [PodcastEntity] object to a [Podcast]. */
+fun PodcastEntity.asPodcast(): Podcast {
+    return Podcast(
+        id = this.id,
+        title = this.title,
+        description = this.description,
+        image = this.image,
+        publisher = this.publisher,
+        explicitContent = this.explicitContent,
+        episodeCount = this.episodeCount,
+        genreIds = this.genreIds,
+        inBestForGenre = this.inBestForGenre,
+        score = this.score
+    )
+}
+
+/** Convert a [PodcastEntity] list to a list of [Podcast]s. */
+fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
+    return map {
+        Podcast(
+            id = it.id,
+            title = it.title,
+            description = it.description,
+            image = it.image,
+            publisher = it.publisher,
+            explicitContent = it.explicitContent,
+            episodeCount = it.episodeCount,
+            genreIds = it.genreIds,
+            inBestForGenre = it.inBestForGenre,
+            score = it.score
+        )
+    }
+}
 
 
 
@@ -105,8 +140,17 @@ data class GenreEntity(
     val parentId: Int,
 )
 
-/** Convert [GenreEntity] list to a list of [Genre]s. */
-fun List<GenreEntity>.asDomainModel(): List<Genre> {
+/** Convert a [GenreEntity] object to a [Genre]. */
+fun GenreEntity.asGenre(): Genre {
+    return Genre(
+        id = this.id,
+        name = this.name,
+        parentId = this.parentId
+    )
+}
+
+/** Convert a [GenreEntity] list to a list of [Genre]s. */
+fun List<GenreEntity>.asGenres(): List<Genre> {
     return map {
         Genre(
             id = it.id,

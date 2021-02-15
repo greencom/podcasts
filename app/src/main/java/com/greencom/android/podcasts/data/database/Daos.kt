@@ -5,6 +5,18 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
+/** Interface to interact with `podcasts` table. */
+@Dao
+interface PodcastDao {
+
+}
+
+/** Interface to interact with `episodes` table. */
+@Dao
+interface EpisodeDao {
+
+}
+
 /** Interface to interact with `genres` table. */
 @Dao
 interface GenreDao {

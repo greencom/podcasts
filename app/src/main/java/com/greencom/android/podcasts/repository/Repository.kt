@@ -21,7 +21,6 @@ class Repository @Inject constructor(
     private val listenApi: ListenApiService,
 ) {
 
-    // Backing property.
     private val _genresState = MutableStateFlow<State>(State.Init)
     /** Represents the state of loading genres using [State] class. */
     val genresState: StateFlow<State> = _genresState
