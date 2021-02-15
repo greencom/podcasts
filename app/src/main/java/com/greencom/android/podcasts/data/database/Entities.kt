@@ -32,7 +32,7 @@ data class PodcastEntity(
     val episodeCount: Int,
 
     /** Podcast genre ids. */
-    val genreIds: List<Int>,
+//    val genreIds: List<Int>,
 
     /**
      * The genre ID for which the podcast is featured on the best list.
@@ -59,7 +59,7 @@ fun PodcastEntity.asPodcast(): Podcast {
         publisher = this.publisher,
         explicitContent = this.explicitContent,
         episodeCount = this.episodeCount,
-        genreIds = this.genreIds,
+//        genreIds = this.genreIds,
         inBestForGenre = this.inBestForGenre,
         score = this.score
     )
@@ -76,7 +76,7 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
             publisher = it.publisher,
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
-            genreIds = it.genreIds,
+//            genreIds = it.genreIds,
             inBestForGenre = it.inBestForGenre,
             score = it.score
         )

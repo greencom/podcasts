@@ -25,7 +25,7 @@ data class Podcast(
     val episodeCount: Int,
 
     /** Podcast genre ids. */
-    val genreIds: List<Int>,
+//    val genreIds: List<Int>,
 
     /**
      * The genre ID for which the podcast is featured on the best list.

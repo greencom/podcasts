@@ -38,7 +38,7 @@ class Repository @Inject constructor(
             _genresState.value = State.Loading
             try {
                 val genres = listenApi.getGenres().asDatabaseModel()
-                genreDao.insertAll(genres)
+                genreDao.insert(genres)
                 _genresState.value = State.Success(Unit)
             } catch (e: Exception) {
                 _genresState.value = State.Error(e)

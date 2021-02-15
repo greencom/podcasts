@@ -3,7 +3,7 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [GenreEntity::class], version = 1)
+@Database(entities = [PodcastEntity::class, EpisodeEntity::class, GenreEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
 
     /** Data access object for the `podcasts` table. */

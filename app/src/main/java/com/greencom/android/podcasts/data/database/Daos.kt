@@ -9,6 +9,9 @@ import androidx.room.Query
 @Dao
 interface PodcastDao {
 
+    /** Insert the given [PodcastEntity] list into the `podcasts` table. */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(podcasts: List<PodcastEntity>)
 }
 
 /** Interface to interact with `episodes` table. */
@@ -27,7 +30,11 @@ interface GenreDao {
 
     /** Insert the given [GenreEntity] list into the `genres` table. */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(genres: List<GenreEntity>)
+    suspend fun insert(genres: List<GenreEntity>)
+
+    /** Get a [GenreEntity] instance by provided genre name. */
+    @Query("SELECT * FROM genres WHERE name = :name")
+    suspend fun getGenre(name: String): GenreEntity
 
     /** Clear whole `genres` table. */
     @Query("DELETE FROM genres")

@@ -135,8 +135,8 @@ data class SearchPodcastResponse(
         val episodeCount: Int,
 
         /** Podcast genre ids. */
-        @Json(name = "genre_ids")
-        val genreIds: List<Int>,
+//        @Json(name = "genre_ids")
+//        val genreIds: List<Int>,
 
         /**
          * The estimated popularity score of a podcast compared to all other
@@ -196,8 +196,8 @@ data class BestPodcastsResponse(
         val episodeCount: Int,
 
         /** Podcast genre ids. */
-        @Json(name = "genre_ids")
-        val genreIds: List<Int>,
+//        @Json(name = "genre_ids")
+//        val genreIds: List<Int>,
 
         /**
          * The estimated popularity score of a podcast compared to all other
@@ -225,7 +225,7 @@ fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
             publisher = it.publisher,
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
-            genreIds = it.genreIds,
+//            genreIds = it.genreIds,
             inBestForGenre = this.genreId,
             score = it.score ?: 0
         )
