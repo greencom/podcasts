@@ -3,7 +3,7 @@ package com.greencom.android.podcasts.repository
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.asDatabaseModel
-import com.greencom.android.podcasts.utils.GenresState
+import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,9 +22,9 @@ class Repository @Inject constructor(
 ) {
 
     // Backing property.
-    private val _genresState = MutableStateFlow<GenresState>(GenresState.Init)
-    /** Represents the state of loading genres using [GenresState] class. */
-    val genresState: StateFlow<GenresState> = _genresState
+    private val _genresState = MutableStateFlow<State>(State.Init)
+    /** Represents the state of loading genres using [State] class. */
+    val genresState: StateFlow<State> = _genresState
 
     /**
      * Fetch genre list from ListenAPI and insert it into the `genres` table,
@@ -32,16 +32,16 @@ class Repository @Inject constructor(
      */
     suspend fun loadGenres() = withContext(Dispatchers.IO) {
         if (genreDao.getSize() == 0) {
-            _genresState.value = GenresState.Loading
+            _genresState.value = State.Loading
             try {
                 val genres = listenApi.getGenres().asDatabaseModel()
                 genreDao.insertAll(genres)
-                _genresState.value = GenresState.Success
+                _genresState.value = State.Success(Unit)
             } catch (e: Exception) {
-                _genresState.value = GenresState.Error(e)
+                _genresState.value = State.Error(e)
             }
         } else {
-            _genresState.value = GenresState.Success
+            _genresState.value = State.Success(Unit)
         }
     }
 }
