@@ -10,7 +10,7 @@ import com.greencom.android.podcasts.databinding.FragmentActivityBinding
 /** TODO: Documentation */
 class ActivityFragment : Fragment() {
 
-    /** Nullable View binding. Use [binding] instead. */
+    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentActivityBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!

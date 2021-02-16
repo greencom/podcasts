@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    /** Nullable View binding. Use [binding] instead. */
+    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentHomeBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!

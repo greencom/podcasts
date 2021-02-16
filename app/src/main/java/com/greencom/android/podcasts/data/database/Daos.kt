@@ -32,10 +32,6 @@ interface GenreDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(genres: List<GenreEntity>)
 
-    /** Get a [GenreEntity] instance by provided genre name. */
-    @Query("SELECT * FROM genres WHERE name = :name")
-    suspend fun getGenre(name: String): GenreEntity
-
     /** Clear whole `genres` table. */
     @Query("DELETE FROM genres")
     suspend fun deleteAll()

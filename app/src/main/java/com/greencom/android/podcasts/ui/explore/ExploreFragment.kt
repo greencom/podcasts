@@ -18,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
 
-    /** Nullable View binding. Use [binding] instead. */
+    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExploreBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!

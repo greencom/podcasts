@@ -8,39 +8,42 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  * Creates the [ExplorePrimaryPageFragment] for the first page and
  * genre-specific [ExploreSecondaryPageFragment] for every other page.
  *
- * To change the order and/or genres for pages edit the [genreNames] list.
- * Note that the list must match the TabLayout TabConfigurationStrategy
+ * To change the order and/or genres for pages edit the [genres] map.
+ * Note that the map must match the TabLayout TabConfigurationStrategy
  * inside the [ExploreFragment].
  */
 class ExplorePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    /** List of the genre names used for genre-specific tabs in the TabLayout. */
-    private val genreNames = listOf(
-        "News",
-        "Society & Culture",
-        "Education",
-        "Science",
-        "Technology",
-        "Business",
-        "History",
-        "Arts",
-        "Sports",
-        "Health & Fitness",
+    /**
+     * Map of the genres used for genre-specific tabs in the TabLayout.
+     * `Key` is a genre name and `value` is a genre ID.
+     */
+    private val genres = mapOf(
+        "News" to 99,
+        "Society & Culture" to 122,
+        "Education" to 111,
+        "Science" to 107,
+        "Technology" to 127,
+        "Business" to 93,
+        "History" to 125,
+        "Arts" to 100,
+        "Sports" to 77,
+        "Health & Fitness" to 88,
     )
 
     // The number of pages is equal to the number of genre-specific pages plus one
     // page represented by an instance of the ExplorePrimaryPageFragment.
-    override fun getItemCount(): Int = genreNames.size + 1
+    override fun getItemCount(): Int = genres.size + 1
 
     // If a page is the first one, create the instance of the ExplorePrimaryPageFragment.
     // Otherwise, create an instance of the ExploreSecondaryPageFragment with provided
-    // parameter of the genre name associated with the page.
+    // parameter of the genre id associated with the page.
     override fun createFragment(position: Int): Fragment {
         return if (position == 0) {
             ExplorePrimaryPageFragment()
         } else {
-            val genreName = genreNames[position - 1]
-            ExploreSecondaryPageFragment.newInstance(genreName)
+            val genreId = genres.values.toList()[position - 1]
+            ExploreSecondaryPageFragment.newInstance(genreId)
         }
     }
 }

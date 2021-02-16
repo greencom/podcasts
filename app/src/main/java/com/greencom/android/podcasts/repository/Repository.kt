@@ -31,7 +31,7 @@ class Repository @Inject constructor(
 
     /**
      * Fetch genre list from ListenAPI and insert it into the `genres` table,
-     * if the table is empty.
+     * if the table is empty. Use [genresState] to get the state of loading process.
      */
     suspend fun loadGenres() = withContext(Dispatchers.IO) {
         if (genreDao.getSize() == 0) {
