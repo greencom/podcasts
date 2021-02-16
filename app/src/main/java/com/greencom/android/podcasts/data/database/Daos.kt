@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 /** Interface to interact with `podcasts` table. */
 @Dao
@@ -12,6 +13,13 @@ interface PodcastDao {
     /** Insert the given [PodcastEntity] list into the `podcasts` table. */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(podcasts: List<PodcastEntity>)
+
+    /**
+     * Get a list of best podcasts for the provided genre ID from the
+     * `podcasts` table.
+     */
+    @Query("SELECT * FROM podcasts WHERE inBestForGenre = :genreId")
+    fun getBestPodcasts(genreId: Int): Flow<List<PodcastEntity>>
 }
 
 /** Interface to interact with `episodes` table. */

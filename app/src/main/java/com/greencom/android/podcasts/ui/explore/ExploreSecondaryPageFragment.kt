@@ -48,8 +48,6 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
         /** View binding setup. */
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 
-        binding.textView.text = genreId.toString()
-
         return binding.root
     }
 
