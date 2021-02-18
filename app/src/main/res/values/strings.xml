@@ -6,6 +6,9 @@
     <string name="explore">Explore</string>
     <string name="activity">Activity</string>
     <string name="search">Search</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="explicit_content_description">Explicit content</string>
 
     <!-- Temporary strings. -->
     <string name="night_mode">Night mode</string>

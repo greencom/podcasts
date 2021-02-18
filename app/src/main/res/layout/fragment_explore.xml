@@ -32,8 +32,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="16dp"
-                android:fontFamily="@font/roboto"
-                android:includeFontPadding="false"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="@string/search"
@@ -67,7 +65,7 @@
                 app:tabMode="scrollable"
                 app:tabPaddingEnd="16dp"
                 app:tabPaddingStart="16dp"
-                app:tabTextAppearance="@style/Tab.Text" />
+                app:tabTextAppearance="@style/TabLayout.Tab.Text" />
 
             <View
                 android:layout_width="match_parent"

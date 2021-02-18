@@ -10,7 +10,7 @@
         the android:windowLightNavigationBar attribute is available only on API 27 and above. -->
 
         <!-- Default colors. -->
-        <item name="colorPrimary">@color/blue_dark</item>
+        <item name="colorPrimary">@color/blue_dark_900</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSurface">@color/surface_dark</item>
         <item name="colorOnSurface">@color/white</item>
@@ -29,7 +29,7 @@
         <item name="colorBottomNavViewBackground">@color/bottom_nav_view_background_dark</item>
         <item name="colorPlayerBackground">@color/player_background_dark</item>
         <item name="colorPlayerCollapsedBackground">@color/player_background_dark</item>
-        <item name="colorPlayerPlay">@color/blue_dark</item>
+        <item name="colorPlayerPlay">@color/blue_dark_900</item>
         <item name="colorOutlinedButtonRipple">@color/outlined_button_ripple_dark</item>
 
     </style>

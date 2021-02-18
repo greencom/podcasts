@@ -7,6 +7,9 @@
     <string name="explore">Находки</string>
     <string name="activity">Активность</string>
     <string name="search">Поиск</string>
+    <string name="subscribe">Подписаться</string>
+    <string name="subscribed">Подписка оформлена</string>
+    <string name="explicit_content_description">Взрослый контент</string>
 
     <!-- Temporary strings. -->
     <string name="night_mode">Тёмная тема</string>

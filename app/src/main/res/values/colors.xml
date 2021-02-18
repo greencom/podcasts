@@ -7,9 +7,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background_scrim">#80000000</color>
     <color name="shadows">#0D000000</color>
+    <color name="orange_900">#FA7B17</color>
 
     <!-- Light colors. -->
-    <color name="blue_light">#1976D2</color>
+    <color name="blue_light_900">#1976D2</color>
     <color name="error_light">#B00020</color>
     <color name="surface_light">#FFFFFFFF</color>
     <color name="grey_light_900">#212121</color>
@@ -21,7 +22,7 @@
     <color name="outlined_button_ripple_light">#D8D9D9</color>
 
     <!-- Dark colors. -->
-    <color name="blue_dark">#8AB4F8</color>
+    <color name="blue_dark_900">#8AB4F8</color>
     <color name="error_dark">#CF6679</color>
     <color name="surface_dark">#222222</color>
     <color name="grey_dark_900">#FFFFFF</color>
