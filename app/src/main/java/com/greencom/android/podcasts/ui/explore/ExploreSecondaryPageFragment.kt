@@ -48,6 +48,10 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
         /** View binding setup. */
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 
+        /** RecyclerView adapter setup. */
+        val adapter = ExplorePodcastAdapter()
+        binding.podcastList.adapter = adapter
+
         return binding.root
     }
 
@@ -59,7 +63,6 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
     }
 
     companion object {
-
         /**
          * Use this factory method to create a new instance of
          * the fragment using the provided parameters.
