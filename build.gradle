@@ -32,6 +32,7 @@ task clean(type: Delete) {
 }
 
 ext {
+    glide_version = '4.12.0'
     lifecycle_version = '2.3.0'
     navigation_version = '2.3.3'
     viewpager2_version = '1.0.0'

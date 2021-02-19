@@ -3,29 +3,24 @@ package com.greencom.android.podcasts.ui.explore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 
-class ExplorePodcastAdapter : RecyclerView.Adapter<PodcastViewHolder>() {
-
-    var data = listOf<Podcast>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
+class ExplorePodcastAdapter : ListAdapter<Podcast, PodcastViewHolder>(PodcastDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PodcastViewHolder {
         return PodcastViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: PodcastViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)
 
         holder.bind(item)
     }
-
-    override fun getItemCount(): Int = data.size
 }
 
 class PodcastViewHolder private constructor(private val binding: PodcastItemBinding) :
@@ -40,6 +35,9 @@ class PodcastViewHolder private constructor(private val binding: PodcastItemBind
         } else {
             binding.explicitContent.visibility = View.INVISIBLE
         }
+        Glide.with(binding.cover.context)
+            .load(item.image)
+            .into(binding.cover)
     }
 
     companion object {
@@ -48,5 +46,16 @@ class PodcastViewHolder private constructor(private val binding: PodcastItemBind
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return PodcastViewHolder(binding)
         }
+    }
+}
+
+class PodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
+
+    override fun areItemsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
+        return oldItem == newItem
     }
 }
