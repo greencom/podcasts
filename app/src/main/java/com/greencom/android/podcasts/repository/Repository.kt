@@ -25,7 +25,7 @@ class Repository @Inject constructor(
     private val genreDao: GenreDao,
 ) {
 
-    private val _genresState = MutableStateFlow<State>(State.Init)
+    private val _genresState = MutableStateFlow<State>(State.NotLoading)
     /** Represents the state of loading genres using [State] class. */
     val genresState: StateFlow<State> = _genresState
 
