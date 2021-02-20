@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.network
 import com.greencom.android.podcasts.data.database.GenreEntity
 import com.greencom.android.podcasts.data.database.PodcastEntity
 import com.greencom.android.podcasts.data.domain.Genre
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.squareup.moshi.Json
 
 /** Model class for `ListenApiService.searchEpisode` response. */
@@ -189,6 +190,22 @@ data class BestPodcastsResponse(
 fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
     return podcasts.map {
         PodcastEntity(
+            id = it.id,
+            title = it.title,
+            description = it.description,
+            image = it.image,
+            publisher = it.publisher,
+            explicitContent = it.explicitContent,
+            episodeCount = it.episodeCount,
+            inBestForGenre = this.genreId,
+        )
+    }
+}
+
+/** Convert [BestPodcastsResponse] object to a [Podcast] list. */
+fun BestPodcastsResponse.asDomainModel(): List<Podcast> {
+    return podcasts.map {
+        Podcast(
             id = it.id,
             title = it.title,
             description = it.description,

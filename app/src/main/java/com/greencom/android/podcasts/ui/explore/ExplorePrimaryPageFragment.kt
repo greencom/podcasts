@@ -5,8 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import com.greencom.android.podcasts.R
+import androidx.fragment.app.activityViewModels
 import com.greencom.android.podcasts.databinding.FragmentExplorePrimaryPageBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +22,7 @@ class ExplorePrimaryPageFragment : Fragment() {
     private val binding get() = _binding!!
 
     /** ExploreViewModel. */
-    private val viewModel: ExploreViewModel by viewModels()
+    private val viewModel: ExploreViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

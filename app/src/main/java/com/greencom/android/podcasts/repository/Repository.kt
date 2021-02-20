@@ -6,10 +6,10 @@ import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.asDatabaseModel
 import com.greencom.android.podcasts.utils.State
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.withContext
+import okio.IOException
+import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,14 +33,16 @@ class Repository @Inject constructor(
      * Fetch genre list from ListenAPI and insert it into the `genres` table,
      * if the table is empty. Use [genresState] to get the state of loading process.
      */
-    suspend fun fetchGenres() = withContext(Dispatchers.IO) {
+    suspend fun fetchGenres() {
         if (genreDao.getSize() == 0) {
             _genresState.value = State.Loading
             try {
                 val genres = listenApi.getGenres().asDatabaseModel()
                 genreDao.insert(genres)
                 _genresState.value = State.Success(Unit)
-            } catch (e: Exception) {
+            } catch (e: IOException) {
+                _genresState.value = State.Error(e)
+            } catch (e: HttpException) {
                 _genresState.value = State.Error(e)
             }
         } else {
