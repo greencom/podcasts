@@ -18,7 +18,6 @@ class ExplorePodcastAdapter : ListAdapter<Podcast, PodcastViewHolder>(PodcastDif
 
     override fun onBindViewHolder(holder: PodcastViewHolder, position: Int) {
         val item = getItem(position)
-
         holder.bind(item)
     }
 }
