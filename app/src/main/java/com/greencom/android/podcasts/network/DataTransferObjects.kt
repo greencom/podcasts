@@ -253,3 +253,19 @@ fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
         )
     }
 }
+
+/**
+ * Convert [GenresResponse] object to a [Genre] list.
+ *
+ * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
+ * value to the [Genre.parentId] property.
+ */
+fun GenresResponse.asDomainModel(): List<Genre> {
+    return genres.map {
+        Genre(
+            id = it.id,
+            name = it.name,
+            parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
+        )
+    }
+}
