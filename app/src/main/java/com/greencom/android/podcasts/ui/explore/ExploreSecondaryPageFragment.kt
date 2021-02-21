@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -33,6 +36,9 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
     /** ExploreViewModel. */
     private val viewModel: ExploreViewModel by activityViewModels()
 
+    /** RecyclerView adapter. */
+    private val adapter = ExplorePodcastAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,12 +51,18 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /** View binding setup. */
+        // View binding setup.
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
 
-        /** RecyclerView adapter setup. */
-        val adapter = ExplorePodcastAdapter()
+        // Adapter setup.
         binding.podcastList.adapter = adapter
+
+        /** TODO: Documentation */
+        lifecycleScope.launch {
+            viewModel.getBestPodcasts(genreId).collectLatest {
+                adapter.submitData(it)
+            }
+        }
 
         return binding.root
     }

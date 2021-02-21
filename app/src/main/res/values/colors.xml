@@ -11,7 +11,7 @@
 
     <!-- Light colors. -->
     <color name="blue_light_900">#1976D2</color>
-    <color name="error_light">#B00020</color>
+    <color name="red_light">#B00020</color>
     <color name="surface_light">#FFFFFFFF</color>
     <color name="grey_light_900">#212121</color>
     <color name="grey_light_700">#3C4043</color>
@@ -23,7 +23,7 @@
 
     <!-- Dark colors. -->
     <color name="blue_dark_900">#8AB4F8</color>
-    <color name="error_dark">#CF6679</color>
+    <color name="red_dark">#CF6679</color>
     <color name="surface_dark">#222222</color>
     <color name="grey_dark_900">#FFFFFF</color>
     <color name="grey_dark_700">#DADCE0</color>

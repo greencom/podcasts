@@ -2,7 +2,7 @@ package com.greencom.android.podcasts.utils
 
 /**
  * Sealed class that represents the state of the event and used as a wrapper
- * for data (or error) if needed. Available states: [Loading], [Success] and
+ * for a data (or error) if needed. Available states: [Loading], [Success] and
  * [Error]. [NotLoading] state is used as initial value for StateFlow.
  */
 sealed class State {

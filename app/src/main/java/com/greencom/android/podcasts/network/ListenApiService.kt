@@ -26,7 +26,7 @@ private val moshi = Moshi.Builder()
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(BASE_URL)
-    .client(httpClient.build()) // Logging.
+    .client(httpClient.build()) // Logging setup.
     .build()
 
 /** Interface that defines methods for interacting with ListenAPI. */

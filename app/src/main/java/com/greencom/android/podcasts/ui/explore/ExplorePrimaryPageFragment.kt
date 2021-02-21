@@ -28,7 +28,7 @@ class ExplorePrimaryPageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /** View binding setup. */
+        // View binding setup.
         _binding = FragmentExplorePrimaryPageBinding.inflate(inflater, container, false)
 
         return binding.root

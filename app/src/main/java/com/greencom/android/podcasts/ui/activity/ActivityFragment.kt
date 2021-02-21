@@ -19,7 +19,7 @@ class ActivityFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /** View binding setup. */
+        // View binding setup.
         _binding = FragmentActivityBinding.inflate(inflater, container, false)
 
         return binding.root

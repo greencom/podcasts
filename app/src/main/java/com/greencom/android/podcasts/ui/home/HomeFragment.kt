@@ -33,7 +33,7 @@ class HomeFragment : Fragment() {
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        /** View binding setup. */
+        // View binding setup.
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -42,7 +42,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Switch night mode
+        // Switch night mode.
         binding.nightModeButton.setOnClickListener {
             when (AppCompatDelegate.getDefaultNightMode()) {
                 AppCompatDelegate.MODE_NIGHT_UNSPECIFIED ->

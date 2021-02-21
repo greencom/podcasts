@@ -1,11 +1,16 @@
 package com.greencom.android.podcasts.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.asDatabaseModel
 import com.greencom.android.podcasts.utils.State
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import okio.IOException
@@ -28,6 +33,17 @@ class Repository @Inject constructor(
     private val _genresState = MutableStateFlow<State>(State.NotLoading)
     /** Represents the state of loading genres using [State] class. */
     val genresState: StateFlow<State> = _genresState
+
+    /** TODO: Documentation */
+    fun getBestPodcasts(genreId: Int): Flow<PagingData<Podcast>> {
+        return Pager(
+            PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { BestPodcastsPagingSource(genreId, listenApi) }
+        ).flow
+    }
 
     /**
      * Fetch genre list from ListenAPI and insert it into the `genres` table,

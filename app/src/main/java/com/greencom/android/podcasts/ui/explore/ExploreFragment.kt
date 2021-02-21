@@ -26,7 +26,7 @@ class ExploreFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        /** View binding setup. */
+        // View binding setup.
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
         /** TabLayout and ViewPager2 setup. */
