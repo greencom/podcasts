@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!-- Global strings. -->
@@ -9,6 +10,9 @@
     <string name="subscribe">Subscribe</string>
     <string name="subscribed">Subscribed</string>
     <string name="explicit_content_description">Explicit content</string>
+    <string name="something_went_wrong">Something went wrong.\nCheck your internet connection and try again.</string>
+    <string name="try_again">Try again</string>
+    <string name="error_description">Error</string>
 
     <!-- Temporary strings. -->
     <string name="night_mode">Night mode</string>

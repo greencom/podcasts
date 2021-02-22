@@ -12,7 +12,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
  * Note that the map must match the TabLayout TabConfigurationStrategy
  * inside the [ExploreFragment].
  */
-class ExplorePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+class ExploreViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
     /**
      * Map of the genres used for genre-specific tabs in the TabLayout.

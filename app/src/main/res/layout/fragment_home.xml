@@ -8,11 +8,10 @@
 
     <Button
         android:id="@+id/night_mode_button"
+        style="@style/Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/night_mode"
-        android:textAllCaps="false"
-        android:letterSpacing="0.02"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

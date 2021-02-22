@@ -16,4 +16,10 @@
         <item name="android:letterSpacing">0.02</item>
     </style>
 
+    <!-- Button without AllCaps. -->
+    <style name="Button" parent="Widget.MaterialComponents.Button">
+        <item name="textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
 </resources>

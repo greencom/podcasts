@@ -30,7 +30,7 @@ class ExploreFragment : Fragment() {
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
         /** TabLayout and ViewPager2 setup. */
-        val pagerAdapter = ExplorePagerAdapter(this)
+        val pagerAdapter = ExploreViewPagerAdapter(this)
         binding.pager.adapter = pagerAdapter
         // Bind the TabLayout with the ViewPager2.
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
