@@ -28,6 +28,8 @@
         <item name="colorOnSurfaceTertiary">@color/grey_dark_500</item>
         <item name="colorOnSurfaceHint">@color/grey_dark_300</item>
         <item name="colorOnSurfaceUtil">@color/grey_dark_100</item>
+
+        <item name="colorSwipeToRefreshBackground">@color/grey_dark_100</item>
         <item name="colorBottomNavViewBackground">@color/bottom_nav_view_background_dark</item>
         <item name="colorPlayerBackground">@color/player_background_dark</item>
         <item name="colorPlayerCollapsedBackground">@color/player_background_dark</item>

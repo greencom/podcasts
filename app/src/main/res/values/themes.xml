@@ -26,6 +26,8 @@
         <item name="colorOnSurfaceTertiary">@color/grey_light_500</item>
         <item name="colorOnSurfaceHint">@color/grey_light_300</item>
         <item name="colorOnSurfaceUtil">@color/grey_light_100</item>
+
+        <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
         <item name="colorPlayerBackground">@color/surface_light</item>
         <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>

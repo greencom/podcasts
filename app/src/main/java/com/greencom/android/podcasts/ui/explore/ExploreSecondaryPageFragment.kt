@@ -1,14 +1,17 @@
 package com.greencom.android.podcasts.ui.explore
 
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -57,6 +60,18 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
         // Adapter setup.
         binding.podcastList.adapter = adapter
 
+        // Swipe-to-refresh theming.
+        binding.refresh.apply {
+            val color = TypedValue()
+            val backgroundColor = TypedValue()
+            val theme = activity?.theme
+            theme?.resolveAttribute(R.attr.colorSwipeToRefreshBackground, color, true)
+            theme?.resolveAttribute(R.attr.colorPrimary, backgroundColor, true)
+
+            setProgressBackgroundColorSchemeColor(color.data)
+            setColorSchemeColors(backgroundColor.data)
+        }
+
         /** TODO: Documentation */
         lifecycleScope.launch {
             viewModel.getBestPodcasts(genreId).collectLatest {
@@ -65,6 +80,19 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        /** TODO: Documentation */
+        binding.refresh.setOnRefreshListener {
+            adapter.refresh()
+            lifecycleScope.launch {
+                delay(750)
+                binding.refresh.isRefreshing = false
+            }
+        }
     }
 
     override fun onDestroy() {

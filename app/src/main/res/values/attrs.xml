@@ -9,6 +9,7 @@
     <attr name="colorOnSurfaceUtil" format="color" />
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorOutlinedButtonRipple" format="color" />
+    <attr name="colorSwipeToRefreshBackground" format="color" />
 
     <!-- Player attrs. -->
     <attr name="colorPlayerBackground" format="color" />
