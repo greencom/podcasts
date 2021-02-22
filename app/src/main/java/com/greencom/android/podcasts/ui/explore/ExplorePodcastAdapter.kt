@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.ui.explore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,13 +12,14 @@ import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 
 /** TODO: Documentation */
-class ExplorePodcastAdapter : PagingDataAdapter<Podcast, PodcastViewHolder>(PodcastDiffCallback()) {
+class ExplorePodcastAdapter :
+    PagingDataAdapter<Podcast, ExplorePodcastViewHolder>(ExplorePodcastDiffCallback()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PodcastViewHolder {
-        return PodcastViewHolder.from(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
+        return ExplorePodcastViewHolder.create(parent)
     }
 
-    override fun onBindViewHolder(holder: PodcastViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ExplorePodcastViewHolder, position: Int) {
         val item = getItem(position)
         if (item != null) {
             holder.bind(item)
@@ -26,11 +28,14 @@ class ExplorePodcastAdapter : PagingDataAdapter<Podcast, PodcastViewHolder>(Podc
 }
 
 /** TODO: Documentation */
-class PodcastViewHolder private constructor(private val binding: PodcastItemBinding) :
+class ExplorePodcastViewHolder private constructor(private val binding: PodcastItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
     /** TODO: Documentation */
     fun bind(item: Podcast) {
+        Glide.with(binding.cover.context)
+            .load(item.image)
+            .into(binding.cover)
         binding.title.text = item.title
         binding.publisher.text = item.publisher
         binding.description.text = item.description
@@ -39,23 +44,21 @@ class PodcastViewHolder private constructor(private val binding: PodcastItemBind
         } else {
             binding.explicitContent.visibility = View.INVISIBLE
         }
-        Glide.with(binding.cover.context)
-            .load(item.image)
-            .into(binding.cover)
+        binding.explicitContent.isVisible = item.explicitContent
     }
 
     companion object {
         /** TODO: Documentation */
-        fun from(parent: ViewGroup): PodcastViewHolder {
+        fun create(parent: ViewGroup): ExplorePodcastViewHolder {
             val binding = PodcastItemBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return PodcastViewHolder(binding)
+            return ExplorePodcastViewHolder(binding)
         }
     }
 }
 
 /** TODO: Documentation */
-class PodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
+class ExplorePodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
 
     override fun areItemsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
         return oldItem.id == newItem.id

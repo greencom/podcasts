@@ -72,6 +72,12 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
             setColorSchemeColors(backgroundColor.data)
         }
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         /** TODO: Documentation */
         lifecycleScope.launch {
             viewModel.getBestPodcasts(genreId).collectLatest {
@@ -79,11 +85,10 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
             }
         }
 
-        return binding.root
-    }
+        /** TODO: Documentation */
+        adapter.addLoadStateListener { loadState ->
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        }
 
         /** TODO: Documentation */
         binding.refresh.setOnRefreshListener {
@@ -93,6 +98,9 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
                 binding.refresh.isRefreshing = false
             }
         }
+
+        /** TODO: Documentation */
+
     }
 
     override fun onDestroy() {
