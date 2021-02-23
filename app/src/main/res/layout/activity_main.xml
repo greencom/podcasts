@@ -35,7 +35,7 @@
         android:background="@drawable/shape_player_shadow_external"
         app:layout_anchor="@id/player" />
 
-    <!-- Player external shadow. -->
+    <!-- Player shadow. -->
     <View
         android:id="@+id/player_shadow_internal"
         android:layout_width="match_parent"
