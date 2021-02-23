@@ -6,20 +6,22 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <!-- Outlined button with rounded corners. -->
-    <style name="Button.Outline.RoundedCorners" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="textAllCaps">false</item>
-        <item name="cornerRadius">18dp</item>
-        <item name="android:textColor">?attr/colorOnSurfaceSecondary</item>
-        <item name="strokeColor">?attr/colorOnSurfaceUtil</item>
-        <item name="android:letterSpacing">0.02</item>
-    </style>
-
-    <!-- Button without AllCaps. -->
+    <!-- Button with small text. -->
     <style name="Button" parent="Widget.MaterialComponents.Button">
         <item name="textAllCaps">false</item>
         <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <!-- Outlined button with small text. -->
+    <style name="Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="strokeColor">?attr/colorOnSurfaceUtil</item>
+    </style>
+
+    <!-- Outlined button with rounded corners. -->
+    <style name="Button.Outline.Rounded" parent="Button.Outline">
+        <item name="cornerRadius">18dp</item>
     </style>
 
 </resources>

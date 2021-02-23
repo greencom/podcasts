@@ -10,7 +10,8 @@
     <string name="subscribe">Подписаться</string>
     <string name="subscribed">Подписка оформлена</string>
     <string name="explicit_content_description">Взрослый контент</string>
-    <string name="something_went_wrong">Что-то пошло не так.\nПроверьте соединение с интернетом и попробуйте снова.</string>
+    <string name="something_went_wrong">Что-то пошло не так</string>
+    <string name="check_connection">Проверьте соединение с интернетом и повторите попытку</string>
     <string name="try_again">Повторить</string>
     <string name="error_description">Ошибка</string>
 

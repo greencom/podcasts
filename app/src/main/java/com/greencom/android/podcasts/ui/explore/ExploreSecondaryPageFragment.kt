@@ -5,13 +5,14 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -26,7 +27,7 @@ private const val GENRE_ID = "genre_id"
  * of the fragment using the provided parameters.
  */
 @AndroidEntryPoint
-class ExploreSecondaryPageFragment private constructor(): Fragment() {
+class ExploreSecondaryPageFragment : Fragment() {
 
     /** The ID of the genre associated with this fragment. */
     private var genreId = 0
@@ -56,6 +57,11 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
     ): View {
         // View binding setup.
         _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         // Adapter setup.
         binding.podcastList.adapter = adapter
@@ -72,12 +78,6 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
             setColorSchemeColors(backgroundColor.data)
         }
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         /** TODO: Documentation */
         lifecycleScope.launch {
             viewModel.getBestPodcasts(genreId).collectLatest {
@@ -87,20 +87,20 @@ class ExploreSecondaryPageFragment private constructor(): Fragment() {
 
         /** TODO: Documentation */
         adapter.addLoadStateListener { loadState ->
-
+            binding.podcastList.isVisible = loadState.refresh is LoadState.NotLoading
+            binding.refresh.isRefreshing = loadState.refresh is LoadState.Loading
+            binding.error.root.isVisible = loadState.refresh is LoadState.Error
         }
 
         /** TODO: Documentation */
         binding.refresh.setOnRefreshListener {
             adapter.refresh()
-            lifecycleScope.launch {
-                delay(750)
-                binding.refresh.isRefreshing = false
-            }
         }
 
         /** TODO: Documentation */
-
+        binding.error.tryAgain.setOnClickListener {
+            adapter.refresh()
+        }
     }
 
     override fun onDestroy() {

@@ -21,4 +21,9 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <include
+        android:id="@+id/error"
+        layout="@layout/error_screen"
+        android:visibility="gone" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

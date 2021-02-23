@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="8dp">
+    android:paddingBottom="16dp">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cover_card"
@@ -69,12 +69,13 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/subscribe"
-        style="@style/Button.Outline.RoundedCorners"
+        style="@style/Button.Outline.Rounded"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:paddingStart="8dp"
         android:text="@string/subscribe"
+        android:textColor="?attr/colorOnSurfaceSecondary"
         app:icon="@drawable/ic_add_24"
         app:layout_constraintStart_toStartOf="@+id/cover_card"
         app:layout_constraintTop_toBottomOf="@+id/description" />
