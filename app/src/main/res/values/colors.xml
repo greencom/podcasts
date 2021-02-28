@@ -7,7 +7,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background_scrim">#80000000</color>
     <color name="shadows">#0D000000</color>
-    <color name="orange_900">#FA7B17</color>
+    <color name="orange_900">#FFF57C00</color>
 
     <!-- Light colors. -->
     <color name="blue_light_900">#1976D2</color>
