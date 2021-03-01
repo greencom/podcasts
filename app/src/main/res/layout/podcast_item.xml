@@ -89,7 +89,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/subscribe"
         app:layout_constraintStart_toEndOf="@+id/subscribe"
         app:layout_constraintTop_toTopOf="@+id/subscribe"
-        app:srcCompat="@drawable/ic_explicit_content_24"
+        app:srcCompat="@drawable/ic_explicit_outline_24"
         app:tint="@color/orange_900" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
