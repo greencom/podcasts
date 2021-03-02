@@ -30,13 +30,11 @@ class ExplorePrimaryPageFragment : Fragment() {
     ): View {
         // View binding setup.
         _binding = FragmentExplorePrimaryPageBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
         // Clear View binding.
         _binding = null
     }

@@ -46,20 +46,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        /** Navigation component setup. */
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        // Use NavHostFragment.navController instead of findNavController() for now
-        // because of FragmentContainerView bug.
-        val navController = navHostFragment.navController
-        binding.bottomNavBar.apply {
-            // Associate the bottom nav bar items with navigation graph actions.
-            setupWithNavController(navController)
-            // Handle Navigation behavior when the bottom navigation item is reselected.
-            setupOnBottomItemReselectedBehavior(navHostFragment, navController)
-        }
+        // Navigation component setup.
+        setupNavigation()
 
-        /** Player [BottomSheetBehavior] setup. */
+        // Player bottom sheet behavior setup.
         playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
             setupBottomSheetBehavior(resources.getDimension(R.dimen.bottom_nav_bar_height))
         }
@@ -105,6 +95,21 @@ class MainActivity : AppCompatActivity() {
         }
         // Return super.dispatchTouchEvent() to handle default behavior.
         return super.dispatchTouchEvent(ev)
+    }
+
+    /** Navigation component setup. */
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // Use NavHostFragment.navController instead of findNavController() for now
+        // because of FragmentContainerView bug.
+        val navController = navHostFragment.navController
+        binding.bottomNavBar.apply {
+            // Associate the bottom nav bar items with navigation graph actions.
+            setupWithNavController(navController)
+            // Handle Navigation behavior when the bottom navigation item is reselected.
+            setupOnBottomItemReselectedBehavior(navHostFragment, navController)
+        }
     }
 
     /**

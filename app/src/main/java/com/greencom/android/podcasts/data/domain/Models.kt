@@ -3,7 +3,7 @@ package com.greencom.android.podcasts.data.domain
 /** Model class that represents a domain podcast object. */
 data class Podcast(
 
-    /** Podcast id. */
+    /** Podcast ID. */
     val id: String,
 
     /** Podcast title. */
@@ -46,7 +46,7 @@ data class Podcast(
 /** Model class that represents a domain episode object. */
 data class Episode(
 
-    /** Episode id. */
+    /** Episode ID. */
     val id: String,
 
     /** Episode title. */

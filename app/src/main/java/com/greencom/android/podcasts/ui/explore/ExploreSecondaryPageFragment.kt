@@ -5,11 +5,14 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,27 +59,19 @@ class ExploreSecondaryPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // View binding setup.
-        _binding = FragmentExploreSecondaryPageBinding.inflate(inflater, container, false)
+        _binding = FragmentExploreSecondaryPageBinding
+            .inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Adapter setup.
-        binding.podcastList.adapter = adapter
+        // RecyclerView setup.
+        setupRecyclerView()
 
         // Swipe-to-refresh theming.
-        binding.refresh.apply {
-            val color = TypedValue()
-            val backgroundColor = TypedValue()
-            val theme = activity?.theme
-            theme?.resolveAttribute(R.attr.colorSwipeToRefreshBackground, color, true)
-            theme?.resolveAttribute(R.attr.colorPrimary, backgroundColor, true)
-
-            setProgressBackgroundColorSchemeColor(color.data)
-            setColorSchemeColors(backgroundColor.data)
-        }
+        customizeSwipeToRefresh()
 
         /** TODO: Documentation */
         lifecycleScope.launch {
@@ -108,6 +103,37 @@ class ExploreSecondaryPageFragment : Fragment() {
 
         // Clear View binding.
         _binding = null
+    }
+
+    /** RecyclerView setup. */
+    private fun setupRecyclerView() {
+        binding.podcastList.apply {
+            setHasFixedSize(true)
+            adapter = this@ExploreSecondaryPageFragment.adapter
+            val divider = DividerItemDecoration(context, RecyclerView.VERTICAL)
+            divider.setDrawable(
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.shape_divider,
+                    context?.theme
+                )!!
+            )
+            addItemDecoration(divider)
+        }
+    }
+
+    /** Swipe-to-refresh theming. */
+    private fun customizeSwipeToRefresh() {
+        binding.refresh.apply {
+            val color = TypedValue()
+            val backgroundColor = TypedValue()
+            val theme = activity?.theme
+            theme?.resolveAttribute(R.attr.colorSwipeToRefreshBackground, color, true)
+            theme?.resolveAttribute(R.attr.colorPrimary, backgroundColor, true)
+
+            setProgressBackgroundColorSchemeColor(color.data)
+            setColorSchemeColors(backgroundColor.data)
+        }
     }
 
     companion object {

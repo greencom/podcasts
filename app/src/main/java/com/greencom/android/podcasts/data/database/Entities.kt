@@ -9,7 +9,7 @@ import com.greencom.android.podcasts.data.domain.Podcast
 @Entity(tableName = "podcasts")
 data class PodcastEntity(
 
-    /** Podcast id. */
+    /** Podcast ID. */
     @PrimaryKey
     val id: String,
 
@@ -76,7 +76,7 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
 @Entity(tableName = "episodes")
 data class EpisodeEntity(
 
-    /** Episode id. */
+    /** Episode ID. */
     @PrimaryKey
     val id: String,
 

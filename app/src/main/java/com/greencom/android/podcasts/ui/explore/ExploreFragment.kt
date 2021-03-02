@@ -29,10 +29,22 @@ class ExploreFragment : Fragment() {
         // View binding setup.
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
-        /** TabLayout and ViewPager2 setup. */
+        // TabLayout and ViewPager2 setup.
+        setupTabLayout()
+
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clear View binding.
+        _binding = null
+    }
+
+    /** TabLayout and ViewPager2 setup. */
+    private fun setupTabLayout() {
         val pagerAdapter = ExploreViewPagerAdapter(this)
         binding.pager.adapter = pagerAdapter
-        // Bind the TabLayout with the ViewPager2.
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             when (position) {
                 0 -> tab.text = resources.getString(R.string.all)
@@ -48,14 +60,5 @@ class ExploreFragment : Fragment() {
                 10 -> tab.text = resources.getString(R.string.health_fitness)
             }
         }.attach()
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        // Clear View binding.
-        _binding = null
     }
 }

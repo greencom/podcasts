@@ -21,13 +21,11 @@ class ActivityFragment : Fragment() {
     ): View {
         // View binding setup.
         _binding = FragmentActivityBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         // Clear View binding.
         _binding = null
     }

@@ -27,6 +27,7 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Fetch genres.
         viewModel.fetchGenres()
     }
 
@@ -36,7 +37,6 @@ class HomeFragment : Fragment() {
     ): View {
         // View binding setup.
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -59,7 +59,6 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-
         // Clear View binding.
         _binding = null
     }
