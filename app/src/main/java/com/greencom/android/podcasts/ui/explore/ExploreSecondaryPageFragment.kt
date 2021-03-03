@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
+import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -110,7 +110,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         binding.podcastList.apply {
             setHasFixedSize(true)
             adapter = this@ExploreSecondaryPageFragment.adapter
-            val divider = DividerItemDecoration(context, RecyclerView.VERTICAL)
+            val divider = CustomDividerItemDecoration(context, RecyclerView.VERTICAL)
             divider.setDrawable(
                 ResourcesCompat.getDrawable(
                     resources,
