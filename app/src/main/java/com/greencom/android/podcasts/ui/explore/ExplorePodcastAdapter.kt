@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.ui.explore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -38,7 +39,8 @@ class ExplorePodcastViewHolder private constructor(private val binding: PodcastI
             .into(binding.cover)
         binding.title.text = item.title
         binding.publisher.text = item.publisher
-        binding.description.text = item.description
+        binding.description.text =
+            HtmlCompat.fromHtml(item.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
         if (item.explicitContent) {
             binding.explicitContent.visibility = View.VISIBLE
         } else {
