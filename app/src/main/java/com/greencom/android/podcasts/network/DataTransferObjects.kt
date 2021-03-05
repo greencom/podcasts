@@ -207,6 +207,7 @@ fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
             episodeCount = it.episodeCount,
             latestPubDate = it.latestPubDate,
             inBestForGenre = this.genreId,
+            inSubscriptions = false,
         )
     }
 }
@@ -224,6 +225,7 @@ fun BestPodcastsResponse.asDomainModel(): List<Podcast> {
             episodeCount = it.episodeCount,
             latestPubDate = it.latestPubDate,
             inBestForGenre = this.genreId,
+            inSubscriptions = false,
         )
     }
 }

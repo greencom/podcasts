@@ -41,6 +41,9 @@ data class PodcastEntity(
      * is not on the best list for any genre.
      */
     val inBestForGenre: Int,
+
+    /** Indicates whether the user is subscribed to this podcast. */
+    val inSubscriptions: Boolean,
 )
 
 /** Convert a [PodcastEntity] object to a [Podcast]. */
@@ -55,6 +58,7 @@ fun PodcastEntity.asPodcast(): Podcast {
         episodeCount = this.episodeCount,
         latestPubDate = this.latestPubDate,
         inBestForGenre = this.inBestForGenre,
+        inSubscriptions = this.inSubscriptions,
     )
 }
 
@@ -71,6 +75,7 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
             episodeCount = it.episodeCount,
             latestPubDate = it.latestPubDate,
             inBestForGenre = it.inBestForGenre,
+            inSubscriptions = it.inSubscriptions,
         )
     }
 }

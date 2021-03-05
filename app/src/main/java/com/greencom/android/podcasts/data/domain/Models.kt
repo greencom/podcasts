@@ -34,6 +34,9 @@ data class Podcast(
      * is not on the best list for any genre.
      */
     val inBestForGenre: Int,
+
+    /** Indicates whether the user is subscribed to this podcast. */
+    val inSubscriptions: Boolean,
 ) {
     companion object {
         /**
