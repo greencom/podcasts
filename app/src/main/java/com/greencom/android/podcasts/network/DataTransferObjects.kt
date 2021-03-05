@@ -134,6 +134,10 @@ data class SearchPodcastResponse(
         /** Total number of episodes in this podcast. */
         @Json(name = "total_episodes")
         val episodeCount: Int,
+
+        /** The published date of the latest episode of this podcast in milliseconds. */
+        @Json(name = "latest_pub_date_ms")
+        val latestPubDate: Long,
     )
 }
 
@@ -183,6 +187,10 @@ data class BestPodcastsResponse(
         /** Total number of episodes in this podcast. */
         @Json(name = "total_episodes")
         val episodeCount: Int,
+
+        /** The published date of the latest episode of this podcast in milliseconds. */
+        @Json(name = "latest_pub_date_ms")
+        val latestPubDate: Long,
     )
 }
 
@@ -197,6 +205,7 @@ fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
             publisher = it.publisher,
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
+            latestPubDate = it.latestPubDate,
             inBestForGenre = this.genreId,
         )
     }
@@ -213,6 +222,7 @@ fun BestPodcastsResponse.asDomainModel(): List<Podcast> {
             publisher = it.publisher,
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
+            latestPubDate = it.latestPubDate,
             inBestForGenre = this.genreId,
         )
     }

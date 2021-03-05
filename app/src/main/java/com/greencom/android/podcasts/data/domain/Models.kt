@@ -24,6 +24,9 @@ data class Podcast(
     /** Total number of episodes in this podcast. */
     val episodeCount: Int,
 
+    /** The published date of the latest episode of this podcast in milliseconds. */
+    val latestPubDate: Long,
+
     /**
      * The genre ID for which the podcast is featured on the best list.
      *

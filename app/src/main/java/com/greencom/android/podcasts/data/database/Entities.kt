@@ -31,6 +31,9 @@ data class PodcastEntity(
     /** Total number of episodes in this podcast. */
     val episodeCount: Int,
 
+    /** The published date of the latest episode of this podcast in milliseconds. */
+    val latestPubDate: Long,
+
     /**
      * The genre ID for which the podcast is featured on the best list.
      *
@@ -50,6 +53,7 @@ fun PodcastEntity.asPodcast(): Podcast {
         publisher = this.publisher,
         explicitContent = this.explicitContent,
         episodeCount = this.episodeCount,
+        latestPubDate = this.latestPubDate,
         inBestForGenre = this.inBestForGenre,
     )
 }
@@ -65,6 +69,7 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
             publisher = it.publisher,
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
+            latestPubDate = it.latestPubDate,
             inBestForGenre = it.inBestForGenre,
         )
     }
