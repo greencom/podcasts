@@ -1,18 +1,42 @@
 package com.greencom.android.podcasts.data.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 /** Interface to interact with `podcasts` table. */
 @Dao
 interface PodcastDao {
 
-    /** Insert the given [PodcastEntity] list into the `podcasts` table. */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    /**
+     * Insert the given [PodcastEntity] list into the `podcasts` table.
+     * [OnConflictStrategy.IGNORE] on conflict.
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(podcasts: List<PodcastEntity>)
+
+    /**
+     * Used to update `inSubscription` property of the single podcast entry in the
+     * `podcasts` table with the given [PodcastEntityUpdateSubscription] object
+     * without editing other properties.
+     */
+    @Update(entity = PodcastEntity::class)
+    suspend fun update(podcast: PodcastEntityUpdateSubscription)
+
+    /**
+     * Used to update the podcast entry in the `podcasts` table without editing
+     * `inSubscription` property with the given [PodcastEntityUpdateWithoutSubscription]
+     * object.
+     */
+    @Update(entity = PodcastEntity::class)
+    suspend fun update(podcast: PodcastEntityUpdateWithoutSubscription)
+
+    /**
+     * Used to update the podcasts entries in the `podcasts` table with the given list of
+     * [PodcastEntityUpdateWithoutSubscription] objects without editing
+     * `inSubscription` property.
+     */
+    @Update(entity = PodcastEntity::class)
+    suspend fun update(podcasts: List<PodcastEntityUpdateWithoutSubscription>)
 
     /**
      * Get a list of best podcasts for the provided genre ID from the
@@ -36,11 +60,10 @@ interface GenreDao {
     @Query("SELECT count(*) FROM genres")
     suspend fun getSize(): Int
 
-    /** Insert the given [GenreEntity] list into the `genres` table. */
+    /**
+     * Insert the given [GenreEntity] list into the `genres` table.
+     * [OnConflictStrategy.REPLACE] on conflict.
+     */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(genres: List<GenreEntity>)
-
-    /** Clear whole `genres` table. */
-    @Query("DELETE FROM genres")
-    suspend fun deleteAll()
 }
