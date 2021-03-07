@@ -3,7 +3,7 @@
 
     <!-- TabLayout tab text. -->
     <style name="TabLayout.Tab.Text" parent="TextAppearance.AppCompat.Body1">
-        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
     <!-- Button with small text. -->

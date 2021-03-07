@@ -164,7 +164,7 @@
         android:layout_height="48dp"
         android:layout_marginStart="28dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/roboto_medium"
         android:padding="0dp"
         android:text="1.0x"
         android:textAppearance="?attr/textAppearanceBody1"

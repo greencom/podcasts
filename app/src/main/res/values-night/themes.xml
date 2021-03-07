@@ -9,6 +9,8 @@
         <!-- System navigation bar color setup is moved to v27 versions of themes.xml because
         the android:windowLightNavigationBar attribute is available only on API 27 and above. -->
 
+        <item name="android:fontFamily">@font/roboto</item>
+
         <!-- Default colors. -->
         <item name="colorPrimary">@color/blue_dark_900</item>
         <item name="colorOnPrimary">@color/black</item>
