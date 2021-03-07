@@ -26,7 +26,7 @@ object DatabaseModule {
             appContext,
             AppDatabase::class.java,
             "podcasts_database"
-        ).fallbackToDestructiveMigration().build()
+        ).fallbackToDestructiveMigrationOnDowngrade().build()
     }
 
     /** Provides an instance of the [PodcastDao]. */

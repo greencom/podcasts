@@ -80,6 +80,19 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
     }
 }
 
+/**
+ * Convert a [PodcastEntity] object to a [PodcastEntityUpdateSubscription] object
+ * with reversing `inSubscription` value. [PodcastEntityUpdateSubscription] used
+ * as parameter for [PodcastDao.update] to update the `inSubscription` property
+ * of the existing entry.
+ */
+fun PodcastEntity.updateSubscription(): PodcastEntityUpdateSubscription {
+    return PodcastEntityUpdateSubscription(
+        id = this.id,
+        inSubscriptions = !this.inSubscriptions
+    )
+}
+
 
 
 /** Model class that represents a episode entity in the database. */

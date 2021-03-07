@@ -38,6 +38,10 @@ interface PodcastDao {
     @Update(entity = PodcastEntity::class)
     suspend fun update(podcasts: List<PodcastEntityUpdateWithoutSubscription>)
 
+    /** Return a [PodcastEntity] from the `podcasts` table for a given ID. */
+    @Query("SELECT * FROM podcasts WHERE id = :id")
+    suspend fun getPodcast(id: String): PodcastEntity?
+
     /**
      * Get a list of best podcasts for the provided genre ID from the
      * `podcasts` table.
@@ -66,4 +70,8 @@ interface GenreDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(genres: List<GenreEntity>)
+
+    /** Return a [GenreEntity] from the `genres` table for a given ID. */
+    @Query("SELECT * FROM genres WHERE id = :id")
+    suspend fun getGenre(id: Int): GenreEntity?
 }
