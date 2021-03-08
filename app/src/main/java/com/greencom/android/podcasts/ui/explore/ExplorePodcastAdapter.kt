@@ -1,14 +1,17 @@
 package com.greencom.android.podcasts.ui.explore
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 
@@ -32,21 +35,41 @@ class ExplorePodcastAdapter :
 class ExplorePodcastViewHolder private constructor(private val binding: PodcastItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
+    private val context: Context = binding.root.context
+
     /** TODO: Documentation */
     fun bind(item: Podcast) {
         Glide.with(binding.cover.context)
             .load(item.image)
             .into(binding.cover)
+
         binding.title.text = item.title
         binding.publisher.text = item.publisher
         binding.description.text =
             HtmlCompat.fromHtml(item.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+        binding.explicitContent.isVisible = item.explicitContent
+
         if (item.explicitContent) {
             binding.explicitContent.visibility = View.VISIBLE
         } else {
             binding.explicitContent.visibility = View.INVISIBLE
         }
-        binding.explicitContent.isVisible = item.explicitContent
+
+        /** TODO: Documentation */
+        binding.subscribe.setOnClickListener {
+
+        }
+
+        /** TODO: Documentation */
+        binding.subscribe.addOnCheckedChangeListener { button, isChecked ->
+            if (isChecked) {
+                button.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
+                button.text = context.getString(R.string.subscribed)
+            } else {
+                button.icon = ContextCompat.getDrawable(context, R.drawable.ic_add_24)
+                button.text = context.getString(R.string.subscribe)
+            }
+        }
     }
 
     companion object {

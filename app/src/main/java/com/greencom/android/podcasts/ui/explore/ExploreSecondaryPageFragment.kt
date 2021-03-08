@@ -17,7 +17,6 @@ import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBin
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -44,7 +43,18 @@ class ExploreSecondaryPageFragment : Fragment() {
     private val viewModel: ExploreViewModel by activityViewModels()
 
     /** RecyclerView adapter. */
-    private val adapter = ExplorePodcastAdapter()
+    private val adapter by lazy {
+        ExplorePodcastAdapter()
+    }
+
+    init {
+        /** TODO: Documentation */
+        lifecycleScope.launchWhenResumed {
+            viewModel.getBestPodcasts(genreId).collectLatest {
+                adapter.submitData(it)
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,17 +84,10 @@ class ExploreSecondaryPageFragment : Fragment() {
         customizeSwipeToRefresh()
 
         /** TODO: Documentation */
-        lifecycleScope.launch {
-            viewModel.getBestPodcasts(genreId).collectLatest {
-                adapter.submitData(it)
-            }
-        }
-
-        /** TODO: Documentation */
         adapter.addLoadStateListener { loadState ->
-            binding.podcastList.isVisible = loadState.refresh is LoadState.NotLoading
-            binding.refresh.isRefreshing = loadState.refresh is LoadState.Loading
-            binding.error.root.isVisible = loadState.refresh is LoadState.Error
+            binding.podcastList.isVisible = loadState.source.refresh is LoadState.NotLoading
+            binding.refresh.isRefreshing = loadState.source.refresh is LoadState.Loading
+            binding.error.root.isVisible = loadState.source.refresh is LoadState.Error
         }
 
         /** TODO: Documentation */

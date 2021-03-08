@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    // In-memory cached PagingData.
+    // In-memory cached best podcasts PagingData.
     private var newsCache: Flow<PagingData<Podcast>>? = null
     private var societyCache: Flow<PagingData<Podcast>>? = null
     private var educationCache: Flow<PagingData<Podcast>>? = null
