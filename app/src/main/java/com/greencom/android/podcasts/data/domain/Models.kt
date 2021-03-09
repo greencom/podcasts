@@ -1,8 +1,5 @@
 package com.greencom.android.podcasts.data.domain
 
-import com.greencom.android.podcasts.data.database.PodcastDao
-import com.greencom.android.podcasts.data.database.PodcastEntityUpdateSubscription
-
 /** Model class that represents a domain podcast object. */
 data class Podcast(
 
@@ -50,21 +47,6 @@ data class Podcast(
     }
 }
 
-/**
- * Convert a [Podcast] object to a [PodcastEntityUpdateSubscription] object
- * with reversing `inSubscription` value. [PodcastEntityUpdateSubscription] used
- * as parameter for [PodcastDao.update] to update the `inSubscription` property
- * of the existing entry.
- */
-fun Podcast.updateSubscription(): PodcastEntityUpdateSubscription {
-    return PodcastEntityUpdateSubscription(
-        id = this.id,
-        inSubscriptions = !this.inSubscriptions
-    )
-}
-
-
-
 /** Model class that represents a domain episode object. */
 data class Episode(
 
@@ -95,8 +77,6 @@ data class Episode(
     /** Published date in milliseconds. */
     val date: Long,
 )
-
-
 
 /** Model class that represents a domain genre object. */
 data class Genre(

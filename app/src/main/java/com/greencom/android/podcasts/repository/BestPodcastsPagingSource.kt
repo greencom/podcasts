@@ -2,9 +2,9 @@ package com.greencom.android.podcasts.repository
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.greencom.android.podcasts.data.asPodcasts
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
-import com.greencom.android.podcasts.network.asPodcasts
 import okio.IOException
 import retrofit2.HttpException
 

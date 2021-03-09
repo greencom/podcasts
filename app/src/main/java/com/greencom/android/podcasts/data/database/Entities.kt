@@ -46,55 +46,6 @@ data class PodcastEntity(
     val inSubscriptions: Boolean,
 )
 
-/** Convert a [PodcastEntity] object to a [Podcast]. */
-fun PodcastEntity.asPodcast(): Podcast {
-    return Podcast(
-        id = this.id,
-        title = this.title,
-        description = this.description,
-        image = this.image,
-        publisher = this.publisher,
-        explicitContent = this.explicitContent,
-        episodeCount = this.episodeCount,
-        latestPubDate = this.latestPubDate,
-        inBestForGenre = this.inBestForGenre,
-        inSubscriptions = this.inSubscriptions,
-    )
-}
-
-/** Convert a [PodcastEntity] list to a list of [Podcast]s. */
-fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
-    return map {
-        Podcast(
-            id = it.id,
-            title = it.title,
-            description = it.description,
-            image = it.image,
-            publisher = it.publisher,
-            explicitContent = it.explicitContent,
-            episodeCount = it.episodeCount,
-            latestPubDate = it.latestPubDate,
-            inBestForGenre = it.inBestForGenre,
-            inSubscriptions = it.inSubscriptions,
-        )
-    }
-}
-
-/**
- * Convert a [PodcastEntity] object to a [PodcastEntityUpdateSubscription] object
- * with reversing `inSubscription` value. [PodcastEntityUpdateSubscription] used
- * as parameter for [PodcastDao.update] to update the `inSubscription` property
- * of the existing entry.
- */
-fun PodcastEntity.updateSubscription(): PodcastEntityUpdateSubscription {
-    return PodcastEntityUpdateSubscription(
-        id = this.id,
-        inSubscriptions = !this.inSubscriptions
-    )
-}
-
-
-
 /** Model class that represents a episode entity in the database. */
 @Entity(tableName = "episodes")
 data class EpisodeEntity(
@@ -149,23 +100,3 @@ data class GenreEntity(
      */
     val parentId: Int,
 )
-
-/** Convert a [GenreEntity] object to a [Genre]. */
-fun GenreEntity.asGenre(): Genre {
-    return Genre(
-        id = this.id,
-        name = this.name,
-        parentId = this.parentId
-    )
-}
-
-/** Convert a [GenreEntity] list to a list of [Genre]s. */
-fun List<GenreEntity>.asGenres(): List<Genre> {
-    return map {
-        Genre(
-            id = it.id,
-            name = it.name,
-            parentId = it.parentId,
-        )
-    }
-}

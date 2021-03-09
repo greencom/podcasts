@@ -3,12 +3,12 @@ package com.greencom.android.podcasts.repository
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.greencom.android.podcasts.data.asGenreEntities
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
-import com.greencom.android.podcasts.network.asGenreEntities
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,9 +1,5 @@
 package com.greencom.android.podcasts.network
 
-import com.greencom.android.podcasts.data.database.GenreEntity
-import com.greencom.android.podcasts.data.database.PodcastEntity
-import com.greencom.android.podcasts.data.domain.Genre
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.squareup.moshi.Json
 
 /** Model class for `ListenApiService.searchEpisode` response. */
@@ -83,8 +79,6 @@ data class SearchEpisodeResponse(
     }
 }
 
-
-
 /** Model class for `ListenApiService.searchPodcast` response. */
 data class SearchPodcastResponse(
 
@@ -141,8 +135,6 @@ data class SearchPodcastResponse(
     )
 }
 
-
-
 /** Model class for `ListenApiService.getBestPodcasts()` response. */
 data class BestPodcastsResponse(
 
@@ -194,44 +186,6 @@ data class BestPodcastsResponse(
     )
 }
 
-/** Convert [BestPodcastsResponse] object to a [PodcastEntity] list. */
-fun BestPodcastsResponse.asPodcastEntities(): List<PodcastEntity> {
-    return podcasts.map {
-        PodcastEntity(
-            id = it.id,
-            title = it.title,
-            description = it.description,
-            image = it.image,
-            publisher = it.publisher,
-            explicitContent = it.explicitContent,
-            episodeCount = it.episodeCount,
-            latestPubDate = it.latestPubDate,
-            inBestForGenre = this.genreId,
-            inSubscriptions = false,
-        )
-    }
-}
-
-/** Convert [BestPodcastsResponse] object to a [Podcast] list. */
-fun BestPodcastsResponse.asPodcasts(): List<Podcast> {
-    return podcasts.map {
-        Podcast(
-            id = it.id,
-            title = it.title,
-            description = it.description,
-            image = it.image,
-            publisher = it.publisher,
-            explicitContent = it.explicitContent,
-            episodeCount = it.episodeCount,
-            latestPubDate = it.latestPubDate,
-            inBestForGenre = this.genreId,
-            inSubscriptions = false,
-        )
-    }
-}
-
-
-
 /** Model class for `ListenApiService.getGenres()` response. */
 data class GenresResponse(val genres: List<GenresResponseItem>) {
 
@@ -248,36 +202,4 @@ data class GenresResponse(val genres: List<GenresResponseItem>) {
         @Json(name = "parent_id")
         val parentId: Int?,
     )
-}
-
-/**
- * Convert [GenresResponse] object to a [GenreEntity] list.
- *
- * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
- * value to the [GenreEntity.parentId] property.
- */
-fun GenresResponse.asGenreEntities(): List<GenreEntity> {
-    return genres.map {
-        GenreEntity(
-            id = it.id,
-            name = it.name,
-            parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
-        )
-    }
-}
-
-/**
- * Convert [GenresResponse] object to a [Genre] list.
- *
- * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
- * value to the [Genre.parentId] property.
- */
-fun GenresResponse.asGenres(): List<Genre> {
-    return genres.map {
-        Genre(
-            id = it.id,
-            name = it.name,
-            parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
-        )
-    }
 }
