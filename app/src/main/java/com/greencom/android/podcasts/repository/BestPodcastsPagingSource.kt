@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
-import com.greencom.android.podcasts.network.asDomainModel
+import com.greencom.android.podcasts.network.asPodcasts
 import okio.IOException
 import retrofit2.HttpException
 
@@ -19,7 +19,7 @@ class BestPodcastsPagingSource(
             val page = params.key ?: 1
             val response = listenApi.getBestPodcasts(genreId, page)
             LoadResult.Page(
-                data = response.asDomainModel(),
+                data = response.asPodcasts(),
                 prevKey = null,
                 nextKey = null
             )

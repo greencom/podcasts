@@ -8,7 +8,7 @@ import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
-import com.greencom.android.podcasts.network.asDatabaseModel
+import com.greencom.android.podcasts.network.asGenreEntities
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +53,7 @@ class Repository @Inject constructor(
         if (genreDao.getSize() == 0) {
             _genresState.value = State.Loading
             try {
-                val genres = listenApi.getGenres().asDatabaseModel()
+                val genres = listenApi.getGenres().asGenreEntities()
                 genreDao.insert(genres)
                 _genresState.value = State.Success(Unit)
             } catch (e: IOException) {

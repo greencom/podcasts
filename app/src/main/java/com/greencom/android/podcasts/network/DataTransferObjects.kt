@@ -195,7 +195,7 @@ data class BestPodcastsResponse(
 }
 
 /** Convert [BestPodcastsResponse] object to a [PodcastEntity] list. */
-fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
+fun BestPodcastsResponse.asPodcastEntities(): List<PodcastEntity> {
     return podcasts.map {
         PodcastEntity(
             id = it.id,
@@ -213,7 +213,7 @@ fun BestPodcastsResponse.asDatabaseModel(): List<PodcastEntity> {
 }
 
 /** Convert [BestPodcastsResponse] object to a [Podcast] list. */
-fun BestPodcastsResponse.asDomainModel(): List<Podcast> {
+fun BestPodcastsResponse.asPodcasts(): List<Podcast> {
     return podcasts.map {
         Podcast(
             id = it.id,
@@ -256,7 +256,7 @@ data class GenresResponse(val genres: List<GenresResponseItem>) {
  * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
  * value to the [GenreEntity.parentId] property.
  */
-fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
+fun GenresResponse.asGenreEntities(): List<GenreEntity> {
     return genres.map {
         GenreEntity(
             id = it.id,
@@ -272,7 +272,7 @@ fun GenresResponse.asDatabaseModel(): List<GenreEntity> {
  * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
  * value to the [Genre.parentId] property.
  */
-fun GenresResponse.asDomainModel(): List<Genre> {
+fun GenresResponse.asGenres(): List<Genre> {
     return genres.map {
         Genre(
             id = it.id,
