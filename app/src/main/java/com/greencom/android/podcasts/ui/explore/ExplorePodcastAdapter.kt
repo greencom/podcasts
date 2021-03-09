@@ -2,7 +2,6 @@ package com.greencom.android.podcasts.ui.explore
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -42,25 +41,28 @@ class ExplorePodcastViewHolder private constructor(private val binding: PodcastI
         Glide.with(binding.cover.context)
             .load(item.image)
             .into(binding.cover)
-
         binding.title.text = item.title
         binding.publisher.text = item.publisher
         binding.description.text =
             HtmlCompat.fromHtml(item.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+        if (item.inSubscriptions) {
+            binding.subscribe.isChecked = true
+            binding.subscribe.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
+            binding.subscribe.text = context.getString(R.string.subscribed)
+        }
         binding.explicitContent.isVisible = item.explicitContent
 
-        if (item.explicitContent) {
-            binding.explicitContent.visibility = View.VISIBLE
-        } else {
-            binding.explicitContent.visibility = View.INVISIBLE
-        }
+        setListeners()
+    }
 
-        /** TODO: Documentation */
+    /** TODO: Documentation */
+    private fun setListeners() {
+        //
         binding.subscribe.setOnClickListener {
 
         }
 
-        /** TODO: Documentation */
+        //
         binding.subscribe.addOnCheckedChangeListener { button, isChecked ->
             if (isChecked) {
                 button.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
@@ -82,9 +84,7 @@ class ExplorePodcastViewHolder private constructor(private val binding: PodcastI
     }
 }
 
-/** TODO: Documentation */
 class ExplorePodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
-
     override fun areItemsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
         return oldItem.id == newItem.id
     }
