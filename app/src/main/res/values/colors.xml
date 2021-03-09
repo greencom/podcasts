@@ -19,7 +19,6 @@
     <color name="grey_light_300">#80868B</color>
     <color name="grey_light_100">#DADCE0</color>
     <color name="player_collapsed_background_light">#F8F9FA</color>
-    <color name="outlined_button_ripple_light">#D8D9D9</color>
 
     <!-- Dark colors. -->
     <color name="blue_dark_900">#8AB4F8</color>
@@ -32,6 +31,5 @@
     <color name="grey_dark_100">#424548</color>
     <color name="bottom_nav_view_background_dark">#222223</color>
     <color name="player_background_dark">#303134</color>
-    <color name="outlined_button_ripple_dark">#46464A</color>
 
 </resources>

@@ -34,7 +34,6 @@
         <item name="colorPlayerBackground">@color/surface_light</item>
         <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
         <item name="colorPlayerPlay">@color/grey_light_700</item>
-        <item name="colorOutlinedButtonRipple">@color/outlined_button_ripple_light</item>
 
     </style>
 </resources>

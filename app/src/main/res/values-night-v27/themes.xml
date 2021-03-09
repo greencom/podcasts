@@ -36,7 +36,6 @@
         <item name="colorPlayerBackground">@color/player_background_dark</item>
         <item name="colorPlayerCollapsedBackground">@color/player_background_dark</item>
         <item name="colorPlayerPlay">@color/blue_dark_900</item>
-        <item name="colorOutlinedButtonRipple">@color/outlined_button_ripple_dark</item>
 
     </style>
 </resources>

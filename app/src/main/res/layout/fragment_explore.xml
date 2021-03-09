@@ -44,7 +44,7 @@
                 app:icon="@drawable/ic_search_24"
                 app:iconPadding="12dp"
                 app:iconTint="?attr/colorOnSurfaceTertiary"
-                app:rippleColor="?attr/colorOutlinedButtonRipple"
+                app:rippleColor="?attr/colorOnSurfaceUtil"
                 app:strokeColor="?attr/colorOnSurfaceUtil" />
 
         </FrameLayout>
