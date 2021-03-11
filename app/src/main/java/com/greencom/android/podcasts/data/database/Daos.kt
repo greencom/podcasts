@@ -1,7 +1,6 @@
 package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 /** Interface to interact with `podcasts` table. */
 @Dao
@@ -47,7 +46,7 @@ interface PodcastDao {
      * `podcasts` table.
      */
     @Query("SELECT * FROM podcasts WHERE inBestForGenre = :genreId")
-    fun getBestPodcasts(genreId: Int): Flow<List<PodcastEntity>>
+    suspend fun getBestPodcasts(genreId: Int): List<PodcastEntity>
 }
 
 /** Interface to interact with `episodes` table. */

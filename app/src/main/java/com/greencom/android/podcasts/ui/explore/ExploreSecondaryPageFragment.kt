@@ -10,11 +10,12 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
+import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -28,6 +29,7 @@ private const val GENRE_ID = "genre_id"
  * Use [ExploreSecondaryPageFragment.newInstance] to create a new instance
  * of the fragment using the provided parameters.
  */
+@Suppress("UNCHECKED_CAST")
 @AndroidEntryPoint
 class ExploreSecondaryPageFragment : Fragment() {
 
@@ -45,15 +47,6 @@ class ExploreSecondaryPageFragment : Fragment() {
     /** RecyclerView adapter. */
     private val adapter by lazy {
         ExplorePodcastAdapter()
-    }
-
-    init {
-        /** TODO: Documentation */
-        lifecycleScope.launchWhenResumed {
-            viewModel.getBestPodcasts(genreId).collectLatest {
-                adapter.submitData(it)
-            }
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,20 +77,15 @@ class ExploreSecondaryPageFragment : Fragment() {
         customizeSwipeToRefresh()
 
         /** TODO: Documentation */
-        adapter.addLoadStateListener { loadState ->
-            binding.podcastList.isVisible = loadState.source.refresh is LoadState.NotLoading
-            binding.refresh.isRefreshing = loadState.source.refresh is LoadState.Loading
-            binding.error.root.isVisible = loadState.source.refresh is LoadState.Error
-        }
-
-        /** TODO: Documentation */
-        binding.refresh.setOnRefreshListener {
-            adapter.refresh()
-        }
-
-        /** TODO: Documentation */
-        binding.error.tryAgain.setOnClickListener {
-            adapter.refresh()
+        lifecycleScope.launchWhenResumed {
+            viewModel.getBestPodcasts(genreId).collectLatest { state ->
+                binding.podcastList.isVisible = state is State.Success<*>
+                binding.refresh.isRefreshing = state is State.Loading
+                binding.error.root.isVisible = state is State.Error
+                if (state is State.Success<*>) {
+                    adapter.submitList(state.data as List<Podcast>)
+                }
+            }
         }
     }
 
@@ -133,7 +121,6 @@ class ExploreSecondaryPageFragment : Fragment() {
             val theme = activity?.theme
             theme?.resolveAttribute(R.attr.colorSwipeToRefreshBackground, color, true)
             theme?.resolveAttribute(R.attr.colorPrimary, backgroundColor, true)
-
             setProgressBackgroundColorSchemeColor(color.data)
             setColorSchemeColors(backgroundColor.data)
         }

@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
-import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.greencom.android.podcasts.R
@@ -16,17 +16,14 @@ import com.greencom.android.podcasts.databinding.PodcastItemBinding
 
 /** TODO: Documentation */
 class ExplorePodcastAdapter :
-    PagingDataAdapter<Podcast, ExplorePodcastViewHolder>(ExplorePodcastDiffCallback()) {
-
+    ListAdapter<Podcast, ExplorePodcastViewHolder>(ExplorePodcastDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
         return ExplorePodcastViewHolder.create(parent)
     }
 
     override fun onBindViewHolder(holder: ExplorePodcastViewHolder, position: Int) {
         val item = getItem(position)
-        if (item != null) {
-            holder.bind(item)
-        }
+        holder.bind(item)
     }
 }
 
@@ -57,12 +54,12 @@ class ExplorePodcastViewHolder private constructor(private val binding: PodcastI
 
     /** TODO: Documentation */
     private fun setListeners() {
-        //
+        // `Subscribe` button onClickListener.
         binding.subscribe.setOnClickListener {
 
         }
 
-        //
+        // `Subscribe` button onCheckedChangeListener.
         binding.subscribe.addOnCheckedChangeListener { button, isChecked ->
             if (isChecked) {
                 button.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)

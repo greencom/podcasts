@@ -27,8 +27,8 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Fetch genres.
-        viewModel.fetchGenres()
+        // Update genres.
+        viewModel.updateGenres()
     }
 
     override fun onCreateView(

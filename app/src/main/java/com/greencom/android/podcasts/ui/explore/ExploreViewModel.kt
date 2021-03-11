@@ -2,12 +2,13 @@ package com.greencom.android.podcasts.ui.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
+import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -17,21 +18,51 @@ import javax.inject.Inject
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    // In-memory cached best podcasts PagingData.
-    private var newsCache: Flow<PagingData<Podcast>>? = null
-    private var societyCache: Flow<PagingData<Podcast>>? = null
-    private var educationCache: Flow<PagingData<Podcast>>? = null
-    private var scienceCache: Flow<PagingData<Podcast>>? = null
-    private var technologyCache: Flow<PagingData<Podcast>>? = null
-    private var businessCache: Flow<PagingData<Podcast>>? = null
-    private var historyCache: Flow<PagingData<Podcast>>? = null
-    private var artsCache: Flow<PagingData<Podcast>>? = null
-    private var sportsCache: Flow<PagingData<Podcast>>? = null
-    private var healthCache: Flow<PagingData<Podcast>>? = null
+    // In-memory cached best podcasts by genre.
+    private val newsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val societyCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val educationCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val scienceCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val technologyCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val businessCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val historyCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val artsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val sportsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
+    private val healthCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
 
-    /** TODO: Documentation */
-    fun getBestPodcasts(genreId: Int): Flow<PagingData<Podcast>> {
-        val lastResult = when (genreId) {
+    /** Get a list of the best podcasts for a given genre ID. */
+    fun getBestPodcasts(genreId: Int): StateFlow<State> {
+        // Get from in-memory cache.
+        val lastResult = getBestPodcastsFromCache(genreId).asStateFlow()
+        if (lastResult.value is State.Success<*>) return lastResult
+
+        // Get from repository (database or network).
+        viewModelScope.launch {
+            cacheBestPodcasts(genreId, State.Loading)
+            repository.getBestPodcasts(genreId, getBestPodcastsFromCache(genreId))
+        }
+        return getBestPodcastsFromCache(genreId).asStateFlow()
+    }
+
+    /** Cache the best podcasts based on the genre ID with a given [State]. */
+    private fun cacheBestPodcasts(genreId: Int, state: State) {
+        when (genreId) {
+            99 -> newsCache.value = state
+            122 -> societyCache.value = state
+            111 -> educationCache.value = state
+            107 -> scienceCache.value = state
+            127 -> technologyCache.value = state
+            93 -> businessCache.value = state
+            125 -> historyCache.value = state
+            100 -> artsCache.value = state
+            77 -> sportsCache.value = state
+            88 -> healthCache.value = state
+        }
+    }
+
+    /** Get the best podcasts from the in-memory cache for a given genre ID. */
+    private fun getBestPodcastsFromCache(genreId: Int): MutableStateFlow<State> {
+        return when (genreId) {
             99 -> newsCache
             122 -> societyCache
             111 -> educationCache
@@ -43,25 +74,6 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             77 -> sportsCache
             88 -> healthCache
             else -> null
-        }
-        if (lastResult != null) {
-            return lastResult
-        }
-
-        val result: Flow<PagingData<Podcast>> = repository.getBestPodcasts(genreId)
-            .cachedIn(viewModelScope)
-        when (genreId) {
-            99 -> newsCache = result
-            122 -> societyCache = result
-            111 -> educationCache = result
-            107 -> scienceCache = result
-            127 -> technologyCache = result
-            93 -> businessCache = result
-            125 -> historyCache = result
-            100 -> artsCache = result
-            77 -> sportsCache = result
-            88 -> healthCache = result
-        }
-        return result
+        } ?: MutableStateFlow(State.Error(Exception()))
     }
 }

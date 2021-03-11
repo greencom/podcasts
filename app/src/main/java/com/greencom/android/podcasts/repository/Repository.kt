@@ -1,16 +1,13 @@
 package com.greencom.android.podcasts.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import com.greencom.android.podcasts.data.asGenreEntities
+import com.greencom.android.podcasts.data.asPodcastEntities
+import com.greencom.android.podcasts.data.asPodcasts
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.utils.State
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import okio.IOException
@@ -30,26 +27,37 @@ class Repository @Inject constructor(
     private val genreDao: GenreDao,
 ) {
 
-    private val _genresState = MutableStateFlow<State>(State.NotLoading)
+    private val _genresState = MutableStateFlow<State>(State.Init)
     /** Represents the state of loading genres using [State] class. */
     val genresState: StateFlow<State> = _genresState
 
-    /** TODO: Documentation */
-    fun getBestPodcasts(genreId: Int): Flow<PagingData<Podcast>> {
-        return Pager(
-            PagingConfig(
-                pageSize = 20,
-                enablePlaceholders = false
-            ),
-            pagingSourceFactory = { BestPodcastsPagingSource(genreId, listenApi) }
-        ).flow
+    /**
+     * Get a list of the best podcasts for a given genre. If the app database contains
+     * the appropriate podcasts, return them. Otherwise, fetch the best podcasts from
+     * the ListenAPI and insert them into the database.
+     */
+    suspend fun getBestPodcasts(genreId: Int, state: MutableStateFlow<State>) {
+        val podcasts = podcastDao.getBestPodcasts(genreId)
+        if (podcasts.isNotEmpty()) {
+            state.value = State.Success(podcasts.asPodcasts())
+        } else {
+            try {
+                val response = listenApi.getBestPodcasts(genreId)
+                podcastDao.insert(response.asPodcastEntities())
+                state.value = State.Success(response.asPodcasts())
+            } catch (e: IOException) {
+                state.value = State.Error(e)
+            } catch (e: HttpException) {
+                state.value = State.Error(e)
+            }
+        }
     }
 
     /**
      * Fetch genre list from ListenAPI and insert it into the `genres` table,
      * if the table is empty. Use [genresState] to get the state of loading process.
      */
-    suspend fun fetchGenres() {
+    suspend fun updateGenres() {
         if (genreDao.getSize() == 0) {
             _genresState.value = State.Loading
             try {
