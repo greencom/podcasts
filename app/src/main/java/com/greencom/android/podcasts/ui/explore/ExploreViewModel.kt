@@ -32,13 +32,14 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
 
     /** Get a list of the best podcasts for a given genre ID. */
     fun getBestPodcasts(genreId: Int): StateFlow<State> {
+        cacheBestPodcasts(genreId, State.Loading)
+
         // Get from in-memory cache.
         val lastResult = getBestPodcastsFromCache(genreId).asStateFlow()
         if (lastResult.value is State.Success<*>) return lastResult
 
         // Get from repository (database or network).
         viewModelScope.launch {
-            cacheBestPodcasts(genreId, State.Loading)
             repository.getBestPodcasts(genreId, getBestPodcastsFromCache(genreId))
         }
         return getBestPodcastsFromCache(genreId).asStateFlow()
@@ -74,6 +75,6 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             77 -> sportsCache
             88 -> healthCache
             else -> null
-        } ?: MutableStateFlow(State.Error(Exception()))
+        } ?: MutableStateFlow(State.Error(IllegalArgumentException("Wrong genre ID")))
     }
 }

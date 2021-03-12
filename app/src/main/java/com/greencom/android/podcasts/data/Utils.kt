@@ -1,26 +1,11 @@
 package com.greencom.android.podcasts.data
 
 import com.greencom.android.podcasts.data.database.GenreEntity
-import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.database.PodcastEntity
-import com.greencom.android.podcasts.data.database.PodcastEntityUpdateSubscription
 import com.greencom.android.podcasts.data.domain.Genre
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.BestPodcastsResponse
 import com.greencom.android.podcasts.network.GenresResponse
-
-/**
- * Convert a [Podcast] object to a [PodcastEntityUpdateSubscription] object
- * with reversing `inSubscription` value. [PodcastEntityUpdateSubscription] used
- * as parameter for [PodcastDao.update] to update the `inSubscription` property
- * of the existing entry.
- */
-fun Podcast.updateSubscription(): PodcastEntityUpdateSubscription {
-    return PodcastEntityUpdateSubscription(
-        id = this.id,
-        inSubscriptions = !this.inSubscriptions
-    )
-}
 
 /** Convert a [PodcastEntity] object to a [Podcast]. */
 fun PodcastEntity.asPodcast(): Podcast {
@@ -54,19 +39,6 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
             inSubscriptions = it.inSubscriptions,
         )
     }
-}
-
-/**
- * Convert a [PodcastEntity] object to a [PodcastEntityUpdateSubscription] object
- * with reversing `inSubscription` value. [PodcastEntityUpdateSubscription] used
- * as parameter for [PodcastDao.update] to update the `inSubscription` property
- * of the existing entry.
- */
-fun PodcastEntity.updateSubscription(): PodcastEntityUpdateSubscription {
-    return PodcastEntityUpdateSubscription(
-        id = this.id,
-        inSubscriptions = !this.inSubscriptions
-    )
 }
 
 /** Convert [BestPodcastsResponse] object to a [PodcastEntity] list. */

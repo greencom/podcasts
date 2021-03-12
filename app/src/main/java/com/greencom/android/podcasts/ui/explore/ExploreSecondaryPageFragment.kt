@@ -79,13 +79,19 @@ class ExploreSecondaryPageFragment : Fragment() {
         /** TODO: Documentation */
         lifecycleScope.launchWhenResumed {
             viewModel.getBestPodcasts(genreId).collectLatest { state ->
-                binding.podcastList.isVisible = state is State.Success<*>
-                binding.refresh.isRefreshing = state is State.Loading
+                binding.swipeToRefresh.isVisible = state is State.Success<*>
+                binding.loading.isVisible = state is State.Loading
                 binding.error.root.isVisible = state is State.Error
+
                 if (state is State.Success<*>) {
                     adapter.submitList(state.data as List<Podcast>)
                 }
             }
+        }
+
+        /** TODO: Documentation */
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.getBestPodcasts(genreId)
         }
     }
 
@@ -115,7 +121,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     /** Swipe-to-refresh theming. */
     private fun customizeSwipeToRefresh() {
-        binding.refresh.apply {
+        binding.swipeToRefresh.apply {
             val color = TypedValue()
             val backgroundColor = TypedValue()
             val theme = activity?.theme
