@@ -33,9 +33,6 @@ private const val GENRE_ID = "genre_id"
 @AndroidEntryPoint
 class ExploreSecondaryPageFragment : Fragment() {
 
-    /** The ID of the genre associated with this fragment. */
-    private var genreId = 0
-
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExploreSecondaryPageBinding? = null
     /** Non-null View binding. */
@@ -43,6 +40,9 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     /** ExploreViewModel. */
     private val viewModel: ExploreViewModel by activityViewModels()
+
+    /** The ID of the genre associated with this fragment. */
+    private var genreId = 0
 
     /** RecyclerView adapter. */
     private val adapter by lazy {
@@ -70,10 +70,7 @@ class ExploreSecondaryPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // RecyclerView setup.
         setupRecyclerView()
-
-        // Swipe-to-refresh theming.
         customizeSwipeToRefresh()
 
         /** TODO: Documentation */
@@ -89,7 +86,7 @@ class ExploreSecondaryPageFragment : Fragment() {
             }
         }
 
-        /** TODO: Documentation */
+        // Update best podcasts from error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.getBestPodcasts(genreId)
         }

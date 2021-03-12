@@ -79,8 +79,6 @@ data class EpisodeEntity(
     val date: Long,
 )
 
-
-
 /** Model class that represents a genre entity in the database. */
 @Entity(tableName = "genres")
 data class GenreEntity(

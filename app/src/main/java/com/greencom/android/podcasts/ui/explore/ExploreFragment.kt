@@ -29,7 +29,6 @@ class ExploreFragment : Fragment() {
         // View binding setup.
         _binding = FragmentExploreBinding.inflate(inflater, container, false)
 
-        // TabLayout and ViewPager2 setup.
         setupTabLayout()
 
         return binding.root

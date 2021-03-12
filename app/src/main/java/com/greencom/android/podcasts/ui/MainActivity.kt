@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Navigation component setup.
         setupNavigation()
 
         // Player bottom sheet behavior setup.
@@ -54,18 +53,13 @@ class MainActivity : AppCompatActivity() {
             setupBottomSheetBehavior(resources.getDimension(R.dimen.bottom_nav_bar_height))
         }
 
-        /** Player content setup. */
         setupPlayer()
     }
 
     /** Make player closable on back pressed. */
     @SuppressLint("SwitchIntDef")
     override fun onBackPressed() {
-        if (
-                playerBehavior.state == BottomSheetBehavior.STATE_DRAGGING ||
-                playerBehavior.state == BottomSheetBehavior.STATE_SETTLING ||
-                playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED
-        ) {
+        if (playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
             playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             super.onBackPressed()
@@ -75,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     /** Make player closable on outside click. */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.action == MotionEvent.ACTION_DOWN &&
-                playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
 
             // Create a new empty Rect with [0,0,0,0] values for [left,top,right,bottom].
             val outRect = Rect()
@@ -178,7 +172,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Player content setup. */
+    /**
+     * Animate the player content and background shadows when the player
+     * [BottomSheetBehavior] slide offset change.
+     */
+    private fun controlPlayerOnBottomSheetSlide(
+            slideOffset: Float,
+            bottomNavBarHeight: Float
+    ) {
+        // Animate alpha of the player collapsed content.
+        binding.player.collapsed.root.alpha = 1f - slideOffset * 10
+        binding.player.collapsed.progressBar.alpha = 1f - slideOffset * 100
+
+        // Animate alpha of the player expanded content.
+        binding.player.expanded.root.alpha = (slideOffset * 1.5f) - 0.15f
+
+        // Animate the displacement of the bottomNavBar along the y-axis.
+        binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
+
+        // Change elevations of the player and bottomNavBar to overlap the background.
+        if (slideOffset >= 0.01f) {
+            binding.player.root.translationZ = 500f
+            binding.bottomNavBar.translationZ = 500f
+        } else {
+            binding.player.root.translationZ = 0f
+            binding.bottomNavBar.translationZ = 0f
+        }
+
+        // Animate player shadow.
+        binding.playerShadowExternal.alpha = 1f - slideOffset * 3
+        binding.playerShadowInternal.alpha = 1f - slideOffset * 3
+
+        // Animate alpha of the background behind player.
+        binding.background.alpha = slideOffset
+    }
+
+    /** Set up a content of the player bottom sheet. */
     private fun setupPlayer() {
 
         // Select text views to make them auto scrollable, if needed.
@@ -191,48 +220,10 @@ class MainActivity : AppCompatActivity() {
         setExpandedContentListeners()
     }
 
-    /**
-     * Animate the player content and background shadows when the player
-     * [BottomSheetBehavior] slide offset change.
-     */
-    private fun controlPlayerOnBottomSheetSlide(
-            slideOffset: Float,
-            bottomNavBarHeight: Float
-    ) {
-        // Animate alpha of the player collapsed content. VERIFIED.
-        binding.player.collapsed.root.alpha = 1f - slideOffset * 10
-        binding.player.collapsed.progressBar.alpha = 1f - slideOffset * 100
-
-        // Animate alpha of the player expanded content. VERIFIED.
-        binding.player.expanded.root.alpha = (slideOffset * 1.5f) - 0.15f
-
-        // Animate the displacement of the bottomNavBar along the y-axis. VERIFIED.
-        binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
-
-        // Change elevations of the player and bottomNavBar to overlap the background. VERIFIED.
-        if (slideOffset >= 0.01f) {
-            binding.player.root.translationZ = 500f
-            binding.bottomNavBar.translationZ = 500f
-        } else {
-            binding.player.root.translationZ = 0f
-            binding.bottomNavBar.translationZ = 0f
-        }
-
-        // Animate player shadow. VERIFIED.
-        binding.playerShadowExternal.alpha = 1f - slideOffset * 3
-        binding.playerShadowInternal.alpha = 1f - slideOffset * 3
-
-        // Animate alpha of the background behind player. VERIFIED.
-        binding.background.alpha = slideOffset
-    }
-
     /** Set listeners for the collapsed content of the player. */
     @SuppressLint("ClickableViewAccessibility")
     private fun setCollapsedContentListeners() {
 
-
-
-        /** Actions that expand the player. */
         // Expand the player on the frame click.
         binding.player.collapsed.root.setOnClickListener {
             if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
@@ -266,17 +257,17 @@ class MainActivity : AppCompatActivity() {
     /** Set listeners for the expanded content of the player. */
     private fun setExpandedContentListeners() {
 
-        /** Slider listeners. */
+        // Slider listeners.
         binding.player.expanded.slider.addOnChangeListener { slider, value, fromUser ->
 
         }
 
-        // OnSliderTouchListener is used for animating slider thumb radius.
         val thumbRadiusDefault = resources
-                .getDimension(R.dimen.slider_thumb_default).roundToInt()
+            .getDimension(R.dimen.slider_thumb_default).roundToInt()
         val thumbRadiusIncreased = resources
-                .getDimension(R.dimen.slider_thumb_increased).roundToInt()
+            .getDimension(R.dimen.slider_thumb_increased).roundToInt()
 
+        // OnSliderTouchListener is used for animating slider thumb radius.
         val onTouchListener = object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 val increaseThumb = ObjectAnimator.ofInt(
@@ -306,7 +297,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
 
-        /** Cover listener. */
+        // Cover listener.
         // The expanded content of the player is not disabled at application start
         // (because of bug?), so prevent random click on the invisible podcast cover
         // by checking the state of player bottom sheet. If player is collapsed, expand it.
