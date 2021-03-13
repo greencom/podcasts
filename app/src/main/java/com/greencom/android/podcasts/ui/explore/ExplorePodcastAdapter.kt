@@ -15,11 +15,12 @@ import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
-class ExplorePodcastAdapter :
-    ListAdapter<Podcast, ExplorePodcastViewHolder>(ExplorePodcastDiffCallback()) {
+class ExplorePodcastAdapter(
+    private val updateSubscription: (Podcast) -> Unit
+) : ListAdapter<Podcast, ExplorePodcastViewHolder>(ExplorePodcastDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
-        return ExplorePodcastViewHolder.create(parent)
+        return ExplorePodcastViewHolder.create(parent, updateSubscription)
     }
 
     override fun onBindViewHolder(holder: ExplorePodcastViewHolder, position: Int) {
@@ -29,20 +30,22 @@ class ExplorePodcastAdapter :
 }
 
 /** ViewHolder that represents a single item in the best podcasts list. */
-class ExplorePodcastViewHolder private constructor(private val binding: PodcastItemBinding) :
-    RecyclerView.ViewHolder(binding.root) {
+class ExplorePodcastViewHolder private constructor(
+    private val binding: PodcastItemBinding,
+    private val updateSubscription: (Podcast) -> Unit,
+) : RecyclerView.ViewHolder(binding.root) {
 
     // View context.
     private val context: Context = binding.root.context
 
     /** Bind ViewHolder with a given [Podcast]. */
     fun bind(podcast: Podcast) {
-        fill(podcast)
-        setListeners()
+        fillView(podcast)
+        setListeners(podcast)
     }
 
     /** Fill item view depending on podcast's properties. */
-    private fun fill(podcast: Podcast) {
+    private fun fillView(podcast: Podcast) {
         Glide.with(binding.cover.context)
             .load(podcast.image)
             .into(binding.cover)
@@ -62,10 +65,10 @@ class ExplorePodcastViewHolder private constructor(private val binding: PodcastI
     }
 
     /** Set listeners for item's content. */
-    private fun setListeners() {
+    private fun setListeners(podcast: Podcast) {
         // `Subscribe` button onClickListener.
         binding.subscribe.setOnClickListener {
-
+            updateSubscription(podcast)
         }
 
         // `Subscribe` button onCheckedChangeListener.
@@ -82,10 +85,13 @@ class ExplorePodcastViewHolder private constructor(private val binding: PodcastI
 
     companion object {
         /** Create a [ExplorePodcastViewHolder]. */
-        fun create(parent: ViewGroup): ExplorePodcastViewHolder {
+        fun create(
+            parent: ViewGroup,
+            updateSubscription: (Podcast) -> Unit,
+        ): ExplorePodcastViewHolder {
             val binding = PodcastItemBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return ExplorePodcastViewHolder(binding)
+            return ExplorePodcastViewHolder(binding, updateSubscription)
         }
     }
 }

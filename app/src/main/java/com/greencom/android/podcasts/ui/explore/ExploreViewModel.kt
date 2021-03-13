@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.ui.explore
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,17 +33,22 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
 
     /** Get a list of the best podcasts for a given genre ID. */
     fun getBestPodcasts(genreId: Int): StateFlow<State> {
-        cacheBestPodcasts(genreId, State.Loading)
-
         // Get from in-memory cache.
         val lastResult = getBestPodcastsFromCache(genreId).asStateFlow()
         if (lastResult.value is State.Success<*>) return lastResult
 
+        // Set State.Loading.
+        cacheBestPodcasts(genreId, State.Loading)
         // Get from repository (database or network).
         viewModelScope.launch {
             repository.getBestPodcasts(genreId, getBestPodcastsFromCache(genreId))
         }
         return getBestPodcastsFromCache(genreId).asStateFlow()
+    }
+
+    /** Update the subscription for a given podcast. */
+    fun updateSubscription(podcast: Podcast) = viewModelScope.launch {
+        repository.updatePodcastSubscription(podcast)
     }
 
     /** Cache the best podcasts based on the genre ID with a given [State]. */
@@ -76,5 +82,21 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             88 -> healthCache
             else -> null
         } ?: MutableStateFlow(State.Error(IllegalArgumentException("Wrong genre ID")))
+    }
+
+    /** Invalidate best podcasts cache for a given genre ID. */
+    private fun invalidateBestPodcastsCache(genreId: Int) {
+        when (genreId) {
+            99 -> newsCache.value = State.Init
+            122 -> societyCache.value = State.Init
+            111 -> educationCache.value = State.Init
+            107 -> scienceCache.value = State.Init
+            127 -> technologyCache.value = State.Init
+            93 -> businessCache.value = State.Init
+            125 -> historyCache.value = State.Init
+            100 -> artsCache.value = State.Init
+            77 -> sportsCache.value = State.Init
+            88 -> healthCache.value = State.Init
+        }
     }
 }

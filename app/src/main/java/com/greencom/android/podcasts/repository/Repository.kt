@@ -6,6 +6,7 @@ import com.greencom.android.podcasts.data.asPodcasts
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +52,14 @@ class Repository @Inject constructor(
                 state.value = State.Error(e)
             }
         }
+    }
+
+    /**
+     * Update the subscription for a given podcast. Insert the updated podcast in
+     * the `podcasts` table and update the existing entry.
+     */
+    suspend fun updatePodcastSubscription(podcast: Podcast) {
+
     }
 
     /**

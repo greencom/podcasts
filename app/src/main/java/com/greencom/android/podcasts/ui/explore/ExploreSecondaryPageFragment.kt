@@ -46,7 +46,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     /** RecyclerView adapter. */
     private val adapter by lazy {
-        ExplorePodcastAdapter()
+        ExplorePodcastAdapter(viewModel::updateSubscription)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
