@@ -23,19 +23,19 @@ interface PodcastDao {
 
     /**
      * Used to update the podcast entry in the `podcasts` table without editing
-     * `inSubscription` property with the given [PodcastEntityUpdateWithoutSubscription]
+     * `inSubscription` property with the given [PodcastEntityUpdate]
      * object.
      */
     @Update(entity = PodcastEntity::class)
-    suspend fun update(podcast: PodcastEntityUpdateWithoutSubscription)
+    suspend fun update(podcast: PodcastEntityUpdate)
 
     /**
      * Used to update the podcasts entries in the `podcasts` table with the given list of
-     * [PodcastEntityUpdateWithoutSubscription] objects without editing
+     * [PodcastEntityUpdate] objects without editing
      * `inSubscription` property.
      */
     @Update(entity = PodcastEntity::class)
-    suspend fun update(podcasts: List<PodcastEntityUpdateWithoutSubscription>)
+    suspend fun update(podcasts: List<PodcastEntityUpdate>)
 
     /** Return a [PodcastEntity] from the `podcasts` table for a given ID. */
     @Query("SELECT * FROM podcasts WHERE id = :id")
@@ -45,7 +45,7 @@ interface PodcastDao {
      * Get a list of best podcasts for the provided genre ID from the
      * `podcasts` table.
      */
-    @Query("SELECT * FROM podcasts WHERE inBestForGenre = :genreId")
+    @Query("SELECT * FROM podcasts WHERE in_best_for_genre = :genreId")
     suspend fun getBestPodcasts(genreId: Int): List<PodcastEntity>
 }
 
