@@ -2,18 +2,20 @@ package com.greencom.android.podcasts.network
 
 import com.squareup.moshi.Json
 
-/** Model class for `ListenApiService.searchEpisode` response. */
-data class SearchEpisodeResponse(
+/** Wrapper class for a `ListenApiService.searchEpisode` response. */
+data class SearchEpisodeWrapper(
 
-    /** The number of search results in this page. */
+    /** The number of search results on this page. */
+    @Json(name = "count")
     val count: Int,
 
     /** The total number of search results. */
+    @Json(name = "total")
     val total: Int,
 
     /** A list of search results. */
     @Json(name = "results")
-    val episodes: List<SearchEpisodeResponseItem>,
+    val episodes: List<SearchEpisodeItem>,
 
     /**
      * Pass this value to the `offset` parameter of `searchEpisode()` to do
@@ -23,10 +25,11 @@ data class SearchEpisodeResponse(
     val nextOffset: Int,
 ) {
 
-    /** Model class for a single episode object in the [SearchEpisodeResponse.episodes] list. */
-    data class SearchEpisodeResponseItem(
+    /** Wrapper class for a single episode object in the [SearchEpisodeWrapper.episodes] list. */
+    data class SearchEpisodeItem(
 
         /** Episode ID. */
+        @Json(name = "id")
         val id: String,
 
         /** Episode title. */
@@ -38,9 +41,11 @@ data class SearchEpisodeResponse(
         val description: String,
 
         /** Image URL for this episode. */
+        @Json(name = "image")
         val image: String,
 
         /** Audio URL for this episode. */
+        @Json(name = "audio")
         val audio: String,
 
         /** Audio length of this episode in seconds. */
@@ -48,21 +53,23 @@ data class SearchEpisodeResponse(
         val audioLength: Int,
 
         /** The podcast that this episode belongs to. */
-        val podcast: SearchEpisodeResponseItemPodcast,
+        @Json(name = "podcast")
+        val podcast: SearchEpisodeItemPodcast,
 
         /** Whether this podcast contains explicit language. */
         @Json(name = "explicit_content")
         val explicitContent: Boolean,
 
-        /** Published date in millisecond. */
+        /** Published date in milliseconds. */
         @Json(name = "pub_date_ms")
         val date: Long,
     ) {
 
-        /** Model class for a [SearchEpisodeResponse.SearchEpisodeResponseItem.podcast] object. */
-        data class SearchEpisodeResponseItemPodcast(
+        /** Wrapper class for a [SearchEpisodeWrapper.SearchEpisodeItem.podcast] object. */
+        data class SearchEpisodeItemPodcast(
 
             /** Podcast ID. */
+            @Json(name = "id")
             val id: String,
 
             /** Podcast name. */
@@ -70,6 +77,7 @@ data class SearchEpisodeResponse(
             val title: String,
 
             /** Image URL. */
+            @Json(name = "image")
             val image: String,
 
             /** Podcast publisher. */
@@ -79,18 +87,20 @@ data class SearchEpisodeResponse(
     }
 }
 
-/** Model class for `ListenApiService.searchPodcast` response. */
-data class SearchPodcastResponse(
+/** Wrapper class for a `ListenApiService.searchPodcast` response. */
+data class SearchPodcastWrapper(
 
     /** The number of search results in this page. */
+    @Json(name = "count")
     val count: Int,
 
     /** The total number of search results. */
+    @Json(name = "total")
     val total: Int,
 
     /** A list of search results. */
     @Json(name = "results")
-    val podcasts: List<SearchPodcastResponseItem>,
+    val podcasts: List<SearchPodcastItem>,
 
     /**
      * Pass this value to the `offset` parameter of `searchPodcast()` to do
@@ -100,10 +110,11 @@ data class SearchPodcastResponse(
     val nextOffset: Int,
 ) {
 
-    /** Model class for a single podcast object in the [SearchPodcastResponse.podcasts] list. */
-    data class SearchPodcastResponseItem(
+    /** Wrapper class for a single podcast object in the [SearchPodcastWrapper.podcasts] list. */
+    data class SearchPodcastItem(
 
         /** Podcast ID. */
+        @Json(name = "id")
         val id: String,
 
         /** Podcast name. */
@@ -115,6 +126,7 @@ data class SearchPodcastResponse(
         val description: String,
 
         /** Image URL for this podcast. */
+        @Json(name = "image")
         val image: String,
 
         /** Podcast publisher. */
@@ -135,11 +147,12 @@ data class SearchPodcastResponse(
     )
 }
 
-/** Model class for `ListenApiService.getBestPodcasts()` response. */
-data class BestPodcastsResponse(
+/** Wrapper class for a `ListenApiService.getBestPodcasts()` response. */
+data class BestPodcastsWrapper(
 
     /** A list of search results. */
-    val podcasts: List<BestPodcastsResponseItem>,
+    @Json(name = "podcasts")
+    val podcasts: List<BestPodcastsItem>,
 
     /** Genre ID for which the best podcasts list is made for. */
     @Json(name = "id")
@@ -154,22 +167,27 @@ data class BestPodcastsResponse(
     val hasNextPage: Boolean,
 ) {
 
-    /** Model class for a single podcast object in the [BestPodcastsResponse.podcasts] list. */
-    data class BestPodcastsResponseItem(
+    /** Wrapper class for a single podcast object in the [BestPodcastsWrapper.podcasts] list. */
+    data class BestPodcastsItem(
 
         /** Podcast ID. */
+        @Json(name = "id")
         val id: String,
 
         /** Podcast name. */
+        @Json(name = "title")
         val title: String,
 
         /** Podcast description. */
+        @Json(name = "description")
         val description: String,
 
         /** Image URL for this podcast. */
+        @Json(name = "image")
         val image: String,
 
         /** Podcast publisher. */
+        @Json(name = "publisher")
         val publisher: String,
 
         /** Whether this podcast contains explicit language. */
@@ -186,16 +204,23 @@ data class BestPodcastsResponse(
     )
 }
 
-/** Model class for `ListenApiService.getGenres()` response. */
-data class GenresResponse(val genres: List<GenresResponseItem>) {
+/** Wrapper class for a `ListenApiService.getGenres()` response. */
+data class GenresWrapper(
 
-    /** Model class for a single genre object in the [GenresResponse.genres] list. */
-    data class GenresResponseItem(
+    /** A list of genres. */
+    @Json(name = "genres")
+    val genres: List<GenresItem>
+) {
+
+    /** Wrapper class for a single genre object in the [GenresWrapper.genres] list. */
+    data class GenresItem(
 
         /** Genre ID. */
+        @Json(name = "id")
         val id: Int,
 
         /** Genre name. */
+        @Json(name = "name")
         val name: String,
 
         /** Parent genre ID. */

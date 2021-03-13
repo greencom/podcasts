@@ -50,7 +50,7 @@ interface ListenApiService {
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 `1` is yes, and `0` is no. Default value is `0`.
      *
-     * @return A [SearchEpisodeResponse] object.
+     * @return A [SearchEpisodeWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("search")
@@ -61,7 +61,7 @@ interface ListenApiService {
             @Query("offset") offset: Int = 0,
             @Query("only_in") onlyIn: String = "title,description,author",
             @Query("safe_mode") safeMode: Int = 0,
-    ): SearchEpisodeResponse
+    ): SearchEpisodeWrapper
 
     /**
      * Search for podcasts.
@@ -81,7 +81,7 @@ interface ListenApiService {
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 `1` is yes, and `0` is no. Default value is `0`.
      *
-     * @return A [SearchPodcastResponse] object.
+     * @return A [SearchPodcastWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("search")
@@ -92,7 +92,7 @@ interface ListenApiService {
             @Query("offset") offset: Int = 0,
             @Query("only_in") onlyIn: String = "title,description,author",
             @Query("safe_mode") safeMode: Int = 0,
-    ): SearchPodcastResponse
+    ): SearchPodcastWrapper
 
     /**
      * Get podcast genres that are supported in Listen Notes. The genre id can be
@@ -102,13 +102,13 @@ interface ListenApiService {
      *                     only top level genres, `0` is get all genres. Default
      *                     value is `0`.
      *
-     * @return A [GenresResponse] object.
+     * @return A [GenresWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("genres")
     suspend fun getGenres(
             @Query("top_level_only") topLevelOnly: Int = 0
-    ): GenresResponse
+    ): GenresWrapper
 
     /**
      * Get a list of curated best podcasts by genre. If `genreId` is not specified,
@@ -120,7 +120,7 @@ interface ListenApiService {
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 `1` is yes, and `0` is no. Default value is `0`.
      *
-     * @return A [BestPodcastsResponse] object.
+     * @return A [BestPodcastsWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")
@@ -129,7 +129,7 @@ interface ListenApiService {
             @Query("page") page: Int = 1,
             @Query("region") region: String = "ru",
             @Query("safe_mode") safeMode: Int = 0,
-    ): BestPodcastsResponse
+    ): BestPodcastsWrapper
 }
 
 /**

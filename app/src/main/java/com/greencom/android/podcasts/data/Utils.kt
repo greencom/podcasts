@@ -4,8 +4,8 @@ import com.greencom.android.podcasts.data.database.GenreEntity
 import com.greencom.android.podcasts.data.database.PodcastEntity
 import com.greencom.android.podcasts.data.domain.Genre
 import com.greencom.android.podcasts.data.domain.Podcast
-import com.greencom.android.podcasts.network.BestPodcastsResponse
-import com.greencom.android.podcasts.network.GenresResponse
+import com.greencom.android.podcasts.network.BestPodcastsWrapper
+import com.greencom.android.podcasts.network.GenresWrapper
 
 /** Convert a [PodcastEntity] object to a [Podcast]. */
 fun PodcastEntity.asPodcast(): Podcast {
@@ -41,8 +41,8 @@ fun List<PodcastEntity>.asPodcasts(): List<Podcast> {
     }
 }
 
-/** Convert [BestPodcastsResponse] object to a [PodcastEntity] list. */
-fun BestPodcastsResponse.asPodcastEntities(): List<PodcastEntity> {
+/** Convert [BestPodcastsWrapper] object to a [PodcastEntity] list. */
+fun BestPodcastsWrapper.asPodcastEntities(): List<PodcastEntity> {
     return podcasts.map {
         PodcastEntity(
             id = it.id,
@@ -59,8 +59,8 @@ fun BestPodcastsResponse.asPodcastEntities(): List<PodcastEntity> {
     }
 }
 
-/** Convert [BestPodcastsResponse] object to a [Podcast] list. */
-fun BestPodcastsResponse.asPodcasts(): List<Podcast> {
+/** Convert [BestPodcastsWrapper] object to a [Podcast] list. */
+fun BestPodcastsWrapper.asPodcasts(): List<Podcast> {
     return podcasts.map {
         Podcast(
             id = it.id,
@@ -98,12 +98,12 @@ fun List<GenreEntity>.asGenres(): List<Genre> {
 }
 
 /**
- * Convert [GenresResponse] object to a [GenreEntity] list.
+ * Convert [GenresWrapper] object to a [GenreEntity] list.
  *
- * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
+ * If [GenresWrapper.GenresItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
  * value to the [GenreEntity.parentId] property.
  */
-fun GenresResponse.asGenreEntities(): List<GenreEntity> {
+fun GenresWrapper.asGenreEntities(): List<GenreEntity> {
     return genres.map {
         GenreEntity(
             id = it.id,
@@ -114,12 +114,12 @@ fun GenresResponse.asGenreEntities(): List<GenreEntity> {
 }
 
 /**
- * Convert [GenresResponse] object to a [Genre] list.
+ * Convert [GenresWrapper] object to a [Genre] list.
  *
- * If [GenresResponse.GenresResponseItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
+ * If [GenresWrapper.GenresItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
  * value to the [Genre.parentId] property.
  */
-fun GenresResponse.asGenres(): List<Genre> {
+fun GenresWrapper.asGenres(): List<Genre> {
     return genres.map {
         Genre(
             id = it.id,
