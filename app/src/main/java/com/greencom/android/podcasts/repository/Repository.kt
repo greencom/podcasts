@@ -1,14 +1,12 @@
 package com.greencom.android.podcasts.repository
 
-import com.greencom.android.podcasts.data.asGenreEntities
-import com.greencom.android.podcasts.data.asPodcastEntities
-import com.greencom.android.podcasts.data.asPodcasts
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.utils.State
+import com.greencom.android.podcasts.utils.asPodcasts
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import okio.IOException
@@ -33,9 +31,15 @@ class Repository @Inject constructor(
     val genresState: StateFlow<State> = _genresState
 
     /**
-     * Get a list of the best podcasts for a given genre. If the app database contains
-     * the appropriate podcasts, return them. Otherwise, fetch the best podcasts from
-     * the ListenAPI and insert them into the database.
+     * Get a list of the best podcasts for a given genre ID. The result of the process
+     * is passed directly to the given [state]. If the `podcasts` table contains the
+     * appropriate list, return it. Otherwise, try to fetch best podcasts from ListenAPI
+     * service and insert them into the `podcasts` table. If fetching failed, pass
+     * the error to the given [state].
+     *
+     * @param genreId the ID of the genre to get the best podcasts for.
+     * @param state list's state that function will pass
+     *              values in.
      */
     suspend fun getBestPodcasts(genreId: Int, state: MutableStateFlow<State>) {
         val podcasts = podcastDao.getBestPodcasts(genreId)
@@ -55,11 +59,12 @@ class Repository @Inject constructor(
     }
 
     /**
-     * Update the subscription for a given podcast. Insert the updated podcast in
-     * the `podcasts` table and update the existing entry.
+     * Update the subscription on the given podcast with the given value.
+     * Update the existing entry in the `podcasts` table with the new one.
      */
-    suspend fun updatePodcastSubscription(podcast: Podcast) {
-
+    suspend fun updateSubscription(podcast: Podcast, newValue: Boolean) {
+        podcast.inSubscriptions = newValue
+        podcastDao.update(podcast.updateSubscription(newValue))
     }
 
     /**

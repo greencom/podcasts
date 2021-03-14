@@ -39,19 +39,20 @@ data class Podcast(
     val inBestForGenre: Int,
 
     /** Indicates whether the user is subscribed to this podcast. */
-    val inSubscriptions: Boolean,
+    var inSubscriptions: Boolean,
 ) {
 
     /**
      * Convert a [Podcast] object to a [PodcastEntityUpdateSubscription] object
-     * with reversing `inSubscription` value. [PodcastEntityUpdateSubscription] used
-     * as parameter for [PodcastDao.update] to update the `inSubscription` property
-     * of the existing entry.
+     * with `inSubscription` property set to a given value.
+     *
+     * [PodcastEntityUpdateSubscription] used as parameter for [PodcastDao.update] to
+     * update the `inSubscription` property of the existing entry.
      */
-    fun updateSubscription(): PodcastEntityUpdateSubscription {
+    fun updateSubscription(newValue: Boolean): PodcastEntityUpdateSubscription {
         return PodcastEntityUpdateSubscription(
             id = this.id,
-            inSubscriptions = !this.inSubscriptions
+            inSubscriptions = newValue
         )
     }
 

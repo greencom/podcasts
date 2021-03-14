@@ -1,5 +1,9 @@
 package com.greencom.android.podcasts.network
 
+import com.greencom.android.podcasts.data.database.GenreEntity
+import com.greencom.android.podcasts.data.database.PodcastEntity
+import com.greencom.android.podcasts.data.domain.Genre
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.squareup.moshi.Json
 
 /** Wrapper class for a `ListenApiService.searchEpisode` response. */
@@ -167,6 +171,42 @@ data class BestPodcastsWrapper(
     val hasNextPage: Boolean,
 ) {
 
+    /** Convert [BestPodcastsWrapper] object to a [PodcastEntity] list. */
+    fun asPodcastEntities(): List<PodcastEntity> {
+        return podcasts.map {
+            PodcastEntity(
+                id = it.id,
+                title = it.title,
+                description = it.description,
+                image = it.image,
+                publisher = it.publisher,
+                explicitContent = it.explicitContent,
+                episodeCount = it.episodeCount,
+                latestPubDate = it.latestPubDate,
+                inBestForGenre = this.genreId,
+                inSubscriptions = false,
+            )
+        }
+    }
+
+    /** Convert [BestPodcastsWrapper] object to a [Podcast] list. */
+    fun asPodcasts(): List<Podcast> {
+        return podcasts.map {
+            Podcast(
+                id = it.id,
+                title = it.title,
+                description = it.description,
+                image = it.image,
+                publisher = it.publisher,
+                explicitContent = it.explicitContent,
+                episodeCount = it.episodeCount,
+                latestPubDate = it.latestPubDate,
+                inBestForGenre = this.genreId,
+                inSubscriptions = false,
+            )
+        }
+    }
+
     /** Wrapper class for a single podcast object in the [BestPodcastsWrapper.podcasts] list. */
     data class BestPodcastsItem(
 
@@ -211,6 +251,38 @@ data class GenresWrapper(
     @Json(name = "genres")
     val genres: List<GenresItem>
 ) {
+
+    /**
+     * Convert [GenresWrapper] object to a [GenreEntity] list.
+     *
+     * If [GenresWrapper.GenresItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
+     * value to the [GenreEntity.parentId] property.
+     */
+    fun asGenreEntities(): List<GenreEntity> {
+        return genres.map {
+            GenreEntity(
+                id = it.id,
+                name = it.name,
+                parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
+            )
+        }
+    }
+
+    /**
+     * Convert [GenresWrapper] object to a [Genre] list.
+     *
+     * If [GenresWrapper.GenresItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
+     * value to the [Genre.parentId] property.
+     */
+    fun asGenres(): List<Genre> {
+        return genres.map {
+            Genre(
+                id = it.id,
+                name = it.name,
+                parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
+            )
+        }
+    }
 
     /** Wrapper class for a single genre object in the [GenresWrapper.genres] list. */
     data class GenresItem(

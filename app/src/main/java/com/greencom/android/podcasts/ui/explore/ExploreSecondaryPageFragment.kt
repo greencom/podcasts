@@ -24,10 +24,10 @@ private const val GENRE_ID = "genre_id"
 
 /**
  * Represents all pages of the ViewPager2 in the ExploreFragment except the first one.
- * Each page contains a large list of podcasts for the specified genre.
+ * Each page contains a list of best podcasts for the specified genre.
  *
  * Use [ExploreSecondaryPageFragment.newInstance] to create a new instance
- * of the fragment using the provided parameters.
+ * of the fragment with provided parameters.
  */
 @Suppress("UNCHECKED_CAST")
 @AndroidEntryPoint
@@ -52,6 +52,7 @@ class ExploreSecondaryPageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Retrieve the genre ID passed on fragment creation.
         arguments?.let {
             genreId = it.getInt(GENRE_ID)
         }
@@ -73,20 +74,22 @@ class ExploreSecondaryPageFragment : Fragment() {
         setupRecyclerView()
         customizeSwipeToRefresh()
 
-        /** TODO: Documentation */
+        // Get best podcasts and display the current state of the process.
         lifecycleScope.launchWhenResumed {
             viewModel.getBestPodcasts(genreId).collectLatest { state ->
+                // Switch screens depending on the state.
                 binding.swipeToRefresh.isVisible = state is State.Success<*>
                 binding.loading.isVisible = state is State.Loading
                 binding.error.root.isVisible = state is State.Error
 
+                // Submit the list of the best podcasts on success.
                 if (state is State.Success<*>) {
                     adapter.submitList(state.data as List<Podcast>)
                 }
             }
         }
 
-        // Update best podcasts from error screen.
+        // Try to update the best podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.getBestPodcasts(genreId)
         }
@@ -94,7 +97,6 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-
         // Clear View binding.
         _binding = null
     }
@@ -104,6 +106,8 @@ class ExploreSecondaryPageFragment : Fragment() {
         binding.podcastList.apply {
             setHasFixedSize(true)
             adapter = this@ExploreSecondaryPageFragment.adapter
+
+            // Set up dividers.
             val divider = CustomDividerItemDecoration(context, RecyclerView.VERTICAL)
             divider.setDrawable(
                 ResourcesCompat.getDrawable(

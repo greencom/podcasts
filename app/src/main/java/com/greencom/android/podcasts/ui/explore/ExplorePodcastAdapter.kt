@@ -6,18 +6,22 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
+import com.greencom.android.podcasts.utils.PodcastDiffCallback
 
-/** Adapter used for RecyclerView that represents a list of best podcasts. */
+/**
+ * Adapter used for RecyclerView that represents a list of best podcasts.
+ *
+ * @param updateSubscription function used to update a subscription on the podcast.
+ */
 class ExplorePodcastAdapter(
-    private val updateSubscription: (Podcast) -> Unit
-) : ListAdapter<Podcast, ExplorePodcastViewHolder>(ExplorePodcastDiffCallback()) {
+    private val updateSubscription: (Podcast, Boolean) -> Unit
+) : ListAdapter<Podcast, ExplorePodcastViewHolder>(PodcastDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
         return ExplorePodcastViewHolder.create(parent, updateSubscription)
@@ -32,7 +36,7 @@ class ExplorePodcastAdapter(
 /** ViewHolder that represents a single item in the best podcasts list. */
 class ExplorePodcastViewHolder private constructor(
     private val binding: PodcastItemBinding,
-    private val updateSubscription: (Podcast) -> Unit,
+    private val updateSubscription: (Podcast, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     // View context.
@@ -55,11 +59,8 @@ class ExplorePodcastViewHolder private constructor(
         binding.description.text =
             HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
         // Change `Subscribe` button state depending on `inSubscription` value.
-        if (podcast.inSubscriptions) {
-            binding.subscribe.isChecked = true
-            binding.subscribe.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
-            binding.subscribe.text = context.getString(R.string.subscribed)
-        }
+        binding.subscribe.isChecked = podcast.inSubscriptions
+        updateSubscribeButton(podcast.inSubscriptions)
         // Show explicit content icon depending on `explicitContent` value.
         binding.explicitContent.isVisible = podcast.explicitContent
     }
@@ -68,40 +69,40 @@ class ExplorePodcastViewHolder private constructor(
     private fun setListeners(podcast: Podcast) {
         // `Subscribe` button onClickListener.
         binding.subscribe.setOnClickListener {
-            updateSubscription(podcast)
+            updateSubscription(podcast, binding.subscribe.isChecked)
         }
 
         // `Subscribe` button onCheckedChangeListener.
-        binding.subscribe.addOnCheckedChangeListener { button, isChecked ->
-            if (isChecked) {
-                button.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
-                button.text = context.getString(R.string.subscribed)
-            } else {
-                button.icon = ContextCompat.getDrawable(context, R.drawable.ic_add_24)
-                button.text = context.getString(R.string.subscribe)
-            }
+        binding.subscribe.addOnCheckedChangeListener { _, isChecked ->
+            updateSubscribeButton(isChecked)
+        }
+    }
+
+    /** Update the `Subscribe` button depending on whether it is checked. */
+    private fun updateSubscribeButton(isChecked: Boolean) {
+        if (isChecked) {
+            binding.subscribe.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
+            binding.subscribe.text = context.getString(R.string.subscribed)
+        } else {
+            binding.subscribe.icon = ContextCompat.getDrawable(context, R.drawable.ic_add_24)
+            binding.subscribe.text = context.getString(R.string.subscribe)
         }
     }
 
     companion object {
-        /** Create a [ExplorePodcastViewHolder]. */
+        /**
+         * Create a [ExplorePodcastViewHolder].
+         *
+         * @param parent parent's ViewGroup.
+         * @param updateSubscription function used to update a subscription on the podcast.
+         */
         fun create(
             parent: ViewGroup,
-            updateSubscription: (Podcast) -> Unit,
+            updateSubscription: (Podcast, Boolean) -> Unit,
         ): ExplorePodcastViewHolder {
             val binding = PodcastItemBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return ExplorePodcastViewHolder(binding, updateSubscription)
         }
-    }
-}
-
-class ExplorePodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
-    override fun areItemsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
-        return oldItem == newItem
     }
 }

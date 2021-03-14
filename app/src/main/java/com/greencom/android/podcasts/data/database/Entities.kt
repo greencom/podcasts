@@ -55,7 +55,24 @@ data class PodcastEntity(
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "in_subscriptions")
     val inSubscriptions: Boolean,
-)
+) {
+
+    /** Convert a [PodcastEntity] object to a [Podcast]. */
+    fun asPodcast(): Podcast {
+        return Podcast(
+            id = this.id,
+            title = this.title,
+            description = this.description,
+            image = this.image,
+            publisher = this.publisher,
+            explicitContent = this.explicitContent,
+            episodeCount = this.episodeCount,
+            latestPubDate = this.latestPubDate,
+            inBestForGenre = this.inBestForGenre,
+            inSubscriptions = this.inSubscriptions,
+        )
+    }
+}
 
 /** Model class that represents a episode entity in the database. */
 @Entity(tableName = "episodes")
@@ -120,4 +137,14 @@ data class GenreEntity(
      */
     @ColumnInfo(name = "parent_id")
     val parentId: Int,
-)
+) {
+
+    /** Convert a [GenreEntity] object to a [Genre]. */
+    fun asGenre(): Genre {
+        return Genre(
+            id = this.id,
+            name = this.name,
+            parentId = this.parentId
+        )
+    }
+}

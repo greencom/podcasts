@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    // In-memory cached best podcasts by genre.
+    // In-memory cached the best podcasts by genre.
     private val newsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val societyCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val educationCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
@@ -31,24 +31,43 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     private val sportsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val healthCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
 
+    // Show whether any item on the appropriate list has changed.
+    private var newsChanged = false
+    private var societyChanged = false
+    private var educationChanged = false
+    private var scienceChanged = false
+    private var technologyChanged = false
+    private var businessChanged = false
+    private var historyChanged = false
+    private var artsChanged = false
+    private var sportsChanged = false
+    private var healthChanged = false
+
     /** Get a list of the best podcasts for a given genre ID. */
     fun getBestPodcasts(genreId: Int): StateFlow<State> {
-        // Get from in-memory cache.
-        val lastResult = getBestPodcastsFromCache(genreId).asStateFlow()
-        if (lastResult.value is State.Success<*>) return lastResult
+        // Get from in-memory cache, if the appropriate podcast list has not changed.
+        if (bestPodcastsHaveNotChanged(genreId)) {
+            val lastResult = getBestPodcastsFromCache(genreId).asStateFlow()
+            if (lastResult.value is State.Success<*>) {
+                return lastResult
+            }
+        }
 
+        // Get from repository (database or network).
         // Set State.Loading.
         cacheBestPodcasts(genreId, State.Loading)
-        // Get from repository (database or network).
         viewModelScope.launch {
             repository.getBestPodcasts(genreId, getBestPodcastsFromCache(genreId))
         }
+        // Reset `*bestPodcasts*Changed` value.
+        setBestPodcastsHaveChanged(genreId, false)
         return getBestPodcastsFromCache(genreId).asStateFlow()
     }
 
-    /** Update the subscription for a given podcast. */
-    fun updateSubscription(podcast: Podcast) = viewModelScope.launch {
-        repository.updatePodcastSubscription(podcast)
+    /** Update the subscription on a given podcast. */
+    fun updateSubscription(podcast: Podcast, newValue: Boolean) = viewModelScope.launch {
+        repository.updateSubscription(podcast, newValue)
+        setBestPodcastsHaveChanged(podcast.inBestForGenre, true)
     }
 
     /** Cache the best podcasts based on the genre ID with a given [State]. */
@@ -81,22 +100,42 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             77 -> sportsCache
             88 -> healthCache
             else -> null
-        } ?: MutableStateFlow(State.Error(IllegalArgumentException("Wrong genre ID")))
+        } ?: MutableStateFlow(State.Error(IllegalArgumentException("Wrong genre ID.")))
     }
 
-    /** Invalidate best podcasts cache for a given genre ID. */
-    private fun invalidateBestPodcastsCache(genreId: Int) {
+    /** Set the appropriate `*bestPodcasts*Changed` property to a given value. */
+    private fun setBestPodcastsHaveChanged(genreId: Int, value: Boolean) {
         when (genreId) {
-            99 -> newsCache.value = State.Init
-            122 -> societyCache.value = State.Init
-            111 -> educationCache.value = State.Init
-            107 -> scienceCache.value = State.Init
-            127 -> technologyCache.value = State.Init
-            93 -> businessCache.value = State.Init
-            125 -> historyCache.value = State.Init
-            100 -> artsCache.value = State.Init
-            77 -> sportsCache.value = State.Init
-            88 -> healthCache.value = State.Init
+            99 -> newsChanged = value
+            122 -> societyChanged = value
+            111 -> educationChanged = value
+            107 -> scienceChanged = value
+            127 -> technologyChanged = value
+            93 -> businessChanged = value
+            125 -> historyChanged = value
+            100 -> artsChanged = value
+            77 -> sportsChanged = value
+            88 -> healthChanged = value
+        }
+    }
+
+    /**
+     * Return `true` if the appropriate podcast list has not changed.
+     * Otherwise, return `false`.
+     */
+    private fun bestPodcastsHaveNotChanged(genreId: Int): Boolean {
+        return when (genreId) {
+            99 -> !newsChanged
+            122 -> !societyChanged
+            111 -> !educationChanged
+            107 -> !scienceChanged
+            127 -> !technologyChanged
+            93 -> !businessChanged
+            125 -> !historyChanged
+            100 -> !artsChanged
+            77 -> !sportsChanged
+            88 -> !healthChanged
+            else -> true
         }
     }
 }
