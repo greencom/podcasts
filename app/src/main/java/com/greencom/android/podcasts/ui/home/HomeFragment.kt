@@ -24,13 +24,6 @@ class HomeFragment : Fragment() {
     /** HomeViewModel. */
     private val viewModel: HomeViewModel by hiltNavGraphViewModels(R.id.nav_graph)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Update genres.
-        viewModel.updateGenres()
-    }
-
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?

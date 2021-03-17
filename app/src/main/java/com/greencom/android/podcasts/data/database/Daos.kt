@@ -69,8 +69,4 @@ interface GenreDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(genres: List<GenreEntity>)
-
-    /** Return a [GenreEntity] from the `genres` table for a given ID. */
-    @Query("SELECT * FROM genres WHERE id = :id")
-    suspend fun getGenre(id: Int): GenreEntity?
 }

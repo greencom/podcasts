@@ -5,15 +5,10 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.google.common.truth.Truth.assertThat
-import com.greencom.android.podcasts.data.asPodcast
-import com.greencom.android.podcasts.data.domain.Podcast
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
@@ -38,31 +33,4 @@ class PodcastDaoTest {
 
     @After
     fun closeDatabase() = database.close()
-
-    @Test
-    fun update_updateSubscription_returnUpdated() = runBlockingTest {
-        // GIVEN - Insert a podcast.
-        val podcastEntity = PodcastEntity(
-            id = "id",
-            title = "title",
-            description = "description",
-            image = "image",
-            publisher = "publisher",
-            explicitContent = false,
-            episodeCount = 100,
-            latestPubDate = 1000000,
-            inBestForGenre = Podcast.NOT_IN_BEST,
-            inSubscriptions = false
-        )
-        val podcast = podcastEntity.asPodcast()
-        podcastDao.insert(listOf(podcastEntity))
-
-        // WHEN - Change `inSubscriptions` value and update podcast.
-        podcastDao.update(podcast.updateSubscription())
-        val loaded = podcastDao.getPodcast(podcastEntity.id)
-
-        // THEN - The `inSubscription` value is back to the initial.
-        assertThat(loaded?.title).isEqualTo(podcast.title)
-        assertThat(loaded?.inSubscriptions).isEqualTo(!podcast.inSubscriptions)
-    }
 }

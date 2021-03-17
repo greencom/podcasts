@@ -38,37 +38,6 @@ class GenreDaoTest {
     fun closeDatabase() = database.close()
 
     @Test
-    fun getGenre_genreExists_returnGenre() = runBlockingTest {
-        // GIVEN - Insert a genre list.
-        val genre1 = GenreEntity(1, "First", 0)
-        val genre2 = GenreEntity(2, "Second", 0)
-        val genres = listOf(genre1, genre2)
-        genreDao.insert(genres)
-
-        // WHEN - Get the genre by ID from the database.
-        val loadedFirst = genreDao.getGenre(genre1.id)
-        val loadedSecond = genreDao.getGenre(genre2.id)
-
-        // THEN - The loaded genres are valid.
-        assertThat(loadedFirst?.id).isEqualTo(genre1.id)
-        assertThat(loadedFirst?.name).isEqualTo(genre1.name)
-
-        assertThat(loadedSecond?.id).isEqualTo(genre2.id)
-        assertThat(loadedSecond?.name).isEqualTo(genre2.name)
-    }
-
-    @Test
-    fun getGenre_genreDoesNotExist_returnNull() = runBlockingTest {
-        // GIVEN - Empty `genres` table.
-
-        // WHEN - Get the non-existent genre.
-        val loaded = genreDao.getGenre(1)
-
-        // THEN - The loaded genre is null.
-        assertThat(loaded).isNull()
-    }
-
-    @Test
     fun getSize_emptyTable_returnZero() = runBlockingTest {
         // GIVEN - Empty `genres` table.
 
