@@ -67,7 +67,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     /** Update the subscription on a given podcast. */
     fun updateSubscription(podcast: Podcast, newValue: Boolean) = viewModelScope.launch {
         repository.updateSubscription(podcast, newValue)
-        setBestPodcastsHaveChanged(podcast.inBestForGenre, true)
+        setBestPodcastsHaveChanged(podcast.genreId, true)
     }
 
     /** Cache the best podcasts based on the genre ID with a given [State]. */
@@ -103,7 +103,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         } ?: MutableStateFlow(State.Error(IllegalArgumentException("Wrong genre ID.")))
     }
 
-    /** Set the appropriate `*bestPodcasts*Changed` property to a given value. */
+    /** Set the corresponding `*bestPodcasts*Changed` property to a given value. */
     private fun setBestPodcastsHaveChanged(genreId: Int, value: Boolean) {
         when (genreId) {
             99 -> newsChanged = value
@@ -120,7 +120,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     }
 
     /**
-     * Return `true` if the appropriate podcast list has not changed.
+     * Return `true` if the corresponding podcast list has not changed.
      * Otherwise, return `false`.
      */
     private fun bestPodcastsHaveNotChanged(genreId: Int): Boolean {

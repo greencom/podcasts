@@ -27,7 +27,7 @@
     <string name="options_description">Options</string>
 
     <!-- TabLayout tabs strings. -->
-    <string name="all">All</string>
+    <string name="all">Main</string>
     <string name="news">News</string>
     <string name="society_culture">Society &amp; Culture</string>
     <string name="education">Education</string>

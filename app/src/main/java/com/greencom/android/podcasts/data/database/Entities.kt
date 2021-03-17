@@ -7,7 +7,7 @@ import com.greencom.android.podcasts.data.domain.Genre
 import com.greencom.android.podcasts.data.domain.Podcast
 
 /** Model class that represents a podcast entity in the database. */
-@Entity(tableName = "podcasts")
+@Entity(tableName = "podcast_table")
 data class PodcastEntity(
 
     /** Podcast ID. */
@@ -49,33 +49,30 @@ data class PodcastEntity(
      * If the value is [Podcast.NOT_IN_BEST], it means that the podcast
      * is not on the best list for any genre.
      */
-    @ColumnInfo(name = "in_best_for_genre")
-    val inBestForGenre: Int,
+    @ColumnInfo(name = "genre_id")
+    val genreId: Int,
+)
+
+/**
+ * Model class that represents a database table that contains only podcast's local attributes.
+ * Local attributes are independent of main [PodcastEntity] model, so values such [subscribed]
+ * can be updated separately.
+ */
+@Entity(tableName = "podcast_local_table")
+data class PodcastLocalAttrs(
+
+    /** Podcast ID. */
+    @PrimaryKey
+    @ColumnInfo(name = "id")
+    val id: String,
 
     /** Indicates whether the user is subscribed to this podcast. */
-    @ColumnInfo(name = "in_subscriptions")
-    val inSubscriptions: Boolean,
-) {
-
-    /** Convert a [PodcastEntity] object to a [Podcast]. */
-    fun asPodcast(): Podcast {
-        return Podcast(
-            id = this.id,
-            title = this.title,
-            description = this.description,
-            image = this.image,
-            publisher = this.publisher,
-            explicitContent = this.explicitContent,
-            episodeCount = this.episodeCount,
-            latestPubDate = this.latestPubDate,
-            inBestForGenre = this.inBestForGenre,
-            inSubscriptions = this.inSubscriptions,
-        )
-    }
-}
+    @ColumnInfo(name = "subscribed")
+    val subscribed: Boolean,
+)
 
 /** Model class that represents a episode entity in the database. */
-@Entity(tableName = "episodes")
+@Entity(tableName = "episode_table")
 data class EpisodeEntity(
 
     /** Episode ID. */
@@ -117,7 +114,7 @@ data class EpisodeEntity(
 )
 
 /** Model class that represents a genre entity in the database. */
-@Entity(tableName = "genres")
+@Entity(tableName = "genre_table")
 data class GenreEntity(
 
     /** Genre ID. */
@@ -137,14 +134,4 @@ data class GenreEntity(
      */
     @ColumnInfo(name = "parent_id")
     val parentId: Int,
-) {
-
-    /** Convert a [GenreEntity] object to a [Genre]. */
-    fun asGenre(): Genre {
-        return Genre(
-            id = this.id,
-            name = this.name,
-            parentId = this.parentId
-        )
-    }
-}
+)

@@ -1,72 +1,75 @@
 package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
+import com.greencom.android.podcasts.data.domain.Podcast
 
-/** Interface to interact with `podcasts` table. */
+/** Interface to interact with `podcast_table` table. */
 @Dao
 interface PodcastDao {
 
     /**
-     * Insert the given [PodcastEntity] list into the `podcasts` table.
-     * [OnConflictStrategy.IGNORE] on conflict.
+     * Insert the given [PodcastEntity] object into the 'podcast_table'.
+     * [OnConflictStrategy.REPLACE] on conflict.
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(podcast: PodcastEntity)
+
+    /**
+     * Insert the given [PodcastEntity] list into the `podcast_table`.
+     * [OnConflictStrategy.REPLACE] on conflict.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(podcasts: List<PodcastEntity>)
 
     /**
-     * Used to update `inSubscription` property of the single podcast entry in the
-     * `podcasts` table with the given [PodcastEntityUpdateSubscription] object
-     * without editing other properties.
+     * Insert the given [PodcastLocalAttrs] object into the 'podcast_local_table'.
+     * [OnConflictStrategy.IGNORE] on conflict.
      */
-    @Update(entity = PodcastEntity::class)
-    suspend fun update(podcast: PodcastEntityUpdateSubscription)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAttrs(attrs: PodcastLocalAttrs)
 
     /**
-     * Used to update the podcast entry in the `podcasts` table without editing
-     * `inSubscription` property with the given [PodcastEntityUpdate]
-     * object.
+     * Insert the given [PodcastLocalAttrs] list into the 'podcast_local_table'.
+     * [OnConflictStrategy.IGNORE] on conflict.
      */
-    @Update(entity = PodcastEntity::class)
-    suspend fun update(podcast: PodcastEntityUpdate)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAttrs(attrsList: List<PodcastLocalAttrs>)
 
-    /**
-     * Used to update the podcasts entries in the `podcasts` table with the given list of
-     * [PodcastEntityUpdate] objects without editing
-     * `inSubscription` property.
-     */
-    @Update(entity = PodcastEntity::class)
-    suspend fun update(podcasts: List<PodcastEntityUpdate>)
+    /** Update the existing entry in the `podcast_local_table`. */
+    @Update
+    suspend fun updateAttrs(attrs: PodcastLocalAttrs)
 
-    /** Return a [PodcastEntity] from the `podcasts` table for a given ID. */
-    @Query("SELECT * FROM podcasts WHERE id = :id")
-    suspend fun getPodcast(id: String): PodcastEntity?
+    /** Get a [Podcast] for a given ID. */
+    @Query("SELECT *, local.subscribed FROM podcast_table " +
+            "INNER JOIN podcast_local_table local " +
+            "WHERE podcast_table.id = :id")
+    suspend fun getPodcast(id: String): Podcast?
 
-    /**
-     * Get a list of best podcasts for the provided genre ID from the
-     * `podcasts` table.
-     */
-    @Query("SELECT * FROM podcasts WHERE in_best_for_genre = :genreId")
-    suspend fun getBestPodcasts(genreId: Int): List<PodcastEntity>
+    /** Get a list of the best podcasts for a given genre ID. */
+    @Query("SELECT *, local.subscribed FROM podcast_table " +
+            "INNER JOIN podcast_local_table local ON podcast_table.id = local.id " +
+            "WHERE podcast_table.genre_id = :genreId")
+    suspend fun getBestPodcasts(genreId: Int): List<Podcast>
 }
 
-/** Interface to interact with `episodes` table. */
+/** Interface to interact with `episode_table`. */
 @Dao
 interface EpisodeDao {
 
 }
 
-/** Interface to interact with `genres` table. */
+/** Interface to interact with `genre_table`. */
 @Dao
 interface GenreDao {
 
-    /** Get the number of entries in the `genres` table. */
-    @Query("SELECT count(*) FROM genres")
-    suspend fun getSize(): Int
-
     /**
-     * Insert the given [GenreEntity] list into the `genres` table.
-     * [OnConflictStrategy.REPLACE] on conflict.
+     * Insert the given [GenreEntity] list into the `genre_table`.
+     * [OnConflictStrategy.IGNORE] on conflict.
      */
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(genres: List<GenreEntity>)
+
+    /** Get the number of entries in the `genre_table`. */
+    @Query("SELECT count(*) FROM genre_table")
+    suspend fun getSize(): Int
 }

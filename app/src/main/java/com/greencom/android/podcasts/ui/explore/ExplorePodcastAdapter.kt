@@ -59,8 +59,8 @@ class ExplorePodcastViewHolder private constructor(
         binding.description.text =
             HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
         // Change `Subscribe` button state depending on `inSubscription` value.
-        binding.subscribe.isChecked = podcast.inSubscriptions
-        updateSubscribeButton(podcast.inSubscriptions)
+        binding.subscribe.isChecked = podcast.subscribed
+        updateSubscribeButton(podcast.subscribed)
         // Show explicit content icon depending on `explicitContent` value.
         binding.explicitContent.isVisible = podcast.explicitContent
     }

@@ -1,33 +1,40 @@
 package com.greencom.android.podcasts.data.domain
 
-import com.greencom.android.podcasts.data.database.PodcastDao
-import com.greencom.android.podcasts.data.database.PodcastEntityUpdateSubscription
+import androidx.room.ColumnInfo
 
 /** Model class that represents a domain podcast object. */
 data class Podcast(
 
     /** Podcast ID. */
+    @ColumnInfo(name = "id")
     val id: String,
 
     /** Podcast title. */
+    @ColumnInfo(name = "title")
     val title: String,
 
     /** Podcast description. */
+    @ColumnInfo(name = "description")
     val description: String,
 
     /** Image URL. */
+    @ColumnInfo(name = "image")
     val image: String,
 
     /** Podcast publisher. */
+    @ColumnInfo(name = "publisher")
     val publisher: String,
 
     /** Whether this podcast contains explicit language. */
+    @ColumnInfo(name = "explicit_content")
     val explicitContent: Boolean,
 
     /** Total number of episodes in this podcast. */
+    @ColumnInfo(name = "episode_count")
     val episodeCount: Int,
 
     /** The published date of the latest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
 
     /**
@@ -36,25 +43,13 @@ data class Podcast(
      * If the value is [Podcast.NOT_IN_BEST], it means that the podcast
      * is not on the best list for any genre.
      */
-    val inBestForGenre: Int,
+    @ColumnInfo(name = "genre_id")
+    val genreId: Int,
 
     /** Indicates whether the user is subscribed to this podcast. */
-    var inSubscriptions: Boolean,
+    @ColumnInfo(name = "subscribed")
+    var subscribed: Boolean,
 ) {
-
-    /**
-     * Convert a [Podcast] object to a [PodcastEntityUpdateSubscription] object
-     * with `inSubscription` property set to a given value.
-     *
-     * [PodcastEntityUpdateSubscription] used as parameter for [PodcastDao.update] to
-     * update the `inSubscription` property of the existing entry.
-     */
-    fun updateSubscription(newValue: Boolean): PodcastEntityUpdateSubscription {
-        return PodcastEntityUpdateSubscription(
-            id = this.id,
-            inSubscriptions = newValue
-        )
-    }
 
     companion object {
         /**
@@ -113,6 +108,7 @@ data class Genre(
      */
     val parentId: Int,
 ) {
+
     companion object {
         /** Constant that means the genre does not have a parent genre. */
         const val NO_PARENT_GENRE = -1
