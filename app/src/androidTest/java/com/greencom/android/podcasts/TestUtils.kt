@@ -7,8 +7,8 @@ import kotlin.math.roundToLong
 /**
  * Create a test [PodcastEntity] object with a given ID.
  *
- * - `title`, `description`, `image` and `publisher` properties are filled according to the
- *   `*property*_*id*` scheme.
+ * - `title`, `description`, `image` and `publisher` string properties are filled
+ *   according to the `"*property*_*id*"` scheme.
  * - `explicitContent`, `episodeCount` and `latestPubDate` properties are random.
  * - `genreId` is `1`.
  */

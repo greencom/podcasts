@@ -29,7 +29,7 @@ class Repository @Inject constructor(
 
 //    private val _genresState = MutableStateFlow<State>(State.Init)
 //    /** Represents the state of loading genres using [State] class. */
-//    val genresState: StateFlow<State> = _genresState
+//    val genresState: StateFlow<State> = _genresState.asStateFlow()
 
     /**
      * Get a list of the best podcasts for a given genre ID. The result of the process
@@ -64,9 +64,9 @@ class Repository @Inject constructor(
      * Update the subscription on a given podcast with a given value using
      * the corresponding [PodcastLocalAttrs] entry.
      */
-    suspend fun updateSubscription(podcast: Podcast, newValue: Boolean) {
-        podcast.subscribed = newValue
-        podcastDao.updateAttrs(PodcastLocalAttrs(podcast.id, newValue))
+    suspend fun updateSubscription(podcast: Podcast, subscribed: Boolean) {
+        podcast.subscribed = subscribed
+        podcastDao.updateAttrs(PodcastLocalAttrs(podcast.id, subscribed))
     }
 
 //    /**

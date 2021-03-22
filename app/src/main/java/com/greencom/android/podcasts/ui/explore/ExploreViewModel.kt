@@ -65,8 +65,8 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     }
 
     /** Update the subscription on a given podcast. */
-    fun updateSubscription(podcast: Podcast, newValue: Boolean) = viewModelScope.launch {
-        repository.updateSubscription(podcast, newValue)
+    fun updateSubscription(podcast: Podcast, subscribed: Boolean) = viewModelScope.launch {
+        repository.updateSubscription(podcast, subscribed)
         setBestPodcastsHaveChanged(podcast.genreId, true)
     }
 
