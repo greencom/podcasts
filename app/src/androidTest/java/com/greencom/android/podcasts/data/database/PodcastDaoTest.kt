@@ -89,6 +89,53 @@ class PodcastDaoTest {
     }
 
     @Test
+    fun update_updatePodcast_returnUpdated() = runBlockingTest {
+        // GIVEN - Insert the podcast with subscription and `genreId` property.
+        val podcast = createTestPodcastEntity("id")
+        val podcastAttrs = PodcastLocalAttrs(podcast.id, true)
+        podcastDao.insert(podcast)
+        podcastDao.insertAttrs(podcastAttrs)
+
+        // WHEN - Update `genreId` property and get the podcast.
+        val updatedPodcast = podcast.copy(genreId = 100)
+        podcastDao.update(updatedPodcast)
+        val loaded = podcastDao.getPodcast(podcast.id)
+
+        // THEN - Loaded podcast is updated.
+        assertThat(loaded?.genreId).isEqualTo(updatedPodcast.genreId)
+        assertThat(loaded?.subscribed).isEqualTo(podcastAttrs.subscribed)
+    }
+
+    @Test
+    fun update_updatePodcasts_returnUpdated() = runBlockingTest {
+        // GIVEN - Insert the podcast list with subscription and `genreId` property.
+        val podcast1 = createTestPodcastEntity("one")
+        val podcast2 = createTestPodcastEntity("two")
+        val podcast3 = createTestPodcastEntity("three")
+        val attrs1 = PodcastLocalAttrs(podcast1.id, true)
+        val attrs2 = PodcastLocalAttrs(podcast2.id, true)
+        val attrs3 = PodcastLocalAttrs(podcast3.id, true)
+        podcastDao.insert(listOf(podcast1, podcast2, podcast3))
+        podcastDao.insertAttrs(listOf(attrs1, attrs2, attrs3))
+
+        // WHEN - Update the podcasts `genreId` properties and get the podcasts.
+        val newGenreId = 100
+        podcastDao.update(listOf(
+            podcast1.copy(genreId = newGenreId),
+            podcast2.copy(genreId = newGenreId),
+            podcast3.copy(genreId = newGenreId)
+        ))
+        val loadedWithOldGenreId = podcastDao.getBestPodcasts(podcast1.genreId)
+        val loadedWithNewGenreId = podcastDao.getBestPodcasts(newGenreId)
+
+        // THEN - loadedWithOld must be empty, loadedWithNew contains three podcasts with
+        //        `subscribed` set to true.
+        assertThat(loadedWithOldGenreId).isEmpty()
+        assertThat(loadedWithNewGenreId).hasSize(3)
+        assertThat(loadedWithNewGenreId[0].subscribed).isEqualTo(true)
+    }
+
+    @Test
     fun updateAttrs_updateSubscription_returnUpdatedPodcast() = runBlockingTest {
         // GIVEN - Insert a podcast without subscription.
         val podcast = createTestPodcastEntity("id")
@@ -101,7 +148,7 @@ class PodcastDaoTest {
         podcastDao.updateAttrs(newAttrs)
         val loaded = podcastDao.getPodcast(podcast.id)
 
-        // THEN - The podcast was updated.
+        // THEN - Loaded podcast is updated.
         assertThat(loaded?.subscribed).isEqualTo(!podcastAttrs.subscribed)
     }
 }

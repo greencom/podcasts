@@ -21,6 +21,12 @@ interface PodcastDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(podcasts: List<PodcastEntity>)
 
+    @Update
+    suspend fun update(podcast: PodcastEntity)
+
+    @Update
+    suspend fun update(podcasts: List<PodcastEntity>)
+
     /**
      * Insert the given [PodcastLocalAttrs] object into the 'podcast_local_table'.
      * [OnConflictStrategy.IGNORE] on conflict.
