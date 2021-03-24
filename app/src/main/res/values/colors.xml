@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global colors -->
+    <!-- Common colors -->
     <color name="transparent">#00FFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background_scrim">#80000000</color>
     <color name="shadows">#0D000000</color>
     <color name="orange_900">#FFF57C00</color>
-    <!-- Global colors -->
+    <!-- Common colors -->
 
     <!-- Light colors -->
     <color name="blue_light_900">#1976D2</color>

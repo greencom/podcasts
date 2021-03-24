@@ -9,7 +9,6 @@ import com.greencom.android.podcasts.network.BestPodcastsWrapper
 import com.greencom.android.podcasts.network.GenresWrapper
 
 // DTOs converters.
-
 /** Convert [BestPodcastsWrapper] object to a [PodcastEntity] list. */
 fun BestPodcastsWrapper.asPodcastEntities(): List<PodcastEntity> {
     return podcasts.map {
@@ -52,9 +51,9 @@ fun GenresWrapper.asGenreEntities(): List<GenreEntity> {
         )
     }
 }
+// DTOs converters.
 
 // Models converters.
-
 /**
  * Convert a [Podcast] list to a [PodcastEntity] list. Podcasts in the final list
  * will have [PodcastEntity.genreId] properties set to a given [genreId].
@@ -74,3 +73,4 @@ fun List<Podcast>.asPodcastEntities(genreId: Int): List<PodcastEntity> {
         )
     }
 }
+// Models converters.

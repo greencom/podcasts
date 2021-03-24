@@ -44,8 +44,8 @@
     <!-- Outlined toggle button with icon and rounded corners. -->
     <style name="Button.Toggle.Outline.Rounded.Icon" parent="Button.Outline.Rounded.Icon">
         <item name="android:checkable">true</item>
-        <item name="android:textColor">@color/toggle_button_text</item>
-        <item name="strokeColor">@color/toggle_button_stroke</item>
+        <item name="android:textColor">@color/button_toggle_outline_text</item>
+        <item name="strokeColor">@color/button_toggle_outline_stroke</item>
     </style>
 
 </resources>

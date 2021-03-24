@@ -24,7 +24,6 @@ import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.math.roundToInt
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
@@ -55,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set up a content of the player bottom sheet.
-        setupPlayer()
+        setupPlayerContent()
     }
 
     /** Make player closable on back pressed. */
@@ -210,7 +209,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Set up a content of the player bottom sheet. */
-    private fun setupPlayer() {
+    private fun setupPlayerContent() {
 
         // Select text views to make them auto scrollable, if needed.
         binding.player.expanded.title.isSelected = true
@@ -264,10 +263,8 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val thumbRadiusDefault = resources
-            .getDimension(R.dimen.slider_thumb_default).roundToInt()
-        val thumbRadiusIncreased = resources
-            .getDimension(R.dimen.slider_thumb_increased).roundToInt()
+        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.slider_thumb_default)
+        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.slider_thumb_increased)
 
         // OnSliderTouchListener is used for animating slider thumb radius.
         val onTouchListener = object : Slider.OnSliderTouchListener {
