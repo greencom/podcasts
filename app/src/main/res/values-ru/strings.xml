@@ -31,8 +31,8 @@
     <string name="explore_check_connection">Проверьте соединение с интернетом и повторите попытку</string>
     <string name="explore_try_again">Повторить</string>
     <string name="explore_podcasts_updated">Подкасты обновлены</string>
-    <!-- Do not forget to update ExploreTabGenre enum class, -->
-    <!-- if you edit this array (except non-genre `Main`). -->
+    <!-- Do not forget to update ExploreTabGenre enum class,
+    if you edit this array (except non-genre `Главное`). -->
     <string-array name="explore_tabs">
         <item>Главное</item>
         <item>Новости</item>

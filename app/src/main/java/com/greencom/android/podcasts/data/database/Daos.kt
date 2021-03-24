@@ -60,9 +60,7 @@ interface PodcastDao {
 
 /** Interface to interact with `episode_table`. */
 @Dao
-interface EpisodeDao {
-
-}
+interface EpisodeDao
 
 /** Interface to interact with `genre_table`. */
 @Dao

@@ -3,17 +3,17 @@
     <!-- NoActionBar instead of DarkActionBar. -->
     <style name="Theme.Podcasts" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <!-- System status bar. -->
+        <!-- System status bar -->
         <item name="android:statusBarColor">@color/surface_light</item>
         <item name="android:windowLightStatusBar">true</item>
 
-        <!-- System navigation bar. -->
+        <!-- System navigation bar -->
         <item name="android:navigationBarColor">@color/surface_light</item>
         <item name="android:windowLightNavigationBar">true</item>
 
         <item name="android:fontFamily">@font/roboto</item>
 
-        <!-- Default colors. -->
+        <!-- Default colors -->
         <item name="colorPrimary">@color/blue_light_900</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/surface_light</item>
@@ -23,8 +23,9 @@
         <item name="colorError">@color/red_light</item>
         <item name="colorOnError">@color/white</item>
         <item name="android:colorEdgeEffect">@color/grey_light_300</item>
+        <!-- Default colors -->
 
-        <!-- Custom colors. -->
+        <!-- Custom colors -->
         <item name="colorOnSurfacePrimary">@color/grey_light_900</item>
         <item name="colorOnSurfaceSecondary">@color/grey_light_700</item>
         <item name="colorOnSurfaceTertiary">@color/grey_light_500</item>
@@ -36,6 +37,7 @@
         <item name="colorPlayerBackground">@color/surface_light</item>
         <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
         <item name="colorPlayerPlay">@color/grey_light_700</item>
+        <!-- Custom colors -->
 
     </style>
 </resources>
