@@ -22,7 +22,7 @@
             android:id="@+id/cover"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/cover_description"
+            android:contentDescription="@string/player_cover_description"
             tools:srcCompat="@drawable/tools_podcast_cover_1400" />
 
     </androidx.cardview.widget.CardView>
@@ -74,7 +74,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/subscribe"
+        android:text="@string/explore_subscribe"
         app:icon="@drawable/ic_add_24"
         app:layout_constraintStart_toStartOf="@+id/cover_card"
         app:layout_constraintTop_toBottomOf="@+id/description" />
@@ -84,7 +84,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginStart="8dp"
-        android:contentDescription="@string/explicit_content_description"
+        android:contentDescription="@string/explore_explicit_content_description"
         app:layout_constraintBottom_toBottomOf="@+id/subscribe"
         app:layout_constraintStart_toEndOf="@+id/subscribe"
         app:layout_constraintTop_toTopOf="@+id/subscribe"

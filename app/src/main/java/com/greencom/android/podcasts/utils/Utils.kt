@@ -1,7 +1,10 @@
 package com.greencom.android.podcasts.utils
 
 import android.content.Context
+import android.view.Gravity
+import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 
 /** Global tag for logging. */
@@ -15,6 +18,20 @@ object PodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
 
     override fun areContentsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
         return oldItem == newItem
+    }
+}
+
+/**
+ * Create a toast with configured gravity to show up above the player. Use this single toast
+ * instead of creating multiple instances.
+ */
+fun createToast(context: Context): Toast {
+    return Toast.makeText(context, "", Toast.LENGTH_SHORT).apply {
+        setGravity(
+            Gravity.BOTTOM,
+            0,
+            context.resources.getDimensionPixelOffset(R.dimen.toast_y_offset)
+        )
     }
 }
 

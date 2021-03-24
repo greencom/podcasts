@@ -82,10 +82,10 @@ class ExplorePodcastViewHolder private constructor(
     private fun updateSubscribeButton(isChecked: Boolean) {
         if (isChecked) {
             binding.subscribe.icon = ContextCompat.getDrawable(context, R.drawable.ic_check_24)
-            binding.subscribe.text = context.getString(R.string.subscribed)
+            binding.subscribe.text = context.getString(R.string.explore_subscribed)
         } else {
             binding.subscribe.icon = ContextCompat.getDrawable(context, R.drawable.ic_add_24)
-            binding.subscribe.text = context.getString(R.string.subscribe)
+            binding.subscribe.text = context.getString(R.string.explore_subscribe)
         }
     }
 

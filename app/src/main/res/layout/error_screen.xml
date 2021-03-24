@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -11,19 +12,19 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="32dp"
-        android:contentDescription="@string/error_description"
         app:layout_constraintDimensionRatio="4:3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/vec_error_clouds" />
+        app:srcCompat="@drawable/vec_error_clouds"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/textView1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/something_went_wrong"
+        android:text="@string/explore_something_went_wrong"
         android:textAlignment="center"
         android:textColor="?attr/colorOnSurfaceTertiary"
         android:textSize="18sp"
@@ -36,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/check_connection"
+        android:text="@string/explore_check_connection"
         android:textAlignment="center"
         android:textColor="?attr/colorOnSurfaceHint"
         app:layout_constraintEnd_toEndOf="@+id/textView1"
@@ -49,7 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/try_again"
+        android:text="@string/explore_try_again"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"

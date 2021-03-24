@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global strings. -->
     <string name="app_name">Подкасты</string>
-    <string name="home">Главная</string>
-    <string name="explore">Находки</string>
-    <string name="activity">Активность</string>
-    <string name="search">Поиск</string>
-    <string name="subscribe">Подписаться</string>
-    <string name="subscribed">Подписка оформлена</string>
-    <string name="explicit_content_description">Взрослый контент</string>
-    <string name="something_went_wrong">Что-то пошло не так</string>
-    <string name="check_connection">Проверьте соединение с интернетом и повторите попытку</string>
-    <string name="try_again">Повторить</string>
-    <string name="error_description">Ошибка</string>
 
-    <!-- Temporary strings. -->
-    <string name="night_mode">Тёмная тема</string>
+    <!-- Player strings -->
+    <string name="player_cover_description">Обложка</string>
+    <string name="player_play_description">Играть</string>
+    <string name="player_pause_description">Пауза</string>
+    <string name="player_backward_description">Назад</string>
+    <string name="player_forward_description">Вперёд</string>
+    <string name="player_options_description">Дополнительно</string>
+    <!-- Player strings -->
 
-    <!-- Player strings. -->
-    <string name="cover_description">Обложка</string>
-    <string name="play_description">Играть</string>
-    <string name="pause_description">Пауза</string>
-    <string name="backward_description">Назад</string>
-    <string name="forward_description">Вперёд</string>
-    <string name="options_description">Дополнительно</string>
+    <!-- Bottom navigation -->
+    <string name="bottom_nav_home">Главная</string>
+    <string name="bottom_nav_explore">Находки</string>
+    <string name="bottom_nav_activity">Активность</string>
+    <!-- Bottom navigation -->
 
-    <!-- TabLayout tabs strings. -->
-    <string name="all">Главное</string>
-    <string name="news">Новости</string>
-    <string name="society_culture">Общество и Культура</string>
-    <string name="education">Образование</string>
-    <string name="science">Наука</string>
-    <string name="technology">Технологии</string>
-    <string name="business">Бизнес</string>
-    <string name="history">История</string>
-    <string name="arts">Искусство</string>
-    <string name="sports">Спорт</string>
-    <string name="health_fitness">Здоровье и Фитнес</string>
+    <!-- HomeFragment -->
+    <string name="home_dark_theme">Тёмная тема</string>
+    <!-- HomeFragment -->
+
+    <!-- ExploreFragment -->
+    <string name="explore_search">Поиск</string>
+    <string name="explore_subscribe">Подписаться</string>
+    <string name="explore_subscribed">Подписка оформлена</string>
+    <string name="explore_explicit_content_description">Нецензурная лексика</string>
+    <string name="explore_something_went_wrong">Что-то пошло не так</string>
+    <string name="explore_check_connection">Проверьте соединение с интернетом и повторите попытку</string>
+    <string name="explore_try_again">Повторить</string>
+    <string name="explore_podcasts_updated">Подкасты обновлены</string>
+    <!-- Do not forget to update ExploreTabGenre enum class, -->
+    <!-- if you edit this array (except non-genre `Main`). -->
+    <string-array name="explore_tabs">
+        <item>Главное</item>
+        <item>Новости</item>
+        <item>Общество и Культура</item>
+        <item>Образование</item>
+        <item>Наука</item>
+        <item>Технологии</item>
+        <item>Бизнес</item>
+        <item>История</item>
+        <item>Искусство</item>
+        <item>Спорт</item>
+        <item>Здоровье и Фитнес</item>
+    </string-array>
+    <!-- ExploreFragment -->
 
 </resources>

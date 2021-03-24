@@ -4,6 +4,7 @@ import com.greencom.android.podcasts.data.database.GenreEntity
 import com.greencom.android.podcasts.data.database.PodcastEntity
 import com.greencom.android.podcasts.data.database.PodcastLocalAttrs
 import com.greencom.android.podcasts.data.domain.Genre
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.BestPodcastsWrapper
 import com.greencom.android.podcasts.network.GenresWrapper
 
@@ -48,6 +49,28 @@ fun GenresWrapper.asGenreEntities(): List<GenreEntity> {
             id = it.id,
             name = it.name,
             parentId = it.parentId ?: Genre.NO_PARENT_GENRE,
+        )
+    }
+}
+
+// Models converters.
+
+/**
+ * Convert a [Podcast] list to a [PodcastEntity] list. Podcasts in the final list
+ * will have [PodcastEntity.genreId] properties set to a given [genreId].
+ */
+fun List<Podcast>.asPodcastEntities(genreId: Int): List<PodcastEntity> {
+    return map {
+        PodcastEntity(
+            id = it.id,
+            title = it.title,
+            description = it.description,
+            image = it.image,
+            publisher = it.publisher,
+            explicitContent = it.explicitContent,
+            episodeCount = it.episodeCount,
+            latestPubDate = it.latestPubDate,
+            genreId = genreId
         )
     }
 }

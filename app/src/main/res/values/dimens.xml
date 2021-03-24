@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global dimens. -->
+    <!-- Global dimens -->
     <dimen name="player_bottom_sheet_peek_height">113dp</dimen>
     <dimen name="bottom_nav_bar_height">56dp</dimen>
+    <dimen name="toast_y_offset">120dp</dimen>
+    <!-- Global dimens -->
 
-    <!-- Player dimens. -->
+    <!-- Player dimens -->
     <dimen name="slider_thumb_default">5dp</dimen>
     <dimen name="slider_thumb_increased">8dp</dimen>
+    <!-- Player dimens -->
 
 </resources>

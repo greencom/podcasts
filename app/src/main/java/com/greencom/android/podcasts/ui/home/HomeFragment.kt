@@ -7,8 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
-import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import com.greencom.android.podcasts.R
+import androidx.fragment.app.viewModels
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +21,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     /** HomeViewModel. */
-    private val viewModel: HomeViewModel by hiltNavGraphViewModels(R.id.nav_graph)
+    private val viewModel: HomeViewModel by viewModels()
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,

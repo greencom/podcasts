@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Navigation component setup.
         setupNavigation()
 
         // Player bottom sheet behavior setup.
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
             setupBottomSheetBehavior(resources.getDimension(R.dimen.bottom_nav_bar_height))
         }
 
+        // Set up a content of the player bottom sheet.
         setupPlayer()
     }
 
@@ -358,9 +360,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun NavController.navigateToStartingFragment(title: CharSequence) {
         when (title) {
-            resources.getString(R.string.home) -> navigate(R.id.action_global_homeFragment)
-            resources.getString(R.string.explore) -> navigate(R.id.action_global_exploreFragment)
-            resources.getString(R.string.activity) -> navigate(R.id.action_global_activityFragment)
+            resources.getString(R.string.bottom_nav_home) -> navigate(R.id.action_global_homeFragment)
+            resources.getString(R.string.bottom_nav_explore) -> navigate(R.id.action_global_exploreFragment)
+            resources.getString(R.string.bottom_nav_activity) -> navigate(R.id.action_global_activityFragment)
         }
     }
 }

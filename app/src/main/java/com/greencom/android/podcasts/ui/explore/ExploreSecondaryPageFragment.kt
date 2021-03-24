@@ -17,7 +17,9 @@ import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBin
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -71,10 +73,13 @@ class ExploreSecondaryPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // RecyclerView setup.
         setupRecyclerView()
+        // Swipe-to-refresh theming.
         customizeSwipeToRefresh()
 
         // Get best podcasts and display the current state of the process.
+        // Using launchWhenResumed to get rid of the freeze on first move to the second tab.
         lifecycleScope.launchWhenResumed {
             viewModel.getBestPodcasts(genreId).collectLatest { state ->
                 // Switch screens depending on the state.
@@ -89,9 +94,20 @@ class ExploreSecondaryPageFragment : Fragment() {
             }
         }
 
-        // Try to update the best podcasts from the error screen.
+        // Update the best podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.getBestPodcasts(genreId)
+        }
+
+        // Update the best podcasts with swipe-to-refresh.
+        binding.swipeToRefresh.setOnRefreshListener {
+            val isRefreshing = MutableStateFlow(true)
+            viewModel.updateBestPodcasts(genreId, isRefreshing)
+            lifecycleScope.launch {
+                isRefreshing.collectLatest { isRefreshing ->
+                    binding.swipeToRefresh.isRefreshing = isRefreshing
+                }
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.greencom.android.podcasts.repository
 
+import android.content.Context
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.asPodcastEntities
 import com.greencom.android.podcasts.data.createAttrs
 import com.greencom.android.podcasts.data.database.EpisodeDao
@@ -9,6 +11,7 @@ import com.greencom.android.podcasts.data.database.PodcastLocalAttrs
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.utils.State
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import okio.IOException
 import retrofit2.HttpException
@@ -21,15 +24,12 @@ import javax.inject.Singleton
  */
 @Singleton
 class Repository @Inject constructor(
+    @ApplicationContext private val appContext: Context,
     private val listenApi: ListenApiService,
     private val podcastDao: PodcastDao,
     private val episodeDao: EpisodeDao,
     private val genreDao: GenreDao,
 ) {
-
-//    private val _genresState = MutableStateFlow<State>(State.Init)
-//    /** Represents the state of loading genres using [State] class. */
-//    val genresState: StateFlow<State> = _genresState.asStateFlow()
 
     /**
      * Get a list of the best podcasts for a given genre ID. The result of the process
@@ -61,6 +61,52 @@ class Repository @Inject constructor(
     }
 
     /**
+     * Update the best podcasts for a given genre ID. This is done by fetching the best
+     * podcasts from ListenAPI. If fetching is success, set the new list into a
+     * [podcastsState] passed from ViewModel and set the success message into the [toastMessage].
+     * Otherwise, set the error message into the [toastMessage].
+     *
+     * @param genreId Genre ID to update the best podcasts for.
+     * @param podcastsState `MutableStateFlow<State>` to which the updated podcasts
+     *                      will be set.
+     * @param toastMessage `MutableStateFlow<String>` to which the toast message will
+     *                     be set.
+     * @param isRefreshing MutableStateFlow<Boolean>` to maintain the refreshing
+     *                     state of the swipe-to-refresh.
+     */
+    suspend fun updateBestPodcasts(
+        genreId: Int,
+        podcastsState: MutableStateFlow<State>,
+        toastMessage: MutableStateFlow<String>,
+        isRefreshing: MutableStateFlow<Boolean>
+    ) {
+        try {
+            // Fetch best podcasts from ListenAPI.
+            val response = listenApi.getBestPodcasts(genreId)
+
+            // Get the actual best podcasts and update them to exclude from the best.
+            val deprecated = podcastDao.getBestPodcasts(genreId)
+                .asPodcastEntities(Podcast.NOT_IN_BEST)
+            podcastDao.update(deprecated)
+
+            // Insert the fetched best podcasts to the database and return them via state.
+            podcastDao.insert(response.asPodcastEntities())
+            podcastDao.insertAttrs(response.createAttrs())
+
+            // Update states.
+            podcastsState.value = State.Success(podcastDao.getBestPodcasts(genreId))
+            toastMessage.value = appContext.resources.getString(R.string.explore_podcasts_updated)
+            isRefreshing.value = false
+        } catch (e: IOException) {
+            toastMessage.value = appContext.resources.getString(R.string.explore_something_went_wrong)
+            isRefreshing.value = false
+        } catch (e: HttpException) {
+            toastMessage.value = appContext.resources.getString(R.string.explore_something_went_wrong)
+            isRefreshing.value = false
+        }
+    }
+
+    /**
      * Update the subscription on a given podcast with a given value using
      * the corresponding [PodcastLocalAttrs] entry.
      */
@@ -68,25 +114,4 @@ class Repository @Inject constructor(
         podcast.subscribed = subscribed
         podcastDao.updateAttrs(PodcastLocalAttrs(podcast.id, subscribed))
     }
-
-//    /**
-//     * Fetch genre list from ListenAPI and insert it into the `genre_table`,
-//     * if the table is empty. Use [genresState] to get the state of loading process.
-//     */
-//    suspend fun fetchGenres() {
-//        if (genreDao.getSize() == 0) {
-//            _genresState.value = State.Loading
-//            try {
-//                val genres = listenApi.getGenres().asGenreEntities()
-//                genreDao.insert(genres)
-//                _genresState.value = State.Success(Unit)
-//            } catch (e: IOException) {
-//                _genresState.value = State.Error(e)
-//            } catch (e: HttpException) {
-//                _genresState.value = State.Error(e)
-//            }
-//        } else {
-//            _genresState.value = State.Success(Unit)
-//        }
-//    }
 }

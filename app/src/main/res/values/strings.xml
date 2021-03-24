@@ -1,42 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global strings. -->
     <string name="app_name">Podcasts</string>
-    <string name="home">Home</string>
-    <string name="explore">Explore</string>
-    <string name="activity">Activity</string>
-    <string name="search">Search</string>
-    <string name="subscribe">Subscribe</string>
-    <string name="subscribed">Subscribed</string>
-    <string name="explicit_content_description">Explicit content</string>
-    <string name="something_went_wrong">Something went wrong</string>
-    <string name="check_connection">Check your internet connection and try again</string>
-    <string name="try_again">Try again</string>
-    <string name="error_description">Error</string>
 
-    <!-- Temporary strings. -->
-    <string name="night_mode">Night mode</string>
+    <!-- Player strings -->
+    <string name="player_cover_description">Cover</string>
+    <string name="player_play_description">Play</string>
+    <string name="player_pause_description">Pause</string>
+    <string name="player_backward_description">Backward</string>
+    <string name="player_forward_description">Forward</string>
+    <string name="player_options_description">Options</string>
+    <!-- Player strings -->
 
-    <!-- Player strings. -->
-    <string name="cover_description">Cover</string>
-    <string name="play_description">Play</string>
-    <string name="pause_description">Pause</string>
-    <string name="backward_description">Backward</string>
-    <string name="forward_description">Forward</string>
-    <string name="options_description">Options</string>
+    <!-- Bottom navigation -->
+    <string name="bottom_nav_home">Home</string>
+    <string name="bottom_nav_explore">Explore</string>
+    <string name="bottom_nav_activity">Activity</string>
+    <!-- Bottom navigation -->
 
-    <!-- TabLayout tabs strings. -->
-    <string name="all">Main</string>
-    <string name="news">News</string>
-    <string name="society_culture">Society &amp; Culture</string>
-    <string name="education">Education</string>
-    <string name="science">Science</string>
-    <string name="technology">Technology</string>
-    <string name="business">Business</string>
-    <string name="history">History</string>
-    <string name="arts">Arts</string>
-    <string name="sports">Sports</string>
-    <string name="health_fitness">Health &amp; Fitness</string>
+    <!-- HomeFragment -->
+    <string name="home_dark_theme">Night mode</string>
+    <!-- HomeFragment -->
+
+    <!-- ExploreFragment -->
+    <string name="explore_search">Search</string>
+    <string name="explore_subscribe">Subscribe</string>
+    <string name="explore_subscribed">Subscribed</string>
+    <string name="explore_explicit_content_description">Explicit content</string>
+    <string name="explore_something_went_wrong">Something went wrong</string>
+    <string name="explore_check_connection">Check your internet connection and try again</string>
+    <string name="explore_try_again">Try again</string>
+    <string name="explore_podcasts_updated">Podcasts have been updated</string>
+    <!-- Do not forget to update ExploreTabGenre enum class, -->
+    <!-- if you edit this array (except non-genre `Main`). -->
+    <string-array name="explore_tabs">
+        <item>Main</item>
+        <item>News</item>
+        <item>Society &amp; Culture</item>
+        <item>Education</item>
+        <item>Science</item>
+        <item>Technology</item>
+        <item>Business</item>
+        <item>History</item>
+        <item>Arts</item>
+        <item>Sports</item>
+        <item>Health &amp; Fitness</item>
+    </string-array>
+    <!-- ExploreFragment -->
 
 </resources>
