@@ -11,9 +11,10 @@
         <item name="android:navigationBarColor">@color/surface_light</item>
         <item name="android:windowLightNavigationBar">true</item>
 
+        <!-- Default font family -->
         <item name="android:fontFamily">@font/roboto</item>
 
-        <!-- Default colors -->
+        <!-- Default colors start -->
         <item name="colorPrimary">@color/blue_light_900</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/surface_light</item>
@@ -23,21 +24,23 @@
         <item name="colorError">@color/red_light</item>
         <item name="colorOnError">@color/white</item>
         <item name="android:colorEdgeEffect">@color/grey_light_300</item>
-        <!-- Default colors -->
+        <!-- Default colors end -->
 
-        <!-- Custom colors -->
+        <!-- Custom colors start -->
         <item name="colorOnSurfacePrimary">@color/grey_light_900</item>
         <item name="colorOnSurfaceSecondary">@color/grey_light_700</item>
         <item name="colorOnSurfaceTertiary">@color/grey_light_500</item>
         <item name="colorOnSurfaceHint">@color/grey_light_300</item>
         <item name="colorOnSurfaceUtil">@color/grey_light_100</item>
-
         <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
+        <!-- Custom colors end -->
+
+        <!-- Player colors start -->
         <item name="colorPlayerBackground">@color/surface_light</item>
         <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
         <item name="colorPlayerPlay">@color/grey_light_700</item>
-        <!-- Custom colors -->
+        <!-- Player colors end -->
 
     </style>
 </resources>

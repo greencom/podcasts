@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Common colors -->
+    <!-- Common colors start -->
     <color name="transparent">#00FFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="background_scrim">#80000000</color>
     <color name="shadows">#0D000000</color>
     <color name="orange_900">#FFF57C00</color>
-    <!-- Common colors -->
+    <!-- Common colors end -->
 
-    <!-- Light colors -->
+    <!-- Light colors start -->
     <color name="blue_light_900">#1976D2</color>
     <color name="red_light">#B00020</color>
     <color name="surface_light">#FFFFFFFF</color>
@@ -20,9 +20,9 @@
     <color name="grey_light_300">#80868B</color>
     <color name="grey_light_100">#DADCE0</color>
     <color name="player_collapsed_background_light">#F8F9FA</color>
-    <!-- Light colors -->
+    <!-- Light colors end -->
 
-    <!-- Dark colors -->
+    <!-- Dark colors start -->
     <color name="blue_dark_900">#8AB4F8</color>
     <color name="red_dark">#CF6679</color>
     <color name="surface_dark">#222222</color>
@@ -33,6 +33,6 @@
     <color name="grey_dark_100">#424548</color>
     <color name="bottom_nav_view_background_dark">#222223</color>
     <color name="player_background_dark">#303134</color>
-    <!-- Dark colors -->
+    <!-- Dark colors end -->
 
 </resources>

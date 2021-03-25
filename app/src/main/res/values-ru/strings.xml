@@ -3,26 +3,26 @@
 
     <string name="app_name">Подкасты</string>
 
-    <!-- Player strings -->
+    <!-- Player strings start -->
     <string name="player_cover_description">Обложка</string>
     <string name="player_play_description">Играть</string>
     <string name="player_pause_description">Пауза</string>
     <string name="player_backward_description">Назад</string>
     <string name="player_forward_description">Вперёд</string>
     <string name="player_options_description">Дополнительно</string>
-    <!-- Player strings -->
+    <!-- Player strings end -->
 
-    <!-- Bottom navigation -->
+    <!-- Bottom navigation start -->
     <string name="bottom_nav_home">Главная</string>
     <string name="bottom_nav_explore">Находки</string>
     <string name="bottom_nav_activity">Активность</string>
-    <!-- Bottom navigation -->
+    <!-- Bottom navigation end -->
 
-    <!-- HomeFragment -->
+    <!-- HomeFragment start -->
     <string name="home_dark_theme">Тёмная тема</string>
-    <!-- HomeFragment -->
+    <!-- HomeFragment end -->
 
-    <!-- ExploreFragment -->
+    <!-- ExploreFragment start -->
     <string name="explore_search">Поиск</string>
     <string name="explore_subscribe">Подписаться</string>
     <string name="explore_subscribed">Подписка оформлена</string>
@@ -46,6 +46,6 @@
         <item>Спорт</item>
         <item>Здоровье и Фитнес</item>
     </string-array>
-    <!-- ExploreFragment -->
+    <!-- ExploreFragment end -->
 
 </resources>

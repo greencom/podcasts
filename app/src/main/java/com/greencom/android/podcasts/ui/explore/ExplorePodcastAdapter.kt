@@ -8,7 +8,7 @@ import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
@@ -50,9 +50,7 @@ class ExplorePodcastViewHolder private constructor(
 
     /** Fill item view depending on podcast's properties. */
     private fun fillView(podcast: Podcast) {
-        Glide.with(binding.cover.context)
-            .load(podcast.image)
-            .into(binding.cover)
+        binding.cover.load(podcast.image)
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
         // Remove all HTML tags from description.

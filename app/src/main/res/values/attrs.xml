@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global attrs -->
+    <!-- Global attrs start -->
     <attr name="colorOnSurfacePrimary" format="color" />
     <attr name="colorOnSurfaceSecondary" format="color" />
     <attr name="colorOnSurfaceTertiary" format="color" />
@@ -10,12 +10,12 @@
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorOutlinedButtonRipple" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
-    <!-- Global attrs -->
+    <!-- Global attrs end -->
 
-    <!-- Player attrs -->
+    <!-- Player attrs start -->
     <attr name="colorPlayerBackground" format="color" />
     <attr name="colorPlayerCollapsedBackground" format="color" />
     <attr name="colorPlayerPlay" format="color" />
-    <!-- Player attrs -->
+    <!-- Player attrs end -->
 
 </resources>

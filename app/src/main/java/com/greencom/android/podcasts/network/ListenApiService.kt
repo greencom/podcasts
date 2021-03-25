@@ -15,7 +15,7 @@ private const val BASE_URL = "https://listen-api.listennotes.com/api/v2/"
 
 // Logging setup.
 private val logging = HttpLoggingInterceptor().apply {
-    setLevel(HttpLoggingInterceptor.Level.BODY)
+    setLevel(HttpLoggingInterceptor.Level.BASIC)
 }
 private val httpClient = OkHttpClient.Builder().apply { addInterceptor(logging) }
 

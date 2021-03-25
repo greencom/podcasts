@@ -3,26 +3,26 @@
 
     <string name="app_name">Podcasts</string>
 
-    <!-- Player strings -->
+    <!-- Player strings start -->
     <string name="player_cover_description">Cover</string>
     <string name="player_play_description">Play</string>
     <string name="player_pause_description">Pause</string>
     <string name="player_backward_description">Backward</string>
     <string name="player_forward_description">Forward</string>
     <string name="player_options_description">Options</string>
-    <!-- Player strings -->
+    <!-- Player strings end -->
 
-    <!-- Bottom navigation -->
+    <!-- Bottom navigation start -->
     <string name="bottom_nav_home">Home</string>
     <string name="bottom_nav_explore">Explore</string>
     <string name="bottom_nav_activity">Activity</string>
-    <!-- Bottom navigation -->
+    <!-- Bottom navigation end -->
 
-    <!-- HomeFragment -->
+    <!-- HomeFragment start -->
     <string name="home_dark_theme">Night mode</string>
-    <!-- HomeFragment -->
+    <!-- HomeFragment end -->
 
-    <!-- ExploreFragment -->
+    <!-- ExploreFragment start -->
     <string name="explore_search">Search</string>
     <string name="explore_subscribe">Subscribe</string>
     <string name="explore_subscribed">Subscribed</string>
@@ -46,6 +46,6 @@
         <item>Sports</item>
         <item>Health &amp; Fitness</item>
     </string-array>
-    <!-- ExploreFragment -->
+    <!-- ExploreFragment end -->
 
 </resources>

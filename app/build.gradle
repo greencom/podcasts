@@ -43,16 +43,16 @@ android {
 
 dependencies {
 
+    // Coil
+    implementation "io.coil-kt:coil:$coil_version"
+
     // Paging 3
     implementation "androidx.paging:paging-runtime-ktx:$paging_version"
-
-    // Glide
-    implementation "com.github.bumptech.glide:glide:$glide_version"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$retrofitLogging_version"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttp_version"
 
     // Moshi
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"

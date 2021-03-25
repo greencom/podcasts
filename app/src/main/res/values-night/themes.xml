@@ -9,9 +9,10 @@
         <!-- System navigation bar color setup is moved to v27 versions of themes.xml because
         the android:windowLightNavigationBar attribute is available only on API 27 and above. -->
 
+        <!-- Default font family -->
         <item name="android:fontFamily">@font/roboto</item>
 
-        <!-- Default colors -->
+        <!-- Default colors start -->
         <item name="colorPrimary">@color/blue_dark_900</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="colorSurface">@color/surface_dark</item>
@@ -21,21 +22,23 @@
         <item name="colorError">@color/red_dark</item>
         <item name="colorOnError">@color/black</item>
         <item name="android:colorEdgeEffect">@color/grey_dark_300</item>
-        <!-- Default colors -->
+        <!-- Default colors end -->
 
-        <!-- Custom colors -->
+        <!-- Custom colors start -->
         <item name="colorOnSurfacePrimary">@color/grey_dark_900</item>
         <item name="colorOnSurfaceSecondary">@color/grey_dark_700</item>
         <item name="colorOnSurfaceTertiary">@color/grey_dark_500</item>
         <item name="colorOnSurfaceHint">@color/grey_dark_300</item>
         <item name="colorOnSurfaceUtil">@color/grey_dark_100</item>
-
         <item name="colorSwipeToRefreshBackground">@color/grey_dark_100</item>
         <item name="colorBottomNavViewBackground">@color/bottom_nav_view_background_dark</item>
+        <!-- Custom colors end -->
+
+        <!-- Player colors start -->
         <item name="colorPlayerBackground">@color/player_background_dark</item>
         <item name="colorPlayerCollapsedBackground">@color/player_background_dark</item>
         <item name="colorPlayerPlay">@color/blue_dark_900</item>
-        <!-- Custom colors -->
+        <!-- Player colors end -->
 
     </style>
 </resources>
