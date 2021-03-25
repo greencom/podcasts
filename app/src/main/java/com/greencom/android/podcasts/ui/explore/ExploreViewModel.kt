@@ -32,47 +32,23 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     private val sportsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val healthCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
 
-    // Show whether any item on the appropriate list has changed.
-    private var newsHasChanged = false
-    private var societyHasChanged = false
-    private var educationHasChanged = false
-    private var scienceHasChanged = false
-    private var technologyHasChanged = false
-    private var businessHasChanged = false
-    private var historyHasChanged = false
-    private var artsHasChanged = false
-    private var sportsHasChanged = false
-    private var healthHasChanged = false
-
     private val _toastMessage = MutableStateFlow("")
     /** `StateFlow` toast message. */
     val toastMessage = _toastMessage.asStateFlow()
 
     /** Get a list of the best podcasts for a given genre ID. */
     fun getBestPodcasts(genreId: Int): StateFlow<State> {
-        // Get from in-memory cache, if the appropriate podcast list has not changed.
-        if (bestPodcastsHaveNotChanged(genreId)) {
-            val lastResult = getBestPodcastsFromCache(genreId).asStateFlow()
-            if (lastResult.value is State.Success<*>) {
-                return lastResult
-            }
-        }
-
         // Get from repository (database or network).
-        // Set State.Loading.
         cacheBestPodcasts(genreId, State.Loading)
         viewModelScope.launch {
             repository.getBestPodcasts(genreId, getBestPodcastsFromCache(genreId))
         }
-        // Reset `*bestPodcasts*Changed` value.
-        setBestPodcastsHaveChanged(genreId, false)
         return getBestPodcastsFromCache(genreId).asStateFlow()
     }
 
     /** Update the subscription on a given podcast. */
     fun updateSubscription(podcast: Podcast, subscribed: Boolean) = viewModelScope.launch {
         repository.updateSubscription(podcast, subscribed)
-        setBestPodcastsHaveChanged(podcast.genreId, true)
     }
 
     /**
@@ -127,41 +103,5 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             else -> null
         } ?: MutableStateFlow(
             State.Error(IllegalArgumentException("No information about the given genre ID")))
-    }
-
-    /** Set the corresponding `*bestPodcasts*Changed` property to a given value. */
-    private fun setBestPodcastsHaveChanged(genreId: Int, value: Boolean) {
-        when (genreId) {
-            ExploreTabGenre.NEWS.id -> newsHasChanged = value
-            ExploreTabGenre.SOCIETY_AND_CULTURE.id -> societyHasChanged = value
-            ExploreTabGenre.EDUCATION.id -> educationHasChanged = value
-            ExploreTabGenre.SCIENCE.id -> scienceHasChanged = value
-            ExploreTabGenre.TECHNOLOGY.id -> technologyHasChanged = value
-            ExploreTabGenre.BUSINESS.id -> businessHasChanged = value
-            ExploreTabGenre.HISTORY.id -> historyHasChanged = value
-            ExploreTabGenre.ARTS.id -> artsHasChanged = value
-            ExploreTabGenre.SPORTS.id -> sportsHasChanged = value
-            ExploreTabGenre.HEALTH_AND_FITNESS.id -> healthHasChanged = value
-        }
-    }
-
-    /**
-     * Return `true` if the corresponding podcast list has not changed.
-     * Otherwise, return `false`.
-     */
-    private fun bestPodcastsHaveNotChanged(genreId: Int): Boolean {
-        return when (genreId) {
-            ExploreTabGenre.NEWS.id -> !newsHasChanged
-            ExploreTabGenre.SOCIETY_AND_CULTURE.id -> !societyHasChanged
-            ExploreTabGenre.EDUCATION.id -> !educationHasChanged
-            ExploreTabGenre.SCIENCE.id -> !scienceHasChanged
-            ExploreTabGenre.TECHNOLOGY.id -> !technologyHasChanged
-            ExploreTabGenre.BUSINESS.id -> !businessHasChanged
-            ExploreTabGenre.HISTORY.id -> !historyHasChanged
-            ExploreTabGenre.ARTS.id -> !artsHasChanged
-            ExploreTabGenre.SPORTS.id -> !sportsHasChanged
-            ExploreTabGenre.HEALTH_AND_FITNESS.id -> !healthHasChanged
-            else -> true
-        }
     }
 }
