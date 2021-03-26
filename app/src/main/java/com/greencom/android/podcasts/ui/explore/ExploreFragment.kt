@@ -6,13 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
+import com.greencom.android.podcasts.utils.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 /**
  * Contains lists of the best podcasts for different genres implemented as tabs for
@@ -44,17 +43,12 @@ class ExploreFragment : Fragment() {
         // TabLayout and ViewPager2 setup.
         setupTabLayout()
         // Create a single snackbar to show messages without overloading.
-        val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_LONG)
+        val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
 
-        // Observe toast messages.
-        lifecycleScope.launchWhenStarted {
-            viewModel.toastMessage.collectLatest { message ->
-                if (message.isNotEmpty()) {
-                    snackbar.setText(message)
-                    snackbar.show()
-                    viewModel.resetToast()
-                }
-            }
+        // Observe viewModel messages.
+        viewModel.message.observeEvent(viewLifecycleOwner) { message ->
+            snackbar.setText(message)
+            snackbar.show()
         }
     }
 

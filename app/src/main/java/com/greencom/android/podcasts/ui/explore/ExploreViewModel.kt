@@ -1,11 +1,17 @@
 package com.greencom.android.podcasts.ui.explore
 
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
+import com.greencom.android.podcasts.utils.Event
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,9 +24,12 @@ import javax.inject.Inject
  * and [ExploreSecondaryPageFragment].
  */
 @HiltViewModel
-class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class ExploreViewModel @Inject constructor(
+    @ApplicationContext private val appContext: Context,
+    private val repository: Repository
+) : ViewModel() {
 
-    // In-memory cached the best podcasts by genre.
+    // In-memory cached the best podcasts by genre (tab).
     private val newsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val societyCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val educationCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
@@ -32,47 +41,52 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     private val sportsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val healthCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
 
-    private val _toastMessage = MutableStateFlow("")
-    /** `StateFlow` toast message. */
-    val toastMessage = _toastMessage.asStateFlow()
+    private val _message = MutableLiveData<Event<String>>()
+    /** `LiveData<Event<String>>` message to show by toast or snackbar. */
+    val message: LiveData<Event<String>> get() = _message
 
     /** Get a list of the best podcasts for a given genre ID. */
     fun getBestPodcasts(genreId: Int): StateFlow<State> {
-        // Get from repository (database or network).
-        cacheBestPodcasts(genreId, State.Loading)
+        writeToCache(genreId, State.Loading)
         viewModelScope.launch {
-            repository.getBestPodcasts(genreId, getBestPodcastsFromCache(genreId))
+            val state = repository.getBestPodcasts(genreId)
+            writeToCache(genreId, state)
         }
-        return getBestPodcastsFromCache(genreId).asStateFlow()
+        return getFromCache(genreId).asStateFlow()
     }
 
-    /** Update the subscription on a given podcast. */
+    /**
+     * Update the best podcasts for a given genre ID. Returns the result as a [State] object.
+     */
+    // Use Dispatchers.IO to get rid of the freeze on first swipe-to-refresh.
+    fun updateBestPodcasts(genreId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            when (val state = repository.updateBestPodcasts(genreId)) {
+                is State.Success<*> -> {
+                    writeToCache(genreId, state)
+                    setMessage(appContext.getString(R.string.explore_podcasts_updated))
+                }
+                is State.Error -> {
+                    setMessage(appContext.getString(R.string.explore_something_went_wrong))
+                }
+            }
+        }
+    }
+
+    /** Update the subscription on a podcast with a given value. */
     fun updateSubscription(podcast: Podcast, subscribed: Boolean) = viewModelScope.launch {
         repository.updateSubscription(podcast, subscribed)
     }
 
-    /**
-     * Update the best podcasts for a given genre ID. Pass the `MutableStateFlow<Boolean>`
-     * [isRefreshing] in addition to maintain the refreshing state of the swipe-to-refresh.
-     */
-    // Using Dispatchers.IO to get rid of the freeze on first swipe-to-refresh.
-    fun updateBestPodcasts(genreId: Int, isRefreshing: MutableStateFlow<Boolean>) =
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.updateBestPodcasts(
-                genreId,
-                getBestPodcastsFromCache(genreId),
-                _toastMessage,
-                isRefreshing
-            )
-        }
-
-    /** Set [toastMessage] value to an empty string. */
-    fun resetToast() {
-        _toastMessage.value = ""
+    /** Set a given string into [message]. */
+    private fun setMessage(string: String) {
+        _message.postValue(Event(string))
     }
 
-    /** Cache the best podcasts based on the genre ID with a given [State]. */
-    private fun cacheBestPodcasts(genreId: Int, state: State) {
+    /**
+     * Write to cache the appropriate [State] with the best podcasts based on the genre ID.
+     */
+    private fun writeToCache(genreId: Int, state: State) {
         when (genreId) {
             ExploreTabGenre.NEWS.id -> newsCache.value = state
             ExploreTabGenre.SOCIETY_AND_CULTURE.id -> societyCache.value = state
@@ -87,8 +101,14 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
-    /** Get the best podcasts from the in-memory cache for a given genre ID. */
-    private fun getBestPodcastsFromCache(genreId: Int): MutableStateFlow<State> {
+    /**
+     * Get the appropriate `MutableStateFlow` of [State] with the best podcasts from the
+     * cache based on the genre ID. Return MutableStateFlow<State.Error()> with
+     * [IllegalArgumentException] if there is no cache for a given ID.
+     *
+     * @return `MutableStateFlow<State>`.
+     */
+    private fun getFromCache(genreId: Int): MutableStateFlow<State> {
         return when (genreId) {
             ExploreTabGenre.NEWS.id -> newsCache
             ExploreTabGenre.SOCIETY_AND_CULTURE.id -> societyCache
@@ -102,6 +122,6 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             ExploreTabGenre.HEALTH_AND_FITNESS.id -> healthCache
             else -> null
         } ?: MutableStateFlow(
-            State.Error(IllegalArgumentException("No information about the given genre ID")))
+            State.Error(IllegalArgumentException("There is no cache for a given ID")))
     }
 }
