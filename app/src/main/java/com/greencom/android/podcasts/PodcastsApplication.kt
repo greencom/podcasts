@@ -12,7 +12,19 @@ class PodcastsApplication : Application() {
 
         // Timber initialization.
         if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
+            Timber.plant(object : Timber.DebugTree() {
+                override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+                    super.log(priority, "global___$tag", message, t)
+                }
+
+                override fun createStackElementTag(element: StackTraceElement): String {
+                    return String.format(
+                        "%s/%s",
+                        super.createStackElementTag(element),
+                        element.methodName,
+                    )
+                }
+            })
         }
     }
 }
