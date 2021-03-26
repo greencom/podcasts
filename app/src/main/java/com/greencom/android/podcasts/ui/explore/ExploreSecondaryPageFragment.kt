@@ -29,7 +29,6 @@ private const val GENRE_ID = "genre_id"
  * Use [ExploreSecondaryPageFragment.newInstance] to create a new instance
  * of the fragment with provided parameters.
  */
-@Suppress("UNCHECKED_CAST")
 @AndroidEntryPoint
 class ExploreSecondaryPageFragment : Fragment() {
 
@@ -87,6 +86,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
                 // Submit the list of the best podcasts on success.
                 if (state is State.Success<*>) {
+                    @Suppress("UNCHECKED_CAST")
                     adapter.submitList(state.data as List<Podcast>)
                 }
             }
@@ -102,7 +102,7 @@ class ExploreSecondaryPageFragment : Fragment() {
             viewModel.updateBestPodcasts(genreId)
         }
 
-        // viewModel.updateBestPodcasts() always set new viewModel.message,
+        // viewModel.updateBestPodcasts() always set new value to viewModel.message,
         // so observe it to cancel the refreshing animation.
         viewModel.message.observe(viewLifecycleOwner) {
             binding.swipeToRefresh.isRefreshing = false

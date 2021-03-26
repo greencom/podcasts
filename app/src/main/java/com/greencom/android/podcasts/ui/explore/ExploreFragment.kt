@@ -46,8 +46,8 @@ class ExploreFragment : Fragment() {
         val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
 
         // Observe viewModel messages.
-        viewModel.message.observeEvent(viewLifecycleOwner) { message ->
-            snackbar.setText(message)
+        viewModel.message.observeEvent(viewLifecycleOwner) { res ->
+            snackbar.setText(getString(res))
             snackbar.show()
         }
     }

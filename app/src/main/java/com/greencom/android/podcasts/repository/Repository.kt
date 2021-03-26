@@ -39,7 +39,7 @@ class Repository @Inject constructor(
         if (podcasts.isNotEmpty()) {
             return State.Success(podcasts)
         }
-        // Try to fetch from ListenAPI.
+        // Try to fetch from ListenAPI otherwise.
         return try {
             val response = listenApi.getBestPodcasts(genreId)
             podcastDao.insert(response.asPodcastEntities())
@@ -61,12 +61,10 @@ class Repository @Inject constructor(
         return try {
             // Try to fetch the best podcasts from ListenAPI.
             val response = listenApi.getBestPodcasts(genreId)
-
             // Get the actual best podcasts and update them to exclude from the best.
             val deprecated = podcastDao.getBestPodcasts(genreId)
                 .asPodcastEntities(Podcast.NOT_IN_BEST)
             podcastDao.update(deprecated)
-
             // Insert the fetched best podcasts and their attrs into the database.
             podcastDao.insert(response.asPodcastEntities())
             podcastDao.insertAttrs(response.createAttrs())

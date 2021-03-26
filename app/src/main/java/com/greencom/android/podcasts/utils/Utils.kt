@@ -7,9 +7,6 @@ import androidx.recyclerview.widget.DiffUtil
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 
-/** Global tag for logging. */
-const val GLOBAL_TAG = "GLOBAL_TAG"
-
 /** Callback for calculating the diff between two non-null [Podcast]s in a list. */
 object PodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
     override fun areItemsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {

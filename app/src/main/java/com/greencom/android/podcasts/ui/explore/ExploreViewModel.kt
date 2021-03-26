@@ -1,6 +1,6 @@
 package com.greencom.android.podcasts.ui.explore
 
-import android.content.Context
+import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,7 +11,6 @@ import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.Event
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,10 +23,7 @@ import javax.inject.Inject
  * and [ExploreSecondaryPageFragment].
  */
 @HiltViewModel
-class ExploreViewModel @Inject constructor(
-    @ApplicationContext private val appContext: Context,
-    private val repository: Repository
-) : ViewModel() {
+class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     // In-memory cached the best podcasts by genre (tab).
     private val newsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
@@ -41,9 +37,13 @@ class ExploreViewModel @Inject constructor(
     private val sportsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
     private val healthCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
 
-    private val _message = MutableLiveData<Event<String>>()
-    /** `LiveData<Event<String>>` message to show by toast or snackbar. */
-    val message: LiveData<Event<String>> get() = _message
+    /** Backing property for a [message]. */
+    private val _message = MutableLiveData<Event<Int>>()
+    /**
+     * `LiveData<Event<Int>>` that contains a string resource for a message
+     * to show by toast or snackbar.
+     */
+    val message: LiveData<Event<Int>> get() = _message
 
     /** Get a list of the best podcasts for a given genre ID. */
     fun getBestPodcasts(genreId: Int): StateFlow<State> {
@@ -64,10 +64,10 @@ class ExploreViewModel @Inject constructor(
             when (val state = repository.updateBestPodcasts(genreId)) {
                 is State.Success<*> -> {
                     writeToCache(genreId, state)
-                    setMessage(appContext.getString(R.string.explore_podcasts_updated))
+                    setMessage(R.string.explore_podcasts_updated)
                 }
                 is State.Error -> {
-                    setMessage(appContext.getString(R.string.explore_something_went_wrong))
+                    setMessage(R.string.explore_something_went_wrong)
                 }
             }
         }
@@ -78,9 +78,9 @@ class ExploreViewModel @Inject constructor(
         repository.updateSubscription(podcast, subscribed)
     }
 
-    /** Set a given string into [message]. */
-    private fun setMessage(string: String) {
-        _message.postValue(Event(string))
+    /** Set a given string resource into [message]. */
+    private fun setMessage(@StringRes res: Int) {
+        _message.postValue(Event(res))
     }
 
     /**
