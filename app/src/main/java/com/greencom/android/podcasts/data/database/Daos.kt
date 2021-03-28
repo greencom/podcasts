@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
 import com.greencom.android.podcasts.data.domain.Podcast
+import kotlinx.coroutines.flow.Flow
 
 /** Interface to interact with `podcast_table` table. */
 @Dao
@@ -56,6 +57,12 @@ interface PodcastDao {
             "INNER JOIN podcast_local_table local ON podcast_table.id = local.id " +
             "WHERE podcast_table.genre_id = :genreId")
     suspend fun getBestPodcasts(genreId: Int): List<Podcast>
+
+    /** Flow of a list of the best podcasts for a given genre ID. */
+    @Query("SELECT *, local.subscribed FROM podcast_table " +
+            "INNER JOIN podcast_local_table local ON podcast_table.id = local.id " +
+            "WHERE podcast_table.genre_id = :genreId")
+    fun getBestPodcastsFlow(genreId: Int): Flow<List<Podcast>>
 }
 
 /** Interface to interact with `episode_table`. */

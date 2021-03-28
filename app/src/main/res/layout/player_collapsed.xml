@@ -38,6 +38,8 @@
         android:gravity="center_vertical"
         android:paddingHorizontal="8dp"
         android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:text="Герта Мюллер — Чёрный парк"
         android:textColor="?attr/colorOnSurfaceSecondary"
         android:textSize="14sp"

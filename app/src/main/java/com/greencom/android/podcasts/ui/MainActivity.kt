@@ -53,8 +53,9 @@ class MainActivity : AppCompatActivity() {
             setupBottomSheetBehavior(resources.getDimension(R.dimen.bottom_nav_bar_height))
         }
 
-        // Set up a content of the player bottom sheet.
-        setupPlayerContent()
+        // Set listeners for the player content.
+        setCollapsedContentListeners()
+        setExpandedContentListeners()
     }
 
     /** Make player closable on back pressed. */
@@ -206,19 +207,6 @@ class MainActivity : AppCompatActivity() {
 
         // Animate alpha of the background behind player.
         binding.background.alpha = slideOffset
-    }
-
-    /** Set up a content of the player bottom sheet. */
-    private fun setupPlayerContent() {
-
-        // Select text views to make them auto scrollable, if needed.
-        binding.player.expanded.title.isSelected = true
-        binding.player.expanded.publisher.isSelected = true
-        binding.player.collapsed.title.isSelected = true
-
-        // Set listeners for the player content.
-        setCollapsedContentListeners()
-        setExpandedContentListeners()
     }
 
     /** Set listeners for the collapsed content of the player. */

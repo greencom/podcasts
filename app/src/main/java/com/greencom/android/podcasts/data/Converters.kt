@@ -8,7 +8,7 @@ import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.network.BestPodcastsWrapper
 import com.greencom.android.podcasts.network.GenresWrapper
 
-// DTOs converters.
+// DTOs converters start.
 /** Convert [BestPodcastsWrapper] object to a [PodcastEntity] list. */
 fun BestPodcastsWrapper.asPodcastEntities(): List<PodcastEntity> {
     return podcasts.map {
@@ -51,9 +51,9 @@ fun GenresWrapper.asGenreEntities(): List<GenreEntity> {
         )
     }
 }
-// DTOs converters.
+// DTOs converters end.
 
-// Models converters.
+// Models converters start.
 /**
  * Convert a [Podcast] list to a [PodcastEntity] list. Podcasts in the final list
  * will have [PodcastEntity.genreId] properties set to a given [genreId].
@@ -73,4 +73,10 @@ fun List<Podcast>.asPodcastEntities(genreId: Int): List<PodcastEntity> {
         )
     }
 }
-// Models converters.
+
+/**
+ * Edit the podcast attributes and return [PodcastLocalAttrs] object to update
+ * the corresponding entry in the database.
+ */
+fun Podcast.editAttrs(subscribed: Boolean) = PodcastLocalAttrs(id, subscribed)
+// Models converters end.

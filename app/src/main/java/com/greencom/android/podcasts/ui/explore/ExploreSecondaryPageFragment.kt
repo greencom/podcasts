@@ -17,6 +17,7 @@ import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBin
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 
 // Initialization parameters.
@@ -34,6 +35,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExploreSecondaryPageBinding? = null
+
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
@@ -45,7 +47,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     /** RecyclerView adapter. */
     private val adapter by lazy {
-        ExplorePodcastAdapter(viewModel::updateSubscription)
+        ExplorePodcastAdapter(viewModel::updateSubscriptionFlow)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +69,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         return binding.root
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -76,15 +79,12 @@ class ExploreSecondaryPageFragment : Fragment() {
         customizeSwipeToRefresh()
 
         // Get the best podcasts and display the result.
-        // Use launchWhenResumed to get rid of the freeze on first move to the second tab.
         lifecycleScope.launchWhenResumed {
-            viewModel.getBestPodcasts(genreId).collectLatest { state ->
-                // Switch screens depending on the state.
+            viewModel.getBestPodcastsFlow(genreId).collectLatest { state ->
                 binding.swipeToRefresh.isVisible = state is State.Success<*>
                 binding.loading.isVisible = state is State.Loading
                 binding.error.root.isVisible = state is State.Error
 
-                // Submit the list of the best podcasts on success.
                 if (state is State.Success<*>) {
                     @Suppress("UNCHECKED_CAST")
                     adapter.submitList(state.data as List<Podcast>)
@@ -92,22 +92,49 @@ class ExploreSecondaryPageFragment : Fragment() {
             }
         }
 
-        // Update the best podcasts from the error screen.
-        binding.error.tryAgain.setOnClickListener {
-            viewModel.getBestPodcasts(genreId)
-        }
-
-        // Update the best podcasts with swipe-to-refresh.
-        binding.swipeToRefresh.setOnRefreshListener {
-            viewModel.updateBestPodcasts(genreId)
-        }
-
-        // viewModel.updateBestPodcasts() always set new value to viewModel.message,
+        // viewModel.updateBestPodcasts() always set a new value the to viewModel.message,
         // so observe it to cancel the refreshing animation.
         viewModel.message.observe(viewLifecycleOwner) {
             binding.swipeToRefresh.isRefreshing = false
             binding.podcastList.smoothScrollToPosition(0)
         }
+
+        // Update the best podcasts from the error screen.
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchBestPodcastsFlow(genreId)
+        }
+
+        // Update the best podcasts with swipe-to-refresh.
+        binding.swipeToRefresh.setOnRefreshListener {
+            viewModel.updateBestPodcastsFlow(genreId)
+        }
+
+//        // Get the best podcasts and display the result.
+//        // Use launchWhenResumed to get rid of the freeze on first move to the second tab.
+//        lifecycleScope.launchWhenResumed {
+//            viewModel.getBestPodcasts(genreId).collectLatest { state ->
+//                // Switch screens depending on the state.
+//                binding.swipeToRefresh.isVisible = state is State.Success<*>
+//                binding.loading.isVisible = state is State.Loading
+//                binding.error.root.isVisible = state is State.Error
+//
+//                // Submit the list of the best podcasts on success.
+//                if (state is State.Success<*>) {
+//                    @Suppress("UNCHECKED_CAST")
+//                    adapter.submitList(state.data as List<Podcast>)
+//                }
+//            }
+//        }
+//
+//        // Update the best podcasts from the error screen.
+//        binding.error.tryAgain.setOnClickListener {
+//            viewModel.getBestPodcasts(genreId)
+//        }
+//
+//        // Update the best podcasts with swipe-to-refresh.
+//        binding.swipeToRefresh.setOnRefreshListener {
+//            viewModel.updateBestPodcasts(genreId)
+//        }
     }
 
     override fun onDestroy() {

@@ -31,6 +31,7 @@
     <string name="explore_check_connection">Check your internet connection and try again</string>
     <string name="explore_try_again">Try again</string>
     <string name="explore_podcasts_updated">Podcasts have been updated</string>
+    <string name="explore_back_description">Go back</string>
     <!-- Do not forget to update ExploreTabGenre enum class,
     if you edit this array (except non-genre `Main`). -->
     <string-array name="explore_tabs">
