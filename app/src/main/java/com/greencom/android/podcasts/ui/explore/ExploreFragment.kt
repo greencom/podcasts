@@ -50,6 +50,9 @@ class ExploreFragment : Fragment() {
             snackbar.setText(getString(res))
             snackbar.show()
         }
+
+        // TODO: Remove test code
+//        binding.searchButton.setOnClickListener { viewModel.transferNews() }
     }
 
     override fun onDestroyView() {

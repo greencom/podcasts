@@ -5,6 +5,7 @@ import android.view.Gravity
 import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.database.PodcastEntity
 import com.greencom.android.podcasts.data.domain.Podcast
 
 /** Callback for calculating the diff between two non-null [Podcast]s in a list. */
@@ -16,6 +17,22 @@ object PodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {
     override fun areContentsTheSame(oldItem: Podcast, newItem: Podcast): Boolean {
         return oldItem == newItem
     }
+}
+
+/**
+ * Filter the [PodcastEntity] list to exclude items that not represented in a given list.
+ * This method uses [PodcastEntity.id]s to calculate the difference between lists.
+ *
+ * [PodcastEntity]s in the resulting list have `genreId` properties with [Podcast.NOT_IN_BEST]
+ * value.
+ *
+ * @return Filtered `List<PodcastEntity>`.
+ */
+fun List<PodcastEntity>.filterNotIn(new: List<PodcastEntity>): List<PodcastEntity> {
+    val newIds = new.map { it.id }
+    return this
+        .filter { it.id !in newIds }
+        .map { it.copy(genreId = Podcast.NOT_IN_BEST) }
 }
 
 /**

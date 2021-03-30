@@ -74,6 +74,9 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         _message.postValue(Event(res))
     }
 
+    // TODO: Remove test code
+    fun transferNews() = viewModelScope.launch { repository.transferNews() }
+
 //    // In-memory cached the best podcasts by genre (tab).
 //    private val newsCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
 //    private val societyCache: MutableStateFlow<State> by lazy { MutableStateFlow(State.Init) }
