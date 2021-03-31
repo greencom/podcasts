@@ -17,29 +17,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cover_card"
+    <ImageView
+        android:id="@+id/cover"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="40dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="0dp"
+        android:contentDescription="@string/player_cover_description"
         app:layout_constraintDimensionRatio="W,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/cover"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/player_cover_description"
-            app:srcCompat="@drawable/tools_podcast_cover_1400"
-            tools:srcCompat="@drawable/tools_podcast_cover_1400" />
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/tools_podcast_cover_1400"
+        tools:srcCompat="@drawable/tools_podcast_cover_1400" />
 
     <TextView
         android:id="@+id/title"
@@ -56,9 +47,9 @@
         android:text="Герта Мюллер — Чёрный парк"
         android:textColor="?attr/colorOnSurfaceSecondary"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/cover_card"
-        app:layout_constraintStart_toStartOf="@+id/cover_card"
-        app:layout_constraintTop_toBottomOf="@+id/cover_card"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
+        app:layout_constraintStart_toStartOf="@+id/cover"
+        app:layout_constraintTop_toBottomOf="@+id/cover"
         tools:text="Герта Мюллер — Чёрный парк" />
 
     <TextView
@@ -76,8 +67,8 @@
         android:text="Чтение"
         android:textColor="?attr/colorOnSurfaceTertiary"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="@+id/cover_card"
-        app:layout_constraintStart_toStartOf="@+id/cover_card"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
+        app:layout_constraintStart_toStartOf="@+id/cover"
         app:layout_constraintTop_toBottomOf="@+id/title"
         tools:text="Чтение" />
 
@@ -108,8 +99,8 @@
         android:text="1:00"
         android:textColor="?attr/colorOnSurfaceSecondary"
         android:textSize="12sp"
-        app:layout_constraintStart_toStartOf="@+id/cover_card"
-        app:layout_constraintTop_toBottomOf="@+id/cover_card"
+        app:layout_constraintStart_toStartOf="@+id/cover"
+        app:layout_constraintTop_toBottomOf="@+id/cover"
         tools:text="1:00" />
 
     <TextView
@@ -119,7 +110,7 @@
         android:text="-39:00"
         android:textColor="?attr/colorOnSurfaceSecondary"
         android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/cover_card"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
         app:layout_constraintTop_toTopOf="@+id/time_current"
         tools:text="-39:00" />
 
@@ -145,7 +136,7 @@
         android:tint="?attr/colorOnSurfaceSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause"
         app:layout_constraintEnd_toStartOf="@+id/play_pause"
-        app:layout_constraintStart_toStartOf="@+id/cover_card"
+        app:layout_constraintStart_toStartOf="@+id/cover"
         app:layout_constraintTop_toTopOf="@+id/play_pause"
         app:srcCompat="@drawable/ic_backward_10_32" />
 
@@ -157,7 +148,7 @@
         android:contentDescription="@string/player_forward_description"
         android:tint="?attr/colorOnSurfaceSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause"
-        app:layout_constraintEnd_toEndOf="@+id/cover_card"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
         app:layout_constraintStart_toEndOf="@+id/play_pause"
         app:layout_constraintTop_toTopOf="@+id/play_pause"
         app:srcCompat="@drawable/ic_forward_30_32" />

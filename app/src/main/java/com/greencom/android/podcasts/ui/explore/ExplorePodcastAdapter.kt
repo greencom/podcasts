@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
@@ -21,7 +22,7 @@ import com.greencom.android.podcasts.utils.PodcastDiffCallback
  * @param onPodcastClick function used to navigate to the podcast page on click.
  */
 class ExplorePodcastAdapter(
-    private val updateSubscription: (Podcast, Boolean) -> Unit,
+    private val updateSubscription: (String, Boolean) -> Unit,
     private val onPodcastClick: (Podcast) -> Unit,
 ) : ListAdapter<Podcast, ExplorePodcastViewHolder>(PodcastDiffCallback) {
 
@@ -38,7 +39,7 @@ class ExplorePodcastAdapter(
 /** ViewHolder that represents a single item in the best podcasts list. */
 class ExplorePodcastViewHolder private constructor(
     private val binding: PodcastItemBinding,
-    private val updateSubscription: (Podcast, Boolean) -> Unit,
+    private val updateSubscription: (String, Boolean) -> Unit,
     private val onPodcastClick: (Podcast) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -53,7 +54,13 @@ class ExplorePodcastViewHolder private constructor(
 
     /** Fill item view depending on podcast's properties. */
     private fun fillView(podcast: Podcast) {
-        binding.cover.load(podcast.image)
+        binding.cover.load(podcast.image) {
+            crossfade(true)
+            placeholder(R.drawable.shape_placeholder)
+            transformations(RoundedCornersTransformation(
+                context.resources.getDimension(R.dimen.corner_radius_small)
+            ))
+        }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
         // Remove all HTML tags from description.
@@ -75,7 +82,7 @@ class ExplorePodcastViewHolder private constructor(
 
         // `Subscribe` button onClickListener.
         binding.subscribe.setOnClickListener {
-            updateSubscription(podcast, binding.subscribe.isChecked)
+            updateSubscription(podcast.id, binding.subscribe.isChecked)
         }
 
         // `Subscribe` button onCheckedChangeListener.
@@ -105,7 +112,7 @@ class ExplorePodcastViewHolder private constructor(
          */
         fun create(
             parent: ViewGroup,
-            updateSubscription: (Podcast, Boolean) -> Unit,
+            updateSubscription: (String, Boolean) -> Unit,
             onPodcastClick: (Podcast) -> Unit,
         ): ExplorePodcastViewHolder {
             val binding = PodcastItemBinding

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 interface PodcastDao {
 
     /**
-     * Insert the given [PodcastEntity] object into the 'podcast_table'. Use [insertWithAttrs]
+     * Insert given [PodcastEntity] object into the 'podcast_table'. Use [insertWithAttrs]
      * method instead.
      *
      * If you only want to update the existing entry, consider using [update] method.
@@ -21,7 +21,7 @@ interface PodcastDao {
     suspend fun insert(podcast: PodcastEntity)
 
     /**
-     * Insert the given [PodcastEntity] list into the `podcast_table`. Use [insertWithAttrs]
+     * Insert given [PodcastEntity] list into the `podcast_table`. Use [insertWithAttrs]
      * method instead.
      *
      * If you only want to update the existing entries, consider using [update] method.
@@ -32,7 +32,7 @@ interface PodcastDao {
     suspend fun insert(podcasts: List<PodcastEntity>)
 
     /**
-     * Insert the given [PodcastLocalAttrs] object into the 'podcast_local_table'.
+     * Insert given [PodcastLocalAttrs] object into the 'podcast_local_table'.
      * Use [insertWithAttrs] method instead.
      *
      * If you only want to update the existing entry, consider using [updateAttrs] method.
@@ -43,7 +43,7 @@ interface PodcastDao {
     suspend fun insertAttrs(attrs: PodcastLocalAttrs)
 
     /**
-     * Insert the given [PodcastLocalAttrs] list into the 'podcast_local_table'.
+     * Insert given [PodcastLocalAttrs] list into the 'podcast_local_table'.
      * Use [insertWithAttrs] method instead.
      *
      * [OnConflictStrategy.IGNORE] on conflict.
@@ -73,9 +73,9 @@ interface PodcastDao {
     @Update
     suspend fun updateAttrs(attrs: PodcastLocalAttrs)
 
-    /** Get a [Podcast] for a given ID. */
+    /** Get [Podcast] for a given ID. */
     @Query("SELECT *, local.subscribed FROM podcast_table " +
-            "INNER JOIN podcast_local_table local " +
+            "INNER JOIN podcast_local_table local ON podcast_table.id = local.id " +
             "WHERE podcast_table.id = :id")
     suspend fun getPodcast(id: String): Podcast?
 
@@ -112,7 +112,7 @@ interface EpisodeDao
 interface GenreDao {
 
     /**
-     * Insert the given [GenreEntity] list into the `genre_table`.
+     * Insert given [GenreEntity] list into the `genre_table`.
      *
      * [OnConflictStrategy.IGNORE] on conflict.
      */

@@ -7,26 +7,16 @@
     android:background="?attr/selectableItemBackground"
     android:paddingBottom="10dp">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cover_card"
+    <ImageView
+        android:id="@+id/cover"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:cardBackgroundColor="?attr/colorOnSurfaceUtil"
-        app:cardCornerRadius="4dp"
-        app:cardElevation="0dp"
+        android:contentDescription="@string/player_cover_description"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/cover"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/player_cover_description"
-            tools:srcCompat="@drawable/tools_podcast_cover_1400" />
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/tools_podcast_cover_1400" />
 
     <TextView
         android:id="@+id/title"
@@ -39,8 +29,8 @@
         android:textColor="?attr/colorOnSurfacePrimary"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cover_card"
-        app:layout_constraintTop_toTopOf="@+id/cover_card"
+        app:layout_constraintStart_toEndOf="@+id/cover"
+        app:layout_constraintTop_toTopOf="@+id/cover"
         tools:text="Чтение" />
 
     <TextView
@@ -65,8 +55,8 @@
         android:maxLines="3"
         android:textColor="?attr/colorOnSurfaceTertiary"
         app:layout_constraintEnd_toEndOf="@+id/title"
-        app:layout_constraintStart_toStartOf="@+id/cover_card"
-        app:layout_constraintTop_toBottomOf="@+id/cover_card"
+        app:layout_constraintStart_toStartOf="@+id/cover"
+        app:layout_constraintTop_toBottomOf="@+id/cover"
         tools:text="Евгений Стаховский читает рассказы и повести известных и не очень известных авторов." />
 
     <com.google.android.material.button.MaterialButton
@@ -77,7 +67,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/explore_subscribe"
         app:icon="@drawable/ic_add_24"
-        app:layout_constraintStart_toStartOf="@+id/cover_card"
+        app:layout_constraintStart_toStartOf="@+id/cover"
         app:layout_constraintTop_toBottomOf="@+id/description" />
 
     <ImageView

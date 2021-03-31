@@ -25,6 +25,7 @@ class Event<out T>(private val data: T) {
     }
 
     /** Returns the content, even if it has already been handled. */
+    @Suppress("UNUSED")
     fun peekContent(): T = data
 }
 

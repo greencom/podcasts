@@ -70,8 +70,8 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     }
 
     /** Update the subscription on a podcast with a given value. */
-    fun updateSubscription(podcast: Podcast, subscribed: Boolean) = viewModelScope.launch {
-        repository.updateSubscription(podcast, subscribed)
+    fun updateSubscription(podcastId: String, subscribed: Boolean) = viewModelScope.launch {
+        repository.updateSubscription(podcastId, subscribed)
     }
 
     /** Set a given string resource into [message]. */

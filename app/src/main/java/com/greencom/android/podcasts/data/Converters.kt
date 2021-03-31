@@ -14,10 +14,10 @@ fun BestPodcastsWrapper.asPodcastEntities(): List<PodcastEntity> {
     return podcasts.map {
         PodcastEntity(
             id = it.id,
-            title = it.title,
-            description = it.description,
+            title = it.title.trim(),
+            description = it.description.trim(),
             image = it.image,
-            publisher = it.publisher,
+            publisher = it.publisher.trim(),
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
             latestPubDate = it.latestPubDate,
@@ -42,6 +42,7 @@ fun BestPodcastsWrapper.createAttrs(): List<PodcastLocalAttrs> {
  * If [GenresWrapper.GenresItem.parentId] is `null`, assign [Genre.NO_PARENT_GENRE]
  * value to the [GenreEntity.parentId] property.
  */
+@Suppress("UNUSED")
 fun GenresWrapper.asGenreEntities(): List<GenreEntity> {
     return genres.map {
         GenreEntity(
@@ -78,5 +79,12 @@ fun List<Podcast>.asPodcastEntities(genreId: Int): List<PodcastEntity> {
  * Edit the podcast attributes and return [PodcastLocalAttrs] object to update
  * the corresponding entry in the database.
  */
+@Suppress("UNUSED")
 fun Podcast.editAttrs(subscribed: Boolean) = PodcastLocalAttrs(id, subscribed)
+
+/**
+ * Edit the podcast attributes for a given podcast ID and return [PodcastLocalAttrs]
+ * object to update the corresponding entry in the database.
+ */
+fun editAttrs(podcastId: String, subscribed: Boolean) = PodcastLocalAttrs(podcastId, subscribed)
 // Models converters end.

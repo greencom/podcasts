@@ -71,6 +71,7 @@
                 android:layout_height="20dp"
                 android:layout_marginStart="8dp"
                 android:contentDescription="@string/explore_explicit_content_description"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/subscribe"
                 app:layout_constraintStart_toEndOf="@+id/subscribe"
                 app:layout_constraintTop_toTopOf="@+id/subscribe"
@@ -123,7 +124,7 @@
             android:layout_height="match_parent">
 
             <ImageButton
-                android:id="@+id/back"
+                android:id="@+id/toolbar_back"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
@@ -133,6 +134,7 @@
                 android:tint="?attr/colorOnSurfaceTertiary" />
 
             <TextView
+                android:id="@+id/toolbar_title"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ellipsize="marquee"
@@ -144,6 +146,7 @@
                 android:singleLine="true"
                 android:textColor="?attr/colorOnSurfaceSecondary"
                 android:textSize="18sp"
+                android:visibility="gone"
                 tools:text="Чтение" />
 
         </LinearLayout>

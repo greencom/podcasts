@@ -6,7 +6,6 @@ import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.database.PodcastLocalAttrs
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.editAttrs
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.utils.State
@@ -31,6 +30,16 @@ class Repository @Inject constructor(
     private val episodeDao: EpisodeDao,
     private val genreDao: GenreDao,
 ) {
+
+    // TODO: Try to update a podcast first, then return
+    suspend fun getPodcast(id: String): State {
+        val podcast = podcastDao.getPodcast(id)
+        return if (podcast !== null) {
+            State.Success(podcast)
+        } else {
+            State.Error(NullPointerException("Podcast is null"))
+        }
+    }
 
     /**
      * Return a Flow with a list of the best podcasts for a given genre ID. If there are the
@@ -100,10 +109,10 @@ class Repository @Inject constructor(
     }
 
     /**
-     * Update the subscription on a given podcast with a given value using
+     * Update the subscription on a given podcast by ID with a given value using
      * the corresponding [PodcastLocalAttrs] entry.
      */
-    suspend fun updateSubscription(podcast: Podcast, subscribed: Boolean) {
-        podcastDao.updateAttrs(podcast.editAttrs(subscribed))
+    suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
+        podcastDao.updateAttrs(editAttrs(podcastId, subscribed))
     }
 }

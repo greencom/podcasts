@@ -39,6 +39,7 @@ fun List<PodcastEntity>.filterNotIn(new: List<PodcastEntity>): List<PodcastEntit
  * Create a toast with configured gravity to show up above the player. Use this single toast
  * instead of creating multiple instances.
  */
+@Suppress("UNUSED")
 fun createToast(context: Context): Toast {
     return Toast.makeText(context, "", Toast.LENGTH_SHORT).apply {
         setGravity(
@@ -50,11 +51,13 @@ fun createToast(context: Context): Toast {
 }
 
 /** Convert `dp` to `px`. */
+@Suppress("UNUSED")
 fun Context.dpToPx(dp: Float): Float {
     return dp * resources.displayMetrics.density
 }
 
 /** Convert `px` to `dp`. */
+@Suppress("UNUSED")
 fun Context.pxToDp(px: Float): Float {
     return px / resources.displayMetrics.density
 }
