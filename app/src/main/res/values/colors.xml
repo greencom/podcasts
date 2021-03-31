@@ -33,6 +33,7 @@
     <color name="grey_dark_100">#424548</color>
     <color name="bottom_nav_view_background_dark">#222223</color>
     <color name="player_background_dark">#303134</color>
+    <color name="swipe_to_refresh_dark">#2C2C2C</color>
     <!-- Dark colors end -->
 
 </resources>
