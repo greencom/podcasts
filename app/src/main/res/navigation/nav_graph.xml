@@ -14,7 +14,11 @@
         android:id="@+id/exploreFragment"
         android:name="com.greencom.android.podcasts.ui.explore.ExploreFragment"
         android:label="fragment_explore"
-        tools:layout="@layout/fragment_explore" />
+        tools:layout="@layout/fragment_explore" >
+        <action
+            android:id="@+id/action_exploreFragment_to_podcastFragment"
+            app:destination="@id/podcastFragment" />
+    </fragment>
     <fragment
         android:id="@+id/activityFragment"
         android:name="com.greencom.android.podcasts.ui.activity.ActivityFragment"
@@ -29,4 +33,13 @@
     <action
         android:id="@+id/action_global_activityFragment"
         app:destination="@id/activityFragment" />
+    <fragment
+        android:id="@+id/podcastFragment"
+        android:name="com.greencom.android.podcasts.ui.podcast.PodcastFragment"
+        android:label="fragment_podcast"
+        tools:layout="@layout/fragment_podcast" >
+        <argument
+            android:name="podcastId"
+            app:argType="string" />
+    </fragment>
 </navigation>

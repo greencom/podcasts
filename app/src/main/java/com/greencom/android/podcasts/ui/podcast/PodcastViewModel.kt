@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.home
+package com.greencom.android.podcasts.ui.podcast
 
 import androidx.lifecycle.ViewModel
 import com.greencom.android.podcasts.repository.Repository
@@ -7,4 +7,6 @@ import javax.inject.Inject
 
 // TODO
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val repository: Repository) : ViewModel()
+class PodcastViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+
+}

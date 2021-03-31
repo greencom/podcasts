@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
@@ -45,14 +46,19 @@ class ExploreFragment : Fragment() {
         // Create a single snackbar to show messages without overloading.
         val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
 
+        // TODO: FIX
         // Observe viewModel messages.
         viewModel.message.observeEvent(viewLifecycleOwner) { res ->
             snackbar.setText(getString(res))
             snackbar.show()
         }
 
-        // TODO: Remove test code
-//        binding.searchButton.setOnClickListener { viewModel.transferNews() }
+        // Navigate to PodcastFragment.
+        viewModel.navigateToPodcast.observeEvent(viewLifecycleOwner) { podcastId ->
+            val action = ExploreFragmentDirections
+                .actionExploreFragmentToPodcastFragment(podcastId)
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {

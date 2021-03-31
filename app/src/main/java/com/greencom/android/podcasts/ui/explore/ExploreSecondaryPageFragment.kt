@@ -41,21 +41,9 @@ class ExploreSecondaryPageFragment : Fragment() {
     /** ExploreViewModel. */
     private val viewModel: ExploreViewModel by activityViewModels()
 
-    /** The ID of the genre associated with this fragment. */
-    private var genreId = 0
-
     /** RecyclerView adapter. */
     private val adapter by lazy {
-        ExplorePodcastAdapter(viewModel::updateSubscriptionFlow)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        // Retrieve the genre ID passed on fragment creation.
-        arguments?.let {
-            genreId = it.getInt(GENRE_ID)
-        }
+        ExplorePodcastAdapter(viewModel::updateSubscription, viewModel::onPodcastClick)
     }
 
     override fun onCreateView(
@@ -72,6 +60,9 @@ class ExploreSecondaryPageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /** The ID of the genre associated with this fragment. */
+        val genreId = arguments?.getInt(GENRE_ID) ?: 0
+
         // RecyclerView setup.
         setupRecyclerView()
         // Swipe-to-refresh theming.
@@ -79,7 +70,7 @@ class ExploreSecondaryPageFragment : Fragment() {
 
         // Get the best podcasts and display the result.
         lifecycleScope.launchWhenResumed {
-            viewModel.getBestPodcastsFlow(genreId).collectLatest { state ->
+            viewModel.getBestPodcasts(genreId).collectLatest { state ->
                 binding.swipeToRefresh.isVisible = state is State.Success<*>
                 binding.loading.isVisible = state is State.Loading
                 binding.error.root.isVisible = state is State.Error
@@ -91,6 +82,7 @@ class ExploreSecondaryPageFragment : Fragment() {
             }
         }
 
+        // TODO: FIX
         // viewModel.updateBestPodcasts() always set a new value the to viewModel.message,
         // so observe it to cancel the refreshing animation.
         viewModel.message.observe(viewLifecycleOwner) {
@@ -100,40 +92,13 @@ class ExploreSecondaryPageFragment : Fragment() {
 
         // Update the best podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
-            viewModel.fetchBestPodcastsFlow(genreId)
+            viewModel.fetchBestPodcasts(genreId)
         }
 
         // Update the best podcasts with swipe-to-refresh.
         binding.swipeToRefresh.setOnRefreshListener {
-            viewModel.updateBestPodcastsFlow(genreId)
+            viewModel.updateBestPodcasts(genreId)
         }
-
-//        // Get the best podcasts and display the result.
-//        // Use launchWhenResumed to get rid of the freeze on first move to the second tab.
-//        lifecycleScope.launchWhenResumed {
-//            viewModel.getBestPodcasts(genreId).collectLatest { state ->
-//                // Switch screens depending on the state.
-//                binding.swipeToRefresh.isVisible = state is State.Success<*>
-//                binding.loading.isVisible = state is State.Loading
-//                binding.error.root.isVisible = state is State.Error
-//
-//                // Submit the list of the best podcasts on success.
-//                if (state is State.Success<*>) {
-//                    @Suppress("UNCHECKED_CAST")
-//                    adapter.submitList(state.data as List<Podcast>)
-//                }
-//            }
-//        }
-//
-//        // Update the best podcasts from the error screen.
-//        binding.error.tryAgain.setOnClickListener {
-//            viewModel.getBestPodcasts(genreId)
-//        }
-//
-//        // Update the best podcasts with swipe-to-refresh.
-//        binding.swipeToRefresh.setOnRefreshListener {
-//            viewModel.updateBestPodcasts(genreId)
-//        }
     }
 
     override fun onDestroy() {
