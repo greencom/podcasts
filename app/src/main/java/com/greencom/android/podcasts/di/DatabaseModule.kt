@@ -14,35 +14,39 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 /** Hilt module that provides database-related components. */
-@InstallIn(SingletonComponent::class)
 @Module
+@InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
     /** Provides a singleton of the [AppDatabase]. */
-    @Provides
     @Singleton
+    @Provides
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
             "podcasts_database"
-        ).fallbackToDestructiveMigration()
+        )
+            .fallbackToDestructiveMigration()
             .build()
     }
 
     /** Provides an instance of the [PodcastDao]. */
+    @Singleton
     @Provides
     fun providePodcastDao(database: AppDatabase): PodcastDao {
         return database.podcastDao()
     }
 
     /** Provides an instance of the [EpisodeDao]. */
+    @Singleton
     @Provides
     fun provideEpisodeDao(database: AppDatabase): EpisodeDao {
         return database.episodeDao()
     }
 
     /** Provides an instance of the [GenreDao]. */
+    @Singleton
     @Provides
     fun provideGenreDao(database: AppDatabase): GenreDao {
         return database.genreDao()

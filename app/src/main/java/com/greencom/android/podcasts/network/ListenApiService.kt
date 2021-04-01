@@ -1,35 +1,13 @@
 package com.greencom.android.podcasts.network
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
-/** ListenAPI base URL. */
-private const val BASE_URL = "https://listen-api.listennotes.com/api/v2/"
-
-// Logging setup.
-private val logging = HttpLoggingInterceptor().apply {
-    setLevel(HttpLoggingInterceptor.Level.BASIC)
-}
-private val httpClient = OkHttpClient.Builder().apply { addInterceptor(logging) }
-
-private val moshi = Moshi.Builder()
-    .addLast(KotlinJsonAdapterFactory())
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(BASE_URL)
-    .client(httpClient.build()) // Logging
-    .build()
-
-/** Interface that defines methods for interacting with ListenAPI. */
+/**
+ * Interface that defines the methods for interacting with ListenAPI.
+ * Available methods: [searchEpisode], [searchPodcast], [getBestPodcasts], [getGenres].
+ */
 interface ListenApiService {
 
     /**
@@ -95,22 +73,6 @@ interface ListenApiService {
     ): SearchPodcastWrapper
 
     /**
-     * Get podcast genres that are supported in Listen Notes. The genre id can be
-     * passed to other endpoints as a parameter to get podcasts in a specific genre.
-     *
-     * @param topLevelOnly whether or not to get only top level genres. `1` is get
-     *                     only top level genres, `0` is get all genres. Default
-     *                     value is `0`.
-     *
-     * @return A [GenresWrapper] object.
-     */
-    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
-    @GET("genres")
-    suspend fun getGenres(
-            @Query("top_level_only") topLevelOnly: Int = 0
-    ): GenresWrapper
-
-    /**
      * Get a list of curated best podcasts by genre. If `genreId` is not specified,
      * returns overall best podcasts.
      *
@@ -125,22 +87,25 @@ interface ListenApiService {
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")
     suspend fun getBestPodcasts(
-            @Query("genre_id") genreId: Int = 0,
-            @Query("page") page: Int = 1,
-            @Query("region") region: String = "ru",
-            @Query("safe_mode") safeMode: Int = 0,
+        @Query("genre_id") genreId: Int = 0,
+        @Query("page") page: Int = 1,
+        @Query("region") region: String = "ru",
+        @Query("safe_mode") safeMode: Int = 0,
     ): BestPodcastsWrapper
-}
 
-/**
- * ListenAPI service object. The following methods defined in the
- * [ListenApiService] interface are available:
- *
- * - [ListenApiService.searchEpisode] and [ListenApiService.searchPodcast] are used
- *   for searching.
- * - [ListenApiService.getGenres] returns genre list.
- * - [ListenApiService.getBestPodcasts] returns a list of the best podcast by genre.
- */
-object ListenApi {
-    val service: ListenApiService by lazy { retrofit.create(ListenApiService::class.java) }
+    /**
+     * Get podcast genres that are supported in Listen Notes. The genre id can be
+     * passed to other endpoints as a parameter to get podcasts in a specific genre.
+     *
+     * @param topLevelOnly whether or not to get only top level genres. `1` is get
+     *                     only top level genres, `0` is get all genres. Default
+     *                     value is `0`.
+     *
+     * @return A [GenresWrapper] object.
+     */
+    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @GET("genres")
+    suspend fun getGenres(
+            @Query("top_level_only") topLevelOnly: Int = 0
+    ): GenresWrapper
 }
