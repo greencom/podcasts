@@ -89,9 +89,6 @@ dependencies {
     // Integration with Navigation
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpack_version"
 
-    // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-
     // UI
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeToRefresh_version"
     implementation "com.google.android.material:material:$material_version"
