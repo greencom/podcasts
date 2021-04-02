@@ -2,7 +2,7 @@ package com.greencom.android.podcasts.network
 
 import com.squareup.moshi.Json
 
-/** Wrapper class for a `ListenApiService.searchEpisode` response. */
+/** Wrapper class for a [ListenApiService.searchEpisode] response. */
 data class SearchEpisodeWrapper(
 
     /** The number of search results on this page. */
@@ -87,7 +87,7 @@ data class SearchEpisodeWrapper(
     }
 }
 
-/** Wrapper class for a `ListenApiService.searchPodcast` response. */
+/** Wrapper class for a [ListenApiService.searchPodcast] response. */
 data class SearchPodcastWrapper(
 
     /** The number of search results in this page. */
@@ -147,7 +147,43 @@ data class SearchPodcastWrapper(
     )
 }
 
-/** Wrapper class for a `ListenApiService.getBestPodcasts()` response. */
+/** Wrapper class for a [ListenApiService.getPodcast] response. */
+data class PodcastWrapper(
+
+    /** Podcast ID. */
+    @Json(name = "id")
+    val id: String,
+
+    /** Podcast name. */
+    @Json(name = "title")
+    val title: String,
+
+    /** Podcast description. */
+    @Json(name = "description")
+    val description: String,
+
+    /** Image URL for this podcast. */
+    @Json(name = "image")
+    val image: String,
+
+    /** Podcast publisher. */
+    @Json(name = "publisher")
+    val publisher: String,
+
+    /** Whether this podcast contains explicit language. */
+    @Json(name = "explicit_content")
+    val explicitContent: Boolean,
+
+    /** Total number of episodes in this podcast. */
+    @Json(name = "total_episodes")
+    val episodeCount: Int,
+
+    /** The published date of the latest episode of this podcast in milliseconds. */
+    @Json(name = "latest_pub_date_ms")
+    val latestPubDate: Long,
+)
+
+/** Wrapper class for a [ListenApiService.getBestPodcasts] response. */
 data class BestPodcastsWrapper(
 
     /** A list of search results. */
@@ -204,7 +240,7 @@ data class BestPodcastsWrapper(
     )
 }
 
-/** Wrapper class for a `ListenApiService.getGenres()` response. */
+/** Wrapper class for a [ListenApiService.getGenres] response. */
 data class GenresWrapper(
 
     /** A list of genres. */

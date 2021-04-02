@@ -2,11 +2,13 @@ package com.greencom.android.podcasts.network
 
 import retrofit2.http.GET
 import retrofit2.http.Headers
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
  * Interface that defines the methods for interacting with ListenAPI.
- * Available methods: [searchEpisode], [searchPodcast], [getBestPodcasts], [getGenres].
+ * Available methods: [searchEpisode], [searchPodcast], [getPodcast], [getBestPodcasts],
+ * [getGenres].
  */
 interface ListenApiService {
 
@@ -27,7 +29,6 @@ interface ListenApiService {
      *               Default value is `title,description,author`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 `1` is yes, and `0` is no. Default value is `0`.
-     *
      * @return A [SearchEpisodeWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -58,7 +59,6 @@ interface ListenApiService {
      *               Default value is `title,description,author`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 `1` is yes, and `0` is no. Default value is `0`.
-     *
      * @return A [SearchPodcastWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -73,6 +73,28 @@ interface ListenApiService {
     ): SearchPodcastWrapper
 
     /**
+     * Fetch detailed meta data and episodes for a specific podcast (up to 10 episodes
+     * each time). Use the [nextEpisodePubDate] parameter to do pagination and fetch more
+     * episodes.
+     *
+     * @param id Podcast ID.
+     * @param nextEpisodePubDate For episode pagination. It is value of
+     *                           `next_episode_pub_date` from the response of last request.
+     *                           If not specified, just return latest 10 episodes or oldest
+     *                           10 episodes, depending on the value of the [sort] parameter.
+     * @param sort Sort the episodes of this podcast. Available values: `recent_first`,
+     *             `oldest_first`. Default is `recent_first`.
+     * @return A [PodcastWrapper] object.
+     */
+    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @GET("podcasts/{id}")
+    suspend fun getPodcast(
+        @Path("id") id: String,
+        @Query("next_episode_pub_date") nextEpisodePubDate: Long,
+        @Query("sort") sort: String,
+    ): PodcastWrapper
+
+    /**
      * Get a list of curated best podcasts by genre. If `genreId` is not specified,
      * returns overall best podcasts.
      *
@@ -81,7 +103,6 @@ interface ListenApiService {
      * @param region filter best podcasts by country/region. Default value is `ru`.
      * @param safeMode whether or not to exclude podcasts with explicit language.
      *                 `1` is yes, and `0` is no. Default value is `0`.
-     *
      * @return A [BestPodcastsWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -100,7 +121,6 @@ interface ListenApiService {
      * @param topLevelOnly whether or not to get only top level genres. `1` is get
      *                     only top level genres, `0` is get all genres. Default
      *                     value is `0`.
-     *
      * @return A [GenresWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
