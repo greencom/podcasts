@@ -109,19 +109,16 @@ class ExploreSecondaryPageFragment : Fragment() {
 
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
+        val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        divider.setDrawable(
+            ResourcesCompat.getDrawable(
+                resources,
+                R.drawable.shape_divider,
+                context?.theme
+            )!!
+        )
         binding.podcastList.apply {
-            setHasFixedSize(true)
             adapter = this@ExploreSecondaryPageFragment.adapter
-
-            // Set up dividers.
-            val divider = CustomDividerItemDecoration(context, RecyclerView.VERTICAL)
-            divider.setDrawable(
-                ResourcesCompat.getDrawable(
-                    resources,
-                    R.drawable.shape_divider,
-                    context?.theme
-                )!!
-            )
             addItemDecoration(divider)
         }
     }

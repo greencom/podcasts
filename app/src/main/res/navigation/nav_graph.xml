@@ -17,7 +17,11 @@
         tools:layout="@layout/fragment_explore" >
         <action
             android:id="@+id/action_exploreFragment_to_podcastFragment"
-            app:destination="@id/podcastFragment" />
+            app:destination="@id/podcastFragment"
+            app:enterAnim="@anim/slide_in_left"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_right"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/activityFragment"
