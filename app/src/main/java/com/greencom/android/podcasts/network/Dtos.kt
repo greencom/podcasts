@@ -182,13 +182,54 @@ data class PodcastWrapper(
     @Json(name = "latest_pub_date_ms")
     val latestPubDate: Long,
 
+    /** Episodes of this podcast. */
+    @Json(name = "episodes")
+    val episodes: List<PodcastItem>,
+
     /**
      * Pass it to the `nextEpisodePubDate` parameter of [ListenApiService.getPodcast]
      * to paginate through episodes of that podcast.
      */
     @Json(name = "next_episode_pub_date")
     val nextEpisodePubDate: Long,
-)
+) {
+
+    /** Wrapper class for a single episode object in the [PodcastWrapper.episodes] list. */
+    data class PodcastItem(
+
+        /** Episode ID. */
+        @Json(name = "id")
+        val id: String,
+
+        /** Episode title. */
+        @Json(name = "title")
+        val title: String,
+
+        /** Episode description. */
+        @Json(name = "description")
+        val description: String,
+
+        /** Image URL for this episode. */
+        @Json(name = "image")
+        val image: String,
+
+        /** Audio URL for this episode. */
+        @Json(name = "audio")
+        val audio: String,
+
+        /** Audio length of this episode in seconds. */
+        @Json(name = "audio_length_sec")
+        val audioLength: Int,
+
+        /** Whether this podcast contains explicit language. */
+        @Json(name = "explicit_content")
+        val explicitContent: Boolean,
+
+        /** Published date in milliseconds. */
+        @Json(name = "pub_date_ms")
+        val date: Long,
+    )
+}
 
 /** Wrapper class for a [ListenApiService.getBestPodcasts] response. */
 data class BestPodcastsWrapper(
