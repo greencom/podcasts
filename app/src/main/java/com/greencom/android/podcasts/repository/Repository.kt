@@ -56,7 +56,7 @@ class Repository @Inject constructor(
             } else {
                 // Otherwise, try to fetch from ListenAPI.
                 try {
-                    val response = listenApi.getBestPodcasts(genreId, 1, "ru")
+                    val response = listenApi.getBestPodcasts(genreId)
                     podcastDao.insertWithAttrs(response.asPodcastEntities(), response.createAttrs())
                 } catch (e: IOException) {
                     send(State.Error(e))
@@ -74,7 +74,7 @@ class Repository @Inject constructor(
     suspend fun updateBestPodcasts(genreId: Int): State {
         return try {
             // Try to fetch the best podcasts from ListenAPI.
-            val response = listenApi.getBestPodcasts(genreId, 1, "ru")
+            val response = listenApi.getBestPodcasts(genreId)
             // Get the actual best podcasts from database.
             val old = podcastDao.getBestPodcasts(genreId).asPodcastEntities(genreId)
             // Insert new ones into the database.
@@ -98,7 +98,7 @@ class Repository @Inject constructor(
      */
     suspend fun fetchBestPodcasts(genreId: Int): State {
         return try {
-            val response = listenApi.getBestPodcasts(genreId, 1, "ru")
+            val response = listenApi.getBestPodcasts(genreId)
             podcastDao.insertWithAttrs(response.asPodcastEntities(), response.createAttrs())
             State.Success(Unit)
         } catch (e: IOException) {

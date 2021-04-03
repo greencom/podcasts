@@ -29,9 +29,9 @@ interface ListenApiService {
     @GET("search")
     suspend fun searchEpisode(
             @Query("q") query: String,
-            @Query("sort_by_date") sortByDate: Int?,
+            @Query("sort_by_date") sortByDate: Int = 0,
             @Query("type") type: String = "episode",
-            @Query("offset") offset: Int?,
+            @Query("offset") offset: Int = 0,
     ): SearchEpisodeWrapper
 
     /**
@@ -51,9 +51,9 @@ interface ListenApiService {
     @GET("search")
     suspend fun searchPodcast(
             @Query("q") query: String,
-            @Query("sort_by_date") sortByDate: Int?,
+            @Query("sort_by_date") sortByDate: Int = 0,
             @Query("type") type: String = "podcast",
-            @Query("offset") offset: Int?,
+            @Query("offset") offset: Int = 0,
     ): SearchPodcastWrapper
 
     /**
@@ -75,7 +75,7 @@ interface ListenApiService {
     suspend fun getPodcast(
         @Path("id") id: String,
         @Query("next_episode_pub_date") nextEpisodePubDate: Long?,
-        @Query("sort") sort: String?,
+        @Query("sort") sort: String = "recent_first",
     ): PodcastWrapper
 
     /**
@@ -83,29 +83,25 @@ interface ListenApiService {
      * returns overall best podcasts.
      *
      * @param genreId what genre podcasts to get. Use `0` to get the overall best podcasts.
-     * @param page page number of the response.
-     * @param region filter best podcasts by country/region.
+     * @param page page number of the response. Default is `1`.
+     * @param region filter best podcasts by country/region. Default is `ru`.
      * @return A [BestPodcastsWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("best_podcasts")
     suspend fun getBestPodcasts(
         @Query("genre_id") genreId: Int,
-        @Query("page") page: Int,
-        @Query("region") region: String,
+        @Query("page") page: Int = 1,
+        @Query("region") region: String = "ru",
     ): BestPodcastsWrapper
 
     /**
-     * Get podcast genres that are supported in Listen Notes. The genre id can be
+     * Get podcast genres that are supported in Listen Notes. The genre ID can be
      * passed to other endpoints as a parameter to get podcasts in a specific genre.
      *
-     * @param topLevelOnly whether or not to get only top level genres. `1` is get
-     *        only top level genres, `0` is get all genres. Default is `0`.
      * @return A [GenresWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
     @GET("genres")
-    suspend fun getGenres(
-            @Query("top_level_only") topLevelOnly: Int?
-    ): GenresWrapper
+    suspend fun getGenres(): GenresWrapper
 }
