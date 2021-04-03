@@ -181,6 +181,13 @@ data class PodcastWrapper(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @Json(name = "latest_pub_date_ms")
     val latestPubDate: Long,
+
+    /**
+     * Pass it to the `nextEpisodePubDate` parameter of [ListenApiService.getPodcast]
+     * to paginate through episodes of that podcast.
+     */
+    @Json(name = "next_episode_pub_date")
+    val nextEpisodePubDate: Long,
 )
 
 /** Wrapper class for a [ListenApiService.getBestPodcasts] response. */
