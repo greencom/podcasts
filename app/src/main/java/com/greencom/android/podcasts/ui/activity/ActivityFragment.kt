@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
 
-// TODO
 class ActivityFragment : Fragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */

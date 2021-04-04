@@ -3,11 +3,9 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.greencom.android.podcasts.data.domain.Genre
-import com.greencom.android.podcasts.data.domain.Podcast
 
 /** Model class that represents a podcast entity in the database. */
-@Entity(tableName = "podcast_table")
+@Entity(tableName = "podcasts")
 data class PodcastEntity(
 
     /** Podcast ID. */
@@ -42,37 +40,10 @@ data class PodcastEntity(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
-
-    /**
-     * The genre ID for which the podcast is featured on the best list.
-     *
-     * If the value is [Podcast.NOT_IN_BEST], it means that the podcast
-     * is not on the best list for any genre.
-     */
-    @ColumnInfo(name = "genre_id")
-    val genreId: Int,
-)
-
-/**
- * Model class that represents a database table that contains only podcast's local attributes.
- * Local attributes are independent of main [PodcastEntity] model, so values such [subscribed]
- * can be updated separately.
- */
-@Entity(tableName = "podcast_local_table")
-data class PodcastLocalAttrs(
-
-    /** Podcast ID. */
-    @PrimaryKey
-    @ColumnInfo(name = "id")
-    val id: String,
-
-    /** Indicates whether the user is subscribed to this podcast. */
-    @ColumnInfo(name = "subscribed")
-    val subscribed: Boolean,
 )
 
 /** Model class that represents a episode entity in the database. */
-@Entity(tableName = "episode_table")
+@Entity(tableName = "episodes")
 data class EpisodeEntity(
 
     /** Episode ID. */
@@ -114,7 +85,7 @@ data class EpisodeEntity(
 )
 
 /** Model class that represents a genre entity in the database. */
-@Entity(tableName = "genre_table")
+@Entity(tableName = "genres")
 data class GenreEntity(
 
     /** Genre ID. */
@@ -126,12 +97,7 @@ data class GenreEntity(
     @ColumnInfo(name = "name")
     val name: String,
 
-    /**
-     * Parent genre ID.
-     *
-     * If the value is [Genre.NO_PARENT_GENRE], it means
-     * that this genre does not have a parent genre.
-     */
+    /** Parent genre ID. */
     @ColumnInfo(name = "parent_id")
     val parentId: Int,
 )

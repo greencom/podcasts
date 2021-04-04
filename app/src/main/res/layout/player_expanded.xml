@@ -121,11 +121,12 @@
         android:layout_marginTop="10dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_play_description"
+        android:scaleType="fitCenter"
         android:tint="?attr/colorPlayerPlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/slider"
-        app:srcCompat="@drawable/ic_play_circle_56" />
+        app:srcCompat="@drawable/ic_play_circle_24" />
 
     <ImageButton
         android:id="@+id/backward"
@@ -133,12 +134,14 @@
         android:layout_height="48dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_backward_description"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
         android:tint="?attr/colorOnSurfaceSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause"
         app:layout_constraintEnd_toStartOf="@+id/play_pause"
         app:layout_constraintStart_toStartOf="@+id/cover"
         app:layout_constraintTop_toTopOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_backward_10_32" />
+        app:srcCompat="@drawable/ic_backward_10_24" />
 
     <ImageButton
         android:id="@+id/forward"
@@ -146,12 +149,14 @@
         android:layout_height="48dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_forward_description"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
         android:tint="?attr/colorOnSurfaceSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause"
         app:layout_constraintEnd_toEndOf="@+id/cover"
         app:layout_constraintStart_toEndOf="@+id/play_pause"
         app:layout_constraintTop_toTopOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_forward_30_32" />
+        app:srcCompat="@drawable/ic_forward_30_24" />
 
     <Button
         android:id="@+id/speed"

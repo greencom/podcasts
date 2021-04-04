@@ -90,7 +90,7 @@ dependencies {
     implementation "androidx.hilt:hilt-navigation-fragment:$hiltJetpack_version"
 
     // UI
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeToRefresh_version"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefresh_version"
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayout_version"
     implementation "androidx.appcompat:appcompat:$appCompat_version"

@@ -6,19 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
-import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collectLatest
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -42,9 +36,7 @@ class ExploreSecondaryPageFragment : Fragment() {
     private val viewModel: ExploreViewModel by activityViewModels()
 
     /** RecyclerView adapter. */
-    private val adapter by lazy {
-        ExplorePodcastAdapter(viewModel::updateSubscription, viewModel::onPodcastClick)
-    }
+    private val adapter = ExplorePodcastAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,49 +48,15 @@ class ExploreSecondaryPageFragment : Fragment() {
         return binding.root
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        /** The ID of the genre associated with this fragment. */
+        // Get the genre ID from the fragment arguments.
         val genreId = arguments?.getInt(GENRE_ID) ?: 0
 
         // RecyclerView setup.
         setupRecyclerView()
         // Swipe-to-refresh theming.
         customizeSwipeToRefresh()
-
-        // Get the best podcasts and display the result.
-        lifecycleScope.launchWhenResumed {
-            viewModel.getBestPodcasts(genreId).collectLatest { state ->
-                binding.swipeToRefresh.isVisible = state is State.Success<*>
-                binding.loading.isVisible = state is State.Loading
-                binding.error.root.isVisible = state is State.Error
-
-                if (state is State.Success<*>) {
-                    @Suppress("UNCHECKED_CAST")
-                    adapter.submitList(state.data as List<Podcast>)
-                }
-            }
-        }
-
-        // TODO: FIX
-        // viewModel.updateBestPodcasts() always set a new value the to viewModel.message,
-        // so observe it to cancel the refreshing animation.
-        viewModel.message.observe(viewLifecycleOwner) {
-            binding.swipeToRefresh.isRefreshing = false
-            binding.podcastList.smoothScrollToPosition(0)
-        }
-
-        // Update the best podcasts from the error screen.
-        binding.error.tryAgain.setOnClickListener {
-            viewModel.fetchBestPodcasts(genreId)
-        }
-
-        // Update the best podcasts with swipe-to-refresh.
-        binding.swipeToRefresh.setOnRefreshListener {
-            viewModel.updateBestPodcasts(genreId)
-        }
     }
 
     override fun onDestroy() {
@@ -111,11 +69,7 @@ class ExploreSecondaryPageFragment : Fragment() {
     private fun setupRecyclerView() {
         val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
         divider.setDrawable(
-            ResourcesCompat.getDrawable(
-                resources,
-                R.drawable.shape_divider,
-                context?.theme
-            )!!
+            ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
         binding.podcastList.apply {
             adapter = this@ExploreSecondaryPageFragment.adapter
@@ -129,10 +83,12 @@ class ExploreSecondaryPageFragment : Fragment() {
             val color = TypedValue()
             val backgroundColor = TypedValue()
             val theme = activity?.theme
-            theme?.resolveAttribute(R.attr.colorSwipeToRefreshBackground, color, true)
-            theme?.resolveAttribute(R.attr.colorPrimary, backgroundColor, true)
-            setProgressBackgroundColorSchemeColor(color.data)
-            setColorSchemeColors(backgroundColor.data)
+            theme?.resolveAttribute(
+                R.attr.colorSwipeToRefreshBackground, backgroundColor, true
+            )
+            theme?.resolveAttribute(R.attr.colorPrimary, color, true)
+            setProgressBackgroundColorSchemeColor(backgroundColor.data)
+            setColorSchemeColors(color.data)
         }
     }
 
@@ -142,7 +98,6 @@ class ExploreSecondaryPageFragment : Fragment() {
          * the fragment using the provided parameters.
          *
          * @param genreId ID of the genre.
-         *
          * @return A new instance of [ExploreSecondaryPageFragment].
          */
         @JvmStatic

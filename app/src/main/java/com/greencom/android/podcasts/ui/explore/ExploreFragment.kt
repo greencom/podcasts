@@ -6,17 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
-import com.greencom.android.podcasts.utils.observeEvent
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
  * Contains lists of the best podcasts for different genres implemented as tabs for
- * the TabLayout and provides a way for searching.
+ * the TabLayout.
  */
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
@@ -45,20 +43,6 @@ class ExploreFragment : Fragment() {
         setupTabLayout()
         // Create a single snackbar to show messages without overloading.
         val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
-
-        // TODO: FIX
-        // Observe viewModel messages.
-        viewModel.message.observeEvent(viewLifecycleOwner) { res ->
-            snackbar.setText(getString(res))
-            snackbar.show()
-        }
-
-        // Navigate to PodcastFragment.
-        viewModel.navigateToPodcast.observeEvent(viewLifecycleOwner) { podcastId ->
-            val action = ExploreFragmentDirections
-                .actionExploreFragmentToPodcastFragment(podcastId)
-            findNavController().navigate(action)
-        }
     }
 
     override fun onDestroyView() {

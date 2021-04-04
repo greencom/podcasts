@@ -16,13 +16,13 @@ interface ListenApiService {
      * Search for episodes.
      *
      * @param query search query. Double quotes can be used to do verbatim match,
-     *        e.g., "game of thrones". Otherwise, it is fuzzy search.
+     *              e.g., "game of thrones". Otherwise, it is fuzzy search.
      * @param sortByDate sort by date or not. If `0`, then sort by relevance. If `1`,
-     *        then sort by date. Default value is `0`.
+     *                   then sort by date. Default value is `0`.
      * @param type what type of contents to search for. Note: always `episode`,
-     *        if needed to search for podcasts, use [searchPodcast] instead.
+     *             if needed to search for podcasts, use [searchPodcast] instead.
      * @param offset offset for pagination. Use `nextOffset` from response for this
-     *        parameter. Default value is `0`.
+     *               parameter. Default value is `0`.
      * @return A [SearchEpisodeWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -38,13 +38,13 @@ interface ListenApiService {
      * Search for podcasts.
      *
      * @param query search query. Double quotes can be used to do verbatim match,
-     *        e.g., "game of thrones". Otherwise, it is fuzzy search.
+     *              e.g., "game of thrones". Otherwise, it is fuzzy search.
      * @param sortByDate sort by date or not. If `0`, then sort by relevance. If `1`,
-     *        then sort by date. Default value is `0`.
+     *                   then sort by date. Default value is `0`.
      * @param type what type of contents to search for. Note: always `podcast`,
-     *        if needed to search for episodes, use [searchEpisode] instead.
+     *             if needed to search for episodes, use [searchEpisode] instead.
      * @param offset offset for pagination. Use `nextOffset` from response for this
-     *        parameter. Default value is `0`.
+     *               parameter. Default value is `0`.
      * @return A [SearchPodcastWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
@@ -63,11 +63,11 @@ interface ListenApiService {
      *
      * @param id Podcast ID.
      * @param nextEpisodePubDate For episode pagination. It is value of
-     *        `next_episode_pub_date` from the response of last request. If not specified,
-     *        just return latest 10 episodes or oldest 10 episodes, depending on the value
-     *        of the [sort] parameter.
+     *                           `next_episode_pub_date` from the response of last request.
+     *                           If not specified, just return latest 10 episodes or oldest
+     *                           10 episodes, depending on the value of the [sort] parameter.
      * @param sort Sort the episodes of this podcast. Available values: `recent_first`,
-     *        `oldest_first`. Default is `recent_first`.
+     *             `oldest_first`. Default is `recent_first`.
      * @return A [PodcastWrapper] object.
      */
     @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")

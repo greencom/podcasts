@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Make player closable on back pressed. */
-    @SuppressLint("SwitchIntDef")
     override fun onBackPressed() {
         if (playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
             playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -135,8 +134,8 @@ class MainActivity : AppCompatActivity() {
      * the player UI behavior when [BottomSheetBehavior] state and slideOffset change.
      *
      * @param bottomNavBarHeight the height of the bottom navigation bar in `px`.
-     *        Used to calculate the distance the bottom navigation bar needs to be
-     *        displaced.
+     *                           Used to calculate the distance the bottom navigation bar
+     *                           needs to be displaced.
      */
     private fun BottomSheetBehavior<FrameLayout>
             .setupBottomSheetBehavior(bottomNavBarHeight: Float) {
@@ -247,7 +246,7 @@ class MainActivity : AppCompatActivity() {
     private fun setExpandedContentListeners() {
 
         // Slider listeners.
-        binding.player.expanded.slider.addOnChangeListener { slider, value, fromUser ->
+        binding.player.expanded.slider.addOnChangeListener { _, _, _ ->
 
         }
 
