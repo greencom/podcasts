@@ -4,12 +4,12 @@ import androidx.room.Dao
 
 /** Interface to interact with the `podcasts` table. */
 @Dao
-interface PodcastDao
+abstract class PodcastDao
 
 /** Interface to interact with the `episodes` table. */
 @Dao
-interface EpisodeDao
+abstract class EpisodeDao
 
 /** Interface to interact with the `genres` table. */
 @Dao
-interface GenreDao
+abstract class GenreDao
