@@ -1,18 +1,90 @@
 package com.greencom.android.podcasts.data.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import com.greencom.android.podcasts.data.domain.Podcast
 
-/** Interface to interact with the `podcasts` and `podcasts_temp` tables. */
+/**
+ * Interface to interact with the `podcasts` and `podcasts_temp` tables.
+ * Use [insertPartial] and [insertPartialWithGenre] methods to safely insert and update
+ * podcasts in the `podcasts` table.
+ */
 @Dao
 abstract class PodcastDao {
 
     /**
+     * Insert a [PodcastEntityPartial] object into the `podcasts` table. This method is
+     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
+     * table under the hood to calculate the diff between the temporary table and the main
+     * table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcast, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insertPartial(podcast: PodcastEntityPartial) {
+        insertPartialToTemp(podcast)
+        merge()
+        updatePartial(podcast)
+        clearTemp()
+    }
+
+    /**
+     * Insert a list of [PodcastEntityPartial] objects into the `podcasts` table. This method is
+     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
+     * table under the hood to calculate the diff between the temporary table and the main
+     * table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcasts, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insertPartial(podcasts: List<PodcastEntityPartial>) {
+        insertPartialToTemp(podcasts)
+        merge()
+        updatePartial(podcasts)
+        clearTemp()
+    }
+
+    /**
+     * Insert a [PodcastEntityPartialWithGenre] object into the `podcasts` table. This method is
+     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
+     * table under the hood to calculate the diff between the temporary table and the main
+     * table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcast, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insertPartialWithGenre(podcast: PodcastEntityPartialWithGenre) {
+        insertPartialWithGenreToTemp(podcast)
+        merge()
+        updatePartialWithGenre(podcast)
+        clearTemp()
+    }
+
+    /**
+     * Insert a list of [PodcastEntityPartialWithGenre] objects into the `podcasts` table.
+     * This method is completely safe in cases of conflicts because it uses a temporary
+     * `podcasts_temp` table under the hood to calculate the diff between the temporary table
+     * and the main table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcasts, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insertPartialWithGenre(podcasts: List<PodcastEntityPartialWithGenre>) {
+        insertPartialWithGenreToTemp(podcasts)
+        merge()
+        updatePartialWithGenre(podcasts)
+        clearTemp()
+    }
+
+    /**
      * Insert a [PodcastEntityPartial] object into the `podcasts_temp` table.
      * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     *
+     * Use [insertPartial] and [insertPartialWithGenre] methods directly to safely insert
+     * and update podcasts in the `podcasts` table.
      */
     @Insert(entity = PodcastEntityTemp::class)
     abstract suspend fun insertPartialToTemp(podcast: PodcastEntityPartial)
@@ -20,6 +92,9 @@ abstract class PodcastDao {
     /**
      * Insert a list of [PodcastEntityPartial] objects into the `podcasts_temp` table.
      * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     *
+     * Use [insertPartial] and [insertPartialWithGenre] methods directly to safely insert
+     * and update podcasts in the `podcasts` table.
      */
     @Insert(entity = PodcastEntityTemp::class)
     abstract suspend fun insertPartialToTemp(podcasts: List<PodcastEntityPartial>)
@@ -27,6 +102,9 @@ abstract class PodcastDao {
     /**
      * Insert a [PodcastEntityPartialWithGenre] object into the `podcasts_temp` table.
      * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     *
+     * Use [insertPartial] and [insertPartialWithGenre] methods directly to safely insert
+     * and update podcasts in the `podcasts` table.
      */
     @Insert(entity = PodcastEntityTemp::class)
     abstract suspend fun insertPartialWithGenreToTemp(podcast: PodcastEntityPartialWithGenre)
@@ -34,6 +112,9 @@ abstract class PodcastDao {
     /**
      * Insert a list of [PodcastEntityPartialWithGenre] objects into the `podcasts_temp` table.
      * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     *
+     * Use [insertPartial] and [insertPartialWithGenre] methods directly to safely insert
+     * and update podcasts in the `podcasts` table.
      */
     @Insert(entity = PodcastEntityTemp::class)
     abstract suspend fun insertPartialWithGenreToTemp(podcasts: List<PodcastEntityPartialWithGenre>)
@@ -42,6 +123,9 @@ abstract class PodcastDao {
      * Merge `podcasts` and `podcasts_temp` tables. All entries missing in the `podcasts`
      * table will be added from the `podcasts_temp` table. Do not forget to [clearTemp]
      * afterwards to keep `podcasts_temp` empty.
+     *
+     * Use [insertPartial] and [insertPartialWithGenre] methods directly to safely insert
+     * and update podcasts in the `podcasts` table.
      */
     @Query(
         "INSERT INTO podcasts (id, title, description, image, publisher, explicit_content, " +

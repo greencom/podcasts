@@ -112,7 +112,7 @@ class PodcastDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertPartial_insertSinglePodcast_returnPodcast() = runBlockingTest {
+    fun insertPartialToTemp_insertSinglePodcast_returnPodcast() = runBlockingTest {
         // GIVEN: Insert a partial podcast into the `podcasts_temp` table.
         val podcast = PodcastEntityPartial(
             "id",
@@ -137,7 +137,7 @@ class PodcastDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertPartial_insertListOfPodcasts_returnPodcasts() = runBlockingTest {
+    fun insertPartialToTemp_insertListOfPodcasts_returnPodcasts() = runBlockingTest {
         // GIVEN: Insert a list of partial podcasts into the `podcasts_temp` table.
         val podcastOne = PodcastEntityPartial(
             "one",
@@ -174,7 +174,7 @@ class PodcastDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertPartialWithGenre_insertSinglePodcast_returnPodcast() = runBlockingTest {
+    fun insertPartialWithGenreToTemp_insertSinglePodcast_returnPodcast() = runBlockingTest {
         // GIVEN: Insert a partial podcast into the `podcasts_temp` table.
         val podcast = PodcastEntityPartialWithGenre(
             "id",
@@ -200,7 +200,7 @@ class PodcastDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertPartialWithGenre_insertListOfPodcasts_returnPodcasts() = runBlockingTest {
+    fun insertPartialWithGenreToTemp_insertListOfPodcasts_returnPodcasts() = runBlockingTest {
         // GIVEN: Insert a list of partial podcasts into the `podcasts_temp` table.
         val podcastOne = PodcastEntityPartialWithGenre(
             "one",
