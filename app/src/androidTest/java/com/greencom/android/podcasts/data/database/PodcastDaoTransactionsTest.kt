@@ -49,7 +49,7 @@ class PodcastDaoTransactionsTest {
             100,
             100L
         )
-        podcastDao.insertPartial(podcast)
+        podcastDao.insert(podcast)
 
         // THEN: loaded is valid.
         val loaded = podcastDao.getPodcast(podcast.id)
@@ -72,13 +72,13 @@ class PodcastDaoTransactionsTest {
                 100,
                 100L
             )
-            podcastDao.insertPartial(podcastOne)
+            podcastDao.insert(podcastOne)
 
             // WHEN: Insert the podcasts into the `podcasts` table.
             val newOne = podcastOne.copy(title = "updated")
             val newTwo = podcastOne.copy("two", "two")
             val newThree = podcastOne.copy("three", "three")
-            podcastDao.insertPartial(listOf(newOne, newTwo, newThree))
+            podcastDao.insert(listOf(newOne, newTwo, newThree))
 
             // THEN: All podcasts are valid.
             val loadedOne = podcastDao.getPodcast(podcastOne.id)
@@ -106,7 +106,7 @@ class PodcastDaoTransactionsTest {
             100L,
             15
         )
-        podcastDao.insertPartialWithGenre(podcast)
+        podcastDao.insertWithGenre(podcast)
 
         // THEN: loaded is valid.
         val loaded = podcastDao.getPodcast(podcast.id)
@@ -130,13 +130,13 @@ class PodcastDaoTransactionsTest {
                 100L,
                 11
             )
-            podcastDao.insertPartialWithGenre(podcastOne)
+            podcastDao.insertWithGenre(podcastOne)
 
             // WHEN: Insert the podcasts into the `podcasts` table.
             val newOne = podcastOne.copy(title = "updated")
             val newTwo = podcastOne.copy("two", "two")
             val newThree = podcastOne.copy("three", "three")
-            podcastDao.insertPartialWithGenre(listOf(newOne, newTwo, newThree))
+            podcastDao.insertWithGenre(listOf(newOne, newTwo, newThree))
 
             // THEN: All podcasts are valid.
             val loadedOne = podcastDao.getPodcast(podcastOne.id)
