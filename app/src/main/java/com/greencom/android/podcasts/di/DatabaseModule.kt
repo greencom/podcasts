@@ -2,10 +2,7 @@ package com.greencom.android.podcasts.di
 
 import android.content.Context
 import androidx.room.Room
-import com.greencom.android.podcasts.data.database.AppDatabase
-import com.greencom.android.podcasts.data.database.EpisodeDao
-import com.greencom.android.podcasts.data.database.GenreDao
-import com.greencom.android.podcasts.data.database.PodcastDao
+import com.greencom.android.podcasts.data.database.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

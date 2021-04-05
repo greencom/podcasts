@@ -5,7 +5,12 @@ import androidx.room.RoomDatabase
 
 /** App database that provides DAO objects to get access to the database tables. */
 @Database(
-    entities = [PodcastEntity::class, EpisodeEntity::class, GenreEntity::class],
+    entities = [
+        PodcastEntity::class,
+        PodcastEntityTemp::class,
+        EpisodeEntity::class,
+        GenreEntity::class
+    ],
     version = 6
 )
 abstract class AppDatabase : RoomDatabase() {
