@@ -9,10 +9,10 @@ fun BestPodcastsWrapper.asDatabaseEntities(): List<PodcastEntityPartialWithGenre
     return podcasts.map {
         PodcastEntityPartialWithGenre(
             id = it.id,
-            title = it.title,
-            description = it.description,
+            title = it.title.trim(),
+            description = it.description.trim(),
             image = it.image,
-            publisher = it.publisher,
+            publisher = it.publisher.trim(),
             explicitContent = it.explicitContent,
             episodeCount = it.episodeCount,
             latestPubDate = it.latestPubDate,

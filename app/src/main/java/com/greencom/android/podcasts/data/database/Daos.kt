@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import com.greencom.android.podcasts.data.domain.Podcast
 
 /** Interface to interact with the `podcasts` and `podcasts_temp` tables. */
 @Dao
@@ -30,13 +31,13 @@ abstract class PodcastDao {
      * table will be added from the `podcasts_temp` table.
      */
     @Query(
-        "INSERT INTO podcasts " +
-                "SELECT temp.id, temp.title, temp.description, temp.image, temp.publisher, " +
-                "temp.explicit_content, temp.episode_count, temp.latest_pub_date, " +
-                "temp.subscribed, temp.genre_id " +
-                "FROM podcasts_temp temp " +
-                "LEFT JOIN podcasts ON temp.id = podcasts.id " +
-                "WHERE podcasts.id IS null"
+        "INSERT INTO podcasts (id, title, description, image, publisher, explicit_content, " +
+                "episode_count, latest_pub_date, subscribed, genre_id) " +
+                "SELECT t.id, t.title, t.description, t.image, t.publisher, t.explicit_content, " +
+                "t.episode_count, t.latest_pub_date, t.subscribed, t.genre_id " +
+                "FROM podcasts_temp t " +
+                "LEFT JOIN podcasts ON t.id = podcasts.id " +
+                "WHERE podcasts.id IS NULL"
     )
     abstract fun merge()
 
@@ -70,6 +71,20 @@ abstract class PodcastDao {
      */
     @Update(entity = PodcastEntity::class)
     abstract fun updatePartialWithGenre(podcasts: List<PodcastEntityPartialWithGenre>)
+
+    /** Get a podcast from the `podcasts` table for a given ID. */
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed, genre_id FROM podcasts WHERE id = :id"
+    )
+    abstract fun getPodcast(id: String): Podcast?
+
+    /** Get a podcast from the `podcasts_temp` table for a given ID. */
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed, genre_id FROM podcasts_temp WHERE id = :id"
+    )
+    abstract fun getPodcastFromTemp(id: String): Podcast?
 
     /** Clear the `podcasts_temp` table. */
     @Query("DELETE FROM podcasts_temp")
