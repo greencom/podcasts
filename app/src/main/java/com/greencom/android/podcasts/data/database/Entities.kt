@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.greencom.android.podcasts.data.domain.Podcast
 
 /** Model class that represents a podcast entity in the database. */
 @Entity(tableName = "podcasts")
@@ -40,6 +41,17 @@ data class PodcastEntity(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
+
+    /** Indicates whether the user is subscribed to this podcast. */
+    @ColumnInfo(name = "subscribed", defaultValue = "0")
+    val subscribed: Boolean,
+
+    /**
+     * The ID of the genre for which this podcast is featured on the best list.
+     * [Podcast.NO_GENRE_ID] by default, which means this podcast is not on any list of the best.
+     */
+    @ColumnInfo(name = "genre_id", defaultValue = "-1")
+    val genreId: Int
 )
 
 /** Model class that represents a episode entity in the database. */

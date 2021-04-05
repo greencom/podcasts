@@ -1,38 +1,58 @@
 package com.greencom.android.podcasts.data.domain
 
+import androidx.room.ColumnInfo
+
 /** Model class that represents a domain podcast object. */
 data class Podcast(
 
     /** Podcast ID. */
+    @ColumnInfo(name = "id")
     val id: String,
 
     /** Podcast title. */
+    @ColumnInfo(name = "title")
     val title: String,
 
     /** Podcast description. */
+    @ColumnInfo(name = "description")
     val description: String,
 
     /** Image URL. */
+    @ColumnInfo(name = "image")
     val image: String,
 
     /** Podcast publisher. */
+    @ColumnInfo(name = "publisher")
     val publisher: String,
 
     /** Whether this podcast contains explicit language. */
+    @ColumnInfo(name = "explicit_content")
     val explicitContent: Boolean,
 
     /** Total number of episodes in this podcast. */
+    @ColumnInfo(name = "episode_count")
     val episodeCount: Int,
 
     /** The published date of the latest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
 
-    /** The genre ID for which the podcast is featured on the best list. */
-    val genreId: Int,
-
     /** Indicates whether the user is subscribed to this podcast. */
+    @ColumnInfo(name = "subscribed")
     var subscribed: Boolean,
-)
+
+    /**
+     * The ID of the genre for which this podcast is featured on the best list. [NO_GENRE_ID] by
+     * default, which means this podcast is not on any list of the best.
+     */
+    @ColumnInfo(name = "genre_id")
+    val genreId: Int,
+) {
+    companion object {
+        /** This podcast is not on any list of the best. */
+        const val NO_GENRE_ID = -1
+    }
+}
 
 /** Model class that represents a domain episode object. */
 data class Episode(
