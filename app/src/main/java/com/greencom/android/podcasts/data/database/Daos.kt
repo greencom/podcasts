@@ -10,25 +10,38 @@ import com.greencom.android.podcasts.data.domain.Podcast
 @Dao
 abstract class PodcastDao {
 
-    /** Insert a [PodcastEntityPartial] object into the `podcasts_temp` table. */
+    /**
+     * Insert a [PodcastEntityPartial] object into the `podcasts_temp` table.
+     * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     */
     @Insert(entity = PodcastEntityTemp::class)
-    abstract fun insertPartial(podcast: PodcastEntityPartial)
+    abstract suspend fun insertPartialToTemp(podcast: PodcastEntityPartial)
 
-    /** Insert a list of [PodcastEntityPartial] objects into the `podcasts_temp` table. */
+    /**
+     * Insert a list of [PodcastEntityPartial] objects into the `podcasts_temp` table.
+     * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     */
     @Insert(entity = PodcastEntityTemp::class)
-    abstract fun insertPartial(podcasts: List<PodcastEntityPartial>)
+    abstract suspend fun insertPartialToTemp(podcasts: List<PodcastEntityPartial>)
 
-    /** Insert a [PodcastEntityPartialWithGenre] object into the `podcasts_temp` table. */
+    /**
+     * Insert a [PodcastEntityPartialWithGenre] object into the `podcasts_temp` table.
+     * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     */
     @Insert(entity = PodcastEntityTemp::class)
-    abstract fun insertPartialWithGenre(podcast: PodcastEntityPartialWithGenre)
+    abstract suspend fun insertPartialWithGenreToTemp(podcast: PodcastEntityPartialWithGenre)
 
-    /** Insert a list of [PodcastEntityPartialWithGenre] objects into the `podcasts_temp` table. */
+    /**
+     * Insert a list of [PodcastEntityPartialWithGenre] objects into the `podcasts_temp` table.
+     * Do not forget to [merge] `podcasts_temp` table with `podcasts` afterwards.
+     */
     @Insert(entity = PodcastEntityTemp::class)
-    abstract fun insertPartialWithGenre(podcasts: List<PodcastEntityPartialWithGenre>)
+    abstract suspend fun insertPartialWithGenreToTemp(podcasts: List<PodcastEntityPartialWithGenre>)
 
     /**
      * Merge `podcasts` and `podcasts_temp` tables. All entries missing in the `podcasts`
-     * table will be added from the `podcasts_temp` table.
+     * table will be added from the `podcasts_temp` table. Do not forget to [clearTemp]
+     * afterwards to keep `podcasts_temp` empty.
      */
     @Query(
         "INSERT INTO podcasts (id, title, description, image, publisher, explicit_content, " +
@@ -39,56 +52,56 @@ abstract class PodcastDao {
                 "LEFT JOIN podcasts ON t.id = podcasts.id " +
                 "WHERE podcasts.id IS NULL"
     )
-    abstract fun merge()
+    abstract suspend fun merge()
 
     /** Update the existing entry in the `podcasts` table with a given [PodcastEntity]. */
     @Update
-    abstract fun update(podcast: PodcastEntity)
+    abstract suspend fun update(podcast: PodcastEntity)
 
     /**
      * Update the existing entry in the `podcasts` table with a given [PodcastEntityPartial].
      */
     @Update(entity = PodcastEntity::class)
-    abstract fun updatePartial(podcast: PodcastEntityPartial)
+    abstract suspend fun updatePartial(podcast: PodcastEntityPartial)
 
     /**
      * Update the existing entries in the `podcasts` table with a given
      * [PodcastEntityPartial] list.
      */
     @Update(entity = PodcastEntity::class)
-    abstract fun updatePartial(podcasts: List<PodcastEntityPartial>)
+    abstract suspend fun updatePartial(podcasts: List<PodcastEntityPartial>)
 
     /**
      * Update the existing entry in the `podcasts` table with a given
      * [PodcastEntityPartialWithGenre].
      */
     @Update(entity = PodcastEntity::class)
-    abstract fun updatePartialWithGenre(podcast: PodcastEntityPartialWithGenre)
+    abstract suspend fun updatePartialWithGenre(podcast: PodcastEntityPartialWithGenre)
 
     /**
      * Update the existing entries in the `podcasts` table with a given
      * [PodcastEntityPartialWithGenre] list.
      */
     @Update(entity = PodcastEntity::class)
-    abstract fun updatePartialWithGenre(podcasts: List<PodcastEntityPartialWithGenre>)
+    abstract suspend fun updatePartialWithGenre(podcasts: List<PodcastEntityPartialWithGenre>)
 
     /** Get a podcast from the `podcasts` table for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
                 "latest_pub_date, subscribed, genre_id FROM podcasts WHERE id = :id"
     )
-    abstract fun getPodcast(id: String): Podcast?
+    abstract suspend fun getPodcast(id: String): Podcast?
 
     /** Get a podcast from the `podcasts_temp` table for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
                 "latest_pub_date, subscribed, genre_id FROM podcasts_temp WHERE id = :id"
     )
-    abstract fun getPodcastFromTemp(id: String): Podcast?
+    abstract suspend fun getPodcastFromTemp(id: String): Podcast?
 
     /** Clear the `podcasts_temp` table. */
     @Query("DELETE FROM podcasts_temp")
-    abstract fun clearTemp()
+    abstract suspend fun clearTemp()
 }
 
 /** Interface to interact with the `episodes` table. */
