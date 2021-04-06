@@ -9,9 +9,8 @@ import androidx.room.RoomDatabase
         PodcastEntity::class,
         PodcastEntityTemp::class,
         EpisodeEntity::class,
-        GenreEntity::class
     ],
-    version = 6
+    version = 7
 )
 abstract class AppDatabase : RoomDatabase() {
 
@@ -20,7 +19,4 @@ abstract class AppDatabase : RoomDatabase() {
 
     /** Data access object for the `episodes` table. */
     abstract fun episodeDao(): EpisodeDao
-
-    /** Data access object for the `genres` table. */
-    abstract fun genreDao(): GenreDao
 }

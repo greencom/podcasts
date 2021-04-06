@@ -196,11 +196,3 @@ abstract class PodcastDao {
     )
     abstract suspend fun getPodcast(id: String): Podcast?
 }
-
-/** Interface to interact with the `episodes` table. */
-@Dao
-abstract class EpisodeDao
-
-/** Interface to interact with the `genres` table. */
-@Dao
-abstract class GenreDao

@@ -41,11 +41,4 @@ object DatabaseModule {
     fun provideEpisodeDao(database: AppDatabase): EpisodeDao {
         return database.episodeDao()
     }
-
-    /** Provides an instance of the [GenreDao]. */
-    @Singleton
-    @Provides
-    fun provideGenreDao(database: AppDatabase): GenreDao {
-        return database.genreDao()
-    }
 }

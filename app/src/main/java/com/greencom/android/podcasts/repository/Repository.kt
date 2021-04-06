@@ -1,7 +1,6 @@
 package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
-import com.greencom.android.podcasts.data.database.GenreDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.network.ListenApiService
 import javax.inject.Inject
@@ -16,5 +15,4 @@ class Repository @Inject constructor(
     private val listenApi: ListenApiService,
     private val podcastDao: PodcastDao,
     private val episodeDao: EpisodeDao,
-    private val genreDao: GenreDao,
 )
