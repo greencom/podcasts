@@ -1,7 +1,7 @@
 package com.greencom.android.podcasts.ui.explore
 
-import androidx.lifecycle.ViewModel
 import com.greencom.android.podcasts.repository.Repository
+import com.greencom.android.podcasts.ui.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -10,4 +10,4 @@ import javax.inject.Inject
  * and [ExploreSecondaryPageFragment].
  */
 @HiltViewModel
-class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel()
+class ExploreViewModel @Inject constructor(private val repository: Repository) : BaseViewModel()
