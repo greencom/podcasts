@@ -2,6 +2,8 @@ package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
 import com.greencom.android.podcasts.data.domain.Podcast
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /**
  * Interface to interact with the `podcasts` and `podcasts_temp` tables.
@@ -110,6 +112,13 @@ abstract class PodcastDao {
     @Query("DELETE FROM podcasts_temp")
     protected abstract suspend fun clearTemp()
 
+    /**
+     * Get a Flow with a list of the best [Podcast]s for a given genre ID. Use
+     * [getBestPodcastsFlow] with applied [distinctUntilChanged] function.
+     */
+    @Query("SELECT * FROM podcasts WHERE genre_id = :genreId")
+    protected abstract fun getBestPodcastsFlowRaw(genreId: Int): Flow<List<Podcast>>
+
     // Helper methods end.
 
 
@@ -190,9 +199,14 @@ abstract class PodcastDao {
     abstract suspend fun update(podcast: PodcastEntity)
 
     /** Get a podcast from the `podcasts` table for a given ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed, genre_id FROM podcasts WHERE id = :id"
-    )
+    @Query("SELECT * FROM podcasts WHERE id = :id")
     abstract suspend fun getPodcast(id: String): Podcast?
+
+    /**
+     * Get a Flow with a list of the best [Podcast]s for a given genre ID.
+     * No need to apply [distinctUntilChanged] function since it is already done under
+     * the hood.
+     */
+    fun getBestPodcastsFlow(genreId: Int) =
+        getBestPodcastsFlowRaw(genreId).distinctUntilChanged()
 }
