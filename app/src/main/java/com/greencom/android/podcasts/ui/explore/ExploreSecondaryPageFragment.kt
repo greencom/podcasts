@@ -6,13 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
+import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -33,10 +39,13 @@ class ExploreSecondaryPageFragment : Fragment() {
     private val binding get() = _binding!!
 
     /** ExploreViewModel. */
-    private val viewModel: ExploreViewModel by activityViewModels()
+    private val viewModel: ExploreViewModel by viewModels()
 
     /** RecyclerView adapter. */
     private val adapter = ExplorePodcastAdapter()
+
+    // TODO
+    private var podcastsJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +66,26 @@ class ExploreSecondaryPageFragment : Fragment() {
         setupRecyclerView()
         // Swipe-to-refresh theming.
         customizeSwipeToRefresh()
+
+        // TODO
+        podcastsJob = lifecycleScope.launchWhenResumed {
+            viewModel.getBestPodcasts(genreId).collectLatest { state ->
+                binding.loading.isVisible = state is State.Loading
+                binding.swipeToRefresh.isVisible = state is State.Success<*>
+                binding.error.root.isVisible = state is State.Error
+
+                @Suppress("UNCHECKED_CAST")
+                if (state is State.Success<*>) {
+                    adapter.submitList(state.data as List<Podcast>)
+                }
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Cancel coroutine to stop collecting Flow with the best podcasts.
+        podcastsJob?.cancel()
     }
 
     override fun onDestroy() {

@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
@@ -24,9 +22,6 @@ class ExploreFragment : Fragment() {
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
-    /** ExploreViewModel. */
-    private val viewModel: ExploreViewModel by activityViewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,11 +33,8 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // TabLayout and ViewPager2 setup.
         setupTabLayout()
-        // Create a single snackbar to show messages without overloading.
-        val snackbar = Snackbar.make(binding.root, "", Snackbar.LENGTH_SHORT)
     }
 
     override fun onDestroyView() {

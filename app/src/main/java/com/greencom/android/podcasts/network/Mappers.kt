@@ -5,7 +5,7 @@ import com.greencom.android.podcasts.data.database.PodcastEntityPartialWithGenre
 /** This file contains methods that convert data transfer objects to the database entities. */
 
 /** Convert a [BestPodcastsWrapper] object to a [PodcastEntityPartialWithGenre] list. */
-fun BestPodcastsWrapper.asDatabaseEntities(): List<PodcastEntityPartialWithGenre> {
+fun BestPodcastsWrapper.toDatabase(): List<PodcastEntityPartialWithGenre> {
     return podcasts.map {
         PodcastEntityPartialWithGenre(
             id = it.id,
