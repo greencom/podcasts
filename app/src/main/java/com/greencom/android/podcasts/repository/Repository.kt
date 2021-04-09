@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Repository {
 
-    // TODO
+    /**
+     * Get a Flow with a list of the best podcasts for a given genre ID. The result
+     * is presented as [State] object.
+     */
     fun getBestPodcasts(genreId: Int): Flow<State>
 }

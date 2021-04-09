@@ -44,7 +44,7 @@ class ExploreSecondaryPageFragment : Fragment() {
     /** RecyclerView adapter. */
     private val adapter = ExplorePodcastAdapter()
 
-    // TODO
+    /** Use this [Job] to control the state of the coroutine collecting the best podcasts. */
     private var podcastsJob: Job? = null
 
     override fun onCreateView(
@@ -67,24 +67,18 @@ class ExploreSecondaryPageFragment : Fragment() {
         // Swipe-to-refresh theming.
         customizeSwipeToRefresh()
 
-        // TODO
+        // Collect the best podcasts. Launch the coroutine when the state becomes RESUMED and
+        // cancel in onPause().
         podcastsJob = lifecycleScope.launchWhenResumed {
             viewModel.getBestPodcasts(genreId).collectLatest { state ->
-                binding.loading.isVisible = state is State.Loading
-                binding.swipeToRefresh.isVisible = state is State.Success<*>
-                binding.error.root.isVisible = state is State.Error
-
-                @Suppress("UNCHECKED_CAST")
-                if (state is State.Success<*>) {
-                    adapter.submitList(state.data as List<Podcast>)
-                }
+                handleState(state)
             }
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        // Cancel coroutine to stop collecting Flow with the best podcasts.
+    override fun onPause() {
+        super.onPause()
+        // Cancel the coroutine to stop collecting the Flow with the best podcasts.
         podcastsJob?.cancel()
     }
 
@@ -92,6 +86,18 @@ class ExploreSecondaryPageFragment : Fragment() {
         super.onDestroy()
         // Clear View binding.
         _binding = null
+    }
+
+    /** Control the UI depending on [State]. */
+    private fun handleState(state: State) {
+        binding.loading.isVisible = state is State.Loading
+        binding.swipeToRefresh.isVisible = state is State.Success<*>
+        binding.error.root.isVisible = state is State.Error
+
+        @Suppress("UNCHECKED_CAST")
+        if (state is State.Success<*>) {
+            adapter.submitList(state.data as List<Podcast>)
+        }
     }
 
     /** RecyclerView setup. */

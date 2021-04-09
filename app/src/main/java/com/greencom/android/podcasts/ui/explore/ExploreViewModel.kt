@@ -5,8 +5,6 @@ import com.greencom.android.podcasts.ui.BaseViewModel
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 /**
@@ -16,15 +14,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val repository: Repository) : BaseViewModel() {
 
-    // TODO
-    private val _event = MutableStateFlow<ExploreEvent>(ExploreEvent.Empty)
-    val event = _event.asStateFlow()
-
-    // TODO
+    /**
+     * Get a Flow with a list of the best podcasts for a given genre ID. The result
+     * is presented as [State] object.
+     */
     fun getBestPodcasts(genreId: Int): Flow<State> = repository.getBestPodcasts(genreId)
-
-    // TODO
-    sealed class ExploreEvent {
-        object Empty : ExploreEvent()
-    }
 }
