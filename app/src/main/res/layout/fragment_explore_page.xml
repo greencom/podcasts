@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:context=".ui.explore.ExploreSecondaryPageFragment"
+            tools:context=".ui.explore.ExplorePageFragment"
             tools:itemCount="4"
             tools:listitem="@layout/podcast_item" />
 
@@ -26,7 +26,7 @@
         layout="@layout/error_screen"
         android:visibility="gone" />
 
-    <!-- marginBottom = 56dp to align progress bar vertically. -->
+    <!-- marginBottom = 56dp to align the progress bar vertically. -->
     <ProgressBar
         android:id="@+id/loading"
         android:layout_width="wrap_content"

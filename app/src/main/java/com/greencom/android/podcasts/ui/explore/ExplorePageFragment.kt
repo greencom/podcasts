@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
-import com.greencom.android.podcasts.databinding.FragmentExploreSecondaryPageBinding
+import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,17 +24,17 @@ import kotlinx.coroutines.flow.collectLatest
 private const val GENRE_ID = "genre_id"
 
 /**
- * Represents all pages of the ViewPager2 in the ExploreFragment except the first one.
- * Each page contains a list of best podcasts for the specified genre.
+ * Represents all pages of the ViewPager2 in the ExploreFragment. Each page contains
+ * a list of the best podcasts for the specified genre.
  *
- * Use [ExploreSecondaryPageFragment.newInstance] to create a new instance
+ * Use [ExplorePageFragment.newInstance] to create a new instance
  * of the fragment with provided parameters.
  */
 @AndroidEntryPoint
-class ExploreSecondaryPageFragment : Fragment() {
+class ExplorePageFragment : Fragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
-    private var _binding: FragmentExploreSecondaryPageBinding? = null
+    private var _binding: FragmentExplorePageBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
@@ -52,8 +52,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // View binding setup.
-        _binding = FragmentExploreSecondaryPageBinding
-            .inflate(inflater, container, false)
+        _binding = FragmentExplorePageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -88,7 +87,7 @@ class ExploreSecondaryPageFragment : Fragment() {
         _binding = null
     }
 
-    /** Control the UI depending on [State]. */
+    /** Handle the UI depending on [State]. */
     private fun handleState(state: State) {
         binding.loading.isVisible = state is State.Loading
         binding.swipeToRefresh.isVisible = state is State.Success<*>
@@ -107,7 +106,7 @@ class ExploreSecondaryPageFragment : Fragment() {
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
         binding.podcastList.apply {
-            adapter = this@ExploreSecondaryPageFragment.adapter
+            adapter = this@ExplorePageFragment.adapter
             addItemDecoration(divider)
         }
     }
@@ -133,11 +132,11 @@ class ExploreSecondaryPageFragment : Fragment() {
          * the fragment using the provided parameters.
          *
          * @param genreId ID of the genre.
-         * @return A new instance of [ExploreSecondaryPageFragment].
+         * @return A new instance of [ExplorePageFragment].
          */
         @JvmStatic
         fun newInstance(genreId: Int) =
-            ExploreSecondaryPageFragment().apply {
+            ExplorePageFragment().apply {
                 arguments = Bundle().apply {
                     putInt(GENRE_ID, genreId)
                 }

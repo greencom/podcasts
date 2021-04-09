@@ -7,10 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-/**
- * ViewModel used by [ExploreFragment] and instances of [ExplorePrimaryPageFragment]
- * and [ExploreSecondaryPageFragment].
- */
+/** ViewModel used by instances of [ExplorePageFragment]. */
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val repository: Repository) : BaseViewModel() {
 
