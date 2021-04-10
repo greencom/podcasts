@@ -6,15 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <!-- Used to dim screen behind the player. -->
-    <FrameLayout
-        android:id="@+id/background"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0"
-        android:background="@color/background_scrim"
-        android:elevation="128dp" />
-
     <!-- Ignore fragment tag replacement hint for now because of bug -->
     <!-- or use NavHostFragment.navController in Activity instead of findNavController(). -->
     <androidx.fragment.app.FragmentContainerView
@@ -25,6 +16,14 @@
         android:layout_marginBottom="@dimen/player_bottom_sheet_peek_height"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
+
+    <!-- Used to dim screen behind the player. -->
+    <View
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:background="@color/background_scrim" />
 
     <!-- Player internal shadow. -->
     <View

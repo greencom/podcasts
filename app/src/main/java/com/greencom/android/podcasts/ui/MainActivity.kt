@@ -7,8 +7,6 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -191,15 +189,6 @@ class MainActivity : AppCompatActivity() {
         // Animate the displacement of the bottomNavBar along the y-axis.
         binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
 
-        // Change elevations of the player and bottomNavBar to overlap the background.
-        if (slideOffset >= 0.01f) {
-            binding.player.root.translationZ = 500f
-            binding.bottomNavBar.translationZ = 500f
-        } else {
-            binding.player.root.translationZ = 0f
-            binding.bottomNavBar.translationZ = 0f
-        }
-
         // Animate player shadow.
         binding.playerShadowExternal.alpha = 1f - slideOffset * 3
         binding.playerShadowInternal.alpha = 1f - slideOffset * 3
@@ -214,46 +203,36 @@ class MainActivity : AppCompatActivity() {
 
         // Expand the player on the frame click.
         binding.player.collapsed.root.setOnClickListener {
-            if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            }
-        }
-        // Expand the player on the play/pause button click.
-        binding.player.collapsed.playPause.setOnClickListener {
-            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+            expandPlayer()
         }
         // Expand the player on frame swipe.
-        binding.player.collapsed.root
-            .setOnTouchListener(object : OnSwipeListener(this) {
+        binding.player.collapsed.root.setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeUp() {
-                if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
+                expandPlayer()
             }
         })
         // Expand the player on play/pause button swipe.
-        binding.player.collapsed.playPause
-            .setOnTouchListener(object : OnSwipeListener(this) {
+        binding.player.collapsed.playPause.setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeUp() {
-                if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                    playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
+                expandPlayer()
             }
         })
+
+        binding.player.collapsed.playPause.setOnClickListener {
+
+        }
     }
 
     /** Set listeners for the expanded content of the player. */
     private fun setExpandedContentListeners() {
 
-        // Slider listeners.
         binding.player.expanded.slider.addOnChangeListener { _, _, _ ->
 
         }
 
+        // OnSliderTouchListener is used for animating slider thumb radius.
         val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.slider_thumb_default)
         val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.slider_thumb_increased)
-
-        // OnSliderTouchListener is used for animating slider thumb radius.
         val onTouchListener = object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 val increaseThumb = ObjectAnimator.ofInt(
@@ -283,7 +262,6 @@ class MainActivity : AppCompatActivity() {
         }
         binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
 
-        // Cover listener.
         // The expanded content of the player is not disabled at application start
         // (because of bug?), so prevent random click on the invisible podcast cover
         // by checking the state of player bottom sheet. If player is collapsed, expand it.
@@ -291,33 +269,40 @@ class MainActivity : AppCompatActivity() {
             if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
-                Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+
             }
         }
 
         binding.player.expanded.playPause.setOnClickListener {
-            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.backward.setOnClickListener {
-            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.forward.setOnClickListener {
-            Toast.makeText(this, "${(it as ImageView).contentDescription} clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.title.setOnClickListener {
-            Toast.makeText(this, "Title clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.title.setOnClickListener {
-            Toast.makeText(this, "Title clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.publisher.setOnClickListener {
-            Toast.makeText(this, "Publisher clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.speed.setOnClickListener {
-            Toast.makeText(this, "Speed clicked", Toast.LENGTH_SHORT).show()
+
         }
         binding.player.expanded.options.setOnClickListener {
-            Toast.makeText(this, "Options clicked", Toast.LENGTH_SHORT).show()
+
+        }
+    }
+
+    /** Expand the player if it is collapsed. */
+    private fun expandPlayer() {
+        if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+            playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
