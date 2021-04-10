@@ -63,8 +63,8 @@ class ExplorePageFragment : Fragment() {
 
         // RecyclerView setup.
         setupRecyclerView()
-        // Swipe-to-refresh theming.
-        customizeSwipeToRefresh()
+        // Swipe-to-refresh setup.
+        setupSwipeToRefresh(genreId)
 
         // Collect the best podcasts. Launch the coroutine when the state becomes RESUMED and
         // cancel in onPause().
@@ -111,8 +111,11 @@ class ExplorePageFragment : Fragment() {
         }
     }
 
-    /** Swipe-to-refresh theming. */
-    private fun customizeSwipeToRefresh() {
+    /**
+     * Swipe-to-refresh setup. Disable swipe-to-refresh if the page belongs to the
+     * [ExploreTabGenre.MAIN], i.e. [genreId] is equal to `0`.
+     */
+    private fun setupSwipeToRefresh(genreId: Int) {
         binding.swipeToRefresh.apply {
             val color = TypedValue()
             val backgroundColor = TypedValue()
@@ -123,6 +126,11 @@ class ExplorePageFragment : Fragment() {
             theme?.resolveAttribute(R.attr.colorPrimary, color, true)
             setProgressBackgroundColorSchemeColor(backgroundColor.data)
             setColorSchemeColors(color.data)
+
+            // Disable swipe-to-refresh, if the genre ID is `0`.
+            if (genreId == ExploreTabGenre.MAIN.id) {
+                binding.swipeToRefresh.isEnabled = false
+            }
         }
     }
 
