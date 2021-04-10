@@ -225,7 +225,7 @@ class MainActivity : AppCompatActivity() {
         // Expand the player on frame swipe.
         binding.player.collapsed.root
             .setOnTouchListener(object : OnSwipeListener(this) {
-            override fun onSwipeTop() {
+            override fun onSwipeUp() {
                 if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                     playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                 }
@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
         // Expand the player on play/pause button swipe.
         binding.player.collapsed.playPause
             .setOnTouchListener(object : OnSwipeListener(this) {
-            override fun onSwipeTop() {
+            override fun onSwipeUp() {
                 if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                     playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                 }

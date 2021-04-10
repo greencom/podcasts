@@ -13,7 +13,7 @@ private const val SWIPE_VELOCITY_THRESHOLD = 100
 /**
  * Class definition for callbacks to be invoked when the system detects a swipe on this view.
  * There are four methods available for defining behavior for swipes in different
- * directions: [onSwipeLeft], [onSwipeRight], [onSwipeTop], [onSwipeBottom].
+ * directions: [onSwipeLeft], [onSwipeRight], [onSwipeUp], [onSwipeDown].
  */
 open class OnSwipeListener(context: Context) : View.OnTouchListener {
 
@@ -31,10 +31,10 @@ open class OnSwipeListener(context: Context) : View.OnTouchListener {
     open fun onSwipeLeft() {}
 
     /** Callback to be invoked when a view is swiped top. */
-    open fun onSwipeTop() {}
+    open fun onSwipeUp() {}
 
     /** Callback to be invoked when a view is swiped bottom. */
-    open fun onSwipeBottom() {}
+    open fun onSwipeDown() {}
 
     private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
 
@@ -62,9 +62,9 @@ open class OnSwipeListener(context: Context) : View.OnTouchListener {
             } else if (abs(diffY) > SWIPE_DISTANCE_THRESHOLD
                     && abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                 if (diffY > 0) {
-                    onSwipeBottom()
+                    onSwipeDown()
                 } else {
-                    onSwipeTop()
+                    onSwipeUp()
                 }
                 result = true
             }
