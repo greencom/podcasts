@@ -93,8 +93,8 @@ class ExplorePageFragment : Fragment() {
         binding.swipeToRefresh.isVisible = state is State.Success<*>
         binding.error.root.isVisible = state is State.Error
 
-        @Suppress("UNCHECKED_CAST")
         if (state is State.Success<*>) {
+            @Suppress("UNCHECKED_CAST")
             adapter.submitList(state.data as List<Podcast>)
         }
     }
