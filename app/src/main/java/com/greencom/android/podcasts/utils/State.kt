@@ -5,7 +5,10 @@ package com.greencom.android.podcasts.utils
  * [Success] or [Error].
  */
 sealed class State {
+    /** Object that represents the `Loading` state. */
     object Loading : State()
-    data class Success<T>(val data: T) : State()
-    data class Error(val throwable: Throwable) : State()
+    /** Class that represents the `Success` state with [data]. */
+    data class Success<out T>(val data: T) : State()
+    /** Class that represents the `Error` state with [exception]. */
+    data class Error(val exception: Throwable) : State()
 }
