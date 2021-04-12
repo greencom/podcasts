@@ -6,19 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
-import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collectLatest
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -44,9 +38,6 @@ class ExplorePageFragment : Fragment() {
     /** RecyclerView adapter. */
     private val adapter = ExplorePodcastAdapter()
 
-    /** Use this [Job] to control the state of the coroutine collecting the best podcasts. */
-    private var podcastsJob: Job? = null
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,38 +56,12 @@ class ExplorePageFragment : Fragment() {
         setupRecyclerView()
         // Swipe-to-refresh setup.
         setupSwipeToRefresh(genreId)
-
-        // Collect the best podcasts. Launch the coroutine when the state becomes RESUMED and
-        // cancel in onPause().
-        podcastsJob = lifecycleScope.launchWhenResumed {
-            viewModel.getBestPodcasts(genreId).collectLatest { state ->
-                handleState(state)
-            }
-        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        // Cancel the coroutine to stop collecting the Flow with the best podcasts.
-        podcastsJob?.cancel()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         // Clear View binding.
         _binding = null
-    }
-
-    /** Handle the UI depending on [State]. */
-    private fun handleState(state: State) {
-        binding.loading.isVisible = state is State.Loading
-        binding.swipeToRefresh.isVisible = state is State.Success<*>
-        binding.error.root.isVisible = state is State.Error
-
-        if (state is State.Success<*>) {
-            @Suppress("UNCHECKED_CAST")
-            adapter.submitList(state.data as List<Podcast>)
-        }
     }
 
     /** RecyclerView setup. */
