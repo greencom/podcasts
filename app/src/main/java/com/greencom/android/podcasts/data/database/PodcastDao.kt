@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
 import com.greencom.android.podcasts.data.domain.Podcast
+import com.greencom.android.podcasts.data.domain.PodcastShort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -104,7 +105,9 @@ abstract class PodcastDao {
     /** Get a podcast from the `podcasts_temp` table for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed, genre_id FROM podcasts_temp WHERE id = :id"
+                "latest_pub_date, subscribed " +
+                "FROM podcasts_temp " +
+                "WHERE id = :id"
     )
     protected abstract suspend fun getPodcastFromTemp(id: String): Podcast?
 
@@ -113,11 +116,15 @@ abstract class PodcastDao {
     protected abstract suspend fun clearTemp()
 
     /**
-     * Get a Flow with a list of the best [Podcast]s for a given genre ID. Use
+     * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID. Use
      * [getBestPodcastsFlow] with applied [distinctUntilChanged] function.
      */
-    @Query("SELECT * FROM podcasts WHERE genre_id = :genreId")
-    protected abstract fun getBestPodcastsFlowRaw(genreId: Int): Flow<List<Podcast>>
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, subscribed " +
+                "FROM podcasts " +
+                "WHERE genre_id = :genreId"
+    )
+    protected abstract fun getBestPodcastsFlowRaw(genreId: Int): Flow<List<PodcastShort>>
 
     // Helper methods end.
 
@@ -199,11 +206,16 @@ abstract class PodcastDao {
     abstract suspend fun update(podcast: PodcastEntity)
 
     /** Get a podcast from the `podcasts` table for a given ID. */
-    @Query("SELECT * FROM podcasts WHERE id = :id")
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed " +
+                "FROM podcasts " +
+                "WHERE id = :id"
+    )
     abstract suspend fun getPodcast(id: String): Podcast?
 
     /**
-     * Get a Flow with a list of the best [Podcast]s for a given genre ID.
+     * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
      * No need to apply [distinctUntilChanged] function since it is already done under
      * the hood.
      */

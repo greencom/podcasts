@@ -134,7 +134,6 @@ class PodcastDaoTest {
 //
 //        // THEN: The podcast is not null, `genreId` = -1, `subscribed` = false.
 //        assertThat(loaded?.title).isEqualTo(podcast.title)
-//        assertThat(loaded?.genreId).isEqualTo(-1)
 //        assertThat(loaded?.subscribed).isFalse()
 //    }
 //
@@ -163,15 +162,12 @@ class PodcastDaoTest {
 //
 //        // THEN: The podcasts are not null, `genreId` = -1, `subscribed` = false for each.
 //        assertThat(loadedOne?.title).isEqualTo(podcastOne.title)
-//        assertThat(loadedOne?.genreId).isEqualTo(-1)
 //        assertThat(loadedOne?.subscribed).isFalse()
 //
 //        assertThat(loadedTwo?.title).isEqualTo(podcastTwo.title)
-//        assertThat(loadedTwo?.genreId).isEqualTo(-1)
 //        assertThat(loadedTwo?.subscribed).isFalse()
 //
 //        assertThat(loadedThree?.title).isEqualTo(podcastThree.title)
-//        assertThat(loadedThree?.genreId).isEqualTo(-1)
 //        assertThat(loadedThree?.subscribed).isFalse()
 //    }
 //
@@ -197,7 +193,6 @@ class PodcastDaoTest {
 //
 //        // THEN: The podcast is not null, `genreId` = 5, `subscribed` = false.
 //        assertThat(loaded?.title).isEqualTo(podcast.title)
-//        assertThat(loaded?.genreId).isEqualTo(podcast.genreId)
 //        assertThat(loaded?.subscribed).isFalse()
 //    }
 //
@@ -227,15 +222,12 @@ class PodcastDaoTest {
 //
 //        // THEN: The podcasts are not null, `genreId` is valid, `subscribed` = false for each.
 //        assertThat(loadedOne?.title).isEqualTo(podcastOne.title)
-//        assertThat(loadedOne?.genreId).isEqualTo(podcastOne.genreId)
 //        assertThat(loadedOne?.subscribed).isFalse()
 //
 //        assertThat(loadedTwo?.title).isEqualTo(podcastTwo.title)
-//        assertThat(loadedTwo?.genreId).isEqualTo(podcastTwo.genreId)
 //        assertThat(loadedTwo?.subscribed).isFalse()
 //
 //        assertThat(loadedThree?.title).isEqualTo(podcastThree.title)
-//        assertThat(loadedThree?.genreId).isEqualTo(podcastThree.genreId)
 //        assertThat(loadedThree?.subscribed).isFalse()
 //    }
 //
@@ -267,15 +259,12 @@ class PodcastDaoTest {
 //
 //            // THEN: The podcasts are not null, `genreId` = -1, `subscribed` = false for each.
 //            assertThat(loadedOne?.title).isEqualTo(podcastOne.title)
-//            assertThat(loadedOne?.genreId).isEqualTo(-1)
 //            assertThat(loadedOne?.subscribed).isFalse()
 //
 //            assertThat(loadedTwo?.title).isEqualTo(podcastTwo.title)
-//            assertThat(loadedTwo?.genreId).isEqualTo(-1)
 //            assertThat(loadedTwo?.subscribed).isFalse()
 //
 //            assertThat(loadedThree?.title).isEqualTo(podcastThree.title)
-//            assertThat(loadedThree?.genreId).isEqualTo(-1)
 //            assertThat(loadedThree?.subscribed).isFalse()
 //        }
 //
@@ -310,15 +299,12 @@ class PodcastDaoTest {
 //
 //            // THEN: The podcasts are not null, `genreId` = -1, `subscribed` = false for each.
 //            assertThat(loadedOne?.title).isEqualTo(podcastOne.title)
-//            assertThat(loadedOne?.genreId).isEqualTo(-1)
 //            assertThat(loadedOne?.subscribed).isFalse()
 //
 //            assertThat(loadedTwo?.title).isEqualTo(podcastTwo.title)
-//            assertThat(loadedTwo?.genreId).isEqualTo(-1)
 //            assertThat(loadedTwo?.subscribed).isFalse()
 //
 //            assertThat(loadedThree?.title).isEqualTo(podcastThree.title)
-//            assertThat(loadedThree?.genreId).isEqualTo(-1)
 //            assertThat(loadedThree?.subscribed).isFalse()
 //        }
 //
@@ -357,17 +343,14 @@ class PodcastDaoTest {
 //        // THEN: The podcasts are not null, fields are not changed.
 //        assertThat(loadedOne?.title).isEqualTo(podcastOne.title)
 //        assertThat(loadedOne?.episodeCount).isEqualTo(podcastOne.episodeCount)
-//        assertThat(loadedOne?.genreId).isEqualTo(-1)
 //        assertThat(loadedOne?.subscribed).isFalse()
 //
 //        assertThat(loadedTwo?.title).isEqualTo(podcastTwo.title)
 //        assertThat(loadedTwo?.episodeCount).isEqualTo(podcastTwo.episodeCount)
-//        assertThat(loadedTwo?.genreId).isEqualTo(-1)
 //        assertThat(loadedTwo?.subscribed).isFalse()
 //
 //        assertThat(loadedThree?.title).isEqualTo(podcastThree.title)
 //        assertThat(loadedThree?.episodeCount).isEqualTo(podcastThree.episodeCount)
-//        assertThat(loadedThree?.genreId).isEqualTo(-1)
 //        assertThat(loadedThree?.subscribed).isFalse()
 //    }
 //
@@ -535,7 +518,6 @@ class PodcastDaoTest {
 //        // THEN: loaded is updated.
 //        assertThat(loaded?.description).isEqualTo(new.description)
 //        assertThat(loaded?.episodeCount).isEqualTo(new.episodeCount)
-//        assertThat(loaded?.genreId).isEqualTo(new.genreId)
 //    }
 //
 //    @Test
@@ -587,11 +569,9 @@ class PodcastDaoTest {
 //        // THEN: returned podcasts are updated.
 //        assertThat(loadedOne?.description).isEqualTo(newOne.description)
 //        assertThat(loadedOne?.episodeCount).isEqualTo(newOne.episodeCount)
-//        assertThat(loadedOne?.genreId).isEqualTo(newOne.genreId)
 //
 //        assertThat(loadedTwo?.description).isEqualTo(newTwo.description)
 //        assertThat(loadedTwo?.episodeCount).isEqualTo(newTwo.episodeCount)
-//        assertThat(loadedTwo?.genreId).isEqualTo(newTwo.genreId)
 //    }
 //
 //    @Test
