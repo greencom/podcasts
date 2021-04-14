@@ -11,12 +11,13 @@ import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Podcast
+import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
 class ExplorePodcastAdapter :
-    ListAdapter<Podcast, ExplorePodcastViewHolder>(PodcastDiffCallback) {
+    ListAdapter<PodcastShort, ExplorePodcastViewHolder>(PodcastDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
         return ExplorePodcastViewHolder.create(parent)
@@ -36,8 +37,8 @@ class ExplorePodcastViewHolder private constructor(
     // View context.
     private val context: Context = binding.root.context
 
-    /** Bind ViewHolder with a given [Podcast]. */
-    fun bind(podcast: Podcast) {
+    /** Bind ViewHolder with a given [PodcastShort]. */
+    fun bind(podcast: PodcastShort) {
         binding.cover.load(podcast.image) {
             crossfade(true)
             placeholder(R.drawable.shape_placeholder)

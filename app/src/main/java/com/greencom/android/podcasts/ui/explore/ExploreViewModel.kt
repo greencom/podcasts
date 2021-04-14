@@ -1,28 +1,42 @@
 package com.greencom.android.podcasts.ui.explore
 
+import androidx.annotation.StringRes
+import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
+import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /** ViewModel used by instances of [ExplorePageFragment]. */
 @HiltViewModel
 class ExploreViewModel @Inject constructor(private val repository: Repository) : BaseViewModel() {
 
-    /** [uiState] backing property. */
     private val _uiState = MutableStateFlow<ExplorePageState>(ExplorePageState.Loading)
     /** StateFlow of UI states. States are presented by [ExplorePageState]. */
     val uiState = _uiState.asStateFlow()
 
-    /** [event] backing property. */
     private val _event = Channel<ExplorePageEvent>(Channel.BUFFERED)
     /** Flow of events. Events are presented by [ExplorePageEvent]. */
     val event = _event.receiveAsFlow()
+
+    /** Load the best podcasts for a given genre ID. The result will be posted to [uiState]. */
+    fun getBestPodcasts(genreId: Int) = viewModelScope.launch {
+        repository.getBestPodcasts(genreId).collect { state ->
+            when (state) {
+                is State.Success -> _uiState.value = ExplorePageState.Success(state.data)
+                is State.Error -> _uiState.value = ExplorePageState.Error(state.exception)
+                else -> {  }
+            }
+        }
+    }
 
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */
     sealed class ExplorePageState {
@@ -35,5 +49,8 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     }
 
     /** Sealed class that represents events of the [ExplorePageFragment]. */
-    sealed class ExplorePageEvent
+    sealed class ExplorePageEvent {
+        /** Represents a Snackbar event with a string res ID of the message to show. */
+        data class Snackbar(@StringRes val stringRes: Int) : ExplorePageEvent()
+    }
 }

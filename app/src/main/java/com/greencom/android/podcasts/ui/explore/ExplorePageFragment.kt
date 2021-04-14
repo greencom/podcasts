@@ -5,14 +5,21 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
+import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -56,6 +63,36 @@ class ExplorePageFragment : Fragment() {
         setupRecyclerView()
         // Swipe-to-refresh setup.
         setupSwipeToRefresh(genreId)
+
+        // TODO: Test code
+        if (genreId != ExploreTabGenre.MAIN.id) {
+            // Load the best podcasts.
+            viewModel.getBestPodcasts(genreId)
+        }
+
+        // Observe UI states.
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.uiState.collect { state ->
+                binding.loading.isVisible = state is ExplorePageState.Loading
+                binding.swipeToRefresh.isVisible = state is ExplorePageState.Success
+                binding.error.root.isVisible = state is ExplorePageState.Error
+
+                if (state is ExplorePageState.Success) {
+                    adapter.submitList(state.podcasts)
+                }
+            }
+        }
+
+        // Observe events.
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+            viewModel.event.collect { event ->
+                binding.swipeToRefresh.isRefreshing = false
+
+                when (event) {
+                    is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -97,6 +134,10 @@ class ExplorePageFragment : Fragment() {
                 binding.swipeToRefresh.isEnabled = false
             }
         }
+    }
+
+    private fun showSnackbar(@StringRes stringRes: Int) {
+        Snackbar.make(binding.root, stringRes, Snackbar.LENGTH_SHORT).show()
     }
 
     companion object {
