@@ -13,3 +13,6 @@ object PodcastDiffCallback : DiffUtil.ItemCallback<PodcastShort>() {
         return oldItem == newItem
     }
 }
+
+/** Reveal animation duration. */
+const val REVEAL_ANIMATION_DURATION = 150L

@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
+import com.greencom.android.podcasts.utils.REVEAL_ANIMATION_DURATION
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -63,6 +64,8 @@ class ExplorePageFragment : Fragment() {
         setupRecyclerView()
         // Swipe-to-refresh setup.
         setupSwipeToRefresh(genreId)
+        // Views alpha setup.
+        setupAlpha()
 
         // TODO: Test code
         if (genreId != ExploreTabGenre.MAIN.id) {
@@ -73,25 +76,20 @@ class ExplorePageFragment : Fragment() {
         // Observe UI states.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.uiState.collect { state ->
-                binding.loading.isVisible = state is ExplorePageState.Loading
-                binding.swipeToRefresh.isVisible = state is ExplorePageState.Success
-                binding.error.root.isVisible = state is ExplorePageState.Error
-
-                if (state is ExplorePageState.Success) {
-                    adapter.submitList(state.podcasts)
-                }
+                handleUiState(state)
             }
         }
 
         // Observe events.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.event.collect { event ->
-                binding.swipeToRefresh.isRefreshing = false
-
-                when (event) {
-                    is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
-                }
+                handleEvent(event)
             }
+        }
+
+        // Fetch the podcasts from the error screen.
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchBestPodcasts(genreId)
         }
     }
 
@@ -99,6 +97,39 @@ class ExplorePageFragment : Fragment() {
         super.onDestroyView()
         // Clear View binding.
         _binding = null
+    }
+
+    /** Handle UI states. */
+    private fun handleUiState(state: ExplorePageState) {
+        binding.loading.isVisible = state is ExplorePageState.Loading
+        binding.swipeToRefresh.isVisible = state is ExplorePageState.Success
+        binding.error.root.isVisible = state is ExplorePageState.Error
+
+        when (state) {
+            is ExplorePageState.Success -> {
+                adapter.submitList(state.podcasts)
+                reveal(binding.podcastList)
+                // Reset error screen alpha.
+                binding.error.root.alpha = 0f
+            }
+            is ExplorePageState.Error -> {
+                reveal(binding.error.root)
+                // Reset podcast list alpha.
+                binding.podcastList.alpha = 0f
+            }
+            else -> {  }
+        }
+    }
+
+    /** Handle events. */
+    private fun handleEvent(event: ExplorePageEvent) {
+        binding.swipeToRefresh.isRefreshing = event is ExplorePageEvent.Refreshing
+        binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
+
+        when (event) {
+            is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
+            else -> {  }
+        }
     }
 
     /** RecyclerView setup. */
@@ -136,6 +167,20 @@ class ExplorePageFragment : Fragment() {
         }
     }
 
+    /** Set up alpha of fragment views. Used to create crossfade animations on reveal. */
+    private fun setupAlpha() {
+        binding.error.root.alpha = 0f
+        binding.podcastList.alpha = 0f
+    }
+
+    /** Reveal a view with crossfade animation. */
+    private fun reveal(view: View) {
+        view.animate()
+            .alpha(1f)
+            .setDuration(REVEAL_ANIMATION_DURATION)
+    }
+
+    /** Show a Snackbar with a message correspond to a given string res ID. */
     private fun showSnackbar(@StringRes stringRes: Int) {
         Snackbar.make(binding.root, stringRes, Snackbar.LENGTH_SHORT).show()
     }

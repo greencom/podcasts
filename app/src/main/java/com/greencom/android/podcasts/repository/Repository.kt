@@ -16,4 +16,10 @@ interface Repository {
      * Otherwise, fetch the podcasts from ListenAPI and insert them into the database.
      */
     fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>>
+
+    /**
+     * Fetch the best podcasts for a given genre ID from ListenAPI and insert them
+     * into the database.
+     */
+    suspend fun fetchBestPodcasts(genreId: Int): State<Unit>
 }

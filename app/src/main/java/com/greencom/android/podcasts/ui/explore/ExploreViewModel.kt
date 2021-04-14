@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.ui.explore
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
@@ -38,6 +39,28 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
+    /**
+     * Fetch the best podcasts for a given genre ID from ListenAPI and insert them
+     * into the database.
+     */
+    fun fetchBestPodcasts(genreId: Int) = viewModelScope.launch {
+        _event.send(ExplorePageEvent.Fetching)
+        when (repository.fetchBestPodcasts(genreId)) {
+            is State.Success -> {
+                _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
+            }
+            is State.Error -> {
+                _event.send(ExplorePageEvent.Snackbar(R.string.explore_something_went_wrong))
+            }
+            else -> {  }
+        }
+    }
+
+    // TODO
+    fun refreshBestPodcasts(genreId: Int) {
+
+    }
+
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */
     sealed class ExplorePageState {
         /** Represents a `Loading` state. */
@@ -52,5 +75,9 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     sealed class ExplorePageEvent {
         /** Represents a Snackbar event with a string res ID of the message to show. */
         data class Snackbar(@StringRes val stringRes: Int) : ExplorePageEvent()
+        /** Represents a Fetching event triggered by [fetchBestPodcasts] method. */
+        object Fetching : ExplorePageEvent()
+        /** Represents a Refreshing event triggered by [refreshBestPodcasts] method. */
+        object Refreshing : ExplorePageEvent()
     }
 }
