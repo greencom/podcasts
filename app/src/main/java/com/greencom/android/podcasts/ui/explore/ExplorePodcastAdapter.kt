@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback

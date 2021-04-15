@@ -2,7 +2,9 @@ package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.PodcastDao
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
+import com.greencom.android.podcasts.data.domain.toDatabase
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.toDatabase
 import com.greencom.android.podcasts.utils.State
@@ -30,6 +32,7 @@ class RepositoryImpl @Inject constructor(
 
     @ExperimentalCoroutinesApi
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = channelFlow {
+        send(State.Loading)
         podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
             // Return from the database, if it contains the appropriate podcasts.
             if (podcasts.isNotEmpty()) {
@@ -54,6 +57,28 @@ class RepositoryImpl @Inject constructor(
         return try {
             val response = listenApi.getBestPodcasts(genreId)
             podcastDao.insertWithGenre(response.toDatabase())
+            State.Success(Unit)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
+        }
+    }
+
+    override suspend fun refreshBestPodcasts(genreId: Int): State<Unit> {
+        return try {
+            // Fetch a new list from ListenAPI.
+            val newList = withContext(Dispatchers.IO) {
+                listenApi.getBestPodcasts(genreId).toDatabase()
+            }
+            // Get the current list from the database.
+            val currentList = podcastDao.getBestPodcasts(genreId)
+            // Filter old podcasts.
+            val newIds = newList.map { it.id }
+            val oldList = currentList.filter { it.id !in newIds }.toDatabase(Podcast.NO_GENRE_ID)
+            // Update old podcasts and insert new ones.
+            podcastDao.insertWithGenre(newList)
+            podcastDao.update(oldList)
             State.Success(Unit)
         } catch (e: IOException) {
             State.Error(e)

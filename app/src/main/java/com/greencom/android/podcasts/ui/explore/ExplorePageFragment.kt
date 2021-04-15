@@ -17,8 +17,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
-import com.greencom.android.podcasts.utils.REVEAL_ANIMATION_DURATION
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
+import com.greencom.android.podcasts.utils.REVEAL_ANIMATION_DURATION
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -90,6 +90,11 @@ class ExplorePageFragment : Fragment() {
         // Fetch the podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.fetchBestPodcasts(genreId)
+        }
+
+        // Refresh the podcasts with swipe-to-refresh gesture.
+        binding.swipeToRefresh.setOnRefreshListener {
+            viewModel.refreshBestPodcasts(genreId)
         }
     }
 

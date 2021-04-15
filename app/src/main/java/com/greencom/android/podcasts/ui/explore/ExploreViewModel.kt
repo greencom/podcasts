@@ -32,9 +32,9 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     fun getBestPodcasts(genreId: Int) = viewModelScope.launch {
         repository.getBestPodcasts(genreId).collect { state ->
             when (state) {
+                is State.Loading -> _uiState.value = ExplorePageState.Loading
                 is State.Success -> _uiState.value = ExplorePageState.Success(state.data)
                 is State.Error -> _uiState.value = ExplorePageState.Error(state.exception)
-                else -> {  }
             }
         }
     }
@@ -56,9 +56,18 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
-    // TODO
-    fun refreshBestPodcasts(genreId: Int) {
-
+    /** Refresh the best podcasts for a given genre ID. */
+    fun refreshBestPodcasts(genreId: Int) = viewModelScope.launch {
+        _event.send(ExplorePageEvent.Refreshing)
+        when (repository.refreshBestPodcasts(genreId)) {
+            is State.Success -> {
+                _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
+            }
+            is State.Error -> {
+                _event.send(ExplorePageEvent.Snackbar(R.string.explore_something_went_wrong))
+            }
+            else -> {  }
+        }
     }
 
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */

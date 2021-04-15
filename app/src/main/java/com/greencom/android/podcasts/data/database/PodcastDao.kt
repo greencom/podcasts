@@ -205,7 +205,11 @@ abstract class PodcastDao {
     @Update
     abstract suspend fun update(podcast: PodcastEntity)
 
-    /** Get a podcast from the `podcasts` table for a given ID. */
+    /** Update the existing entries in the `podcasts` table with a given [PodcastEntity] list. */
+    @Update
+    abstract suspend fun update(podcasts: List<PodcastEntity>)
+
+    /** Get a podcast for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
                 "latest_pub_date, subscribed " +
@@ -213,6 +217,10 @@ abstract class PodcastDao {
                 "WHERE id = :id"
     )
     abstract suspend fun getPodcast(id: String): Podcast?
+
+    /** Get the best podcasts for a given genre ID. */
+    @Query("SELECT * FROM podcasts WHERE genre_id = :genreId")
+    abstract suspend fun getBestPodcasts(genreId: Int): List<Podcast>
 
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
