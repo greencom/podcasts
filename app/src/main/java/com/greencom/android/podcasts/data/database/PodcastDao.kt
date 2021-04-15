@@ -219,7 +219,11 @@ abstract class PodcastDao {
     abstract suspend fun getPodcast(id: String): Podcast?
 
     /** Get the best podcasts for a given genre ID. */
-    @Query("SELECT * FROM podcasts WHERE genre_id = :genreId")
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed " +
+                "FROM podcasts " +
+                "WHERE genre_id = :genreId")
     abstract suspend fun getBestPodcasts(genreId: Int): List<Podcast>
 
     /**
