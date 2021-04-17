@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Set expanded content alpha to zero.
+        binding.player.expanded.root.alpha = 0f
 
         // Navigation component setup.
         setupNavigation()

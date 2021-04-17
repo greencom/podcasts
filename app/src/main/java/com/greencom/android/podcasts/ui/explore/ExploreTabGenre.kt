@@ -11,7 +11,7 @@ package com.greencom.android.podcasts.ui.explore
  * if you edit this class.
  */
 enum class ExploreTabGenre(val id: Int) {
-    MAIN(0),
+    MAIN(67),
     NEWS(99),
     SOCIETY_AND_CULTURE(122),
     EDUCATION(111),

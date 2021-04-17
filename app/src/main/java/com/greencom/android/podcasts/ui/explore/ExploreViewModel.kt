@@ -52,7 +52,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             is State.Error -> {
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_something_went_wrong))
             }
-            else -> {  }
+            is State.Loading -> {  }
         }
     }
 
@@ -66,7 +66,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             is State.Error -> {
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_something_went_wrong))
             }
-            else -> {  }
+            is State.Loading -> {  }
         }
     }
 

@@ -63,15 +63,12 @@ class ExplorePageFragment : Fragment() {
         // RecyclerView setup.
         setupRecyclerView()
         // Swipe-to-refresh setup.
-        setupSwipeToRefresh(genreId)
+        setupSwipeToRefresh()
         // Views alpha setup.
         setupAlpha()
 
-        // TODO: Test code
-        if (genreId != ExploreTabGenre.MAIN.id) {
-            // Load the best podcasts.
-            viewModel.getBestPodcasts(genreId)
-        }
+        // Load the best podcasts.
+        viewModel.getBestPodcasts(genreId)
 
         // Observe UI states.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
@@ -122,7 +119,7 @@ class ExplorePageFragment : Fragment() {
                 // Reset podcast list alpha.
                 binding.podcastList.alpha = 0f
             }
-            else -> {  }
+            is ExplorePageState.Loading -> {  }
         }
     }
 
@@ -133,7 +130,8 @@ class ExplorePageFragment : Fragment() {
 
         when (event) {
             is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
-            else -> {  }
+            is ExplorePageEvent.Fetching -> {  }
+            is ExplorePageEvent.Refreshing -> {  }
         }
     }
 
@@ -149,11 +147,8 @@ class ExplorePageFragment : Fragment() {
         }
     }
 
-    /**
-     * Swipe-to-refresh setup. Disable swipe-to-refresh if the page belongs to the
-     * [ExploreTabGenre.MAIN], i.e. [genreId] is equal to `0`.
-     */
-    private fun setupSwipeToRefresh(genreId: Int) {
+    /** Swipe-to-refresh setup. */
+    private fun setupSwipeToRefresh() {
         binding.swipeToRefresh.apply {
             val color = TypedValue()
             val backgroundColor = TypedValue()
@@ -164,11 +159,6 @@ class ExplorePageFragment : Fragment() {
             theme?.resolveAttribute(R.attr.colorPrimary, color, true)
             setProgressBackgroundColorSchemeColor(backgroundColor.data)
             setColorSchemeColors(color.data)
-
-            // Disable swipe-to-refresh, if the genre ID is `0`.
-            if (genreId == ExploreTabGenre.MAIN.id) {
-                binding.swipeToRefresh.isEnabled = false
-            }
         }
     }
 
