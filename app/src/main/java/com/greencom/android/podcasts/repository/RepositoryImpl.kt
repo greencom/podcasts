@@ -8,7 +8,7 @@ import com.greencom.android.podcasts.data.domain.toDatabase
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.toDatabase
 import com.greencom.android.podcasts.utils.State
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
@@ -31,7 +31,10 @@ class RepositoryImpl @Inject constructor(
 ) : Repository {
 
     @ExperimentalCoroutinesApi
-    override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = channelFlow {
+    override fun getBestPodcasts(
+        genreId: Int,
+        dispatcher: CoroutineDispatcher
+    ): Flow<State<List<PodcastShort>>> = channelFlow {
         send(State.Loading)
         podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
             // Return from the database, if it contains the appropriate podcasts.
@@ -40,7 +43,7 @@ class RepositoryImpl @Inject constructor(
             } else {
                 // Otherwise, fetch the best podcasts from ListenAPI and insert them into db.
                 try {
-                    val response = withContext(Dispatchers.IO) {
+                    val response = withContext(dispatcher) {
                         listenApi.getBestPodcasts(genreId)
                     }
                     podcastDao.insertWithGenre(response.toDatabase())
@@ -53,9 +56,14 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
+    override suspend fun fetchBestPodcasts(
+        genreId: Int,
+        dispatcher: CoroutineDispatcher
+    ): State<Unit> {
         return try {
-            val response = listenApi.getBestPodcasts(genreId)
+            val response = withContext(dispatcher) {
+                listenApi.getBestPodcasts(genreId)
+            }
             podcastDao.insertWithGenre(response.toDatabase())
             State.Success(Unit)
         } catch (e: IOException) {
@@ -65,10 +73,13 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshBestPodcasts(genreId: Int): State<Unit> {
+    override suspend fun refreshBestPodcasts(
+        genreId: Int,
+        dispatcher: CoroutineDispatcher
+    ): State<Unit> {
         return try {
             // Fetch a new list from ListenAPI.
-            val newList = withContext(Dispatchers.IO) {
+            val newList = withContext(dispatcher) {
                 listenApi.getBestPodcasts(genreId).toDatabase()
             }
             // Get the current list from the database.
