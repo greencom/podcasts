@@ -188,7 +188,6 @@ class ExplorePageFragment : Fragment() {
          * @param genreId ID of the genre.
          * @return A new instance of [ExplorePageFragment].
          */
-        @JvmStatic
         fun newInstance(genreId: Int) =
             ExplorePageFragment().apply {
                 arguments = Bundle().apply {
