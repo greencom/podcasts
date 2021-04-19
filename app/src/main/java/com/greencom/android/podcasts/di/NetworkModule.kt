@@ -22,8 +22,8 @@ object NetworkModule {
     private const val BASE_URL = "https://listen-api.listennotes.com/api/v2/"
 
     /** Provides the implementation of [ListenApiService]. */
-    @Singleton
     @Provides
+    @Singleton
     fun provideListenApiService(moshi: Moshi, httpClient: OkHttpClient): ListenApiService {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -34,7 +34,6 @@ object NetworkModule {
     }
 
     /** Provides an instance of [Moshi] for [MoshiConverterFactory]. */
-    @Singleton
     @Provides
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
@@ -43,7 +42,6 @@ object NetworkModule {
     }
 
     /** Provides an instance of [OkHttpClient] with logging to use in `Retrofit.Builder()`. */
-    @Singleton
     @Provides
     fun provideHttpClient(logging: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
@@ -52,7 +50,6 @@ object NetworkModule {
     }
 
     /** Provides [HttpLoggingInterceptor] of [HttpLoggingInterceptor.Level.BASIC] level. */
-    @Singleton
     @Provides
     fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)

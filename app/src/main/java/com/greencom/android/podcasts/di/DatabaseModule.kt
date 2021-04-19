@@ -2,7 +2,9 @@ package com.greencom.android.podcasts.di
 
 import android.content.Context
 import androidx.room.Room
-import com.greencom.android.podcasts.data.database.*
+import com.greencom.android.podcasts.data.database.AppDatabase
+import com.greencom.android.podcasts.data.database.EpisodeDao
+import com.greencom.android.podcasts.data.database.PodcastDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,8 +18,8 @@ import javax.inject.Singleton
 object DatabaseModule {
 
     /** Provides a singleton of the [AppDatabase]. */
-    @Singleton
     @Provides
+    @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): AppDatabase {
         return Room.databaseBuilder(
             appContext,
@@ -28,15 +30,13 @@ object DatabaseModule {
             .build()
     }
 
-    /** Provides an instance of the [PodcastDao]. */
-    @Singleton
+    /** Provides an access to the [PodcastDao]. */
     @Provides
     fun providePodcastDao(database: AppDatabase): PodcastDao {
         return database.podcastDao()
     }
 
-    /** Provides an instance of the [EpisodeDao]. */
-    @Singleton
+    /** Provides an access to the [EpisodeDao]. */
     @Provides
     fun provideEpisodeDao(database: AppDatabase): EpisodeDao {
         return database.episodeDao()

@@ -8,7 +8,6 @@ import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +30,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
 
     /** Load the best podcasts for a given genre ID. The result will be posted to [uiState]. */
     fun getBestPodcasts(genreId: Int) = viewModelScope.launch {
-        repository.getBestPodcasts(genreId, Dispatchers.IO).collect { state ->
+        repository.getBestPodcasts(genreId).collect { state ->
             when (state) {
                 is State.Loading -> _uiState.value = ExplorePageState.Loading
                 is State.Success -> _uiState.value = ExplorePageState.Success(state.data)
@@ -46,7 +45,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
      */
     fun fetchBestPodcasts(genreId: Int) = viewModelScope.launch {
         _event.send(ExplorePageEvent.Fetching)
-        when (repository.fetchBestPodcasts(genreId, Dispatchers.IO)) {
+        when (repository.fetchBestPodcasts(genreId)) {
             is State.Success -> {
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
             }
@@ -60,7 +59,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     /** Refresh the best podcasts for a given genre ID. */
     fun refreshBestPodcasts(genreId: Int) = viewModelScope.launch {
         _event.send(ExplorePageEvent.Refreshing)
-        when (repository.refreshBestPodcasts(genreId, Dispatchers.IO)) {
+        when (repository.refreshBestPodcasts(genreId)) {
             is State.Success -> {
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
             }

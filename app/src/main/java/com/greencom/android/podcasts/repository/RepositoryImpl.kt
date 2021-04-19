@@ -5,6 +5,7 @@ import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.data.domain.toDatabase
+import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.toDatabase
 import com.greencom.android.podcasts.utils.State
@@ -28,13 +29,11 @@ class RepositoryImpl @Inject constructor(
     private val listenApi: ListenApiService,
     private val podcastDao: PodcastDao,
     private val episodeDao: EpisodeDao,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
     @ExperimentalCoroutinesApi
-    override fun getBestPodcasts(
-        genreId: Int,
-        dispatcher: CoroutineDispatcher
-    ): Flow<State<List<PodcastShort>>> = channelFlow {
+    override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = channelFlow {
         send(State.Loading)
         podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
             // Return from the database, if it contains the appropriate podcasts.
@@ -43,7 +42,7 @@ class RepositoryImpl @Inject constructor(
             } else {
                 // Otherwise, fetch the best podcasts from ListenAPI and insert them into db.
                 try {
-                    val response = withContext(dispatcher) {
+                    val response = withContext(ioDispatcher) {
                         listenApi.getBestPodcasts(genreId)
                     }
                     podcastDao.insertWithGenre(response.toDatabase())
@@ -56,12 +55,9 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchBestPodcasts(
-        genreId: Int,
-        dispatcher: CoroutineDispatcher
-    ): State<Unit> {
+    override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
         return try {
-            val response = withContext(dispatcher) {
+            val response = withContext(ioDispatcher) {
                 listenApi.getBestPodcasts(genreId)
             }
             podcastDao.insertWithGenre(response.toDatabase())
@@ -73,13 +69,10 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshBestPodcasts(
-        genreId: Int,
-        dispatcher: CoroutineDispatcher
-    ): State<Unit> {
+    override suspend fun refreshBestPodcasts(genreId: Int): State<Unit> {
         return try {
             // Fetch a new list from ListenAPI.
-            val newList = withContext(dispatcher) {
+            val newList = withContext(ioDispatcher) {
                 listenApi.getBestPodcasts(genreId).toDatabase()
             }
             // Get the current list from the database.
