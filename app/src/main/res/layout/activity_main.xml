@@ -6,8 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
-    <!-- Ignore fragment tag replacement hint for now because of bug -->
-    <!-- or use NavHostFragment.navController in Activity instead of findNavController(). -->
+    <!-- Ignore fragment tag replacement hint for now because of bug
+         or use NavHostFragment.navController in Activity instead of findNavController(). -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
