@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
@@ -52,5 +53,26 @@ class ExploreFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = tabs[position]
         }.attach()
+
+        // Handle TabLayout onTabSelected cases.
+        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
+    }
+
+    /** Listener that implements [TabLayout.OnTabSelectedListener] interface. */
+    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
+        override fun onTabSelected(tab: TabLayout.Tab?) {  }
+
+        override fun onTabUnselected(tab: TabLayout.Tab?) {  }
+
+        // Pass information about tab reselection to the certain ExplorePageFragment instance
+        // depending on genreId.
+        override fun onTabReselected(tab: TabLayout.Tab?) {
+            val tabIndex = binding.tabLayout.selectedTabPosition
+            val genreId = ExploreTabGenre.values()[tabIndex].id
+            childFragmentManager.setFragmentResult(
+                "${ExplorePageFragment.ON_TAB_RESELECTED_KEY}$genreId",
+                Bundle()
+            )
+        }
     }
 }

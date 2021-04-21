@@ -60,6 +60,14 @@ class ExplorePageFragment : Fragment() {
         // Get the genre ID from the fragment arguments.
         val genreId = arguments?.getInt(GENRE_ID) ?: 0
 
+        // Scroll list of the best podcasts on tab reselection.
+        parentFragmentManager.setFragmentResultListener(
+            "$ON_TAB_RESELECTED_KEY$genreId",
+            viewLifecycleOwner
+        ) { _, _ ->
+            binding.podcastList.smoothScrollToPosition(0)
+        }
+
         // RecyclerView setup.
         setupRecyclerView()
         // Swipe-to-refresh setup.
@@ -186,6 +194,13 @@ class ExplorePageFragment : Fragment() {
     }
 
     companion object {
+
+        /**
+         * Key prefix used to pass and retrieve information about reselected tab
+         * in [ExploreFragment].
+         */
+        const val ON_TAB_RESELECTED_KEY = "explore_page_on_tab_reselected"
+
         /**
          * Use this factory method to create a new instance of
          * the fragment using the provided parameters.
