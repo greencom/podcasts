@@ -130,6 +130,11 @@ class ExplorePageFragment : Fragment() {
 
         when (event) {
             is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
+            is ExplorePageEvent.Refreshed -> {
+                showSnackbar(event.stringRes)
+                if (event.isSuccessful) binding.podcastList.smoothScrollToPosition(0)
+            }
+
             is ExplorePageEvent.Fetching -> {  }
             is ExplorePageEvent.Refreshing -> {  }
         }
