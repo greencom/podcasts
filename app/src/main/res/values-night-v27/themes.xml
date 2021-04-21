@@ -11,8 +11,10 @@
         <item name="android:navigationBarColor">@color/surface_dark</item>
         <item name="android:windowLightNavigationBar">false</item>
 
-        <!-- Default font family -->
+        <!-- Default values start -->
         <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+        <!-- Default values end -->
 
         <!-- Default colors start -->
         <item name="colorPrimary">@color/blue_dark_900</item>

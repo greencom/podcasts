@@ -10,8 +10,10 @@
              because the android:windowLightNavigationBar attribute is available only
              on API 27 and above. -->
 
-        <!-- Default font family -->
+        <!-- Default values start -->
         <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+        <!-- Default values end -->
 
         <!-- Default colors start -->
         <item name="colorPrimary">@color/blue_light_900</item>
