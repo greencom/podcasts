@@ -44,7 +44,9 @@ class ExplorePageFragment : Fragment() {
     private val viewModel: ExploreViewModel by viewModels()
 
     /** RecyclerView adapter. */
-    private val adapter = ExplorePodcastAdapter()
+    private val adapter: ExplorePodcastAdapter by lazy {
+        ExplorePodcastAdapter(viewModel::updateSubscription)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

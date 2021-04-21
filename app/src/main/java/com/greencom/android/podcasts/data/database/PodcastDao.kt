@@ -14,6 +14,117 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Dao
 abstract class PodcastDao {
 
+    /**
+     * Insert a [PodcastEntityPartial] object into the `podcasts` table. This method is
+     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
+     * table under the hood to calculate the diff between the temporary table and the main
+     * table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcast, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insert(podcast: PodcastEntityPartial) {
+        insertPartialToTemp(podcast)
+        merge()
+        updatePartial(podcast)
+        clearTemp()
+    }
+
+    /**
+     * Insert a list of [PodcastEntityPartial] objects into the `podcasts` table. This method is
+     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
+     * table under the hood to calculate the diff between the temporary table and the main
+     * table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcasts, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insert(podcasts: List<PodcastEntityPartial>) {
+        insertPartialToTemp(podcasts)
+        merge()
+        updatePartial(podcasts)
+        clearTemp()
+    }
+
+    /**
+     * Insert a [PodcastEntityPartialWithGenre] object into the `podcasts` table. This method is
+     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
+     * table under the hood to calculate the diff between the temporary table and the main
+     * table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcast, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insertWithGenre(podcast: PodcastEntityPartialWithGenre) {
+        insertPartialWithGenreToTemp(podcast)
+        merge()
+        updatePartialWithGenre(podcast)
+        clearTemp()
+    }
+
+    /**
+     * Insert a list of [PodcastEntityPartialWithGenre] objects into the `podcasts` table.
+     * This method is completely safe in cases of conflicts because it uses a temporary
+     * `podcasts_temp` table under the hood to calculate the diff between the temporary table
+     * and the main table and only inserts the podcasts that are missing in the `podcasts` table.
+     * After insertions, this method updates the `podcasts` table with the given podcasts, so
+     * that podcasts that were already in the `podcasts` table will be updated with the
+     * new data.
+     */
+    @Transaction
+    open suspend fun insertWithGenre(podcasts: List<PodcastEntityPartialWithGenre>) {
+        insertPartialWithGenreToTemp(podcasts)
+        merge()
+        updatePartialWithGenre(podcasts)
+        clearTemp()
+    }
+
+    /** Update the existing entry in the `podcasts` table with a given [PodcastEntity]. */
+    @Update
+    abstract suspend fun update(podcast: PodcastEntity)
+
+    /** Update the existing entries in the `podcasts` table with a given [PodcastEntity] list. */
+    @Update
+    abstract suspend fun update(podcasts: List<PodcastEntity>)
+
+    /** Update the existing entry in the `podcasts` table with a given [Podcast]. */
+    @Update(entity = PodcastEntity::class)
+    abstract suspend fun update(podcast: Podcast)
+
+    /** Update the existing entry in the `podcasts` table with a given [PodcastShort]. */
+    @Update(entity = PodcastEntity::class)
+    abstract suspend fun update(podcast: PodcastShort)
+
+    /** Get a podcast for a given ID. */
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed " +
+                "FROM podcasts " +
+                "WHERE id = :id"
+    )
+    abstract suspend fun getPodcast(id: String): Podcast?
+
+    /** Get the best podcasts for a given genre ID. */
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed " +
+                "FROM podcasts " +
+                "WHERE genre_id = :genreId")
+    abstract suspend fun getBestPodcasts(genreId: Int): List<Podcast>
+
+    /**
+     * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
+     * No need to apply [distinctUntilChanged] function since it is already done under
+     * the hood.
+     */
+    fun getBestPodcastsFlow(genreId: Int) =
+        getBestPodcastsFlowRaw(genreId).distinctUntilChanged()
+
+
+
     // Helper methods start.
 
     /**
@@ -127,110 +238,4 @@ abstract class PodcastDao {
     protected abstract fun getBestPodcastsFlowRaw(genreId: Int): Flow<List<PodcastShort>>
 
     // Helper methods end.
-
-
-
-
-
-
-    /**
-     * Insert a [PodcastEntityPartial] object into the `podcasts` table. This method is
-     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
-     * table under the hood to calculate the diff between the temporary table and the main
-     * table and only inserts the podcasts that are missing in the `podcasts` table.
-     * After insertions, this method updates the `podcasts` table with the given podcast, so
-     * that podcasts that were already in the `podcasts` table will be updated with the
-     * new data.
-     */
-    @Transaction
-    open suspend fun insert(podcast: PodcastEntityPartial) {
-        insertPartialToTemp(podcast)
-        merge()
-        updatePartial(podcast)
-        clearTemp()
-    }
-
-    /**
-     * Insert a list of [PodcastEntityPartial] objects into the `podcasts` table. This method is
-     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
-     * table under the hood to calculate the diff between the temporary table and the main
-     * table and only inserts the podcasts that are missing in the `podcasts` table.
-     * After insertions, this method updates the `podcasts` table with the given podcasts, so
-     * that podcasts that were already in the `podcasts` table will be updated with the
-     * new data.
-     */
-    @Transaction
-    open suspend fun insert(podcasts: List<PodcastEntityPartial>) {
-        insertPartialToTemp(podcasts)
-        merge()
-        updatePartial(podcasts)
-        clearTemp()
-    }
-
-    /**
-     * Insert a [PodcastEntityPartialWithGenre] object into the `podcasts` table. This method is
-     * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`
-     * table under the hood to calculate the diff between the temporary table and the main
-     * table and only inserts the podcasts that are missing in the `podcasts` table.
-     * After insertions, this method updates the `podcasts` table with the given podcast, so
-     * that podcasts that were already in the `podcasts` table will be updated with the
-     * new data.
-     */
-    @Transaction
-    open suspend fun insertWithGenre(podcast: PodcastEntityPartialWithGenre) {
-        insertPartialWithGenreToTemp(podcast)
-        merge()
-        updatePartialWithGenre(podcast)
-        clearTemp()
-    }
-
-    /**
-     * Insert a list of [PodcastEntityPartialWithGenre] objects into the `podcasts` table.
-     * This method is completely safe in cases of conflicts because it uses a temporary
-     * `podcasts_temp` table under the hood to calculate the diff between the temporary table
-     * and the main table and only inserts the podcasts that are missing in the `podcasts` table.
-     * After insertions, this method updates the `podcasts` table with the given podcasts, so
-     * that podcasts that were already in the `podcasts` table will be updated with the
-     * new data.
-     */
-    @Transaction
-    open suspend fun insertWithGenre(podcasts: List<PodcastEntityPartialWithGenre>) {
-        insertPartialWithGenreToTemp(podcasts)
-        merge()
-        updatePartialWithGenre(podcasts)
-        clearTemp()
-    }
-
-    /** Update the existing entry in the `podcasts` table with a given [PodcastEntity]. */
-    @Update
-    abstract suspend fun update(podcast: PodcastEntity)
-
-    /** Update the existing entries in the `podcasts` table with a given [PodcastEntity] list. */
-    @Update
-    abstract suspend fun update(podcasts: List<PodcastEntity>)
-
-    /** Get a podcast for a given ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
-                "FROM podcasts " +
-                "WHERE id = :id"
-    )
-    abstract suspend fun getPodcast(id: String): Podcast?
-
-    /** Get the best podcasts for a given genre ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
-                "FROM podcasts " +
-                "WHERE genre_id = :genreId")
-    abstract suspend fun getBestPodcasts(genreId: Int): List<Podcast>
-
-    /**
-     * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
-     * No need to apply [distinctUntilChanged] function since it is already done under
-     * the hood.
-     */
-    fun getBestPodcastsFlow(genreId: Int) =
-        getBestPodcastsFlowRaw(genreId).distinctUntilChanged()
 }

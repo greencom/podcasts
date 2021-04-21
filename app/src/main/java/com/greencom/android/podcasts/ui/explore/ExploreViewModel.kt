@@ -76,6 +76,11 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
+    /** Update subscription to a given [PodcastShort] with a given value. */
+    fun updateSubscription(podcast: PodcastShort, subscribed: Boolean) = viewModelScope.launch {
+        repository.updateSubscription(podcast, subscribed)
+    }
+
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */
     sealed class ExplorePageState {
         /** Represents a `Loading` state. */

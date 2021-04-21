@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.repository
 
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.flow.Flow
@@ -9,6 +10,12 @@ import kotlinx.coroutines.flow.Flow
  * and the app database tables.
  */
 interface Repository {
+
+    /** Update subscription to a given [Podcast] with a given value. */
+    suspend fun updateSubscription(podcast: Podcast, subscribed: Boolean)
+
+    /** Update subscription to a given [PodcastShort] with a given value. */
+    suspend fun updateSubscription(podcast: PodcastShort, subscribed: Boolean)
 
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of

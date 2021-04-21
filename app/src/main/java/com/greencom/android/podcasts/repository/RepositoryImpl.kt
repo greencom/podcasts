@@ -32,6 +32,14 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
+    override suspend fun updateSubscription(podcast: Podcast, subscribed: Boolean) {
+        podcastDao.update(podcast.copy(subscribed = subscribed))
+    }
+
+    override suspend fun updateSubscription(podcast: PodcastShort, subscribed: Boolean) {
+        podcastDao.update(podcast.copy(subscribed = subscribed))
+    }
+
     @ExperimentalCoroutinesApi
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = channelFlow {
         send(State.Loading)
