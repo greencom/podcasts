@@ -1,84 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="16dp"
     android:paddingBottom="10dp">
 
-    <ImageView
-        android:id="@+id/cover"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/player_cover_description"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/tools_podcast_cover_1400" />
-
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textColor="?attr/colorOnSurfacePrimary"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cover"
-        app:layout_constraintTop_toTopOf="@+id/cover"
-        tools:text="Чтение" />
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/publisher"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textColor="?attr/colorOnSurfaceTertiary"
-        app:layout_constraintEnd_toEndOf="@+id/title"
-        app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/title"
-        tools:text="Радио Маяк" />
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="@string/player_cover_description"
+            tools:srcCompat="@drawable/tools_podcast_cover_1400" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textColor="?attr/colorOnSurfacePrimary"
+                android:textSize="18sp"
+                tools:text="Чтение" />
+
+            <TextView
+                android:id="@+id/publisher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="?attr/colorOnSurfaceTertiary"
+                tools:text="Радио Маяк" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/description"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="3"
         android:textColor="?attr/colorOnSurfaceTertiary"
-        app:layout_constraintEnd_toEndOf="@+id/title"
-        app:layout_constraintStart_toStartOf="@+id/cover"
-        app:layout_constraintTop_toBottomOf="@+id/cover"
         tools:text="Евгений Стаховский читает рассказы и повести известных и не очень известных авторов." />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/subscribe"
-        style="@style/Button.Toggle.Outline.Rounded.Icon"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="@string/explore_subscribe"
-        app:icon="@drawable/ic_add_24"
-        app:layout_constraintStart_toStartOf="@+id/cover"
-        app:layout_constraintTop_toBottomOf="@+id/description" />
+        android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/explicit_content"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:contentDescription="@string/explore_explicit_content_description"
-        app:layout_constraintBottom_toBottomOf="@+id/subscribe"
-        app:layout_constraintStart_toEndOf="@+id/subscribe"
-        app:layout_constraintTop_toTopOf="@+id/subscribe"
-        app:srcCompat="@drawable/ic_explicit_outline_24"
-        app:tint="@color/orange_900" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/subscribe"
+            style="@style/Button.Toggle.Outline.Rounded.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/explore_subscribe"
+            app:icon="@drawable/ic_add_24" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/explicit_content"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/explore_explicit_content_description"
+            app:srcCompat="@drawable/ic_explicit_outline_24"
+            app:tint="@color/orange_900" />
+
+    </LinearLayout>
+
+</LinearLayout>
