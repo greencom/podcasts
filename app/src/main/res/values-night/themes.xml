@@ -22,7 +22,7 @@
         <item name="colorOnSurface">@color/white</item>
         <item name="android:colorBackground">@color/surface_dark</item>
         <item name="colorOnBackground">@color/white</item>
-        <item name="colorError">@color/red_dark</item>
+        <item name="colorError">@color/error_dark</item>
         <item name="colorOnError">@color/black</item>
         <item name="android:colorEdgeEffect">@color/grey_dark_300</item>
         <!-- Default colors end -->
