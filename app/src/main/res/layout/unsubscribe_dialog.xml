@@ -12,7 +12,7 @@
         android:layout_width="24dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/shape_placeholder" />
+        android:background="@drawable/shape_pill" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -35,6 +35,7 @@
         android:stateListAnimator="@null"
         android:text="@string/unsubscribe_unsubscribe"
         android:textColor="?attr/colorOnError"
+        android:textSize="16sp"
         app:cornerRadius="@dimen/corner_radius_medium" />
 
 </LinearLayout>

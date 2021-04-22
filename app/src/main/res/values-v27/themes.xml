@@ -37,6 +37,7 @@
         <item name="colorOnSurfaceUtil">@color/grey_light_100</item>
         <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
+        <item name="colorBottomSheetDialogPill">@color/grey_light_100</item>
         <!-- Custom colors end -->
 
         <!-- Player colors start -->

@@ -10,6 +10,7 @@
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorOutlinedButtonRipple" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
+    <attr name="colorBottomSheetDialogPill" format="color" />
     <!-- Global attrs end -->
 
     <!-- Player attrs start -->
