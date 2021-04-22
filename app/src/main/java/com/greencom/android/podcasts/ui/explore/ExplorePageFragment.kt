@@ -20,6 +20,7 @@ import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.REVEAL_ANIMATION_DURATION
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 
 // Initialization parameters.
@@ -101,7 +102,7 @@ class ExplorePageFragment : Fragment() {
 
         // Refresh the podcasts with swipe-to-refresh gesture.
         binding.swipeToRefresh.setOnRefreshListener {
-            viewModel.refreshBestPodcasts(genreId)
+            viewModel.refreshBestPodcasts(genreId, adapter.currentList)
         }
     }
 
@@ -134,7 +135,7 @@ class ExplorePageFragment : Fragment() {
     }
 
     /** Handle events. */
-    private fun handleEvent(event: ExplorePageEvent) {
+    private suspend fun handleEvent(event: ExplorePageEvent) {
         binding.swipeToRefresh.isRefreshing = event is ExplorePageEvent.Refreshing
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
 
@@ -142,7 +143,11 @@ class ExplorePageFragment : Fragment() {
             is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
             is ExplorePageEvent.Refreshed -> {
                 showSnackbar(event.stringRes)
-                if (event.isSuccessful) binding.podcastList.smoothScrollToPosition(0)
+                if (event.isSuccessful) {
+                    // Wait for a list to update to scroll up.
+                    delay(500)
+                    binding.podcastList.smoothScrollToPosition(0)
+                }
             }
 
             is ExplorePageEvent.Fetching -> {  }

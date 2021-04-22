@@ -92,11 +92,19 @@ abstract class PodcastDao {
 
     /** Update the existing entry in the `podcasts` table with a given [Podcast]. */
     @Update(entity = PodcastEntity::class)
-    abstract suspend fun update(podcast: Podcast)
+    abstract suspend fun updateWithPodcast(podcast: Podcast)
+
+    /** Update the existing entries in the `podcasts` table with a given [Podcast] list. */
+    @Update(entity = PodcastEntity::class)
+    abstract suspend fun updateWithPodcast(podcasts: List<Podcast>)
 
     /** Update the existing entry in the `podcasts` table with a given [PodcastShort]. */
     @Update(entity = PodcastEntity::class)
-    abstract suspend fun update(podcast: PodcastShort)
+    abstract suspend fun updateWithPodcastShort(podcast: PodcastShort)
+
+    /** Update the existing entries in the `podcasts` table with a given [PodcastShort] list. */
+    @Update(entity = PodcastEntity::class)
+    abstract suspend fun updateWithPodcastShort(podcast: List<PodcastShort>)
 
     /** Get a podcast for a given ID. */
     @Query(
@@ -107,14 +115,6 @@ abstract class PodcastDao {
     )
     abstract suspend fun getPodcast(id: String): Podcast?
 
-    /** Get the best podcasts for a given genre ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
-                "FROM podcasts " +
-                "WHERE genre_id = :genreId")
-    abstract suspend fun getBestPodcasts(genreId: Int): List<Podcast>
-
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
      * No need to apply [distinctUntilChanged] function since it is already done under
@@ -122,6 +122,8 @@ abstract class PodcastDao {
      */
     fun getBestPodcastsFlow(genreId: Int) =
         getBestPodcastsFlowRaw(genreId).distinctUntilChanged()
+
+
 
 
 
@@ -231,7 +233,7 @@ abstract class PodcastDao {
      * [getBestPodcastsFlow] with applied [distinctUntilChanged] function.
      */
     @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, subscribed " +
+        "SELECT id, title, description, image, publisher, explicit_content, subscribed, genre_id " +
                 "FROM podcasts " +
                 "WHERE genre_id = :genreId"
     )

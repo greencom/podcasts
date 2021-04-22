@@ -35,5 +35,5 @@ interface Repository {
      * ListenAPI and inserted into the database. Podcasts that not anymore on the best list
      * will be excluded from it, but remain in the database.
      */
-    suspend fun refreshBestPodcasts(genreId: Int): State<Unit>
+    suspend fun refreshBestPodcasts(genreId: Int, currentList: List<PodcastShort>): State<Unit>
 }

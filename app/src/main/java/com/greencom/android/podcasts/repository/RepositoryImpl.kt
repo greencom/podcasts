@@ -4,7 +4,6 @@ import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
-import com.greencom.android.podcasts.data.domain.toDatabase
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.toDatabase
@@ -33,11 +32,11 @@ class RepositoryImpl @Inject constructor(
 ) : Repository {
 
     override suspend fun updateSubscription(podcast: Podcast, subscribed: Boolean) {
-        podcastDao.update(podcast.copy(subscribed = subscribed))
+        podcastDao.updateWithPodcast(podcast.copy(subscribed = subscribed))
     }
 
     override suspend fun updateSubscription(podcast: PodcastShort, subscribed: Boolean) {
-        podcastDao.update(podcast.copy(subscribed = subscribed))
+        podcastDao.updateWithPodcastShort(podcast.copy(subscribed = subscribed))
     }
 
     @ExperimentalCoroutinesApi
@@ -77,20 +76,23 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun refreshBestPodcasts(genreId: Int): State<Unit> {
+    override suspend fun refreshBestPodcasts(
+        genreId: Int,
+        currentList: List<PodcastShort>
+    ): State<Unit> {
         return try {
             // Fetch a new list from ListenAPI.
             val newList = withContext(ioDispatcher) {
                 listenApi.getBestPodcasts(genreId).toDatabase()
             }
-            // Get the current list from the database.
-            val currentList = podcastDao.getBestPodcasts(genreId)
             // Filter old podcasts.
             val newIds = newList.map { it.id }
-            val oldList = currentList.filter { it.id !in newIds }.toDatabase(Podcast.NO_GENRE_ID)
+            val oldList = currentList
+                .filter { it.id !in newIds }
+                .map { it.copy(genreId = Podcast.NO_GENRE_ID) }
             // Update old podcasts and insert new ones.
             podcastDao.insertWithGenre(newList)
-            podcastDao.update(oldList)
+            podcastDao.updateWithPodcastShort(oldList)
             State.Success(Unit)
         } catch (e: IOException) {
             State.Error(e)

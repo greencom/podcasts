@@ -57,9 +57,9 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     }
 
     /** Refresh the best podcasts for a given genre ID. */
-    fun refreshBestPodcasts(genreId: Int) = viewModelScope.launch {
+    fun refreshBestPodcasts(genreId: Int, currentList: List<PodcastShort>) = viewModelScope.launch {
         _event.send(ExplorePageEvent.Refreshing)
-        when (repository.refreshBestPodcasts(genreId)) {
+        when (repository.refreshBestPodcasts(genreId, currentList)) {
             is State.Success -> {
                 _event.send(ExplorePageEvent.Refreshed(
                     true,

@@ -83,6 +83,13 @@ data class PodcastShort(
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "subscribed")
     val subscribed: Boolean,
+
+    /**
+     * The ID of the genre for which this podcast is featured on the best list.
+     * [Podcast.NO_GENRE_ID] by default, which means this podcast is not on any list of the best.
+     */
+    @ColumnInfo(name = "genre_id")
+    val genreId: Int
 )
 
 /** Model class that represents a domain episode object. */
