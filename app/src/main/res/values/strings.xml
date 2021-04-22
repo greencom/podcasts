@@ -60,4 +60,9 @@
     </plurals>
     <!-- PodcastFragment end -->
 
+    <!-- UnsubscribeDialog start -->
+    <string name="unsubscribe_are_you_sure">Are you sure?</string>
+    <string name="unsubscribe_unsubscribe">Unsubscribe</string>
+    <!-- UnsubscribeDialog end -->
+
 </resources>

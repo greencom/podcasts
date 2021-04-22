@@ -8,6 +8,7 @@
     <color name="background_scrim">#80000000</color>
     <color name="shadows">#0D000000</color>
     <color name="orange_900">#FFF57C00</color>
+    <color name="red">#F63D38</color>
     <!-- Common colors end -->
 
     <!-- Light colors start -->
