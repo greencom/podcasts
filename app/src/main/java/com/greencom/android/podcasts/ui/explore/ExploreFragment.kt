@@ -40,7 +40,7 @@ class ExploreFragment : Fragment() {
 
         // TODO: Test code
         binding.searchButton.setOnClickListener {
-            UnsubscribeDialog().show(parentFragmentManager, "dialog")
+            UnsubscribeDialog().show(parentFragmentManager, UnsubscribeDialog.TAG)
         }
     }
 

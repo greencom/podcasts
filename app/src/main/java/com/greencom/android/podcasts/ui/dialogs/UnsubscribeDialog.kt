@@ -26,4 +26,8 @@ class UnsubscribeDialog : BottomSheetDialogFragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    companion object {
+        const val TAG = "UnsubscribeDialog"
+    }
 }
