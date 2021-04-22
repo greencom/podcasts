@@ -42,7 +42,7 @@ data class Podcast(
 
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "subscribed")
-    var subscribed: Boolean,
+    val subscribed: Boolean,
 ) {
     companion object {
         /** This podcast is not on any list of the best. */
@@ -82,7 +82,7 @@ data class PodcastShort(
 
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "subscribed")
-    var subscribed: Boolean,
+    val subscribed: Boolean,
 )
 
 /** Model class that represents a domain episode object. */
