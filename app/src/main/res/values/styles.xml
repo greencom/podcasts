@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- BottomSheetDialog start -->
+    <style name="BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+    </style>
+    
+    <style name="BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheetDialog</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.BottomSheetDialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
+    </style>
+    <!-- BottomSheetDialog end -->
+
     <!-- TabLayout tab text. -->
     <style name="TabLayout.Tab.Text" parent="TextAppearance.AppCompat.Body1">
         <item name="android:fontFamily">@font/roboto_medium</item>

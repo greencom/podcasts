@@ -14,6 +14,7 @@
         <!-- Default values start -->
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:lineSpacingMultiplier">1.1</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
         <!-- Default values end -->
 
         <!-- Default colors start -->
