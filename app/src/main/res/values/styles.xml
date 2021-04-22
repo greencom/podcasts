@@ -5,7 +5,7 @@
     <style name="BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheet</item>
     </style>
-    
+
     <style name="BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheetDialog</item>
     </style>
@@ -22,46 +22,34 @@
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
-    <!-- Button with small text. -->
+    <!-- Buttons start -->
+    <!-- Button. -->
     <style name="Button" parent="Widget.MaterialComponents.Button">
         <item name="textAllCaps">false</item>
         <item name="android:letterSpacing">0.02</item>
-    </style>
-
-    <!-- Button with icon. -->
-    <style name="Button.Icon" parent="Button">
-        <item name="android:paddingStart">8dp</item>
-    </style>
-
-    <!-- Outlined button with small text. -->
-    <style name="Button.Outline" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="textAllCaps">false</item>
-        <item name="android:letterSpacing">0.02</item>
-        <item name="strokeColor">?attr/colorOnSurfaceUtil</item>
-    </style>
-
-    <!-- Outlined button with icon. -->
-    <style name="Button.Outline.Icon" parent="Button.Outline">
-        <item name="android:paddingStart">8dp</item>
-        <item name="iconTint">?attr/colorPrimary</item>
-    </style>
-
-    <!-- Outlined button with rounded corners. -->
-    <style name="Button.Outline.Rounded" parent="Button.Outline">
         <item name="cornerRadius">18dp</item>
     </style>
 
-    <!-- Outlined button with icon and rounded corners. -->
-    <style name="Button.Outline.Rounded.Icon" parent="Button.Outline.Rounded">
+    <!-- Outlined button. -->
+    <style name="OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="strokeColor">?attr/colorOnSurfaceUtil</item>
+        <item name="cornerRadius">18dp</item>
+    </style>
+
+    <!-- Outlined button with icon. -->
+    <style name="OutlinedButtonWithIcon" parent="OutlinedButton">
         <item name="android:paddingStart">8dp</item>
         <item name="iconTint">?attr/colorPrimary</item>
     </style>
 
-    <!-- Outlined toggle button with icon and rounded corners. -->
-    <style name="Button.Toggle.Outline.Rounded.Icon" parent="Button.Outline.Rounded.Icon">
+    <!-- Toggle outlined button with icon. -->
+    <style name="ToggleButton" parent="OutlinedButtonWithIcon">
         <item name="android:checkable">true</item>
         <item name="android:textColor">@color/button_toggle_outline_text</item>
         <item name="strokeColor">@color/button_toggle_outline_stroke</item>
     </style>
+    <!-- Buttons end -->
 
 </resources>
