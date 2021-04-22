@@ -9,6 +9,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
+import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -36,6 +37,11 @@ class ExploreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // TabLayout and ViewPager2 setup.
         setupTabLayout()
+
+        // TODO: Test code
+        binding.searchButton.setOnClickListener {
+            UnsubscribeDialog().show(parentFragmentManager, "dialog")
+        }
     }
 
     override fun onDestroyView() {
