@@ -4,6 +4,7 @@
     <!-- Global dimens start -->
     <dimen name="corner_radius_small">4dp</dimen>
     <dimen name="corner_radius_medium">8dp</dimen>
+    <dimen name="corner_radius_large">16dp</dimen>
     <dimen name="player_bottom_sheet_peek_height">113dp</dimen>
     <dimen name="bottom_nav_bar_height">56dp</dimen>
     <dimen name="toast_y_offset">120dp</dimen>
