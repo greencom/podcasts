@@ -43,11 +43,12 @@ class ExplorePodcastViewHolder private constructor(
     /** Bind ViewHolder with a given [PodcastShort]. */
     fun bind(podcast: PodcastShort) {
         binding.cover.load(podcast.image) {
-            crossfade(true)
-            placeholder(R.drawable.shape_placeholder)
             transformations(RoundedCornersTransformation(
                 context.resources.getDimension(R.dimen.corner_radius_small)
             ))
+            crossfade(true)
+            placeholder(R.drawable.shape_placeholder)
+            error(R.drawable.shape_placeholder)
         }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
