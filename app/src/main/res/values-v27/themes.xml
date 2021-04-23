@@ -14,7 +14,7 @@
         <!-- Default values start -->
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:lineSpacingMultiplier">1.1</item>
-        <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetDialogV27</item>
         <!-- Default values end -->
 
         <!-- Default colors start -->
@@ -38,6 +38,7 @@
         <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
         <item name="colorBottomSheetDialogPill">@color/grey_light_100</item>
+        <item name="colorNavigationBarOnDialog">@color/surface_light</item>
         <!-- Custom colors end -->
 
         <!-- Player colors start -->

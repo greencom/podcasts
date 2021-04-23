@@ -35,6 +35,7 @@
     <color name="bottom_nav_view_background_dark">#222223</color>
     <color name="player_background_dark">#303134</color>
     <color name="swipe_to_refresh_dark">#2C2C2C</color>
+    <color name="navigation_bar_on_dialog_dark">#3D3D3D</color>
     <!-- Dark colors end -->
 
 </resources>

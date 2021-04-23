@@ -11,6 +11,7 @@
     <attr name="colorOutlinedButtonRipple" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
     <attr name="colorBottomSheetDialogPill" format="color" />
+    <attr name="colorNavigationBarOnDialog" format="color" />
     <!-- Global attrs end -->
 
     <!-- Player attrs start -->
