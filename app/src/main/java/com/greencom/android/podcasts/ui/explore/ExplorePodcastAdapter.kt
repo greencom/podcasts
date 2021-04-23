@@ -60,26 +60,32 @@ class ExplorePodcastViewHolder private constructor(
 
         // Update `Subscribe` button state.
         if (podcast.subscribed) {
-            binding.subscribe.isChecked = true
-            binding.subscribe.text = context.getString(R.string.explore_subscribed)
-            binding.subscribe.icon = ResourcesCompat.getDrawable(
-                context.resources,
-                R.drawable.ic_check_24,
-                context.theme
-            )
+            binding.subscribe.apply {
+                isChecked = true
+                text = context.getString(R.string.explore_subscribed)
+                icon = ResourcesCompat.getDrawable(
+                    context.resources,
+                    R.drawable.ic_check_24,
+                    context.theme
+                )
+            }
         } else {
-            binding.subscribe.isChecked = false
-            binding.subscribe.text = context.getString(R.string.explore_subscribe)
-            binding.subscribe.icon = ResourcesCompat.getDrawable(
-                context.resources,
-                R.drawable.ic_add_24,
-                context.theme
-            )
+            binding.subscribe.apply {
+                isChecked = false
+                text = context.getString(R.string.explore_subscribe)
+                icon = ResourcesCompat.getDrawable(
+                    context.resources,
+                    R.drawable.ic_add_24,
+                    context.theme
+                )
+            }
         }
 
         // Update subscription to the podcast.
         binding.subscribe.setOnClickListener {
             updateSubscription(podcast, (it as MaterialButton).isChecked)
+            // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
+            if (podcast.subscribed) binding.subscribe.isChecked = true
         }
     }
 

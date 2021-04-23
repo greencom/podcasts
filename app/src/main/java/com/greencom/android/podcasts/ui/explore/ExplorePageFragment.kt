@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
+import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.REVEAL_ANIMATION_DURATION
@@ -69,6 +70,15 @@ class ExplorePageFragment : Fragment() {
             viewLifecycleOwner
         ) { _, _ ->
             binding.podcastList.smoothScrollToPosition(0)
+        }
+
+        // Unsubscribe from the podcast by a given ID after UnsubscribeDialog confirmation.
+        childFragmentManager.setFragmentResultListener(
+            ON_UNSUBSCRIBE_CLICK,
+            viewLifecycleOwner
+        ) { _, result ->
+            val podcastId = result.getString(PODCAST_ID) ?: ""
+            viewModel.unsubscribe(podcastId)
         }
 
         // RecyclerView setup.
@@ -149,10 +159,15 @@ class ExplorePageFragment : Fragment() {
                     binding.podcastList.smoothScrollToPosition(0)
                 }
             }
-
+            is ExplorePageEvent.UnsubscribeDialog -> showUnsubscribeDialog(event.podcastId)
             is ExplorePageEvent.Fetching -> {  }
             is ExplorePageEvent.Refreshing -> {  }
         }
+    }
+
+    /** Show a [UnsubscribeDialog] for a given podcast ID. */
+    private fun showUnsubscribeDialog(podcastId: String) {
+        UnsubscribeDialog.newInstance(podcastId).show(childFragmentManager, UnsubscribeDialog.TAG)
     }
 
     /** RecyclerView setup. */
@@ -203,10 +218,19 @@ class ExplorePageFragment : Fragment() {
     companion object {
 
         /**
-         * Key prefix used to pass and retrieve information about reselected tab
-         * in [ExploreFragment].
+         * Key prefix used to pass and retrieve data about reselected tab
+         * in [ExploreFragment] between fragments.
          */
         const val ON_TAB_RESELECTED_KEY = "explore_page_on_tab_reselected"
+
+        /**
+         * Key used to pass and retrieve data after [UnsubscribeDialog] confirmation
+         * between fragments.
+         */
+        const val ON_UNSUBSCRIBE_CLICK = "explore_page_fragment_on_unsubscribe_click"
+
+        /** Key used to pass and retrieve podcast ID with result bundles. */
+        const val PODCAST_ID = "podcast_id"
 
         /**
          * Use this factory method to create a new instance of
@@ -215,11 +239,10 @@ class ExplorePageFragment : Fragment() {
          * @param genreId ID of the genre.
          * @return A new instance of [ExplorePageFragment].
          */
-        fun newInstance(genreId: Int) =
-            ExplorePageFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(GENRE_ID, genreId)
-                }
+        fun newInstance(genreId: Int) = ExplorePageFragment().apply {
+            arguments = Bundle().apply {
+                putInt(GENRE_ID, genreId)
             }
+        }
     }
 }

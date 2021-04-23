@@ -76,9 +76,24 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
-    /** Update subscription to a given [PodcastShort] with a given value. */
+    /**
+     * Update subscription to a given [PodcastShort] with a given value. If the value is
+     * `false`, show UnsubscribeDialog to the user and wait for confirmation.
+     */
     fun updateSubscription(podcast: PodcastShort, subscribed: Boolean) = viewModelScope.launch {
-        repository.updateSubscription(podcast, subscribed)
+        if (subscribed) {
+            repository.updateSubscription(podcast, subscribed)
+        } else {
+            _event.send(ExplorePageEvent.UnsubscribeDialog(podcast.id))
+        }
+    }
+
+    /**
+     * Unsubscribe from a podcast by given podcast ID. Used only after UnsubscribeDialog
+     * confirmation.
+     */
+    fun unsubscribe(podcastId: String) = viewModelScope.launch {
+
     }
 
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */
@@ -105,5 +120,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
          */
         data class Refreshed(val isSuccessful: Boolean, @StringRes val stringRes: Int) :
                 ExplorePageEvent()
+        /** Represents a UnsubscribeDialog successful confirmation event. */
+        data class UnsubscribeDialog(val podcastId: String): ExplorePageEvent()
     }
 }
