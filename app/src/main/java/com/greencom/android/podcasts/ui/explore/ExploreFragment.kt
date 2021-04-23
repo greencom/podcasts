@@ -70,7 +70,7 @@ class ExploreFragment : Fragment() {
             val tabIndex = binding.tabLayout.selectedTabPosition
             val genreId = ExploreTabGenre.values()[tabIndex].id
             childFragmentManager.setFragmentResult(
-                "${ExplorePageFragment.ON_TAB_RESELECTED_KEY}$genreId",
+                "${ExplorePageFragment.ON_TAB_RESELECTED}$genreId",
                 Bundle()
             )
         }

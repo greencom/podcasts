@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.PodcastDao
+import com.greencom.android.podcasts.data.database.PodcastSubscription
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
@@ -31,12 +32,8 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
-    override suspend fun updateSubscription(podcast: Podcast, subscribed: Boolean) {
-        podcastDao.updateWithPodcast(podcast.copy(subscribed = subscribed))
-    }
-
-    override suspend fun updateSubscription(podcast: PodcastShort, subscribed: Boolean) {
-        podcastDao.updateWithPodcastShort(podcast.copy(subscribed = subscribed))
+    override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
+        podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
     }
 
     @ExperimentalCoroutinesApi

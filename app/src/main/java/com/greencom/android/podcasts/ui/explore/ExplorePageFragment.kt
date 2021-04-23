@@ -66,7 +66,7 @@ class ExplorePageFragment : Fragment() {
 
         // Scroll list of the best podcasts on tab reselection.
         parentFragmentManager.setFragmentResultListener(
-            "$ON_TAB_RESELECTED_KEY$genreId",
+            "$ON_TAB_RESELECTED$genreId",
             viewLifecycleOwner
         ) { _, _ ->
             binding.podcastList.smoothScrollToPosition(0)
@@ -74,7 +74,7 @@ class ExplorePageFragment : Fragment() {
 
         // Unsubscribe from the podcast by a given ID after UnsubscribeDialog confirmation.
         childFragmentManager.setFragmentResultListener(
-            ON_UNSUBSCRIBE_CLICK,
+            UNSUBSCRIBE_DIALOG,
             viewLifecycleOwner
         ) { _, result ->
             val podcastId = result.getString(PODCAST_ID) ?: ""
@@ -221,13 +221,13 @@ class ExplorePageFragment : Fragment() {
          * Key prefix used to pass and retrieve data about reselected tab
          * in [ExploreFragment] between fragments.
          */
-        const val ON_TAB_RESELECTED_KEY = "explore_page_on_tab_reselected"
+        const val ON_TAB_RESELECTED = "explore_page_on_tab_reselected"
 
         /**
          * Key used to pass and retrieve data after [UnsubscribeDialog] confirmation
          * between fragments.
          */
-        const val ON_UNSUBSCRIBE_CLICK = "explore_page_fragment_on_unsubscribe_click"
+        const val UNSUBSCRIBE_DIALOG = "explore_page_fragment_on_unsubscribe_click"
 
         /** Key used to pass and retrieve podcast ID with result bundles. */
         const val PODCAST_ID = "podcast_id"

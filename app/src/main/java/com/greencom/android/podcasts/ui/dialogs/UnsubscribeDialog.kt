@@ -33,7 +33,7 @@ class UnsubscribeDialog : BottomSheetDialogFragment() {
 
         binding.unsubscribe.setOnClickListener {
             parentFragmentManager.setFragmentResult(
-                ExplorePageFragment.ON_UNSUBSCRIBE_CLICK,
+                ExplorePageFragment.UNSUBSCRIBE_DIALOG,
                 bundleOf(ExplorePageFragment.PODCAST_ID to podcastId)
             )
             dismiss()

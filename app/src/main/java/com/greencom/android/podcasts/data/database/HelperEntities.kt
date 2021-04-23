@@ -95,3 +95,18 @@ data class PodcastEntityPartialWithGenre(
     @ColumnInfo(name = "genre_id")
     val genreId: Int
 )
+
+/**
+ * Model class that represents a Podcast with subscription indicator. Used to update
+ * subscription to a podcast by a podcast ID.
+ */
+data class PodcastSubscription(
+
+    /** Podcast ID. */
+    @ColumnInfo(name = "id")
+    val id: String,
+
+    /** Indicates whether the user is subscribed to this podcast. */
+    @ColumnInfo(name = "subscribed")
+    val subscribed: Boolean,
+)

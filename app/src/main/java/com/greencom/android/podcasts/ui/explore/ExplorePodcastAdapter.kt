@@ -18,7 +18,7 @@ import com.greencom.android.podcasts.utils.PodcastDiffCallback
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
 class ExplorePodcastAdapter(
-    private val updateSubscription: (PodcastShort, Boolean) -> Unit
+    private val updateSubscription: (String, Boolean) -> Unit
 ) : ListAdapter<PodcastShort, ExplorePodcastViewHolder>(PodcastDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
@@ -34,7 +34,7 @@ class ExplorePodcastAdapter(
 /** ViewHolder that represents a single item in the best podcasts list. */
 class ExplorePodcastViewHolder private constructor(
     private val binding: PodcastItemBinding,
-    private val updateSubscription: (PodcastShort, Boolean) -> Unit
+    private val updateSubscription: (String, Boolean) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
     // View context.
@@ -83,7 +83,7 @@ class ExplorePodcastViewHolder private constructor(
 
         // Update subscription to the podcast.
         binding.subscribe.setOnClickListener {
-            updateSubscription(podcast, (it as MaterialButton).isChecked)
+            updateSubscription(podcast.id, (it as MaterialButton).isChecked)
             // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
             if (podcast.subscribed) binding.subscribe.isChecked = true
         }
@@ -93,7 +93,7 @@ class ExplorePodcastViewHolder private constructor(
         /** Create a [ExplorePodcastViewHolder]. */
         fun create(
             parent: ViewGroup,
-            updateSubscription: (PodcastShort, Boolean) -> Unit
+            updateSubscription: (String, Boolean) -> Unit
         ): ExplorePodcastViewHolder {
             val binding = PodcastItemBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
