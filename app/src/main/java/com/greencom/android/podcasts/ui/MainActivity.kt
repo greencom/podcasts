@@ -3,11 +3,15 @@ package com.greencom.android.podcasts.ui
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.ColorUtils
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -22,6 +26,7 @@ import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.roundToInt
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
@@ -36,14 +41,25 @@ class MainActivity : AppCompatActivity() {
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
+    // App bar colors.
+    private var statusBarColor = 0
+    private var navigationBarColorDefault = TypedValue()
+    private var navigationBarColorChanged = TypedValue()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         // Set expanded content alpha to zero.
         binding.player.expanded.root.alpha = 0f
+
+        // Obtain app bar colors.
+        statusBarColor = getColor(R.color.background_scrim)
+        theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
+        theme.resolveAttribute(R.attr.colorPlayerBackground, navigationBarColorChanged, true)
 
         // Navigation component setup.
         setupNavigation()
@@ -140,7 +156,8 @@ class MainActivity : AppCompatActivity() {
     private fun BottomSheetBehavior<FrameLayout>
             .setupBottomSheetBehavior(bottomNavBarHeight: Float) {
 
-        val callback = object : BottomSheetBehavior.BottomSheetCallback() {
+        /** BottomSheetCallback for API versions below 27. */
+        class Callback : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 controlPlayerOnBottomSheetStateChanged(newState)
             }
@@ -149,7 +166,25 @@ class MainActivity : AppCompatActivity() {
                 controlPlayerOnBottomSheetSlide(slideOffset, bottomNavBarHeight)
             }
         }
-        addBottomSheetCallback(callback)
+
+        /** BottomSheetCallback for API versions 27 and higher. */
+        @RequiresApi(Build.VERSION_CODES.O_MR1)
+        class CallbackV27 : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                controlPlayerOnBottomSheetStateChanged(newState)
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                controlPlayerOnBottomSheetSlideV27(slideOffset, bottomNavBarHeight)
+            }
+        }
+
+        // Add BottomSheetCallback depending on system version.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            addBottomSheetCallback(CallbackV27())
+        } else {
+            addBottomSheetCallback(Callback())
+        }
     }
 
     /**
@@ -175,9 +210,41 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Animate the player content and background shadows when the player
-     * [BottomSheetBehavior] slide offset change.
+     * [BottomSheetBehavior] slide offset change. Used on API versions below 27.
      */
     private fun controlPlayerOnBottomSheetSlide(
+        slideOffset: Float,
+        bottomNavBarHeight: Float
+    ) {
+        // Animate alpha of the player collapsed content.
+        binding.player.collapsed.root.alpha = 1f - slideOffset * 10
+        binding.player.collapsed.progressBar.alpha = 1f - slideOffset * 100
+
+        // Animate alpha of the player expanded content.
+        binding.player.expanded.root.alpha = (slideOffset * 1.5f) - 0.15f
+
+        // Animate the displacement of the bottomNavBar along the y-axis.
+        binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
+
+        // Animate player shadow.
+        binding.playerShadowExternal.alpha = 1f - slideOffset * 3
+        binding.playerShadowInternal.alpha = 1f - slideOffset * 3
+
+        // Animate alpha of the background behind player.
+        binding.background.alpha = slideOffset
+
+        // Animate status bar color.
+        statusBarColor = ColorUtils
+            .setAlphaComponent(statusBarColor, (slideOffset * 255 / 2).roundToInt())
+        window.statusBarColor = statusBarColor
+    }
+
+    /**
+     * Animate the player content and background shadows when the player
+     * [BottomSheetBehavior] slide offset change. Used on API versions 27 and higher.
+     */
+    @RequiresApi(Build.VERSION_CODES.O_MR1)
+    private fun controlPlayerOnBottomSheetSlideV27(
             slideOffset: Float,
             bottomNavBarHeight: Float
     ) {
@@ -197,6 +264,20 @@ class MainActivity : AppCompatActivity() {
 
         // Animate alpha of the background behind player.
         binding.background.alpha = slideOffset
+
+        // Animate status bar color.
+        statusBarColor = ColorUtils
+            .setAlphaComponent(statusBarColor, (slideOffset * 255 / 2).roundToInt())
+        window.statusBarColor = statusBarColor
+
+        // Animate navigation bar color.
+        if (navigationBarColorDefault.data != navigationBarColorChanged.data) {
+            if (slideOffset >= 0.1 && window.navigationBarColor != navigationBarColorChanged.data) {
+                window.navigationBarColor = navigationBarColorChanged.data
+            } else if (slideOffset < 0.1 && window.navigationBarColor != navigationBarColorDefault.data) {
+                window.navigationBarColor = navigationBarColorDefault.data
+            }
+        }
     }
 
     /** Set listeners for the collapsed content of the player. */
