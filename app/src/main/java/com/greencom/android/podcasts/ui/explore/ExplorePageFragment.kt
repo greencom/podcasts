@@ -63,8 +63,77 @@ class ExplorePageFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // Get the genre ID from the fragment arguments.
         val genreId = arguments?.getInt(GENRE_ID) ?: 0
+        // Load the best podcasts.
+        viewModel.getBestPodcasts(genreId)
 
-        // Scroll list of the best podcasts on tab reselection.
+        setupRecyclerView()
+        setupSwipeToRefresh()
+        setupContentAlpha()
+
+        setObservers()
+        setFragmentResultListeners(genreId)
+        setViewListeners(genreId)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clear View binding.
+        _binding = null
+    }
+
+    /** RecyclerView setup. */
+    private fun setupRecyclerView() {
+        val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        divider.setDrawable(
+            ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
+        )
+        binding.podcastList.apply {
+            adapter = this@ExplorePageFragment.adapter
+            addItemDecoration(divider)
+        }
+    }
+
+    /** Swipe-to-refresh setup. */
+    private fun setupSwipeToRefresh() {
+        binding.swipeToRefresh.apply {
+            val color = TypedValue()
+            val backgroundColor = TypedValue()
+            val theme = context?.theme
+            theme?.resolveAttribute(
+                R.attr.colorSwipeToRefreshBackground, backgroundColor, true
+            )
+            theme?.resolveAttribute(R.attr.colorPrimary, color, true)
+            setProgressBackgroundColorSchemeColor(backgroundColor.data)
+            setColorSchemeColors(color.data)
+        }
+    }
+
+    /** Set up alpha of fragment views. Used to create crossfade animations on [reveal]. */
+    private fun setupContentAlpha() {
+        binding.error.root.alpha = 0f
+        binding.podcastList.alpha = 0f
+    }
+
+    /** Set observers for ViewModel observables. */
+    private fun setObservers() {
+        // Observe UI states.
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
+            viewModel.uiState.collect { state ->
+                handleUiState(state)
+            }
+        }
+
+        // Observe events.
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+            viewModel.event.collect { event ->
+                handleEvent(event)
+            }
+        }
+    }
+
+    /** Set fragment result listeners. */
+    private fun setFragmentResultListeners(genreId: Int) {
+        // Scroll the list of the best podcasts on tab reselection.
         parentFragmentManager.setFragmentResultListener(
             "$ON_TAB_RESELECTED$genreId",
             viewLifecycleOwner
@@ -80,31 +149,10 @@ class ExplorePageFragment : Fragment() {
             val podcastId = result.getString(PODCAST_ID) ?: ""
             viewModel.unsubscribe(podcastId)
         }
+    }
 
-        // RecyclerView setup.
-        setupRecyclerView()
-        // Swipe-to-refresh setup.
-        setupSwipeToRefresh()
-        // Views alpha setup.
-        setupAlpha()
-
-        // Load the best podcasts.
-        viewModel.getBestPodcasts(genreId)
-
-        // Observe UI states.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.uiState.collect { state ->
-                handleUiState(state)
-            }
-        }
-
-        // Observe events.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.event.collect { event ->
-                handleEvent(event)
-            }
-        }
-
+    /** Set fragment's view on touch listeners. */
+    private fun setViewListeners(genreId: Int) {
         // Fetch the podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.fetchBestPodcasts(genreId)
@@ -116,12 +164,6 @@ class ExplorePageFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Clear View binding.
-        _binding = null
-    }
-
     /** Handle UI states. */
     private fun handleUiState(state: ExplorePageState) {
         binding.loading.isVisible = state is ExplorePageState.Loading
@@ -131,12 +173,12 @@ class ExplorePageFragment : Fragment() {
         when (state) {
             is ExplorePageState.Success -> {
                 adapter.submitList(state.podcasts)
-                reveal(binding.podcastList)
+                binding.podcastList.reveal()
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
             }
             is ExplorePageState.Error -> {
-                reveal(binding.error.root)
+                binding.error.root.reveal()
                 // Reset podcast list alpha.
                 binding.podcastList.alpha = 0f
             }
@@ -170,42 +212,9 @@ class ExplorePageFragment : Fragment() {
         UnsubscribeDialog.newInstance(podcastId).show(childFragmentManager, UnsubscribeDialog.TAG)
     }
 
-    /** RecyclerView setup. */
-    private fun setupRecyclerView() {
-        val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
-        divider.setDrawable(
-            ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
-        )
-        binding.podcastList.apply {
-            adapter = this@ExplorePageFragment.adapter
-            addItemDecoration(divider)
-        }
-    }
-
-    /** Swipe-to-refresh setup. */
-    private fun setupSwipeToRefresh() {
-        binding.swipeToRefresh.apply {
-            val color = TypedValue()
-            val backgroundColor = TypedValue()
-            val theme = activity?.theme
-            theme?.resolveAttribute(
-                R.attr.colorSwipeToRefreshBackground, backgroundColor, true
-            )
-            theme?.resolveAttribute(R.attr.colorPrimary, color, true)
-            setProgressBackgroundColorSchemeColor(backgroundColor.data)
-            setColorSchemeColors(color.data)
-        }
-    }
-
-    /** Set up alpha of fragment views. Used to create crossfade animations on reveal. */
-    private fun setupAlpha() {
-        binding.error.root.alpha = 0f
-        binding.podcastList.alpha = 0f
-    }
-
     /** Reveal a view with crossfade animation. */
-    private fun reveal(view: View) {
-        view.animate()
+    private fun View.reveal() {
+        animate()
             .alpha(1f)
             .setDuration(REVEAL_ANIMATION_DURATION)
     }
