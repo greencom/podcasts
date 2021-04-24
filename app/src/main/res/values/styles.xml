@@ -53,8 +53,8 @@
     <!-- Toggle outlined button with icon. -->
     <style name="ToggleButton" parent="OutlinedButtonWithIcon">
         <item name="android:checkable">true</item>
-        <item name="android:textColor">@color/button_toggle_outline_text</item>
-        <item name="strokeColor">@color/button_toggle_outline_stroke</item>
+        <item name="android:textColor">@color/toggle_button_text</item>
+        <item name="strokeColor">@color/toggle_button_stroke</item>
     </style>
     <!-- Buttons end -->
 
