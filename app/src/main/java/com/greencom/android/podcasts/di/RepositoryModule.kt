@@ -16,6 +16,7 @@ abstract class RepositoryModule {
      * Tell Hilt which [Repository] implementation to use when it needs to provide
      * an instance of interface.
      */
+    @Suppress("unused")
     @Binds
     abstract fun bindRepository(repositoryImpl: RepositoryImpl): Repository
 }
