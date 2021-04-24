@@ -33,7 +33,6 @@
     <style name="Button" parent="Widget.MaterialComponents.Button">
         <item name="textAllCaps">false</item>
         <item name="android:letterSpacing">0.02</item>
-        <item name="cornerRadius">18dp</item>
     </style>
 
     <!-- Outlined button. -->
@@ -41,19 +40,15 @@
         <item name="textAllCaps">false</item>
         <item name="android:letterSpacing">0.02</item>
         <item name="strokeColor">?attr/colorOnSurfaceUtil</item>
-        <item name="cornerRadius">18dp</item>
     </style>
 
-    <!-- Outlined button with icon. -->
-    <style name="OutlinedButtonWithIcon" parent="OutlinedButton">
-        <item name="android:paddingStart">8dp</item>
-        <item name="iconTint">?attr/colorPrimary</item>
-    </style>
-
-    <!-- Toggle outlined button with icon. -->
-    <style name="ToggleButton" parent="OutlinedButtonWithIcon">
+    <!-- Toggle outlined button with icon and rounded corners. -->
+    <style name="ToggleButton" parent="OutlinedButton">
         <item name="android:checkable">true</item>
         <item name="android:textColor">@color/toggle_button_text</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="iconTint">?attr/colorPrimary</item>
         <item name="strokeColor">@color/toggle_button_stroke</item>
     </style>
     <!-- Buttons end -->
