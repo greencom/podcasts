@@ -33,6 +33,7 @@
     <style name="Button" parent="Widget.MaterialComponents.Button">
         <item name="textAllCaps">false</item>
         <item name="android:letterSpacing">0.02</item>
+        <item name="cornerRadius">8dp</item>
     </style>
 
     <!-- Outlined button. -->
@@ -40,6 +41,7 @@
         <item name="textAllCaps">false</item>
         <item name="android:letterSpacing">0.02</item>
         <item name="strokeColor">?attr/colorOnSurfaceUtil</item>
+        <item name="cornerRadius">8dp</item>
     </style>
 
     <!-- Toggle outlined button with icon and rounded corners. -->

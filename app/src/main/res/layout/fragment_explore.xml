@@ -40,7 +40,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:textColor="?attr/colorOnSurfaceHint"
                 android:textSize="16sp"
-                app:cornerRadius="24dp"
+                app:cornerRadius="8dp"
                 app:icon="@drawable/ic_search_24"
                 app:iconPadding="12dp"
                 app:iconTint="?attr/colorOnSurfaceTertiary"
