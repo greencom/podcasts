@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingHorizontal="32dp"
+    android:paddingHorizontal="64dp"
     android:paddingTop="16dp">
 
     <View
@@ -25,19 +25,19 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/unsubscribe"
-        style="@style/Button"
+        style="@style/OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="22dp"
         android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/red"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        android:stateListAnimator="@null"
         android:text="@string/unsubscribe_unsubscribe"
-        android:textColor="?attr/colorOnError"
+        android:textColor="@color/red"
         android:textSize="16sp"
-        app:cornerRadius="24dp" />
+        app:cornerRadius="8dp"
+        app:rippleColor="@color/unsubscribe_button_ripple"
+        app:strokeColor="@color/red" />
 
 </LinearLayout>
