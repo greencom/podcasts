@@ -8,7 +8,6 @@
     <attr name="colorOnSurfaceHint" format="color" />
     <attr name="colorOnSurfaceUtil" format="color" />
     <attr name="colorBottomNavViewBackground" format="color" />
-    <attr name="colorOutlinedButtonRipple" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
     <attr name="colorBottomSheetDialogPill" format="color" />
     <attr name="colorNavigationBarOnDialog" format="color" />
