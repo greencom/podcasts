@@ -5,13 +5,13 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="64dp"
-    android:paddingTop="16dp">
+    android:paddingTop="12dp">
 
     <View
         android:layout_width="24dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:background="@drawable/shape_pill" />
+        android:background="@drawable/shape_dialog_pill" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,7 +20,7 @@
         android:layout_marginTop="20dp"
         android:fontFamily="@font/roboto_medium"
         android:text="@string/unsubscribe_are_you_sure"
-        android:textColor="?attr/colorOnSurfaceSecondary"
+        android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="18sp" />
 
     <com.google.android.material.button.MaterialButton
@@ -34,10 +34,9 @@
         android:insetTop="0dp"
         android:insetBottom="0dp"
         android:text="@string/unsubscribe_unsubscribe"
-        android:textColor="@color/red"
+        android:textColor="?attr/colorPrimary"
         android:textSize="16sp"
         app:cornerRadius="8dp"
-        app:rippleColor="@color/unsubscribe_button_ripple"
-        app:strokeColor="@color/red" />
+        app:strokeColor="?attr/colorPrimary" />
 
 </LinearLayout>

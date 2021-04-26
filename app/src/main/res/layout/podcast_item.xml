@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="?attr/colorOnSurfacePrimary"
+                android:textColor="?attr/colorOnSurfaceHigh"
                 android:textSize="18sp"
                 tools:text="Чтение" />
 
@@ -44,7 +44,7 @@
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="?attr/colorOnSurfaceTertiary"
+                android:textColor="?attr/colorOnSurfaceLow"
                 tools:text="Радио Маяк" />
 
         </LinearLayout>
@@ -58,7 +58,7 @@
         android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="3"
-        android:textColor="?attr/colorOnSurfaceTertiary"
+        android:textColor="?attr/colorOnSurfaceLow"
         tools:text="Евгений Стаховский читает рассказы и повести известных и не очень известных авторов." />
 
     <LinearLayout
@@ -83,7 +83,7 @@
             android:layout_marginStart="8dp"
             android:contentDescription="@string/explore_explicit_content_description"
             app:srcCompat="@drawable/ic_explicit_outline_24"
-            app:tint="@color/orange_900" />
+            app:tint="@color/orange" />
 
     </LinearLayout>
 

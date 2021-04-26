@@ -43,7 +43,7 @@
                 app:cornerRadius="8dp"
                 app:icon="@drawable/ic_search_24"
                 app:iconPadding="12dp"
-                app:iconTint="?attr/colorOnSurfaceTertiary"
+                app:iconTint="?attr/colorOnSurfaceLow"
                 app:rippleColor="?attr/colorOnSurfaceUtil"
                 app:strokeColor="?attr/colorOnSurfaceUtil" />
 

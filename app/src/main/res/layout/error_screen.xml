@@ -26,7 +26,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/explore_something_went_wrong"
         android:textAlignment="center"
-        android:textColor="?attr/colorOnSurfaceTertiary"
+        android:textColor="?attr/colorOnSurfaceLow"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="@+id/imageView"

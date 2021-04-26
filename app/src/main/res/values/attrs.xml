@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Global attrs start -->
-    <attr name="colorOnSurfacePrimary" format="color" />
-    <attr name="colorOnSurfaceSecondary" format="color" />
-    <attr name="colorOnSurfaceTertiary" format="color" />
+    <!-- Main attrs start -->
+    <attr name="colorOnSurfaceHigh" format="color" />
+    <attr name="colorOnSurfaceMedium" format="color" />
+    <attr name="colorOnSurfaceLow" format="color" />
     <attr name="colorOnSurfaceHint" format="color" />
     <attr name="colorOnSurfaceUtil" format="color" />
-    <attr name="colorBottomNavViewBackground" format="color" />
-    <attr name="colorSwipeToRefreshBackground" format="color" />
-    <attr name="colorBottomSheetDialogPill" format="color" />
-    <attr name="colorNavigationBarOnDialog" format="color" />
-    <!-- Global attrs end -->
+    <!-- Main attrs end -->
 
-    <!-- Player attrs start -->
+    <!-- Specific attrs start -->
     <attr name="colorPlayerBackground" format="color" />
     <attr name="colorPlayerCollapsedBackground" format="color" />
     <attr name="colorPlayerPlay" format="color" />
-    <!-- Player attrs end -->
+    <attr name="colorPlayerPill" format="color" />
+
+    <attr name="colorBottomNavViewBackground" format="color" />
+    <attr name="colorSwipeToRefreshBackground" format="color" />
+    <attr name="colorDialogPill" format="color" />
+    <attr name="colorNavigationBarOnDialog" format="color" />
+    <!-- Specific attrs end -->
 
 </resources>

@@ -16,34 +16,32 @@
         <item name="bottomSheetDialogTheme">@style/BottomSheetDialog</item>
         <!-- Default values end -->
 
-        <!-- Default colors start -->
-        <item name="colorPrimary">@color/blue_light_900</item>
+        <!-- Main colors start -->
+        <item name="colorPrimary">@color/primary_light</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSurface">@color/surface_light</item>
         <item name="colorOnSurface">@color/black</item>
         <item name="android:colorBackground">@color/surface_light</item>
         <item name="colorOnBackground">@color/black</item>
-        <item name="colorError">@color/error_light</item>
-        <item name="colorOnError">@color/white</item>
-        <item name="android:colorEdgeEffect">@color/grey_light_300</item>
-        <!-- Default colors end -->
+        <item name="android:colorEdgeEffect">@color/on_surface_hint_light</item>
 
-        <!-- Custom colors start -->
-        <item name="colorOnSurfacePrimary">@color/grey_light_900</item>
-        <item name="colorOnSurfaceSecondary">@color/grey_light_700</item>
-        <item name="colorOnSurfaceTertiary">@color/grey_light_500</item>
-        <item name="colorOnSurfaceHint">@color/grey_light_300</item>
-        <item name="colorOnSurfaceUtil">@color/grey_light_100</item>
+        <item name="colorOnSurfaceHigh">@color/on_surface_high_light</item>
+        <item name="colorOnSurfaceMedium">@color/on_surface_medium_light</item>
+        <item name="colorOnSurfaceLow">@color/on_surface_low_light</item>
+        <item name="colorOnSurfaceHint">@color/on_surface_hint_light</item>
+        <item name="colorOnSurfaceUtil">@color/on_surface_util_light</item>
+
         <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
-        <item name="colorBottomSheetDialogPill">@color/grey_light_100</item>
-        <!-- Custom colors end -->
+        <item name="colorDialogPill">@color/on_surface_util_light</item>
+        <!-- Main colors end -->
 
-        <!-- Player colors start -->
+        <!-- Specific colors start -->
         <item name="colorPlayerBackground">@color/surface_light</item>
         <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
-        <item name="colorPlayerPlay">@color/grey_light_700</item>
-        <!-- Player colors end -->
+        <item name="colorPlayerPlay">@color/on_surface_medium_light</item>
+        <item name="colorPlayerPill">@color/on_surface_util_light</item>
+        <!-- Specific colors end -->
 
     </style>
 </resources>

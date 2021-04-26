@@ -24,7 +24,7 @@
                 android:layout_marginEnd="16dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="?attr/colorOnSurfacePrimary"
+                android:textColor="?attr/colorOnSurfaceHigh"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toStartOf="@+id/cover"
                 app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +38,7 @@
                 android:layout_marginTop="8dp"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="?attr/colorOnSurfaceTertiary"
+                android:textColor="?attr/colorOnSurfaceLow"
                 app:layout_constraintEnd_toEndOf="@+id/title"
                 app:layout_constraintStart_toStartOf="@+id/title"
                 app:layout_constraintTop_toBottomOf="@+id/title"
@@ -76,14 +76,14 @@
                 app:layout_constraintStart_toEndOf="@+id/subscribe"
                 app:layout_constraintTop_toTopOf="@+id/subscribe"
                 app:srcCompat="@drawable/ic_explicit_outline_24"
-                app:tint="@color/orange_900" />
+                app:tint="@color/orange" />
 
             <TextView
                 android:id="@+id/description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:textColor="?attr/colorOnSurfaceTertiary"
+                android:textColor="?attr/colorOnSurfaceLow"
                 app:layout_constraintEnd_toEndOf="@+id/cover"
                 app:layout_constraintStart_toStartOf="@+id/title"
                 app:layout_constraintTop_toBottomOf="@+id/subscribe"
@@ -102,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:textColor="?attr/colorOnSurfaceSecondary"
+                android:textColor="?attr/colorOnSurfaceMedium"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="@+id/title"
                 app:layout_constraintTop_toBottomOf="@+id/divider"
@@ -131,7 +131,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/explore_back_description"
                 android:src="@drawable/ic_arrow_back_24"
-                android:tint="?attr/colorOnSurfaceTertiary" />
+                android:tint="?attr/colorOnSurfaceLow" />
 
             <TextView
                 android:id="@+id/toolbar_title"
@@ -144,7 +144,7 @@
                 android:paddingStart="8dp"
                 android:paddingEnd="16dp"
                 android:singleLine="true"
-                android:textColor="?attr/colorOnSurfaceSecondary"
+                android:textColor="?attr/colorOnSurfaceMedium"
                 android:textSize="18sp"
                 android:visibility="gone"
                 tools:text="Чтение" />
