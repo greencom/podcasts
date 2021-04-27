@@ -61,7 +61,6 @@
     <!-- PodcastFragment end -->
 
     <!-- UnsubscribeDialog start -->
-    <string name="unsubscribe_are_you_sure">Вы уверены?</string>
     <string name="unsubscribe_unsubscribe">Отписаться</string>
     <!-- UnsubscribeDialog end -->
 

@@ -10,15 +10,14 @@
     <!-- Main attrs end -->
 
     <!-- Specific attrs start -->
-    <attr name="colorPlayerBackground" format="color" />
-    <attr name="colorPlayerCollapsedBackground" format="color" />
-    <attr name="colorPlayerPlay" format="color" />
-    <attr name="colorPlayerPill" format="color" />
-
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
-    <attr name="colorDialogPill" format="color" />
-    <attr name="colorNavigationBarOnDialog" format="color" />
+
+    <attr name="colorBottomSheetBackground" format="color" />
+    <attr name="colorBottomSheetPill" format="color" />
+
+    <attr name="colorPlayerCollapsedBackground" format="color" />
+    <attr name="colorPlayerPlay" format="color" />
     <!-- Specific attrs end -->
 
 </resources>

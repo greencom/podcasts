@@ -59,7 +59,8 @@ class MainActivity : AppCompatActivity() {
         // Obtain app bar colors.
         statusBarColor = getColor(R.color.background_scrim)
         theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
-        theme.resolveAttribute(R.attr.colorPlayerBackground, navigationBarColorChanged, true)
+        // TODO: Check
+        theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
 
         // Navigation component setup.
         setupNavigation()

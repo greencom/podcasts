@@ -34,15 +34,14 @@
 
         <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
-        <item name="colorNavigationBarOnDialog">@color/surface_light</item>
-        <item name="colorDialogPill">@color/on_surface_util_light</item>
+
+        <item name="colorBottomSheetBackground">@color/surface_light</item>
+        <item name="colorBottomSheetPill">@color/on_surface_util_light</item>
         <!-- Main colors end -->
 
         <!-- Specific colors start -->
-        <item name="colorPlayerBackground">@color/surface_light</item>
         <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
         <item name="colorPlayerPlay">@color/on_surface_medium_light</item>
-        <item name="colorPlayerPill">@color/on_surface_util_light</item>
         <!-- Specific colors end -->
 
     </style>

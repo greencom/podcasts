@@ -8,12 +8,13 @@
 
     <style name="BottomSheetDialogV27" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheet</item>
-        <item name="android:navigationBarColor">?attr/colorNavigationBarOnDialog</item>
+        <item name="android:navigationBarColor">?attr/colorBottomSheetBackground</item>
         <item name="android:windowIsFloating">false</item>
     </style>
 
     <style name="BottomSheet" parent="Widget.MaterialComponents.BottomSheet">
         <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.BottomSheetDialog</item>
+        <item name="backgroundTint">?attr/colorBottomSheetBackground</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.BottomSheetDialog" parent="">

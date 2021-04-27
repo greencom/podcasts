@@ -31,16 +31,16 @@
         <item name="colorOnSurfaceHint">@color/on_surface_hint_dark</item>
         <item name="colorOnSurfaceUtil">@color/on_surface_util_dark</item>
 
-        <item name="colorSwipeToRefreshBackground">@color/player_background_dark</item>
+        <item name="colorSwipeToRefreshBackground">@color/bottom_sheet_background_dark</item>
         <item name="colorBottomNavViewBackground">@color/bottom_nav_view_background_dark</item>
-        <item name="colorDialogPill">@color/dialog_pill_dark</item>
+
+        <item name="colorBottomSheetBackground">@color/bottom_sheet_background_dark</item>
+        <item name="colorBottomSheetPill">@color/bottom_sheet_pill_dark</item>
         <!-- Main colors end -->
 
         <!-- Specific colors start -->
-        <item name="colorPlayerBackground">@color/player_background_dark</item>
-        <item name="colorPlayerCollapsedBackground">@color/player_background_dark</item>
+        <item name="colorPlayerCollapsedBackground">@color/bottom_sheet_background_dark</item>
         <item name="colorPlayerPlay">@color/primary_dark</item>
-        <item name="colorPlayerPill">@color/player_pill_dark</item>
         <!-- Specific colors end -->
 
     </style>

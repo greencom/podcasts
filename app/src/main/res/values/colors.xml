@@ -25,18 +25,19 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="orange">#EF6C00</color>
+    <color name="red">#F44336</color>
     <!-- Common colors end -->
 
     <!-- Specific colors start -->
     <color name="background_scrim">#80000000</color>
     <color name="navigation_bar_on_dialog_dark">#3D3D3D</color>
-    <color name="dialog_pill_dark">#5C5C5C</color>
     <color name="bottom_nav_view_background_dark">#222223</color>
 
-    <color name="player_collapsed_background_light">#FAFAFA</color>
-    <color name="player_background_dark">#303030</color>
-    <color name="player_pill_dark">#4F4F4F</color>
+    <color name="bottom_sheet_background_dark">#303030</color>
+    <color name="bottom_sheet_pill_dark">#4F4F4F</color>
+
     <color name="player_shadows">#0D000000</color>
+    <color name="player_collapsed_background_light">#FAFAFA</color>
     <!-- Specific colors end -->
 
 </resources>
