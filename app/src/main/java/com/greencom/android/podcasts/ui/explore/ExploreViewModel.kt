@@ -52,6 +52,8 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
             is State.Error -> {
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_something_went_wrong))
             }
+
+            // Make `when` expression exhaustive.
             is State.Loading -> {  }
         }
     }
@@ -72,8 +74,15 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
                     R.string.explore_something_went_wrong
                 ))
             }
+
+            // Make `when` expression exhaustive.
             is State.Loading -> {  }
         }
+    }
+
+    /** Navigate to PodcastFragment with a given podcast ID. */
+    fun navigateToPodcast(podcastId: String) = viewModelScope.launch {
+        _event.send(ExplorePageEvent.NavigateToPodcast(podcastId))
     }
 
     /**
@@ -98,29 +107,40 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
 
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */
     sealed class ExplorePageState {
+
         /** Represents a `Loading` state. */
         object Loading : ExplorePageState()
+
         /** Represents a `Success` state with a list of [PodcastShort] items. */
         data class Success(val podcasts: List<PodcastShort>) : ExplorePageState()
+
         /** Represents an `Error` state with a [Throwable] error. */
         data class Error(val error: Throwable) : ExplorePageState()
     }
 
     /** Sealed class that represents events of the [ExplorePageFragment]. */
     sealed class ExplorePageEvent {
+
+        /** Represents a UnsubscribeDialog successful confirmation event. */
+        data class UnsubscribeDialog(val podcastId: String): ExplorePageEvent()
+
+        /** Navigate to a PodcastFragment with a given podcast ID. */
+        data class NavigateToPodcast(val podcastId: String) : ExplorePageEvent()
+
         /** Represents a Snackbar event with a string res ID of the message to show. */
         data class Snackbar(@StringRes val stringRes: Int) : ExplorePageEvent()
+
         /** Represents a Fetching event triggered by [fetchBestPodcasts] method. */
         object Fetching : ExplorePageEvent()
+
         /** Represents a Refreshing event triggered by [refreshBestPodcasts] method. */
         object Refreshing : ExplorePageEvent()
+
         /**
          * Represents the end of the [Refreshing] event. Contains a message to show
          * depending on whether the event was successful.
          */
         data class Refreshed(val isSuccessful: Boolean, @StringRes val stringRes: Int) :
                 ExplorePageEvent()
-        /** Represents a UnsubscribeDialog successful confirmation event. */
-        data class UnsubscribeDialog(val podcastId: String): ExplorePageEvent()
     }
 }

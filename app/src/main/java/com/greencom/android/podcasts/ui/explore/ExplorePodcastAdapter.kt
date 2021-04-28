@@ -18,11 +18,12 @@ import com.greencom.android.podcasts.utils.PodcastDiffCallback
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
 class ExplorePodcastAdapter(
+    private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
 ) : ListAdapter<PodcastShort, ExplorePodcastViewHolder>(PodcastDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
-        return ExplorePodcastViewHolder.create(parent, updateSubscription)
+        return ExplorePodcastViewHolder.create(parent, navigateToPodcast, updateSubscription)
     }
 
     override fun onBindViewHolder(holder: ExplorePodcastViewHolder, position: Int) {
@@ -34,6 +35,7 @@ class ExplorePodcastAdapter(
 /** ViewHolder that represents a single item in the best podcasts list. */
 class ExplorePodcastViewHolder private constructor(
     private val binding: PodcastItemBinding,
+    private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -58,7 +60,7 @@ class ExplorePodcastViewHolder private constructor(
         // Show explicit content icon depending on `explicitContent` value.
         binding.explicitContent.isVisible = podcast.explicitContent
 
-        // Update `Subscribe` button state.
+        // Handle `Subscribe` button state.
         if (podcast.subscribed) {
             binding.subscribe.apply {
                 isChecked = true
@@ -87,17 +89,23 @@ class ExplorePodcastViewHolder private constructor(
             // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
             if (podcast.subscribed) binding.subscribe.isChecked = true
         }
+
+        // Navigate to PodcastFragment.
+        binding.root.setOnClickListener {
+            navigateToPodcast(podcast.id)
+        }
     }
 
     companion object {
         /** Create a [ExplorePodcastViewHolder]. */
         fun create(
             parent: ViewGroup,
+            navigateToPodcast: (String) -> Unit,
             updateSubscription: (String, Boolean) -> Unit
         ): ExplorePodcastViewHolder {
             val binding = PodcastItemBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return ExplorePodcastViewHolder(binding, updateSubscription)
+            return ExplorePodcastViewHolder(binding, navigateToPodcast, updateSubscription)
         }
     }
 }

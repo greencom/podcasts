@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
@@ -47,7 +48,7 @@ class ExplorePageFragment : Fragment() {
 
     /** RecyclerView adapter. */
     private val adapter: ExplorePodcastAdapter by lazy {
-        ExplorePodcastAdapter(viewModel::updateSubscription)
+        ExplorePodcastAdapter(viewModel::navigateToPodcast, viewModel::updateSubscription)
     }
 
     override fun onCreateView(
@@ -182,6 +183,8 @@ class ExplorePageFragment : Fragment() {
                 // Reset podcast list alpha.
                 binding.podcastList.alpha = 0f
             }
+
+            // Make `when` expression exhaustive.
             is ExplorePageState.Loading -> {  }
         }
     }
@@ -192,7 +195,22 @@ class ExplorePageFragment : Fragment() {
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
 
         when (event) {
+            // Show UnsubscribeDialog.
+            is ExplorePageEvent.UnsubscribeDialog -> showUnsubscribeDialog(event.podcastId)
+
+            // Navigate to PodcastFragment.
+            is ExplorePageEvent.NavigateToPodcast -> {
+                findNavController().navigate(
+                    ExploreFragmentDirections.actionExploreFragmentToPodcastFragment(
+                        event.podcastId
+                    )
+                )
+            }
+
+            // Show a snackbar.
             is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
+
+            // Scroll the list up when refreshed.
             is ExplorePageEvent.Refreshed -> {
                 showSnackbar(event.stringRes)
                 if (event.isSuccessful) {
@@ -201,7 +219,8 @@ class ExplorePageFragment : Fragment() {
                     binding.podcastList.smoothScrollToPosition(0)
                 }
             }
-            is ExplorePageEvent.UnsubscribeDialog -> showUnsubscribeDialog(event.podcastId)
+
+            // Make `when` expression exhaustive.
             is ExplorePageEvent.Fetching -> {  }
             is ExplorePageEvent.Refreshing -> {  }
         }
