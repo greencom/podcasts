@@ -16,7 +16,7 @@
     <LinearLayout
         android:id="@+id/unsubscribe"
         android:layout_width="match_parent"
-        android:background="@drawable/ripple_recyclerview_item"
+        android:background="@drawable/ripple_custom"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
