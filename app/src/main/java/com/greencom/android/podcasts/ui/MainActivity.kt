@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity() {
         // Obtain app bar colors.
         statusBarColor = getColor(R.color.background_scrim)
         theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
-        // TODO: Check
         theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
 
         // Navigation component setup.
@@ -139,8 +138,8 @@ class MainActivity : AppCompatActivity() {
     ) {
         setOnNavigationItemReselectedListener {
             val currentFragment = navHostFragment.childFragmentManager.fragments[0]
-            val isNavigatingNeeded = !currentFragment.isStarting()
-            if (isNavigatingNeeded) {
+            val isNavigationNeeded = !currentFragment.isStarting()
+            if (isNavigationNeeded) {
                 navController.navigateToStartingFragment(it.title)
             }
         }
