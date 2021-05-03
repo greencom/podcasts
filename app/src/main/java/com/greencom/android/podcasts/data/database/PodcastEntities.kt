@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.greencom.android.podcasts.data.domain.Podcast
+import com.greencom.android.podcasts.network.BestPodcastsWrapper
+import com.greencom.android.podcasts.network.PodcastWrapper
 
 /** Model class that represents a podcast entity in the database. */
 @Entity(tableName = "podcasts")
@@ -54,7 +56,10 @@ data class PodcastEntity(
     val genreId: Int
 )
 
-/** Model class that represents a podcast entity in the temporary table in the database. */
+/**
+ * Temporary podcasts table to ensure the safety of the insert and update operations with
+ * the main `podcasts` table.
+ */
 @Entity(tableName = "podcasts_temp")
 data class PodcastEntityTemp(
 
@@ -103,20 +108,38 @@ data class PodcastEntityTemp(
     val genreId: Int
 )
 
-/** Model class that represents an episode entity in the database. */
-@Entity(tableName = "episodes")
-data class EpisodeEntity(
+/** Used to update subscription to a podcast by ID. */
+data class PodcastSubscription(
 
-    /** Episode ID. */
-    @PrimaryKey
+    /** Podcast ID. */
     @ColumnInfo(name = "id")
     val id: String,
 
-    /** Episode title. */
+    /** Indicates whether the user is subscribed to this podcast. */
+    @ColumnInfo(name = "subscribed")
+    val subscribed: Boolean,
+)
+
+/**
+ * Model class that represents a partial [PodcastEntity] without [PodcastEntity.subscribed]
+ * and [PodcastEntity.genreId] properties.
+ *
+ * Used when converting DTOs such as [PodcastWrapper], which have only common podcast
+ * fields. Consider using other helper entities when converting DTOs which have additional
+ * fields, such as [PodcastEntityPartialWithGenre] for converting [BestPodcastsWrapper]
+ * with [BestPodcastsWrapper.genreId] property.
+ */
+data class PodcastEntityPartial(
+
+    /** Podcast ID. */
+    @ColumnInfo(name = "id")
+    val id: String,
+
+    /** Podcast title. */
     @ColumnInfo(name = "title")
     val title: String,
 
-    /** Episode description. */
+    /** Podcast description. */
     @ColumnInfo(name = "description")
     val description: String,
 
@@ -124,41 +147,65 @@ data class EpisodeEntity(
     @ColumnInfo(name = "image")
     val image: String,
 
-    /** Audio URL. */
-    @ColumnInfo(name = "audio")
-    val audio: String,
-
-    /** Audio length in seconds. */
-    @ColumnInfo(name = "audio_length")
-    val audioLength: Int,
-
-    /** The ID of the podcast that this episode belongs to. */
-    @ColumnInfo(name = "podcast_id")
-    val podcastId: String,
+    /** Podcast publisher. */
+    @ColumnInfo(name = "publisher")
+    val publisher: String,
 
     /** Whether this podcast contains explicit language. */
     @ColumnInfo(name = "explicit_content")
     val explicitContent: Boolean,
 
-    /** Published date in milliseconds. */
-    @ColumnInfo(name = "date")
-    val date: Long,
+    /** Total number of episodes in this podcast. */
+    @ColumnInfo(name = "episode_count")
+    val episodeCount: Int,
+
+    /** The published date of the latest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "latest_pub_date")
+    val latestPubDate: Long,
 )
 
-/** Model class that represents a genre entity in the database. */
-@Entity(tableName = "genres")
-data class GenreEntity(
+/**
+ * Model class that represents a partial [PodcastEntity] without [PodcastEntity.subscribed]
+ * property.
+ *
+ * Used when converting DTOs such as [BestPodcastsWrapper], which have additional
+ * [BestPodcastsWrapper.genreId] property.
+ */
+data class PodcastEntityPartialWithGenre(
 
-    /** Genre ID. */
-    @PrimaryKey
+    /** Podcast ID. */
     @ColumnInfo(name = "id")
-    val id: Int,
+    val id: String,
 
-    /** Genre name. */
-    @ColumnInfo(name = "name")
-    val name: String,
+    /** Podcast title. */
+    @ColumnInfo(name = "title")
+    val title: String,
 
-    /** Parent genre ID. */
-    @ColumnInfo(name = "parent_id")
-    val parentId: Int,
+    /** Podcast description. */
+    @ColumnInfo(name = "description")
+    val description: String,
+
+    /** Image URL. */
+    @ColumnInfo(name = "image")
+    val image: String,
+
+    /** Podcast publisher. */
+    @ColumnInfo(name = "publisher")
+    val publisher: String,
+
+    /** Whether this podcast contains explicit language. */
+    @ColumnInfo(name = "explicit_content")
+    val explicitContent: Boolean,
+
+    /** Total number of episodes in this podcast. */
+    @ColumnInfo(name = "episode_count")
+    val episodeCount: Int,
+
+    /** The published date of the latest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "latest_pub_date")
+    val latestPubDate: Long,
+
+    /** The ID of the genre for which this podcast is featured on the best list. */
+    @ColumnInfo(name = "genre_id")
+    val genreId: Int
 )

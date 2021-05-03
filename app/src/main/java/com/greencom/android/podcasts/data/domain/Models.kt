@@ -122,16 +122,3 @@ data class Episode(
     /** Published date in milliseconds. */
     val date: Long,
 )
-
-/** Model class that represents a domain genre object. */
-data class Genre(
-
-    /** Genre ID. */
-    val id: Int,
-
-    /** Genre name. */
-    val name: String,
-
-    /** Parent genre ID. */
-    val parentId: Int,
-)
