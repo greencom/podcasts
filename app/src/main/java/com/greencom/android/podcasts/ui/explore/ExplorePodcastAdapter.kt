@@ -3,7 +3,6 @@ package com.greencom.android.podcasts.ui.explore
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
@@ -15,6 +14,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.databinding.PodcastItemBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
+import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
 class ExplorePodcastAdapter(
@@ -60,26 +60,8 @@ class ExplorePodcastViewHolder private constructor(
         // Show explicit content icon depending on `explicitContent` value.
         binding.explicitContent.isVisible = podcast.explicitContent
 
-        // Handle `Subscribe` button state.
-        binding.subscribe.apply {
-            if (podcast.subscribed) {
-                isChecked = true
-                text = context.getString(R.string.explore_subscribed)
-                icon = ResourcesCompat.getDrawable(
-                    context.resources,
-                    R.drawable.ic_check_24,
-                    context.theme
-                )
-            } else {
-                isChecked = false
-                text = context.getString(R.string.explore_subscribe)
-                icon = ResourcesCompat.getDrawable(
-                    context.resources,
-                    R.drawable.ic_add_24,
-                    context.theme
-                )
-            }
-        }
+        // Setup `Subscribe` button.
+        setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
 
         // Update subscription to the podcast.
         binding.subscribe.setOnClickListener {

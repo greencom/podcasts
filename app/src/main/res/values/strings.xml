@@ -50,7 +50,9 @@
     <!-- ExploreFragment end -->
 
     <!-- PodcastFragment start -->
-    <plurals name="episode_count">
+    <string name="podcast_subscribe">Subscribe</string>
+    <string name="podcast_subscribed">Subscribed</string>
+    <plurals name="podcast_episode_count">
         <item quantity="zero">%d Episodes</item>
         <item quantity="one">%d Episode</item>
         <item quantity="two">%d Episodes</item>

@@ -50,7 +50,9 @@
     <!-- ExploreFragment end -->
 
     <!-- PodcastFragment start -->
-    <plurals name="episode_count" tools:ignore="UnusedQuantity">
+    <string name="podcast_subscribe">Подписаться</string>
+    <string name="podcast_subscribed">Подписка оформлена</string>
+    <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
         <item quantity="zero">%d Эпизодов</item>
         <item quantity="one">%d Эпизод</item>
         <item quantity="two">%d Эпизода</item>
