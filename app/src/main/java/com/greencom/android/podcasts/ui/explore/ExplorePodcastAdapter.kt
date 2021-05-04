@@ -61,8 +61,8 @@ class ExplorePodcastViewHolder private constructor(
         binding.explicitContent.isVisible = podcast.explicitContent
 
         // Handle `Subscribe` button state.
-        if (podcast.subscribed) {
-            binding.subscribe.apply {
+        binding.subscribe.apply {
+            if (podcast.subscribed) {
                 isChecked = true
                 text = context.getString(R.string.explore_subscribed)
                 icon = ResourcesCompat.getDrawable(
@@ -70,9 +70,7 @@ class ExplorePodcastViewHolder private constructor(
                     R.drawable.ic_check_24,
                     context.theme
                 )
-            }
-        } else {
-            binding.subscribe.apply {
+            } else {
                 isChecked = false
                 text = context.getString(R.string.explore_subscribe)
                 icon = ResourcesCompat.getDrawable(
