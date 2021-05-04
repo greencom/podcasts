@@ -5,7 +5,6 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -14,13 +13,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
-import com.greencom.android.podcasts.utils.REVEAL_ANIMATION_DURATION
+import com.greencom.android.podcasts.utils.reveal
+import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -36,7 +35,7 @@ private const val GENRE_ID = "genre_id"
  * of the fragment with provided parameters.
  */
 @AndroidEntryPoint
-class ExplorePageFragment : Fragment() {
+class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExplorePageBinding? = null
@@ -141,15 +140,6 @@ class ExplorePageFragment : Fragment() {
         ) { _, _ ->
             binding.podcastList.smoothScrollToPosition(0)
         }
-
-        // Unsubscribe from the podcast by a given ID after UnsubscribeDialog confirmation.
-        childFragmentManager.setFragmentResultListener(
-            UNSUBSCRIBE_DIALOG,
-            viewLifecycleOwner
-        ) { _, result ->
-            val podcastId = result.getString(PODCAST_ID) ?: ""
-            viewModel.unsubscribe(podcastId)
-        }
     }
 
     /** Set fragment's view on touch listeners. */
@@ -195,8 +185,12 @@ class ExplorePageFragment : Fragment() {
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
 
         when (event) {
+
+            // Show a snackbar.
+            is ExplorePageEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
+
             // Show UnsubscribeDialog.
-            is ExplorePageEvent.UnsubscribeDialog -> showUnsubscribeDialog(event.podcastId)
+            is ExplorePageEvent.UnsubscribeDialog -> UnsubscribeDialog.show(childFragmentManager, event.podcastId)
 
             // Navigate to PodcastFragment.
             is ExplorePageEvent.NavigateToPodcast -> {
@@ -207,12 +201,9 @@ class ExplorePageFragment : Fragment() {
                 )
             }
 
-            // Show a snackbar.
-            is ExplorePageEvent.Snackbar -> showSnackbar(event.stringRes)
-
             // Scroll the list up when refreshed.
             is ExplorePageEvent.Refreshed -> {
-                showSnackbar(event.stringRes)
+                showSnackbar(binding.root, event.stringRes)
                 if (event.isSuccessful) {
                     // Wait for a list to update to scroll up.
                     delay(500)
@@ -226,21 +217,9 @@ class ExplorePageFragment : Fragment() {
         }
     }
 
-    /** Show a [UnsubscribeDialog] for a given podcast ID. */
-    private fun showUnsubscribeDialog(podcastId: String) {
-        UnsubscribeDialog.newInstance(podcastId).show(childFragmentManager, UnsubscribeDialog.TAG)
-    }
-
-    /** Reveal a view with crossfade animation. */
-    private fun View.reveal() {
-        animate()
-            .alpha(1f)
-            .setDuration(REVEAL_ANIMATION_DURATION)
-    }
-
-    /** Show a Snackbar with a message correspond to a given string res ID. */
-    private fun showSnackbar(@StringRes stringRes: Int) {
-        Snackbar.make(binding.root, stringRes, Snackbar.LENGTH_SHORT).show()
+    // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
+    override fun onUnsubscribeClick(podcastId: String) {
+        viewModel.unsubscribe(podcastId)
     }
 
     companion object {
@@ -250,15 +229,6 @@ class ExplorePageFragment : Fragment() {
          * in [ExploreFragment] between fragments.
          */
         const val ON_TAB_RESELECTED = "explore_page_on_tab_reselected"
-
-        /**
-         * Key used to pass and retrieve data after [UnsubscribeDialog] confirmation
-         * between fragments.
-         */
-        const val UNSUBSCRIBE_DIALOG = "explore_page_fragment_on_unsubscribe_click"
-
-        /** Key used to pass and retrieve podcast ID with result bundles. */
-        const val PODCAST_ID = "podcast_id"
 
         /**
          * Use this factory method to create a new instance of
