@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -52,6 +53,9 @@ class MainActivity : AppCompatActivity() {
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Hide scrim background at start.
+        binding.background.isVisible = false
 
         // Set expanded content alpha to zero.
         binding.player.expanded.root.alpha = 0f
@@ -192,20 +196,13 @@ class MainActivity : AppCompatActivity() {
      * state change.
      */
     private fun controlPlayerOnBottomSheetStateChanged(newState: Int) {
-        when (newState) {
-            // Disable the player expanded content when the player is collapsed.
-            BottomSheetBehavior.STATE_COLLAPSED -> {
-                binding.player.collapsed.root.isEnabled = true
-                binding.player.collapsed.playPause.isClickable = true
-                binding.player.expanded.cover.isClickable = false
-            }
-            // Disable the player collapsed content when the player is expanded.
-            BottomSheetBehavior.STATE_EXPANDED -> {
-                binding.player.collapsed.root.isEnabled = false
-                binding.player.collapsed.playPause.isClickable = false
-                binding.player.expanded.cover.isClickable = true
-            }
-        }
+        // Hide the scrim background when the player is collapsed.
+        binding.background.isVisible = newState != BottomSheetBehavior.STATE_COLLAPSED
+        // Disable the player collapsed content when the player is expanded.
+        binding.player.collapsed.root.isClickable = newState == BottomSheetBehavior.STATE_COLLAPSED
+        // Disable the player expanded content when the player is collapsed.
+        binding.player.expanded.root.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
+        binding.player.expanded.cover.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
     }
 
     /**
