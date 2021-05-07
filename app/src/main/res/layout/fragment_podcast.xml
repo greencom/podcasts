@@ -108,6 +108,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/divider"
                 tools:text="394 Episodes" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/episode_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/episode_count"
+                tools:itemCount="4"
+                tools:listitem="@layout/episode_item" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
