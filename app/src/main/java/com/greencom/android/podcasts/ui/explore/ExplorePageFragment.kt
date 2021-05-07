@@ -190,7 +190,8 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             is ExplorePageEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
 
             // Show UnsubscribeDialog.
-            is ExplorePageEvent.UnsubscribeDialog -> UnsubscribeDialog.show(childFragmentManager, event.podcastId)
+            is ExplorePageEvent.UnsubscribeDialog ->
+                UnsubscribeDialog.show(childFragmentManager, event.podcastId)
 
             // Navigate to PodcastFragment.
             is ExplorePageEvent.NavigateToPodcast -> {

@@ -7,6 +7,7 @@ import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.ListenApiService
+import com.greencom.android.podcasts.network.podcastToDatabase
 import com.greencom.android.podcasts.network.toDatabase
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.CoroutineDispatcher
@@ -32,6 +33,29 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
+    @ExperimentalCoroutinesApi
+    override fun getPodcast(id: String): Flow<State<Podcast>> = channelFlow {
+        send(State.Loading)
+        podcastDao.getPodcastFlow(id).collect { podcast ->
+            // If the database already contains the appropriate podcast, return it.
+            if (podcast != null) {
+                send(State.Success(podcast))
+            } else {
+                // Otherwise, fetch the podcast from ListenAPI and insert into the database.
+                try {
+                    val response = withContext(ioDispatcher) {
+                        listenApi.getPodcast(id, null)
+                    }
+                    podcastDao.insert(response.podcastToDatabase())
+                } catch (e: IOException) {
+                    send(State.Error(e))
+                } catch (e: HttpException) {
+                    send(State.Error(e))
+                }
+            }
+        }
+    }
+
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
     }
@@ -44,7 +68,7 @@ class RepositoryImpl @Inject constructor(
             if (podcasts.isNotEmpty()) {
                 send(State.Success(podcasts))
             } else {
-                // Otherwise, fetch the best podcasts from ListenAPI and insert them into db.
+                // Otherwise, fetch the best podcasts from ListenAPI and insert them into the db.
                 try {
                     val response = withContext(ioDispatcher) {
                         listenApi.getBestPodcasts(genreId)

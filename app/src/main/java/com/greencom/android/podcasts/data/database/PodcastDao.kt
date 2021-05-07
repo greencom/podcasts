@@ -110,14 +110,11 @@ abstract class PodcastDao {
     @Update(entity = PodcastEntity::class)
     abstract suspend fun updateWithPodcastShort(podcast: List<PodcastShort>)
 
-    /** Get a podcast for a given ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
-                "FROM podcasts " +
-                "WHERE id = :id"
-    )
-    abstract suspend fun getPodcast(id: String): Podcast?
+    /**
+     * Get a Flow with a podcast for a given ID. No need to apply [distinctUntilChanged]
+     * function since it is already done under the hood.
+     */
+    fun getPodcastFlow(id: String) = getPodcastFlowRaw(id).distinctUntilChanged()
 
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
@@ -231,6 +228,24 @@ abstract class PodcastDao {
     /** Clear the `podcasts_temp` table. */
     @Query("DELETE FROM podcasts_temp")
     protected abstract suspend fun clearTemp()
+
+    /** Get a podcast for a given ID. */
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed " +
+                "FROM podcasts " +
+                "WHERE id = :id"
+    )
+    protected abstract suspend fun getPodcast(id: String): Podcast?
+
+    /** Get a Flow with a podcast for a given ID. */
+    @Query(
+        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
+                "latest_pub_date, subscribed " +
+                "FROM podcasts " +
+                "WHERE id = :id"
+    )
+    protected abstract fun getPodcastFlowRaw(id: String): Flow<Podcast?>
 
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID. Use
