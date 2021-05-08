@@ -11,7 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
 
     /** Load the best podcasts for a given genre ID. The result will be posted to [uiState]. */
     fun getBestPodcasts(genreId: Int) = viewModelScope.launch {
-        repository.getBestPodcasts(genreId).collect { state ->
+        repository.getBestPodcasts(genreId).collectLatest { state ->
             when (state) {
                 is State.Loading -> _uiState.value = ExplorePageState.Loading
                 is State.Success -> _uiState.value = ExplorePageState.Success(state.data)

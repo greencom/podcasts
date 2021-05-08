@@ -23,6 +23,7 @@ import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 // Initialization parameters.
 private const val GENRE_ID = "genre_id"
@@ -118,7 +119,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     private fun setObservers() {
         // Observe UI states.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.uiState.collect { state ->
+            viewModel.uiState.collectLatest { state ->
                 handleUiState(state)
             }
         }

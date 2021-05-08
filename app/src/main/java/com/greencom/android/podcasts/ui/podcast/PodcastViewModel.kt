@@ -10,7 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,7 +28,7 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
 
     /** Load a podcast for a given ID. The result will be posted to [uiState]. */
     fun getPodcast(id: String) = viewModelScope.launch {
-        repository.getPodcast(id).collect { state ->
+        repository.getPodcast(id).collectLatest { state ->
             when (state) {
                 is State.Loading -> _uiState.value = PodcastState.Loading
                 is State.Success -> _uiState.value = PodcastState.Success(state.data)

@@ -54,6 +54,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Set text selected to run ellipsize animation.
+        binding.player.collapsed.title.isSelected = true
+
         // Hide scrim background at start.
         binding.background.isVisible = false
 
@@ -203,6 +206,9 @@ class MainActivity : AppCompatActivity() {
         // Disable the player expanded content when the player is collapsed.
         binding.player.expanded.root.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
         binding.player.expanded.cover.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
+        // Set text selected to run ellipsize animation.
+        binding.player.collapsed.title.isSelected = newState != BottomSheetBehavior.STATE_EXPANDED
+        binding.player.expanded.title.isSelected = newState != BottomSheetBehavior.STATE_COLLAPSED
     }
 
     /**

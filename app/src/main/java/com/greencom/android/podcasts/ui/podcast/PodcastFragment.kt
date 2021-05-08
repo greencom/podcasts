@@ -23,6 +23,7 @@ import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
@@ -57,7 +58,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // TODO
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.uiState.collect { state ->
+            viewModel.uiState.collectLatest { state ->
                 when (state) {
                     is PodcastState.Success -> {
                         val podcast = state.podcast

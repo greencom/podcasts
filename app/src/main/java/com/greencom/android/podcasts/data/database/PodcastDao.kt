@@ -90,10 +90,6 @@ abstract class PodcastDao {
     @Update
     abstract suspend fun update(podcasts: List<PodcastEntity>)
 
-    /** Update subscription to a Podcast with given [PodcastSubscription] object. */
-    @Update(entity = PodcastEntity::class)
-    abstract suspend fun updateSubscription(podcastSubscription: PodcastSubscription)
-
     /** Update the existing entry in the `podcasts` table with a given [Podcast]. */
     @Update(entity = PodcastEntity::class)
     abstract suspend fun updateWithPodcast(podcast: Podcast)
@@ -109,6 +105,10 @@ abstract class PodcastDao {
     /** Update the existing entries in the `podcasts` table with a given [PodcastShort] list. */
     @Update(entity = PodcastEntity::class)
     abstract suspend fun updateWithPodcastShort(podcast: List<PodcastShort>)
+
+    /** Update subscription to a Podcast with given [PodcastSubscription] object. */
+    @Update(entity = PodcastEntity::class)
+    abstract suspend fun updateSubscription(podcastSubscription: PodcastSubscription)
 
     /**
      * Get a Flow with a podcast for a given ID. No need to apply [distinctUntilChanged]

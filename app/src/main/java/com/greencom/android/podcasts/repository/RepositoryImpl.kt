@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import okio.IOException
 import retrofit2.HttpException
@@ -36,7 +36,7 @@ class RepositoryImpl @Inject constructor(
     @ExperimentalCoroutinesApi
     override fun getPodcast(id: String): Flow<State<Podcast>> = channelFlow {
         send(State.Loading)
-        podcastDao.getPodcastFlow(id).collect { podcast ->
+        podcastDao.getPodcastFlow(id).collectLatest { podcast ->
             // If the database already contains the appropriate podcast, return it.
             if (podcast != null) {
                 send(State.Success(podcast))
@@ -63,7 +63,7 @@ class RepositoryImpl @Inject constructor(
     @ExperimentalCoroutinesApi
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = channelFlow {
         send(State.Loading)
-        podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
+        podcastDao.getBestPodcastsFlow(genreId).collectLatest { podcasts ->
             // Return from the database, if it contains the appropriate podcasts.
             if (podcasts.isNotEmpty()) {
                 send(State.Success(podcasts))
