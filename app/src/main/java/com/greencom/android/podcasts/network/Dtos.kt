@@ -144,6 +144,10 @@ data class SearchPodcastWrapper(
         /** The published date of the latest episode of this podcast in milliseconds. */
         @Json(name = "latest_pub_date_ms")
         val latestPubDate: Long,
+
+        /** The published date of the oldest episode of this podcast in milliseconds. */
+        @Json(name = "earliest_pub_date_ms")
+        val earliestPubDate: Long,
     )
 }
 
@@ -181,6 +185,10 @@ data class PodcastWrapper(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @Json(name = "latest_pub_date_ms")
     val latestPubDate: Long,
+
+    /** The published date of the oldest episode of this podcast in milliseconds. */
+    @Json(name = "earliest_pub_date_ms")
+    val earliestPubDate: Long,
 
     /** Episodes of this podcast. */
     @Json(name = "episodes")
@@ -285,6 +293,10 @@ data class BestPodcastsWrapper(
         /** The published date of the latest episode of this podcast in milliseconds. */
         @Json(name = "latest_pub_date_ms")
         val latestPubDate: Long,
+
+        /** The published date of the oldest episode of this podcast in milliseconds. */
+        @Json(name = "earliest_pub_date_ms")
+        val earliestPubDate: Long,
     )
 }
 

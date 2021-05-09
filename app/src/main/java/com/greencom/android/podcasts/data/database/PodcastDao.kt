@@ -180,9 +180,9 @@ abstract class PodcastDao {
      */
     @Query(
         "INSERT INTO podcasts (id, title, description, image, publisher, explicit_content, " +
-                "episode_count, latest_pub_date, subscribed, genre_id) " +
+                "episode_count, latest_pub_date, earliest_pub_date, subscribed, genre_id) " +
                 "SELECT t.id, t.title, t.description, t.image, t.publisher, t.explicit_content, " +
-                "t.episode_count, t.latest_pub_date, t.subscribed, t.genre_id " +
+                "t.episode_count, t.latest_pub_date, t.earliest_pub_date, t.subscribed, t.genre_id " +
                 "FROM podcasts_temp t " +
                 "LEFT JOIN podcasts ON t.id = podcasts.id " +
                 "WHERE podcasts.id IS NULL"
@@ -219,7 +219,7 @@ abstract class PodcastDao {
     /** Get a podcast from the `podcasts_temp` table for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
+                "latest_pub_date, earliest_pub_date, subscribed " +
                 "FROM podcasts_temp " +
                 "WHERE id = :id"
     )
@@ -232,7 +232,7 @@ abstract class PodcastDao {
     /** Get a podcast for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
+                "latest_pub_date, earliest_pub_date, subscribed " +
                 "FROM podcasts " +
                 "WHERE id = :id"
     )
@@ -241,7 +241,7 @@ abstract class PodcastDao {
     /** Get a Flow with a podcast for a given ID. */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, subscribed " +
+                "latest_pub_date, earliest_pub_date, subscribed " +
                 "FROM podcasts " +
                 "WHERE id = :id"
     )

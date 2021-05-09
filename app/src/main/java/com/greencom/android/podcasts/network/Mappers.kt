@@ -17,6 +17,7 @@ fun BestPodcastsWrapper.toDatabase(): List<PodcastEntityPartialWithGenre> = podc
         explicitContent = it.explicitContent,
         episodeCount = it.episodeCount,
         latestPubDate = it.latestPubDate,
+        earliestPubDate = it.earliestPubDate,
         genreId = this.genreId
     )
 }
@@ -31,6 +32,7 @@ fun PodcastWrapper.podcastToDatabase(): PodcastEntityPartial = PodcastEntityPart
     explicitContent = explicitContent,
     episodeCount = episodeCount,
     latestPubDate = latestPubDate,
+    earliestPubDate = earliestPubDate
 )
 
 /** Convert a [PodcastWrapper.episodes] list to a [EpisodeEntity] list. */

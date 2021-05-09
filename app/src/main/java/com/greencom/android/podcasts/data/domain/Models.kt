@@ -40,6 +40,10 @@ data class Podcast(
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
 
+    /** The published date of the oldest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "earliest_pub_date")
+    val earliestPubDate: Long,
+
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "subscribed")
     val subscribed: Boolean,

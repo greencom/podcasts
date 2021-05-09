@@ -44,6 +44,10 @@ data class PodcastEntity(
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
 
+    /** The published date of the oldest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "earliest_pub_date")
+    val earliestPubDate: Long,
+
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "subscribed", defaultValue = "0")
     val subscribed: Boolean,
@@ -95,6 +99,10 @@ data class PodcastEntityTemp(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
+
+    /** The published date of the oldest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "earliest_pub_date")
+    val earliestPubDate: Long,
 
     /** Indicates whether the user is subscribed to this podcast. */
     @ColumnInfo(name = "subscribed", defaultValue = "0")
@@ -162,6 +170,10 @@ data class PodcastEntityPartial(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
+
+    /** The published date of the oldest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "earliest_pub_date")
+    val earliestPubDate: Long,
 )
 
 /**
@@ -204,6 +216,10 @@ data class PodcastEntityPartialWithGenre(
     /** The published date of the latest episode of this podcast in milliseconds. */
     @ColumnInfo(name = "latest_pub_date")
     val latestPubDate: Long,
+
+    /** The published date of the oldest episode of this podcast in milliseconds. */
+    @ColumnInfo(name = "earliest_pub_date")
+    val earliestPubDate: Long,
 
     /** The ID of the genre for which this podcast is featured on the best list. */
     @ColumnInfo(name = "genre_id")
