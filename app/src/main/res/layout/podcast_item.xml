@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:background="@drawable/ripple_custom"
+    android:orientation="vertical"
     android:paddingHorizontal="16dp"
     android:paddingTop="16dp"
     android:paddingBottom="10dp">
@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:textColor="?attr/colorOnSurfaceHigh"
                 android:textSize="18sp"
                 tools:text="Чтение" />

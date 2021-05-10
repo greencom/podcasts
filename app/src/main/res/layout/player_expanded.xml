@@ -37,10 +37,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ellipsize="marquee"
-        android:marqueeRepeatLimit="marquee_forever"
         android:focusable="true"
         android:focusableInTouchMode="true"
         android:gravity="center_horizontal"
+        android:marqueeRepeatLimit="marquee_forever"
         android:paddingTop="2dp"
         android:paddingBottom="2dp"
         android:singleLine="true"
@@ -95,12 +95,12 @@
         android:id="@+id/time_current"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="116dp"
+        android:layout_marginBottom="8dp"
         android:text="1:00"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/backward"
         app:layout_constraintStart_toStartOf="@+id/cover"
-        app:layout_constraintTop_toBottomOf="@+id/cover"
         tools:text="1:00" />
 
     <TextView
@@ -110,8 +110,8 @@
         android:text="-39:00"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/time_current"
         app:layout_constraintEnd_toEndOf="@+id/cover"
-        app:layout_constraintTop_toTopOf="@+id/time_current"
         tools:text="-39:00" />
 
     <ImageButton
