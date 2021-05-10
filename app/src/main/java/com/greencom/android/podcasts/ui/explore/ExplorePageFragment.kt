@@ -185,6 +185,13 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         binding.swipeToRefresh.isRefreshing = event is ExplorePageEvent.Refreshing
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
 
+        // Reset try_again button text.
+        if (event !is ExplorePageEvent.Fetching) {
+            // Wait for a list to reveal.
+            delay(200)
+            binding.error.tryAgain.text = getString(R.string.explore_try_again)
+        }
+
         when (event) {
 
             // Show a snackbar.
@@ -213,8 +220,12 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 }
             }
 
+            // Set "Loading" text to the try_again button.
+            is ExplorePageEvent.Fetching -> {
+                binding.error.tryAgain.text = getString(R.string.explore_loading)
+            }
+
             // Make `when` expression exhaustive.
-            is ExplorePageEvent.Fetching -> {  }
             is ExplorePageEvent.Refreshing -> {  }
         }
     }
