@@ -41,9 +41,28 @@ class ExplorePodcastViewHolder private constructor(
 
     // View context.
     private val context: Context = binding.root.context
+    // Podcast associated with this ViewHolder.
+    private lateinit var podcast: PodcastShort
+
+    init {
+        // Update subscription to the podcast.
+        binding.subscribe.setOnClickListener {
+            updateSubscription(podcast.id, (it as MaterialButton).isChecked)
+            // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
+            if (podcast.subscribed) binding.subscribe.isChecked = true
+        }
+
+        // Navigate to PodcastFragment.
+        binding.root.setOnClickListener {
+            navigateToPodcast(podcast.id)
+        }
+    }
 
     /** Bind ViewHolder with a given [PodcastShort]. */
     fun bind(podcast: PodcastShort) {
+        // Update the podcast associated with this ViewHolder.
+        this.podcast = podcast
+
         binding.cover.load(podcast.image) {
             transformations(RoundedCornersTransformation(
                 context.resources.getDimension(R.dimen.corner_radius_small)
@@ -59,21 +78,8 @@ class ExplorePodcastViewHolder private constructor(
             HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
         // Show explicit content icon depending on `explicitContent` value.
         binding.explicitContent.isVisible = podcast.explicitContent
-
         // Setup `Subscribe` button.
         setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
-
-        // Update subscription to the podcast.
-        binding.subscribe.setOnClickListener {
-            updateSubscription(podcast.id, (it as MaterialButton).isChecked)
-            // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
-            if (podcast.subscribed) binding.subscribe.isChecked = true
-        }
-
-        // Navigate to PodcastFragment.
-        binding.root.setOnClickListener {
-            navigateToPodcast(podcast.id)
-        }
     }
 
     companion object {
