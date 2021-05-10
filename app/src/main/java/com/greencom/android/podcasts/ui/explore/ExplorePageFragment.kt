@@ -185,17 +185,16 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         binding.swipeToRefresh.isRefreshing = event is ExplorePageEvent.Refreshing
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
 
-        // Reset try_again button text.
-        if (event !is ExplorePageEvent.Fetching) {
-            // Wait for a list to reveal.
-            delay(200)
-            binding.error.tryAgain.text = getString(R.string.explore_try_again)
-        }
-
         when (event) {
 
             // Show a snackbar.
-            is ExplorePageEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
+            is ExplorePageEvent.Snackbar -> {
+                showSnackbar(binding.root, event.stringRes)
+
+                // Reset try_again button text.
+                delay(300) // Delay to avoid blinking.
+                binding.error.tryAgain.text = getString(R.string.explore_try_again)
+            }
 
             // Show UnsubscribeDialog.
             is ExplorePageEvent.UnsubscribeDialog ->
