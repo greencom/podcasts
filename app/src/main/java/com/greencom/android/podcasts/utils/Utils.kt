@@ -81,7 +81,6 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
  * - "35 min", if the number of hours is zero.
  * - "1 hr 35 min" in any other case.
  */
-// TODO: test
 fun audioLengthToString(length: Int, context: Context): String {
     val hours = (length / TimeUnit.HOURS.toSeconds(1)).toInt()
     val minutes = ((length - TimeUnit.HOURS.toSeconds(1) * hours) /
@@ -99,7 +98,6 @@ fun audioLengthToString(length: Int, context: Context): String {
  * than 7 days ago, return the most appropriate date description, otherwise return the date
  * in the format `day, month, year`.
  */
-// TODO: test
 fun pubDateToString(pubDate: Long, currentDate: Long, context: Context): String {
     return when (val timeFromNow = currentDate - pubDate) {
         in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.podcast_just_now)
