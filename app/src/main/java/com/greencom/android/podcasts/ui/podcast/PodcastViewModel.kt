@@ -37,6 +37,9 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
         }
     }
 
+    // TODO
+    fun getEpisodes(id: String) = repository.getEpisodes(id)
+
     /**
      * Update subscription to a podcast by ID with a given value. If the value is
      * `false`, show UnsubscribeDialog to the user and wait for confirmation.

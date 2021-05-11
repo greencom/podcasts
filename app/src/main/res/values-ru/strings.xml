@@ -61,6 +61,26 @@
         <item quantity="many">%d Эпизодов</item>
         <item quantity="other">%d Эпизодов</item>
     </plurals>
+    <string name="podcast_length_full">%1$d ч. %2$d мин.</string>
+    <string name="podcast_length_hours">%1$d ч.</string>
+    <string name="podcast_length_minutes">%1$d мин.</string>
+    <string name="podcast_just_now">Только что</string>
+    <plurals name="podcast_days_ago" tools:ignore="UnusedQuantity">
+        <item quantity="zero">%d дней назад</item>
+        <item quantity="one">%d день назад</item>
+        <item quantity="two">%d дня назад</item>
+        <item quantity="few">%d дня назад</item>
+        <item quantity="many">%d дней назад</item>
+        <item quantity="other">%d дней назад</item>
+    </plurals>
+    <plurals name="podcast_hours_ago" tools:ignore="UnusedQuantity">
+        <item quantity="zero">%d часов назад</item>
+        <item quantity="one">%d час назад</item>
+        <item quantity="two">%d часа назад</item>
+        <item quantity="few">%d часа назад</item>
+        <item quantity="many">%d часов назад</item>
+        <item quantity="other">%d часов назад</item>
+    </plurals>
     <!-- PodcastFragment end -->
 
     <!-- UnsubscribeDialog start -->

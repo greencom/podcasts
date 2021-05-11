@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.repository
 
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.utils.State
@@ -17,6 +18,9 @@ interface Repository {
      * fetch the podcast from ListenAPI and insert it into the database.
      */
     fun getPodcast(id: String): Flow<State<Podcast>>
+
+    // TODO
+    fun getEpisodes(id: String): Flow<List<Episode>>
 
     /** Update subscription to a Podcast by ID with a given value. */
     suspend fun updateSubscription(podcastId: String, subscribed: Boolean)

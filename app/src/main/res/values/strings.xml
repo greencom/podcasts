@@ -61,6 +61,26 @@
         <item quantity="many">%d Episodes</item>
         <item quantity="other">%d Episodes</item>
     </plurals>
+    <string name="podcast_length_full">%1$d hr %2$d min</string>
+    <string name="podcast_length_hours">%1$d hr</string>
+    <string name="podcast_length_minutes">%1$d min</string>
+    <string name="podcast_just_now">Just now</string>
+    <plurals name="podcast_days_ago">
+        <item quantity="zero">%d days ago</item>
+        <item quantity="one">%d day ago</item>
+        <item quantity="two">%d days ago</item>
+        <item quantity="few">%d days ago</item>
+        <item quantity="many">%d days ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+    <plurals name="podcast_hours_ago">
+        <item quantity="zero">%d hours ago</item>
+        <item quantity="one">%d hour ago</item>
+        <item quantity="two">%d hours ago</item>
+        <item quantity="few">%d hours ago</item>
+        <item quantity="many">%d hours ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
     <!-- PodcastFragment end -->
 
     <!-- UnsubscribeDialog start -->

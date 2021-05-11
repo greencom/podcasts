@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.repository
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.database.PodcastSubscription
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
@@ -55,6 +56,9 @@ class RepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override fun getEpisodes(id: String): Flow<List<Episode>> =
+        episodeDao.getEpisodesFlow(id)
 
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))

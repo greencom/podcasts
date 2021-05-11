@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -11,6 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.google.android.material.button.MaterialButton
@@ -19,6 +21,7 @@ import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
+import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,6 +39,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
+    /** RecyclerView adapter. */
+    private val adapter: PodcastEpisodeAdapter by lazy {
+        PodcastEpisodeAdapter()
+    }
+
     // Safe Args arguments.
     private val args: PodcastFragmentArgs by navArgs()
 
@@ -52,6 +60,16 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         super.onViewCreated(view, savedInstanceState)
         // Get the podcast ID from the navigation arguments.
         val id = args.podcastId
+
+        // TODO
+        val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        divider.setDrawable(
+            ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
+        )
+        binding.episodeList.apply {
+            adapter = this@PodcastFragment.adapter
+            addItemDecoration(divider)
+        }
 
         // TODO
         viewModel.getPodcast(id)
@@ -97,6 +115,13 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                         }
                     }
                 }
+            }
+        }
+
+        // TODO
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+            viewModel.getEpisodes(id).collect {
+                adapter.submitList(it)
             }
         }
 

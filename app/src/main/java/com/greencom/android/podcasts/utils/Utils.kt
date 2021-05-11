@@ -8,7 +8,11 @@ import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastShort
+import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 /** Callback for calculating the diff between two non-null [PodcastShort] items in a list. */
 object PodcastDiffCallback : DiffUtil.ItemCallback<PodcastShort>() {
@@ -17,6 +21,17 @@ object PodcastDiffCallback : DiffUtil.ItemCallback<PodcastShort>() {
     }
 
     override fun areContentsTheSame(oldItem: PodcastShort, newItem: PodcastShort): Boolean {
+        return oldItem == newItem
+    }
+}
+
+/** Callback for calculating the diff between two non-null [Episode] items in a list. */
+object EpisodeDiffCallback : DiffUtil.ItemCallback<Episode>() {
+    override fun areItemsTheSame(oldItem: Episode, newItem: Episode): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Episode, newItem: Episode): Boolean {
         return oldItem == newItem
     }
 }
@@ -55,6 +70,50 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
                 R.drawable.ic_add_24,
                 context.theme
             )
+        }
+    }
+}
+
+/**
+ * Convert a length in seconds to a localized String. Three outputs are possible
+ * (examples for EN locale):
+ * - "1 hr", if the number of hours is not zero and the number of minutes is zero.
+ * - "35 min", if the number of hours is zero.
+ * - "1 hr 35 min" in any other case.
+ */
+// TODO: test
+fun audioLengthToString(length: Int, context: Context): String {
+    val hours = (length / TimeUnit.HOURS.toSeconds(1)).toInt()
+    val minutes = ((length - TimeUnit.HOURS.toSeconds(1) * hours) /
+            TimeUnit.MINUTES.toSeconds(1).toFloat()).roundToInt()
+
+    return when {
+        hours != 0 && minutes == 0 -> context.getString(R.string.podcast_length_hours, hours)
+        hours == 0 -> context.getString(R.string.podcast_length_minutes, minutes)
+        else -> context.getString(R.string.podcast_length_full, hours, minutes)
+    }
+}
+
+/**
+ * Convert a date in milliseconds to a localized String. If an episode was published no more
+ * than 7 days ago, return the most appropriate date description, otherwise return the date
+ * in the format `day, month, year`.
+ */
+// TODO: test
+fun pubDateToString(pubDate: Long, currentDate: Long, context: Context): String {
+    return when (val timeFromNow = currentDate - pubDate) {
+        in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.podcast_just_now)
+        in (TimeUnit.HOURS.toMillis(1)..TimeUnit.DAYS.toMillis(1)) -> {
+            val hours = timeFromNow / TimeUnit.HOURS.toMillis(1)
+            context.resources.getQuantityString(R.plurals.podcast_hours_ago, hours.toInt(), hours)
+        }
+        in (TimeUnit.DAYS.toMillis(1))..TimeUnit.DAYS.toMillis(7) -> {
+            val days = timeFromNow / TimeUnit.DAYS.toMillis(1)
+            context.resources.getQuantityString(R.plurals.podcast_days_ago, days.toInt(), days)
+        }
+        else -> {
+            val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT)
+            dateFormatter.format(pubDate)
         }
     }
 }

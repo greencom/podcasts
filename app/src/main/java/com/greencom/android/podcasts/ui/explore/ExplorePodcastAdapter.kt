@@ -1,6 +1,5 @@
 package com.greencom.android.podcasts.ui.explore
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
@@ -40,7 +39,7 @@ class ExplorePodcastViewHolder private constructor(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     // View context.
-    private val context: Context = binding.root.context
+    private val context = binding.root.context
     // Podcast associated with this ViewHolder.
     private lateinit var podcast: PodcastShort
 
