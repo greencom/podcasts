@@ -34,6 +34,7 @@ class ExploreFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
         // TabLayout and ViewPager2 setup.
         setupTabLayout()
     }
@@ -53,7 +54,6 @@ class ExploreFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = tabs[position]
         }.attach()
-
         // Handle TabLayout onTabSelected cases.
         binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
     }

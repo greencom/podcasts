@@ -26,14 +26,31 @@ abstract class EpisodeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insert(episodes: List<EpisodeEntity>)
 
-    // TODO
+    /**
+     * Get the publication date of the latest podcast episode which was uploaded
+     * to the database for a given podcast ID.
+     */
+    @Query("SELECT date from episodes WHERE podcast_id = :id ORDER BY date DESC LIMIT 1")
+    abstract suspend fun getLatestLoadedEpisodePubDate(id: String): Long?
+
+    /**
+     * Get the publication date of the oldest podcast episode which was uploaded
+     * to the database for a given podcast ID.
+     */
+    @Query("SELECT date from episodes WHERE podcast_id = :id ORDER BY date ASC LIMIT 1")
+    abstract suspend fun getOldestLoadedEpisodePubDate(id: String): Long?
+
+    /**
+     * Get a Flow with a list of episodes for a given podcast ID. No need to apply
+     * [distinctUntilChanged] function since it is already done under the hood.
+     */
     fun getEpisodesFlow(id: String) = getEpisodesFlowRaw(id).distinctUntilChanged()
 
 
 
     // Helper methods start.
 
-    // TODO
+    /** Get a Flow with a list of episodes for a given podcast ID. */
     @Query(
         "SELECT id, title, description, image, audio, audio_length, podcast_id, " +
                 "explicit_content, date " +

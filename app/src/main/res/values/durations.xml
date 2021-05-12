@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Transaction animations start -->
+    <integer name="nav_slide_enter_duration">150</integer>
+    <integer name="nav_slide_exit_duration">160</integer>
+    <integer name="nav_slide_pop_enter_duration">150</integer>
+    <integer name="nav_slide_pop_exit_duration">150</integer>
+    <!-- Transaction animations end -->
+
+</resources>

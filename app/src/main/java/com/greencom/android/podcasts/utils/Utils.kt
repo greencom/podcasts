@@ -14,6 +14,20 @@ import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
+/** Global tag for logging. */
+const val GLOBAL_TAG = "global___"
+
+/**
+ * Enum class that represents a sort order. Constant values can be used in ListenApiService
+ * methods.
+ */
+enum class SortOrder(val value: String) {
+    /** Contains "recent_first" value. */
+    RECENT_FIRST("recent_first"),
+    /** Contains "oldest_first" value. */
+    OLDEST_FIRST("oldest_first")
+}
+
 /** Callback for calculating the diff between two non-null [PodcastShort] items in a list. */
 object PodcastDiffCallback : DiffUtil.ItemCallback<PodcastShort>() {
     override fun areItemsTheSame(oldItem: PodcastShort, newItem: PodcastShort): Boolean {
@@ -110,7 +124,7 @@ fun pubDateToString(pubDate: Long, currentDate: Long, context: Context): String 
             context.resources.getQuantityString(R.plurals.podcast_days_ago, days.toInt(), days)
         }
         else -> {
-            val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT)
+            val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
             dateFormatter.format(pubDate)
         }
     }

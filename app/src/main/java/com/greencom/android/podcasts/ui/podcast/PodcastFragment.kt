@@ -4,8 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -17,6 +20,7 @@ import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
@@ -27,6 +31,7 @@ import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
@@ -39,13 +44,16 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
+    // Safe Args arguments.
+    private val args: PodcastFragmentArgs by navArgs()
+
     /** RecyclerView adapter. */
     private val adapter: PodcastEpisodeAdapter by lazy {
         PodcastEpisodeAdapter()
     }
 
-    // Safe Args arguments.
-    private val args: PodcastFragmentArgs by navArgs()
+    // TODO
+    private lateinit var podcast: Podcast
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +66,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
+        binding.root.doOnPreDraw { startPostponedEnterTransition() }
         // Get the podcast ID from the navigation arguments.
         val id = args.podcastId
 
@@ -72,14 +82,35 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         // TODO
+        val cl = binding.nestedScrollView.getChildAt(0) as ConstraintLayout
+        val rv = cl.getChildAt(cl.childCount - 1)
+
+        // TODO
+        val onScrollChangeListener = NestedScrollView.OnScrollChangeListener {
+                v, scrollX, scrollY, oldScrollX, oldScrollY ->
+
+            if ((scrollY >= rv.measuredHeight - v.measuredHeight) && scrollY > oldScrollY) {
+                if (adapter.currentList.isNotEmpty() && adapter.currentList.size != podcast.episodeCount) {
+                    viewModel.fetchMoreEpisodes(id, adapter.currentList.last().date)
+                }
+            }
+        }
+
+        // TODO
+        binding.nestedScrollView.setOnScrollChangeListener(onScrollChangeListener)
+
+        // TODO
         viewModel.getPodcast(id)
+
+        // TODO
+        viewModel.fetchRecentEpisodes(id)
 
         // TODO
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.uiState.collectLatest { state ->
                 when (state) {
                     is PodcastState.Success -> {
-                        val podcast = state.podcast
+                        podcast = state.podcast
                         binding.cover.load(podcast.image) {
                             transformations(RoundedCornersTransformation(
                                 resources.getDimension(R.dimen.corner_radius_medium)
@@ -105,23 +136,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                             podcast.subscribed,
                             requireContext()
                         )
-
-                        // Update subscription to the podcast.
-                        binding.subscribe.setOnClickListener {
-                            viewModel.updateSubscription(id, (it as MaterialButton).isChecked)
-                            // Keep the button checked until the user makes his choice
-                            // in the UnsubscribeDialog.
-                            if (podcast.subscribed) binding.subscribe.isChecked = true
-                        }
                     }
                 }
-            }
-        }
-
-        // TODO
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.getEpisodes(id).collect {
-                adapter.submitList(it)
             }
         }
 
@@ -138,6 +154,21 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                         UnsubscribeDialog.show(childFragmentManager, id)
                 }
             }
+        }
+
+        // TODO
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+            viewModel.getEpisodes(id).collectLatest { episodes ->
+                adapter.submitList(episodes)
+            }
+        }
+
+        // Update subscription to the podcast.
+        binding.subscribe.setOnClickListener {
+            viewModel.updateSubscription(id, (it as MaterialButton).isChecked)
+            // Keep the button checked until the user makes his choice
+            // in the UnsubscribeDialog.
+            if (podcast.subscribed) binding.subscribe.isChecked = true
         }
 
         // Handle toolbar back button clicks.
