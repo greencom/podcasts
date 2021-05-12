@@ -12,15 +12,17 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Repository {
 
-    /**
-     * Get a podcast for a given ID. The result presented by instances of [State].
-     * If the database already contains the appropriate podcast, return it. Otherwise,
-     * fetch the podcast from ListenAPI and insert it into the database.
-     */
+    // TODO
     fun getPodcast(id: String): Flow<State<Podcast>>
 
     // TODO
     fun getEpisodes(id: String): Flow<List<Episode>>
+
+    // TODO
+    suspend fun fetchRecentEpisodes(id: String)
+
+    // TODO
+    suspend fun fetchMoreEpisodes(id: String, nextEpisodePubDate: Long)
 
     /** Update subscription to a Podcast by ID with a given value. */
     suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
@@ -34,14 +36,15 @@ interface Repository {
 
     /**
      * Fetch the best podcasts for a given genre ID from ListenAPI and insert them
-     * into the database.
+     * into the database. Returns result represented by [State].
      */
     suspend fun fetchBestPodcasts(genreId: Int): State<Unit>
 
     /**
      * Refresh the best podcasts for a given genre ID. A new list will be fetched from
      * ListenAPI and inserted into the database. Podcasts that not anymore on the best list
-     * will be excluded from it, but remain in the database.
+     * will be excluded from it, but remain in the database. Returns result represented by
+     * [State].
      */
     suspend fun refreshBestPodcasts(genreId: Int, currentList: List<PodcastShort>): State<Unit>
 }

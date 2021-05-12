@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
+import com.greencom.android.podcasts.data.database.EpisodeEntity
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.database.PodcastSubscription
 import com.greencom.android.podcasts.data.domain.Episode
@@ -8,8 +9,10 @@ import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.ListenApiService
+import com.greencom.android.podcasts.network.episodesToDatabase
 import com.greencom.android.podcasts.network.podcastToDatabase
 import com.greencom.android.podcasts.network.toDatabase
+import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,22 +46,57 @@ class RepositoryImpl @Inject constructor(
                 send(State.Success(podcast))
             } else {
                 // Otherwise, fetch the podcast from ListenAPI and insert into the database.
-                try {
-                    val response = withContext(ioDispatcher) {
-                        listenApi.getPodcast(id, null)
-                    }
-                    podcastDao.insert(response.podcastToDatabase())
-                } catch (e: IOException) {
-                    send(State.Error(e))
-                } catch (e: HttpException) {
-                    send(State.Error(e))
-                }
+                val result = fetchPodcast(id)
+                if (result is State.Error) send(State.Error(result.exception))
             }
         }
     }
 
-    override fun getEpisodes(id: String): Flow<List<Episode>> =
-        episodeDao.getEpisodesFlow(id)
+    override fun getEpisodes(id: String): Flow<List<Episode>> {
+        return episodeDao.getEpisodesFlow(id)
+    }
+
+    override suspend fun fetchRecentEpisodes(id: String) {
+        var latestPubDate: Long = 0
+        var latestEpisodes = listOf<EpisodeEntity>()
+        try {
+            val response = withContext(ioDispatcher) {
+                listenApi.getPodcast(id, null, SortOrder.RECENT_FIRST.value)
+            }
+            podcastDao.insert(response.podcastToDatabase())
+            latestPubDate = response.latestPubDate
+            latestEpisodes = response.episodesToDatabase()
+        } catch (e: Exception) {  }
+
+        var latestLoadedEpisodePubDate = episodeDao.getLatestLoadedEpisodePubDate(id)
+
+        if (latestLoadedEpisodePubDate == null) {
+            episodeDao.insert(latestEpisodes)
+        } else {
+            try {
+                while (latestLoadedEpisodePubDate != latestPubDate) {
+                    val response = withContext(ioDispatcher) {
+                        listenApi.getPodcast(id, latestLoadedEpisodePubDate, SortOrder.OLDEST_FIRST.value)
+                    }
+                    episodeDao.insert(response.episodesToDatabase())
+                    latestPubDate = response.latestPubDate
+                    latestLoadedEpisodePubDate = maxOf(
+                        response.episodes.first().date,
+                        response.episodes.last().date
+                    )
+                }
+            } catch (e: Exception) {  }
+        }
+    }
+
+    override suspend fun fetchMoreEpisodes(id: String, nextEpisodePubDate: Long) {
+        try {
+            val response = withContext(ioDispatcher) {
+                listenApi.getPodcast(id, nextEpisodePubDate)
+            }
+            episodeDao.insert(response.episodesToDatabase())
+        } catch (e: Exception) {  }
+    }
 
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
@@ -73,31 +111,9 @@ class RepositoryImpl @Inject constructor(
                 send(State.Success(podcasts))
             } else {
                 // Otherwise, fetch the best podcasts from ListenAPI and insert them into the db.
-                try {
-                    val response = withContext(ioDispatcher) {
-                        listenApi.getBestPodcasts(genreId)
-                    }
-                    podcastDao.insertWithGenre(response.toDatabase())
-                } catch (e: IOException) {
-                    send(State.Error(e))
-                } catch (e: HttpException) {
-                    send(State.Error(e))
-                }
+                val result = fetchBestPodcasts(genreId)
+                if (result is State.Error) send(State.Error(result.exception))
             }
-        }
-    }
-
-    override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
-        return try {
-            val response = withContext(ioDispatcher) {
-                listenApi.getBestPodcasts(genreId)
-            }
-            podcastDao.insertWithGenre(response.toDatabase())
-            State.Success(Unit)
-        } catch (e: IOException) {
-            State.Error(e)
-        } catch (e: HttpException) {
-            State.Error(e)
         }
     }
 
@@ -118,6 +134,35 @@ class RepositoryImpl @Inject constructor(
             // Update old podcasts and insert new ones.
             podcastDao.insertWithGenre(newList)
             podcastDao.updateWithPodcastShort(oldList)
+            State.Success(Unit)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
+        }
+    }
+
+    override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
+        return try {
+            val response = withContext(ioDispatcher) {
+                listenApi.getBestPodcasts(genreId)
+            }
+            podcastDao.insertWithGenre(response.toDatabase())
+            State.Success(Unit)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
+        }
+    }
+
+    // TODO
+    private suspend fun fetchPodcast(id: String): State<Unit> {
+        return try {
+            val response = withContext(ioDispatcher) {
+                listenApi.getPodcast(id, null)
+            }
+            podcastDao.insert(response.podcastToDatabase())
             State.Success(Unit)
         } catch (e: IOException) {
             State.Error(e)

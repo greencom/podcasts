@@ -2,17 +2,16 @@ package com.greencom.android.podcasts.ui.podcast
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,6 +25,9 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     /** Flow of events represented by [PodcastEvent]. */
     val event = _event.receiveAsFlow()
 
+    // TODO
+    private var isLoading = false
+
     /** Load a podcast for a given ID. The result will be posted to [uiState]. */
     fun getPodcast(id: String) = viewModelScope.launch {
         repository.getPodcast(id).collectLatest { state ->
@@ -38,7 +40,27 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     }
 
     // TODO
-    fun getEpisodes(id: String) = repository.getEpisodes(id)
+    fun getEpisodes(id: String): Flow<List<Episode>> {
+        return repository.getEpisodes(id)
+    }
+
+    // TODO
+    fun fetchRecentEpisodes(id: String) = viewModelScope.launch {
+        repository.fetchRecentEpisodes(id)
+    }
+
+    // TODO
+    fun fetchMoreEpisodes(id: String, nextEpisodePubDate: Long) {
+        if (!isLoading) {
+            viewModelScope.launch {
+                isLoading = true
+                Timber.d("fetching")
+                repository.fetchMoreEpisodes(id, nextEpisodePubDate)
+                Timber.d("reset isLoading")
+                isLoading = false
+            }
+        }
+    }
 
     /**
      * Update subscription to a podcast by ID with a given value. If the value is
