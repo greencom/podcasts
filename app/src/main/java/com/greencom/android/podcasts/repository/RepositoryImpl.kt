@@ -37,6 +37,10 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
+    override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
+        podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
+    }
+
     @ExperimentalCoroutinesApi
     override fun getPodcast(id: String): Flow<State<Podcast>> = channelFlow {
         send(State.Loading)
@@ -49,6 +53,20 @@ class RepositoryImpl @Inject constructor(
                 val result = fetchPodcast(id)
                 if (result is State.Error) send(State.Error(result.exception))
             }
+        }
+    }
+
+    override suspend fun fetchPodcast(id: String): State<Unit> {
+        return try {
+            val response = withContext(ioDispatcher) {
+                listenApi.getPodcast(id, null)
+            }
+            podcastDao.insert(response.podcastToDatabase())
+            State.Success(Unit)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
         }
     }
 
@@ -98,10 +116,6 @@ class RepositoryImpl @Inject constructor(
         } catch (e: Exception) {  }
     }
 
-    override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
-        podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
-    }
-
     @ExperimentalCoroutinesApi
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = channelFlow {
         send(State.Loading)
@@ -114,6 +128,20 @@ class RepositoryImpl @Inject constructor(
                 val result = fetchBestPodcasts(genreId)
                 if (result is State.Error) send(State.Error(result.exception))
             }
+        }
+    }
+
+    override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
+        return try {
+            val response = withContext(ioDispatcher) {
+                listenApi.getBestPodcasts(genreId)
+            }
+            podcastDao.insertWithGenre(response.toDatabase())
+            State.Success(Unit)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
         }
     }
 
@@ -134,35 +162,6 @@ class RepositoryImpl @Inject constructor(
             // Update old podcasts and insert new ones.
             podcastDao.insertWithGenre(newList)
             podcastDao.updateWithPodcastShort(oldList)
-            State.Success(Unit)
-        } catch (e: IOException) {
-            State.Error(e)
-        } catch (e: HttpException) {
-            State.Error(e)
-        }
-    }
-
-    override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
-        return try {
-            val response = withContext(ioDispatcher) {
-                listenApi.getBestPodcasts(genreId)
-            }
-            podcastDao.insertWithGenre(response.toDatabase())
-            State.Success(Unit)
-        } catch (e: IOException) {
-            State.Error(e)
-        } catch (e: HttpException) {
-            State.Error(e)
-        }
-    }
-
-    // TODO
-    private suspend fun fetchPodcast(id: String): State<Unit> {
-        return try {
-            val response = withContext(ioDispatcher) {
-                listenApi.getPodcast(id, null)
-            }
-            podcastDao.insert(response.podcastToDatabase())
             State.Success(Unit)
         } catch (e: IOException) {
             State.Error(e)

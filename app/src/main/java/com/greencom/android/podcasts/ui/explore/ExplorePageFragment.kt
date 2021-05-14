@@ -63,19 +63,24 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Start parent fragment postponed transition.
         binding.root.doOnPreDraw { parentFragment?.startPostponedEnterTransition() }
+
         // Get the genre ID from the fragment arguments.
         val genreId = arguments?.getInt(GENRE_ID) ?: 0
+
         // Load the best podcasts.
         viewModel.getBestPodcasts(genreId)
 
         setupRecyclerView()
         setupSwipeToRefresh()
-        setupContentAlpha()
+        setContentAlpha()
 
         setObservers()
         setFragmentResultListeners(genreId)
-        setViewListeners(genreId)
+
+        setOnTouchListeners(genreId)
     }
 
     override fun onDestroyView() {
@@ -112,7 +117,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Set up alpha of fragment views. Used to create crossfade animations on [reveal]. */
-    private fun setupContentAlpha() {
+    private fun setContentAlpha() {
         binding.error.root.alpha = 0f
         binding.podcastList.alpha = 0f
     }
@@ -146,7 +151,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Set fragment's view on touch listeners. */
-    private fun setViewListeners(genreId: Int) {
+    private fun setOnTouchListeners(genreId: Int) {
         // Fetch the podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.fetchBestPodcasts(genreId)
@@ -160,17 +165,21 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** Handle UI states. */
     private fun handleUiState(state: ExplorePageState) {
-        binding.loading.isVisible = state is ExplorePageState.Loading
         binding.swipeToRefresh.isVisible = state is ExplorePageState.Success
         binding.error.root.isVisible = state is ExplorePageState.Error
+        binding.loading.isVisible = state is ExplorePageState.Loading
 
         when (state) {
+
+            // Show podcast list.
             is ExplorePageState.Success -> {
                 adapter.submitList(state.podcasts)
                 binding.podcastList.reveal()
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
             }
+
+            // Show error screen.
             is ExplorePageState.Error -> {
                 binding.error.root.reveal()
                 // Reset podcast list alpha.

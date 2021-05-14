@@ -12,8 +12,14 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Repository {
 
+    /** Update subscription to a Podcast by ID with a given value. */
+    suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
+
     // TODO
     fun getPodcast(id: String): Flow<State<Podcast>>
+
+    // TODO
+    suspend fun fetchPodcast(id: String): State<Unit>
 
     // TODO
     fun getEpisodes(id: String): Flow<List<Episode>>
@@ -23,9 +29,6 @@ interface Repository {
 
     // TODO
     suspend fun fetchMoreEpisodes(id: String, nextEpisodePubDate: Long)
-
-    /** Update subscription to a Podcast by ID with a given value. */
-    suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
 
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of
