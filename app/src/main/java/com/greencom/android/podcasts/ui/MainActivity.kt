@@ -54,19 +54,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set text selected to run ellipsize animation. TODO
-        binding.player.collapsed.title.isSelected = true
-        // Hide scrim background at start.
-        binding.background.isVisible = false
-        // Set expanded content alpha to zero.
-        binding.player.expanded.root.alpha = 0f
-
-        // Obtain app bar colors. TODO
-        statusBarColor = getColor(R.color.background_scrim)
-        theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
-        theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
-
-        // Navigation component setup.
+        initViews()
         setupNavigation()
 
         // Player bottom sheet behavior setup.
@@ -75,8 +63,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Set listeners for the player content.
-        setCollapsedContentListeners()
-        setExpandedContentListeners()
+        setPlayerCollapsedContentListeners()
+        setPlayerExpandedContentListeners()
+    }
+
+    /** Initialize views. */
+    private fun initViews() {
+        // Set text selected to run ellipsize animation.
+        binding.player.collapsed.title.isSelected = true
+        // Hide scrim background at start.
+        binding.background.isVisible = false
+        // Set expanded content alpha to zero.
+        binding.player.expanded.root.alpha = 0f
+
+        // Obtain app bar colors.
+        statusBarColor = getColor(R.color.background_scrim)
+        theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
+        theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
     }
 
     /** Make player closable on back pressed. */
@@ -283,7 +286,7 @@ class MainActivity : AppCompatActivity() {
 
     /** Set listeners for the collapsed content of the player. */
     @SuppressLint("ClickableViewAccessibility")
-    private fun setCollapsedContentListeners() {
+    private fun setPlayerCollapsedContentListeners() {
 
         // Expand the player on the frame click.
         binding.player.collapsed.root.setOnClickListener {
@@ -308,7 +311,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Set listeners for the expanded content of the player. */
-    private fun setExpandedContentListeners() {
+    private fun setPlayerExpandedContentListeners() {
 
         binding.player.expanded.slider.addOnChangeListener { _, _, _ ->
 
