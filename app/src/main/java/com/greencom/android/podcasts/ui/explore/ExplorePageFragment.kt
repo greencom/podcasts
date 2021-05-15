@@ -75,7 +75,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
         setupRecyclerView()
         setupSwipeToRefresh()
-        setContentAlpha()
+        setupViews()
 
         setObservers()
         setFragmentResultListeners(genreId)
@@ -116,9 +116,11 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         }
     }
 
-    /** Set up alpha of fragment views. Used to create crossfade animations on [reveal]. */
-    private fun setContentAlpha() {
+    /** Set up fragment views. */
+    private fun setupViews() {
+        // Set alpha to create crossfade animations on reveal.
         binding.error.root.alpha = 0f
+        binding.error.progressBar.alpha = 0f
         binding.podcastList.alpha = 0f
     }
 
@@ -152,7 +154,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** Set fragment's view on touch listeners. */
     private fun setOnTouchListeners(genreId: Int) {
-        // Fetch the podcasts from the error screen.
+        // Fetch the best podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener {
             viewModel.fetchBestPodcasts(genreId)
         }
@@ -177,10 +179,22 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 binding.podcastList.reveal()
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
+                // Reset "Try again" button text.
+                binding.error.tryAgain.text = getString(R.string.explore_try_again)
+                // Reset loading indicator alpha.
+                binding.error.progressBar.alpha = 0f
             }
 
             // Show error screen.
             is ExplorePageState.Error -> {
+                // Position the progress bar depending on ExplorePodcast app bar state.
+                if ((parentFragment as ExploreFragment).isAppBarCollapsed) {
+                    binding.error.progressBar.translationY = 0f
+                } else {
+                    // TODO: Use the appropriate value after app bar rework.
+                    binding.error.progressBar.translationY = -(resources.getDimension(R.dimen.bottom_nav_bar_height))
+                }
+
                 binding.error.root.reveal()
                 // Reset podcast list alpha.
                 binding.podcastList.alpha = 0f
@@ -195,6 +209,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     private suspend fun handleEvent(event: ExplorePageEvent) {
         binding.swipeToRefresh.isRefreshing = event is ExplorePageEvent.Refreshing
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
+        binding.error.progressBar.isVisible = event is ExplorePageEvent.Fetching
 
         when (event) {
 
@@ -202,8 +217,11 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             is ExplorePageEvent.Snackbar -> {
                 showSnackbar(binding.root, event.stringRes)
 
-                // Reset try_again button text.
-                delay(300) // Delay to avoid blinking.
+                // Reset loading indicator alpha.
+                binding.error.progressBar.alpha = 0f
+
+                // Reset "Try again" button text.
+                delay(200) // Delay to avoid blinking.
                 binding.error.tryAgain.text = getString(R.string.explore_try_again)
             }
 
@@ -230,8 +248,9 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 }
             }
 
-            // Set "Loading" text to the try_again button.
+            // Show Loading process.
             is ExplorePageEvent.Fetching -> {
+                binding.error.progressBar.reveal()
                 binding.error.tryAgain.text = getString(R.string.explore_loading)
             }
 

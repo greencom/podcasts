@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.ui.podcast
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
@@ -36,6 +37,20 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
                 is State.Success -> _uiState.value = PodcastState.Success(state.data)
                 is State.Error -> _uiState.value = PodcastState.Error(state.exception)
             }
+        }
+    }
+
+    /** Fetch the podcast from ListenAPI and insert it into the database. */
+    fun fetchPodcast(id: String) = viewModelScope.launch {
+        _event.send(PodcastEvent.Fetching)
+        when (repository.fetchPodcast(id)) {
+            is State.Error -> {
+                _event.send(PodcastEvent.Snackbar(R.string.podcast_something_went_wrong))
+            }
+
+            // Make `when` expression exhaustive.
+            is State.Loading -> {  }
+            is State.Success -> {  }
         }
     }
 
@@ -100,6 +115,9 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
 
         /** Represents a Snackbar event with a string res ID of the message to show. */
         data class Snackbar(@StringRes val stringRes: Int) : PodcastEvent()
+
+        /** Represents a Fetching event triggered by [fetchPodcast] method. */
+        object Fetching : PodcastEvent()
 
         /** Represents an UnsubscribeDialog event. */
         data class UnsubscribeDialog(val podcastId: String): PodcastEvent()

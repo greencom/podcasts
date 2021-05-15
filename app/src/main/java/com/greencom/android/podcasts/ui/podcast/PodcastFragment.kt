@@ -30,6 +30,7 @@ import com.greencom.android.podcasts.utils.reveal
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
@@ -83,7 +84,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // TODO
 //        val cl = binding.nestedScrollView.getChildAt(0) as ConstraintLayout
 //        val rv = cl.getChildAt(cl.childCount - 1)
-//
 //        val onScrollChangeListener = NestedScrollView.OnScrollChangeListener {
 //                v, scrollX, scrollY, oldScrollX, oldScrollY ->
 //
@@ -95,16 +95,22 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 //        }
 //        binding.nestedScrollView.setOnScrollChangeListener(onScrollChangeListener)
 
-        setupToolbar()
+        setupAppBar()
         setupRecyclerView()
-        setContentAlpha()
+        setupViews()
 
         setObservers()
         setOnTouchListeners()
     }
 
-    // TODO
-    private fun setupToolbar() {
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clear View binding.
+        _binding = null
+    }
+
+    /** App bar setup. */
+    private fun setupAppBar() {
         // Disable AppBarLayout dragging behavior.
         if (binding.appBarLayout.layoutParams != null) {
             val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
@@ -130,10 +136,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
     }
 
-    /** Set up alpha of fragment views. Used to create crossfade animations on [reveal]. */
-    private fun setContentAlpha() {
+    /** Set up fragment views. */
+    private fun setupViews() {
+        // Set alpha to create crossfade animations on reveal.
         binding.error.root.alpha = 0f
         binding.nestedScrollView.alpha = 0f
+        binding.error.progressBar.alpha = 0f
     }
 
     /** Set observers for ViewModel observables. */
@@ -168,6 +176,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             // Keep the button checked until the user makes his choice
             // in the UnsubscribeDialog.
             if (podcast.subscribed) binding.subscribe.isChecked = true
+        }
+
+        // Fetch the podcast from the error screen.
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchPodcast(id)
         }
 
         // Handle toolbar back button clicks.
@@ -216,6 +229,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 binding.nestedScrollView.reveal()
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
+                // Reset "Try again" button text.
+                binding.error.tryAgain.text = getString(R.string.explore_try_again)
+                // Reset loading indicator alpha.
+                binding.error.progressBar.alpha = 0f
             }
 
             // Show error screen.
@@ -231,22 +248,34 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** Handle events. */
-    private fun handleEvent(event: PodcastEvent) {
+    private suspend fun handleEvent(event: PodcastEvent) {
+        binding.error.tryAgain.isEnabled = event !is PodcastEvent.Fetching
+        binding.error.progressBar.isVisible = event is PodcastEvent.Fetching
+
         when (event) {
 
             // Show a snackbar.
-            is PodcastEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
+            is PodcastEvent.Snackbar -> {
+                showSnackbar(binding.root, event.stringRes)
+
+                // Reset loading indicator alpha.
+                binding.error.progressBar.alpha = 0f
+
+                // Reset "Try again" button text.
+                delay(200) // Delay to avoid blinking.
+                binding.error.tryAgain.text = getString(R.string.explore_try_again)
+            }
 
             // Show UnsubscribeDialog.
             is PodcastEvent.UnsubscribeDialog ->
                 UnsubscribeDialog.show(childFragmentManager, podcast.id)
-        }
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Clear View binding.
-        _binding = null
+            // Show Loading process.
+            is PodcastEvent.Fetching -> {
+                binding.error.progressBar.reveal()
+                binding.error.tryAgain.text = getString(R.string.podcast_loading)
+            }
+        }
     }
 
     // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.

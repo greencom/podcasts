@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
@@ -23,6 +25,10 @@ class ExploreFragment : Fragment() {
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
+    /** Indicates whether the app bar is collapsed or not. */
+    var isAppBarCollapsed = false
+        private set
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,6 +43,7 @@ class ExploreFragment : Fragment() {
 
         postponeEnterTransition()
 
+        setupAppBar()
         setupTabLayout()
     }
 
@@ -44,6 +51,27 @@ class ExploreFragment : Fragment() {
         super.onDestroyView()
         // Clear View binding.
         _binding = null
+    }
+
+    /** App bar setup. */
+    private fun setupAppBar() {
+        // Disable AppBarLayout dragging behavior.
+        if (binding.appBarLayout.layoutParams != null) {
+            val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
+            val appBarBehavior = AppBarLayout.Behavior()
+            appBarBehavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+                override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                    return false
+                }
+            })
+            appBarParams.behavior = appBarBehavior
+        }
+
+        // Track whether the app bar is collapsed or not.
+        binding.appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                isAppBarCollapsed = verticalOffset != 0
+            })
     }
 
     /** TabLayout and ViewPager2 setup. */
@@ -76,6 +104,8 @@ class ExploreFragment : Fragment() {
                 "${ExplorePageFragment.ON_TAB_RESELECTED}$genreId",
                 Bundle()
             )
+            // Expand the app bar.
+            binding.appBarLayout.setExpanded(true, true)
         }
     }
 }

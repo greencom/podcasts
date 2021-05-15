@@ -46,15 +46,13 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
     fun fetchBestPodcasts(genreId: Int) = viewModelScope.launch {
         _event.send(ExplorePageEvent.Fetching)
         when (repository.fetchBestPodcasts(genreId)) {
-            is State.Success -> {
-                _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
-            }
             is State.Error -> {
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_something_went_wrong))
             }
 
             // Make `when` expression exhaustive.
             is State.Loading -> {  }
+            is State.Success -> {  }
         }
     }
 

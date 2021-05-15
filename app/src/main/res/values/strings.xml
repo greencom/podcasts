@@ -53,6 +53,8 @@
     <!-- PodcastFragment start -->
     <string name="podcast_subscribe">Subscribe</string>
     <string name="podcast_subscribed">Subscribed</string>
+    <string name="podcast_something_went_wrong">Something went wrong</string>
+    <string name="podcast_loading">Loading</string>
     <plurals name="podcast_episode_count">
         <item quantity="zero">%d Episodes</item>
         <item quantity="one">%d Episode</item>
