@@ -139,14 +139,14 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/app_bar_with_progress_bar"
         android:background="@null"
         app:elevation="0dp"
         app:liftOnScroll="false">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="?attr/actionBarSize"
             android:orientation="horizontal"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
@@ -177,6 +177,14 @@
                 tools:text="Чтение" />
 
         </LinearLayout>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/episodes_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:trackColor="?attr/colorSurface" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

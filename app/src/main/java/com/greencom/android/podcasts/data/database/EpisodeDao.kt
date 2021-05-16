@@ -34,21 +34,17 @@ abstract class EpisodeDao {
     abstract suspend fun getLatestLoadedEpisodePubDate(id: String): Long?
 
     /**
-     * Get the publication date of the oldest podcast episode which was uploaded
+     * Get the publication date of the earliest podcast episode which was uploaded
      * to the database for a given podcast ID.
      */
     @Query("SELECT date from episodes WHERE podcast_id = :id ORDER BY date ASC LIMIT 1")
-    abstract suspend fun getOldestLoadedEpisodePubDate(id: String): Long?
+    abstract suspend fun getEarliestLoadedEpisodePubDate(id: String): Long?
 
     /**
      * Get a Flow with a list of episodes for a given podcast ID. No need to apply
      * [distinctUntilChanged] function since it is already done under the hood.
      */
     fun getEpisodesFlow(id: String) = getEpisodesFlowRaw(id).distinctUntilChanged()
-
-    /** Get the episode count loaded to the database for a given podcast ID. */
-    @Query("SELECT COUNT(id) FROM episodes WHERE podcast_id = :id")
-    abstract fun getEpisodeCount(id: String): Int
 
 
 

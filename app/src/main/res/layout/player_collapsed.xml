@@ -55,6 +55,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_play_outline_24" />
 
+    <!-- TODO: Replace with LinearProgressIndicator -->
     <ProgressBar
         android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyleHorizontal"

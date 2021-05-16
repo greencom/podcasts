@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
@@ -18,7 +19,7 @@ import kotlin.math.roundToInt
 const val GLOBAL_TAG = "global___"
 
 /**
- * Enum class that represents a sort order. Constant values can be used in ListenApiService
+ * Enum class that represents a sort order. String [value]s can be used in ListenApiService
  * methods.
  */
 enum class SortOrder(val value: String) {
@@ -55,14 +56,23 @@ fun showSnackbar(view: View, @StringRes stringRes: Int) {
     Snackbar.make(view, stringRes, Snackbar.LENGTH_SHORT).show()
 }
 
-/** Reveal animation duration. */
-const val REVEAL_ANIMATION_DURATION = 150L
+/** Duration used to create crossfade animations. */
+const val CROSSFADE_ANIMATION_DURATION = 150L
 
 /** Reveal a view with crossfade animation. */
-fun View.reveal() {
+fun View.revealCrossfade() {
+    isVisible = true
     animate()
         .alpha(1f)
-        .setDuration(REVEAL_ANIMATION_DURATION)
+        .setDuration(CROSSFADE_ANIMATION_DURATION)
+}
+
+/** Hide a view with a crossfade animation. */
+fun View.hideCrossfade() {
+    animate()
+        .alpha(0f)
+        .setDuration(CROSSFADE_ANIMATION_DURATION)
+        .withEndAction { isVisible = false }
 }
 
 /** Setup given material button as a `Subscribe` toggle button. */

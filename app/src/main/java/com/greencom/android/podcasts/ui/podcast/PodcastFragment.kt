@@ -25,10 +25,7 @@ import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
-import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
-import com.greencom.android.podcasts.utils.reveal
-import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
-import com.greencom.android.podcasts.utils.showSnackbar
+import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -45,7 +42,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
-    // Safe Args arguments.
+    /** Navigation Safe Args. */
     private val args: PodcastFragmentArgs by navArgs()
 
     /** Podcast ID. */
@@ -59,6 +56,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         PodcastEpisodeAdapter()
     }
 
+    /**
+     * Indicates whether the transition is complete. Used to postpone episode list rendering
+     * to ensure the transition runs smoothly.
+     */
+    private var isTransitionComplete = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -70,7 +73,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Postpone and start transition.
         postponeEnterTransition()
         binding.root.doOnPreDraw { startPostponedEnterTransition() }
@@ -81,19 +83,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Load the podcast.
         viewModel.getPodcast(id)
 
-        // TODO
-//        val cl = binding.nestedScrollView.getChildAt(0) as ConstraintLayout
-//        val rv = cl.getChildAt(cl.childCount - 1)
-//        val onScrollChangeListener = NestedScrollView.OnScrollChangeListener {
-//                v, scrollX, scrollY, oldScrollX, oldScrollY ->
-//
-//            if ((scrollY >= rv.measuredHeight - v.measuredHeight) && scrollY > oldScrollY) {
-//                if (adapter.currentList.isNotEmpty() && adapter.currentList.size != podcast.episodeCount) {
-//                    viewModel.fetchMoreEpisodes(id, adapter.currentList.last().date)
-//                }
-//            }
-//        }
-//        binding.nestedScrollView.setOnScrollChangeListener(onScrollChangeListener)
+        // Fetch episodes.
+        viewModel.fetchEpisodes(id)
 
         setupAppBar()
         setupRecyclerView()
@@ -151,14 +142,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         // Fetch the podcast from the error screen.
-        binding.error.tryAgain.setOnClickListener {
-            viewModel.fetchPodcast(id)
-        }
+        binding.error.tryAgain.setOnClickListener { viewModel.fetchPodcast(id) }
 
         // Handle toolbar back button clicks.
-        binding.toolbarBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        binding.toolbarBack.setOnClickListener { findNavController().navigateUp() }
     }
 
     /** Set observers for ViewModel observables. */
@@ -180,7 +167,20 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Observe podcast episodes.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.getEpisodes(id).collectLatest { episodes ->
+                // Delay at fragment start to ensure transition runs smoothly.
+                if (!isTransitionComplete) delay(200)
                 adapter.submitList(episodes)
+                isTransitionComplete = true
+            }
+        }
+
+        // Observe episodes progress bar state.
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+            viewModel.progressBar.collectLatest { isActive ->
+                when (isActive) {
+                    true -> binding.episodesProgressBar.revealCrossfade()
+                    false -> binding.episodesProgressBar.hideCrossfade()
+                }
             }
         }
     }
@@ -222,7 +222,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                     requireContext()
                 )
 
-                binding.nestedScrollView.reveal()
+                binding.nestedScrollView.revealCrossfade()
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
                 // Reset "Try again" button text.
@@ -233,7 +233,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show error screen.
             is PodcastState.Error -> {
-                binding.error.root.reveal()
+                binding.error.root.revealCrossfade()
                 // Reset podcast data alpha.
                 binding.nestedScrollView.alpha = 0f
             }
@@ -268,7 +268,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show Loading process.
             is PodcastEvent.Fetching -> {
-                binding.error.progressBar.reveal()
+                binding.error.progressBar.revealCrossfade()
                 binding.error.tryAgain.text = getString(R.string.podcast_loading)
             }
         }

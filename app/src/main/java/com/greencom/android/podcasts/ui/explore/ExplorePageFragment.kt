@@ -19,7 +19,7 @@ import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
-import com.greencom.android.podcasts.utils.reveal
+import com.greencom.android.podcasts.utils.revealCrossfade
 import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -67,7 +67,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Start parent fragment postponed transition.
+        // Start ExploreFragment postponed transition.
         binding.root.doOnPreDraw { parentFragment?.startPostponedEnterTransition() }
 
         // Get the genre ID from the fragment arguments.
@@ -125,9 +125,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         binding.podcastList.alpha = 0f
 
         // Fetch the best podcasts from the error screen.
-        binding.error.tryAgain.setOnClickListener {
-            viewModel.fetchBestPodcasts(genreId)
-        }
+        binding.error.tryAgain.setOnClickListener { viewModel.fetchBestPodcasts(genreId) }
 
         // Refresh the podcasts with swipe-to-refresh gesture.
         binding.swipeToRefresh.setOnRefreshListener {
@@ -174,7 +172,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             // Show podcast list.
             is ExplorePageState.Success -> {
                 adapter.submitList(state.podcasts)
-                binding.podcastList.reveal()
+                binding.podcastList.revealCrossfade()
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
                 // Reset "Try again" button text.
@@ -193,7 +191,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                     binding.error.progressBar.translationY = -(resources.getDimension(R.dimen.bottom_nav_bar_height))
                 }
 
-                binding.error.root.reveal()
+                binding.error.root.revealCrossfade()
                 // Reset podcast list alpha.
                 binding.podcastList.alpha = 0f
             }
@@ -248,7 +246,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
             // Show Loading process.
             is ExplorePageEvent.Fetching -> {
-                binding.error.progressBar.reveal()
+                binding.error.progressBar.revealCrossfade()
                 binding.error.tryAgain.text = getString(R.string.explore_loading)
             }
 

@@ -7,12 +7,13 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
+import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,8 +27,12 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     /** Flow of events represented by [PodcastEvent]. */
     val event = _event.receiveAsFlow()
 
-    // TODO
-    private var isLoading = false
+    private val _progressBar = MutableStateFlow(false)
+    /** StateFlow of episodes progress bar state. */
+    val progressBar = _progressBar.asStateFlow()
+
+    /** Job that handles episodes fetching. */
+    private var episodesJob: Job? = null
 
     /** Load a podcast for a given ID. The result will be posted to [uiState]. */
     fun getPodcast(id: String) = viewModelScope.launch {
@@ -60,19 +65,19 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     }
 
     // TODO
-    fun fetchRecentEpisodes(id: String) = viewModelScope.launch {
-        repository.fetchRecentEpisodes(id)
-    }
-
-    // TODO
-    fun fetchMoreEpisodes(id: String, nextEpisodePubDate: Long) {
-        if (!isLoading) {
-            viewModelScope.launch {
-                isLoading = true
-                Timber.d("fetching")
-                repository.fetchMoreEpisodes(id, nextEpisodePubDate)
-                Timber.d("reset isLoading")
-                isLoading = false
+    fun fetchEpisodes(id: String) {
+        // Make sure that only one fetching
+        episodesJob?.cancel()
+        episodesJob = viewModelScope.launch {
+            repository.fetchEpisodes(id, SortOrder.RECENT_FIRST).collect { state ->
+                when (state) {
+                    is State.Loading -> _progressBar.value = true
+                    is State.Success -> _progressBar.value = false
+                    is State.Error -> {
+                        _progressBar.value = false
+                        _event.send(PodcastEvent.Snackbar(R.string.podcast_episodes_error))
+                    }
+                }
             }
         }
     }
@@ -120,6 +125,6 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
         object Fetching : PodcastEvent()
 
         /** Represents an UnsubscribeDialog event. */
-        data class UnsubscribeDialog(val podcastId: String): PodcastEvent()
+        data class UnsubscribeDialog(val podcastId: String) : PodcastEvent()
     }
 }

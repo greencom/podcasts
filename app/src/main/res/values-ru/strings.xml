@@ -54,6 +54,7 @@
     <string name="podcast_subscribe">Подписаться</string>
     <string name="podcast_subscribed">Подписка оформлена</string>
     <string name="podcast_something_went_wrong">Что-то пошло не так</string>
+    <string name="podcast_episodes_error">При загрузке эпизодов возникла ошибка</string>
     <string name="podcast_loading">Загрузка</string>
     <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
         <item quantity="zero">%d Эпизодов</item>
