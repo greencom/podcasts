@@ -100,7 +100,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         setupViews()
 
         setObservers()
-        setOnTouchListeners()
     }
 
     override fun onDestroyView() {
@@ -136,12 +135,30 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
     }
 
-    /** Set up fragment views. */
+    /** Fragment views setup. */
     private fun setupViews() {
         // Set alpha to create crossfade animations on reveal.
         binding.error.root.alpha = 0f
         binding.nestedScrollView.alpha = 0f
         binding.error.progressBar.alpha = 0f
+
+        // Update subscription to the podcast.
+        binding.subscribe.setOnClickListener {
+            viewModel.updateSubscription(id, (it as MaterialButton).isChecked)
+            // Keep the button checked until the user makes his choice
+            // in the UnsubscribeDialog.
+            if (podcast.subscribed) binding.subscribe.isChecked = true
+        }
+
+        // Fetch the podcast from the error screen.
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchPodcast(id)
+        }
+
+        // Handle toolbar back button clicks.
+        binding.toolbarBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     /** Set observers for ViewModel observables. */
@@ -165,27 +182,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             viewModel.getEpisodes(id).collectLatest { episodes ->
                 adapter.submitList(episodes)
             }
-        }
-    }
-
-    /** Set fragment's view on touch listeners. */
-    private fun setOnTouchListeners() {
-        // Update subscription to the podcast.
-        binding.subscribe.setOnClickListener {
-            viewModel.updateSubscription(id, (it as MaterialButton).isChecked)
-            // Keep the button checked until the user makes his choice
-            // in the UnsubscribeDialog.
-            if (podcast.subscribed) binding.subscribe.isChecked = true
-        }
-
-        // Fetch the podcast from the error screen.
-        binding.error.tryAgain.setOnClickListener {
-            viewModel.fetchPodcast(id)
-        }
-
-        // Handle toolbar back button clicks.
-        binding.toolbarBack.setOnClickListener {
-            findNavController().navigateUp()
         }
     }
 

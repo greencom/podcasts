@@ -47,6 +47,9 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     /** ExploreViewModel. */
     private val viewModel: ExploreViewModel by viewModels()
 
+    /** Genre ID associated with this fragment. */
+    var genreId = 0
+
     /** RecyclerView adapter. */
     private val adapter: ExplorePodcastAdapter by lazy {
         ExplorePodcastAdapter(viewModel::navigateToPodcast, viewModel::updateSubscription)
@@ -68,7 +71,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         binding.root.doOnPreDraw { parentFragment?.startPostponedEnterTransition() }
 
         // Get the genre ID from the fragment arguments.
-        val genreId = arguments?.getInt(GENRE_ID) ?: 0
+        genreId = arguments?.getInt(GENRE_ID) ?: 0
 
         // Load the best podcasts.
         viewModel.getBestPodcasts(genreId)
@@ -78,9 +81,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         setupViews()
 
         setObservers()
-        setFragmentResultListeners(genreId)
-
-        setOnTouchListeners(genreId)
+        setFragmentResultListeners()
     }
 
     override fun onDestroyView() {
@@ -116,12 +117,22 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         }
     }
 
-    /** Set up fragment views. */
+    /** Fragment views setup. */
     private fun setupViews() {
         // Set alpha to create crossfade animations on reveal.
         binding.error.root.alpha = 0f
         binding.error.progressBar.alpha = 0f
         binding.podcastList.alpha = 0f
+
+        // Fetch the best podcasts from the error screen.
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchBestPodcasts(genreId)
+        }
+
+        // Refresh the podcasts with swipe-to-refresh gesture.
+        binding.swipeToRefresh.setOnRefreshListener {
+            viewModel.refreshBestPodcasts(genreId, adapter.currentList)
+        }
     }
 
     /** Set observers for ViewModel observables. */
@@ -142,26 +153,13 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Set fragment result listeners. */
-    private fun setFragmentResultListeners(genreId: Int) {
+    private fun setFragmentResultListeners() {
         // Scroll the list of the best podcasts on tab reselection.
         parentFragmentManager.setFragmentResultListener(
             "$ON_TAB_RESELECTED$genreId",
             viewLifecycleOwner
         ) { _, _ ->
             binding.podcastList.smoothScrollToPosition(0)
-        }
-    }
-
-    /** Set fragment's view on touch listeners. */
-    private fun setOnTouchListeners(genreId: Int) {
-        // Fetch the best podcasts from the error screen.
-        binding.error.tryAgain.setOnClickListener {
-            viewModel.fetchBestPodcasts(genreId)
-        }
-
-        // Refresh the podcasts with swipe-to-refresh gesture.
-        binding.swipeToRefresh.setOnRefreshListener {
-            viewModel.refreshBestPodcasts(genreId, adapter.currentList)
         }
     }
 
