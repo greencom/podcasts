@@ -18,6 +18,9 @@ import kotlin.math.roundToInt
 /** Global tag for logging. */
 const val GLOBAL_TAG = "global___"
 
+/** String message to use as an exception message to show the appropriate Snackbar. */
+const val NO_CONNECTION = "NO_CONNECTION"
+
 /**
  * Enum class that represents a sort order. String [value]s can be used in ListenApiService
  * methods.

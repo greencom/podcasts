@@ -53,6 +53,7 @@
     <!-- PodcastFragment start -->
     <string name="podcast_subscribe">Subscribe</string>
     <string name="podcast_subscribed">Subscribed</string>
+    <string name="podcast_no_connection">No connection</string>
     <string name="podcast_something_went_wrong">Something went wrong</string>
     <string name="podcast_episodes_error">An error occurred while loading episodes</string>
     <string name="podcast_loading">Loading</string>

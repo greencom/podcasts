@@ -12,6 +12,7 @@ import com.greencom.android.podcasts.network.ListenApiService
 import com.greencom.android.podcasts.network.episodesToDatabase
 import com.greencom.android.podcasts.network.podcastToDatabase
 import com.greencom.android.podcasts.network.toDatabase
+import com.greencom.android.podcasts.utils.NO_CONNECTION
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.*
@@ -74,6 +75,7 @@ class RepositoryImpl @Inject constructor(
         return episodeDao.getEpisodesFlow(id)
     }
 
+    // TODO: Get rid of boilerplate code.
     override suspend fun fetchEpisodes(id: String, sortOrder: SortOrder): Flow<State<Unit>> = flow {
         emit(State.Loading)
         Timber.d("Fetching has started")
@@ -94,12 +96,11 @@ class RepositoryImpl @Inject constructor(
                 earliestPubDate = response.earliestPubDate
                 recentEpisodes = response.episodesToDatabase()
             } catch (e: IOException) {
-                // TODO: Get rid of the error message. Check episode count equality.
-                emit(State.Error(e))
+                emit(State.Error(Exception(NO_CONNECTION)))
                 currentCoroutineContext().cancel()
                 return@flow
             } catch (e: HttpException) {
-                emit(State.Error(e))
+                emit(State.Error(Exception(NO_CONNECTION)))
                 currentCoroutineContext().cancel()
                 return@flow
             }
