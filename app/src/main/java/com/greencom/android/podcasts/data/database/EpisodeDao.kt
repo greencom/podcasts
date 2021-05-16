@@ -46,6 +46,10 @@ abstract class EpisodeDao {
      */
     fun getEpisodesFlow(id: String) = getEpisodesFlowRaw(id).distinctUntilChanged()
 
+    /** Get the episode count loaded to the database for a given podcast ID. */
+    @Query("SELECT COUNT(id) FROM episodes WHERE podcast_id = :id")
+    abstract fun getEpisodeCount(id: String): Int
+
 
 
     // Helper methods start.
