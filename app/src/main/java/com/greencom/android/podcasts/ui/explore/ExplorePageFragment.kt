@@ -90,6 +90,11 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         _binding = null
     }
 
+    // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
+    override fun onUnsubscribeClick(podcastId: String) {
+        viewModel.unsubscribe(podcastId)
+    }
+
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
         val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
@@ -253,11 +258,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             // Make `when` expression exhaustive.
             is ExplorePageEvent.Refreshing -> {  }
         }
-    }
-
-    // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
-    override fun onUnsubscribeClick(podcastId: String) {
-        viewModel.unsubscribe(podcastId)
     }
 
     companion object {

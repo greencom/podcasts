@@ -99,6 +99,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         _binding = null
     }
 
+    // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
+    override fun onUnsubscribeClick(podcastId: String) {
+        viewModel.unsubscribe(podcastId)
+    }
+
     /** App bar setup. */
     private fun setupAppBar() {
         // Disable AppBarLayout dragging behavior.
@@ -129,8 +134,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Fragment views setup. */
     private fun setupViews() {
         // Set alpha to create crossfade animations on reveal.
-        binding.error.root.alpha = 0f
         binding.nestedScrollView.alpha = 0f
+        binding.error.root.alpha = 0f
         binding.error.progressBar.alpha = 0f
 
         // Update subscription to the podcast.
@@ -168,7 +173,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.getEpisodes(id).collectLatest { episodes ->
                 // Delay at fragment start to ensure transition runs smoothly.
-                if (!isTransitionComplete) delay(200)
+                waitForTransition(500)
                 adapter.submitList(episodes)
                 isTransitionComplete = true
             }
@@ -177,6 +182,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Observe episodes progress bar state.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.progressBar.collectLatest { isActive ->
+                // Delay at fragment start to ensure transition runs smoothly.
+                waitForTransition(1000)
                 when (isActive) {
                     true -> binding.episodesProgressBar.revealCrossfade()
                     false -> binding.episodesProgressBar.hideCrossfade()
@@ -252,6 +259,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show a snackbar.
             is PodcastEvent.Snackbar -> {
+                // Delay at fragment start to ensure transition runs smoothly.
+                waitForTransition(800)
                 showSnackbar(binding.root, event.stringRes)
 
                 // Reset loading indicator alpha.
@@ -274,8 +283,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
     }
 
-    // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
-    override fun onUnsubscribeClick(podcastId: String) {
-        viewModel.unsubscribe(podcastId)
+    /** [delay] to wait for a transition to complete. */
+    private suspend fun waitForTransition(timeMillis: Long) {
+        if (!isTransitionComplete) delay(timeMillis)
     }
 }
