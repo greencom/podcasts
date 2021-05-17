@@ -41,8 +41,9 @@ abstract class EpisodeDao {
     abstract suspend fun getEarliestLoadedEpisodePubDate(id: String): Long?
 
     /**
-     * Get a Flow with a list of episodes for a given podcast ID. No need to apply
-     * [distinctUntilChanged] function since it is already done under the hood.
+     * Get a Flow with a list of episodes for a given podcast ID. Episodes are sorted
+     * by date in descending order. No need to apply [distinctUntilChanged] function
+     * since it is already done under the hood.
      */
     fun getEpisodesFlow(id: String) = getEpisodesFlowRaw(id).distinctUntilChanged()
 
@@ -50,7 +51,10 @@ abstract class EpisodeDao {
 
     // Helper methods start.
 
-    /** Get a Flow with a list of episodes for a given podcast ID. */
+    /**
+     * Get a Flow with a list of episodes for a given podcast ID. Episodes are sorted
+     * by date in descending order.
+     */
     @Query(
         "SELECT id, title, description, image, audio, audio_length, podcast_id, " +
                 "explicit_content, date " +
