@@ -22,14 +22,18 @@ const val GLOBAL_TAG = "global___"
 const val NO_CONNECTION = "NO_CONNECTION"
 
 /**
- * Enum class that represents a sort order. String [value]s can be used in ListenApiService
+ * Enum class that represents a sort order. Enum [value]s can be used in ListenApiService
  * methods.
  */
 enum class SortOrder(val value: String) {
     /** Contains "recent_first" value. */
     RECENT_FIRST("recent_first"),
+
     /** Contains "oldest_first" value. */
-    OLDEST_FIRST("oldest_first")
+    OLDEST_FIRST("oldest_first");
+
+    /** Reverse [SortOrder] value. */
+    fun reverse(): SortOrder = if (this == RECENT_FIRST) OLDEST_FIRST else RECENT_FIRST
 }
 
 /** Callback for calculating the diff between two non-null [PodcastShort] items in a list. */
