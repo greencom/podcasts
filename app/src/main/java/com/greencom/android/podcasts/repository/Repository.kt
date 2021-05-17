@@ -35,9 +35,6 @@ interface Repository {
     // TODO
     suspend fun fetchEpisodes(id: String, sortOrder: SortOrder): Flow<State<Unit>>
 
-    // TODO
-    suspend fun fetchMoreEpisodes(id: String, nextEpisodePubDate: Long)
-
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of
      * [State]. If the database already contains the appropriate podcasts, return them.
