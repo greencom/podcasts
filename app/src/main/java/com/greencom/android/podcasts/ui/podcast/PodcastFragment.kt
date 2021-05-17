@@ -173,7 +173,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.getEpisodes(id).collectLatest { episodes ->
                 // Delay at fragment start to ensure transition runs smoothly.
-                waitForTransition(500)
+                waitForTransition(350)
                 adapter.submitList(episodes)
                 isTransitionComplete = true
             }
@@ -182,8 +182,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Observe episodes progress bar state.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.progressBar.collectLatest { isActive ->
-                // Delay at fragment start to ensure transition runs smoothly.
-                waitForTransition(1000)
                 when (isActive) {
                     true -> binding.episodesProgressBar.revealCrossfade()
                     false -> binding.episodesProgressBar.hideCrossfade()
@@ -260,7 +258,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             // Show a snackbar.
             is PodcastEvent.Snackbar -> {
                 // Delay at fragment start to ensure transition runs smoothly.
-                waitForTransition(800)
+                waitForTransition(1000)
                 showSnackbar(binding.root, event.stringRes)
 
                 // Reset loading indicator alpha.

@@ -77,7 +77,6 @@ class RepositoryImpl @Inject constructor(
 
     // TODO: Get rid of boilerplate code.
     override suspend fun fetchEpisodes(id: String, sortOrder: SortOrder): Flow<State<Unit>> = flow {
-        emit(State.Loading)
         // The published dates of the latest and earliest episodes of the podcast in ms.
         val latestPubDate: Long
         val earliestPubDate: Long
@@ -109,6 +108,7 @@ class RepositoryImpl @Inject constructor(
             // Get the date of the latest episode loaded to the database for this podcast.
             Timber.d("Get latestLoadedPubDate")
             var latestLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(id)
+            emit(State.Loading)
 
             if (latestLoadedPubDate == null) {
                 Timber.d("latestLoadedPubDate is null, there are no episodes")
