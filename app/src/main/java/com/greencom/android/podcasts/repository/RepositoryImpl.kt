@@ -78,13 +78,13 @@ class RepositoryImpl @Inject constructor(
     // TODO: Get rid of boilerplate code.
     override suspend fun fetchEpisodes(id: String, sortOrder: SortOrder): Flow<State<Unit>> = flow {
         emit(State.Loading)
-        Timber.d("Fetching has started")
         // The published dates of the latest and earliest episodes of the podcast in ms.
         val latestPubDate: Long
         val earliestPubDate: Long
 
         // Algorithm for "recent first" mode.
         if (sortOrder == SortOrder.RECENT_FIRST) {
+            Timber.d("Fetching has started for ${sortOrder.name}")
 
             // Fetch the podcast data.
             val recentEpisodes: List<EpisodeEntity>
@@ -123,13 +123,17 @@ class RepositoryImpl @Inject constructor(
                 // the earliestPubDate.
                 var nextEpisodePubDate = recentEpisodes.last().date
                 try {
-                    while (nextEpisodePubDate != earliestPubDate) {
-                        val response = withContext(ioDispatcher) {
-                            listenApi.getPodcast(id, nextEpisodePubDate, SortOrder.RECENT_FIRST.value)
+                    withContext(ioDispatcher) {
+                        while (nextEpisodePubDate != earliestPubDate) {
+                            val response = listenApi.getPodcast(
+                                id,
+                                nextEpisodePubDate,
+                                SortOrder.RECENT_FIRST.value
+                            )
+                            episodeDao.insert(response.episodesToDatabase())
+                            nextEpisodePubDate = response.nextEpisodePubDate
+                            Timber.d("${response.episodes.size} more episodes loaded")
                         }
-                        episodeDao.insert(response.episodesToDatabase())
-                        nextEpisodePubDate = response.nextEpisodePubDate
-                        Timber.d("${response.episodes.size} more episodes loaded")
                     }
                 } catch (e: IOException) {
                     emit(State.Error(e))
@@ -166,13 +170,17 @@ class RepositoryImpl @Inject constructor(
                         // the earliestPubDate.
                         var nextEpisodePubDate = earliestLoadedPubDate
                         try {
-                            while (nextEpisodePubDate != earliestPubDate) {
-                                val response = withContext(ioDispatcher) {
-                                    listenApi.getPodcast(id, nextEpisodePubDate, SortOrder.RECENT_FIRST.value)
+                            withContext(ioDispatcher) {
+                                while (nextEpisodePubDate != earliestPubDate) {
+                                    val response = listenApi.getPodcast(
+                                        id,
+                                        nextEpisodePubDate,
+                                        SortOrder.RECENT_FIRST.value
+                                    )
+                                    episodeDao.insert(response.episodesToDatabase())
+                                    nextEpisodePubDate = response.nextEpisodePubDate
+                                    Timber.d("${response.episodes.size} more episodes loaded")
                                 }
-                                episodeDao.insert(response.episodesToDatabase())
-                                nextEpisodePubDate = response.nextEpisodePubDate
-                                Timber.d("${response.episodes.size} more episodes loaded")
                             }
                         } catch (e: IOException) {
                             emit(State.Error(e))
@@ -188,16 +196,20 @@ class RepositoryImpl @Inject constructor(
                     Timber.d("latestLoadedPubDate != latestPubDate, recent episodes not loaded")
                     // If the latestLoadedPubDate != latestPubDate, load the new ones at first.
                     try {
-                        while (latestLoadedPubDate != latestPubDate) {
-                            // Load in reverse order from the latestLoadedPubDate.
-                            // Reverse order ensures that episodes are loaded in sequence and
-                            // and that there are no spaces in between.
-                            val response = withContext(ioDispatcher) {
-                                listenApi.getPodcast(id, latestLoadedPubDate, SortOrder.OLDEST_FIRST.value)
+                        withContext(ioDispatcher) {
+                            while (latestLoadedPubDate != latestPubDate) {
+                                // Load in reverse order from the latestLoadedPubDate.
+                                // Reverse order ensures that episodes are loaded in sequence and
+                                // and that there are no spaces in between.
+                                val response = listenApi.getPodcast(
+                                    id,
+                                    latestLoadedPubDate,
+                                    SortOrder.OLDEST_FIRST.value
+                                )
+                                episodeDao.insert(response.episodesToDatabase())
+                                latestLoadedPubDate = response.nextEpisodePubDate
+                                Timber.d("${response.episodes.size} more episodes loaded")
                             }
-                            episodeDao.insert(response.episodesToDatabase())
-                            latestLoadedPubDate = response.nextEpisodePubDate
-                            Timber.d("${response.episodes.size} more episodes loaded")
                         }
                     } catch (e: IOException) {
                         emit(State.Error(e))
@@ -220,13 +232,17 @@ class RepositoryImpl @Inject constructor(
                         // the earliestPubDate.
                         var nextEpisodePubDate = earliestLoadedPubDate
                         try {
-                            while (nextEpisodePubDate != earliestPubDate) {
-                                val response = withContext(ioDispatcher) {
-                                    listenApi.getPodcast(id, nextEpisodePubDate, SortOrder.RECENT_FIRST.value)
+                            withContext(ioDispatcher) {
+                                while (nextEpisodePubDate != earliestPubDate) {
+                                    val response = listenApi.getPodcast(
+                                        id,
+                                        nextEpisodePubDate,
+                                        SortOrder.RECENT_FIRST.value
+                                    )
+                                    episodeDao.insert(response.episodesToDatabase())
+                                    nextEpisodePubDate = response.nextEpisodePubDate
+                                    Timber.d("${response.episodes.size} more episodes loaded")
                                 }
-                                episodeDao.insert(response.episodesToDatabase())
-                                nextEpisodePubDate = response.nextEpisodePubDate
-                                Timber.d("${response.episodes.size} more episodes loaded")
                             }
                         } catch (e: IOException) {
                             emit(State.Error(e))
