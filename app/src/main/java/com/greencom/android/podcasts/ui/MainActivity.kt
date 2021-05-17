@@ -318,8 +318,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         // OnSliderTouchListener is used for animating slider thumb radius.
-        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.slider_thumb_default)
-        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.slider_thumb_increased)
+        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
+        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
         val onTouchListener = object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 val increaseThumb = ObjectAnimator.ofInt(

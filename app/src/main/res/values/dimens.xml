@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO: Rework. -->
 <resources>
 
-    <!-- Global dimens start -->
+    <!-- Global start -->
+    <dimen name="bottom_nav_bar_height">56dp</dimen>
+    <dimen name="app_bar_height">56dp</dimen>
+    <dimen name="app_bar_with_progress_bar_height">60dp</dimen>
+    <!-- Global end -->
+
+    <!-- Corners start -->
     <dimen name="corner_radius_small">4dp</dimen>
     <dimen name="corner_radius_medium">8dp</dimen>
     <dimen name="corner_radius_large">16dp</dimen>
-    <dimen name="player_bottom_sheet_peek_height">113dp</dimen>
-    <dimen name="bottom_nav_bar_height">56dp</dimen>
-    <dimen name="app_bar_with_progress_bar">60dp</dimen>
-    <!-- Global dimens end -->
+    <!-- Corners end -->
 
-    <!-- Player dimens start -->
-    <dimen name="slider_thumb_default">5dp</dimen>
-    <dimen name="slider_thumb_increased">8dp</dimen>
-    <!-- Player dimens end -->
+    <!-- Player start -->
+    <dimen name="player_bottom_sheet_peek_height">113dp</dimen>
+    <dimen name="player_slider_thumb_default">5dp</dimen>
+    <dimen name="player_slider_thumb_increased">8dp</dimen>
+    <!-- Player end -->
 
 </resources>

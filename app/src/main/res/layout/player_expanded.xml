@@ -87,7 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/publisher"
-        app:thumbRadius="@dimen/slider_thumb_default"
+        app:thumbRadius="@dimen/player_slider_thumb_default"
         app:trackColorInactive="?attr/colorOnSurfaceUtil"
         app:trackHeight="2dp" />
 
