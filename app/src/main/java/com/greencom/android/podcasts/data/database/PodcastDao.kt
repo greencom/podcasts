@@ -114,6 +114,14 @@ abstract class PodcastDao {
     @Query("SELECT update_date FROM podcasts WHERE id = :id")
     abstract suspend fun getUpdateDate(id: String): Long?
 
+    /** Get the date of the latest published episode of the podcast by ID. */
+    @Query("SELECT latest_pub_date FROM podcasts WHERE id = :id")
+    abstract suspend fun getLatestPubDate(id: String): Long?
+
+    /** Get the date of the earliest published episode of the podcast by ID. */
+    @Query("SELECT earliest_pub_date FROM podcasts WHERE id = :id")
+    abstract suspend fun getEarliestPubDate(id: String): Long?
+
     /**
      * Get a Flow with a podcast for a given ID. No need to apply [distinctUntilChanged]
      * function since it is already done under the hood.

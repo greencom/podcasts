@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.repository
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
+import com.greencom.android.podcasts.network.PodcastWrapper
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.flow.Flow
@@ -27,13 +28,13 @@ interface Repository {
      * Fetch the podcast for a given ID from ListenAPI and insert it into the database.
      * Returns result represented by [State].
      */
-    suspend fun fetchPodcast(id: String): State<Unit>
+    suspend fun fetchPodcast(id: String): State<PodcastWrapper>
 
     // TODO
     fun getEpisodes(id: String): Flow<List<Episode>>
 
     // TODO
-    suspend fun fetchEpisodes(id: String, sortOrder: SortOrder): Flow<State<Unit>>
+    suspend fun fetchEpisodes(id: String, sortOrder: SortOrder, isForced: Boolean): Flow<State<Unit>>
 
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of

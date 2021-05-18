@@ -66,11 +66,10 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     }
 
     // TODO
-    fun fetchEpisodes(id: String) {
-        // Make sure that only one fetching
+    fun fetchEpisodes(id: String, isForced: Boolean = false) {
         episodesJob?.cancel()
         episodesJob = viewModelScope.launch {
-            repository.fetchEpisodes(id, SortOrder.RECENT_FIRST).collect { state ->
+            repository.fetchEpisodes(id, SortOrder.RECENT_FIRST, isForced).collect { state ->
                 when (state) {
                     is State.Loading -> _progressBar.value = true
                     is State.Success -> _progressBar.value = false
