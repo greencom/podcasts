@@ -58,6 +58,6 @@ ext {
     robolectric_version = '4.5.1'
     jetpackJUnit_version = '1.1.2'
     arch_version = '2.1.0'
-    coroutines_version = '1.5.0-RC-native-mt'
+    coroutines_version = '1.5.0-native-mt'
     jetpackEspresso_version = '3.3.0'
 }
