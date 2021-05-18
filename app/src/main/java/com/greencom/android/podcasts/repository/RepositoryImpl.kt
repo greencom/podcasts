@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -74,6 +75,18 @@ class RepositoryImpl @Inject constructor(
 
     // TODO: Get rid of boilerplate code. Write comments.
     override suspend fun fetchEpisodes(id: String, sortOrder: SortOrder): Flow<State<Unit>> = flow {
+
+        // TODO: Do not forget about explicit calls to refresh.
+        // If the podcast was recently updated, do not update it implicitly.
+        val updateDate = podcastDao.getUpdateDate(id)
+        if (updateDate != null) {
+            val timeFromLastUpdate = System.currentTimeMillis() - updateDate
+            if (timeFromLastUpdate <= TimeUnit.HOURS.toMillis(3)) {
+                Timber.d("The podcast was recently updated, no update required")
+                currentCoroutineContext().cancel()
+                return@flow
+            }
+        }
 
         Timber.d("Fetching for $sortOrder")
         // Declare 2 vars for the podcast latest and earliest pub dates and 1 var for the
