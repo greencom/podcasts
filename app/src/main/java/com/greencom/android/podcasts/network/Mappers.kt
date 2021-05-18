@@ -6,22 +6,6 @@ import com.greencom.android.podcasts.data.database.PodcastEntityPartialWithGenre
 
 /** This file contains methods that convert data transfer objects to the database entities. */
 
-/** Convert a [BestPodcastsWrapper] object to a [PodcastEntityPartialWithGenre] list. */
-fun BestPodcastsWrapper.toDatabase(): List<PodcastEntityPartialWithGenre> = podcasts.map {
-    PodcastEntityPartialWithGenre(
-        id = it.id,
-        title = it.title.trim(),
-        description = it.description.trim(),
-        image = it.image,
-        publisher = it.publisher.trim(),
-        explicitContent = it.explicitContent,
-        episodeCount = it.episodeCount,
-        latestPubDate = it.latestPubDate,
-        earliestPubDate = it.earliestPubDate,
-        genreId = this.genreId
-    )
-}
-
 /** Convert a [PodcastWrapper] object to a [PodcastEntityPartial]. */
 fun PodcastWrapper.podcastToDatabase(): PodcastEntityPartial = PodcastEntityPartial(
     id = id,
@@ -32,7 +16,8 @@ fun PodcastWrapper.podcastToDatabase(): PodcastEntityPartial = PodcastEntityPart
     explicitContent = explicitContent,
     episodeCount = episodeCount,
     latestPubDate = latestPubDate,
-    earliestPubDate = earliestPubDate
+    earliestPubDate = earliestPubDate,
+    updateDate = System.currentTimeMillis()
 )
 
 /** Convert a [PodcastWrapper.episodes] list to a [EpisodeEntity] list. */
@@ -48,4 +33,24 @@ fun PodcastWrapper.episodesToDatabase(): List<EpisodeEntity> = episodes.map {
         explicitContent = it.explicitContent,
         date = it.date
     )
+}
+
+/** Convert a [BestPodcastsWrapper] object to a [PodcastEntityPartialWithGenre] list. */
+fun BestPodcastsWrapper.toDatabase(): List<PodcastEntityPartialWithGenre> {
+    val currentTime = System.currentTimeMillis()
+    return podcasts.map {
+        PodcastEntityPartialWithGenre(
+            id = it.id,
+            title = it.title.trim(),
+            description = it.description.trim(),
+            image = it.image,
+            publisher = it.publisher.trim(),
+            explicitContent = it.explicitContent,
+            episodeCount = it.episodeCount,
+            latestPubDate = it.latestPubDate,
+            earliestPubDate = it.earliestPubDate,
+            genreId = this.genreId,
+            updateDate = currentTime
+        )
+    }
 }
