@@ -30,22 +30,26 @@ abstract class EpisodeDao {
      * Get the publication date of the latest podcast episode which was uploaded
      * to the database for a given podcast ID.
      */
-    @Query("SELECT date from episodes WHERE podcast_id = :id ORDER BY date DESC LIMIT 1")
-    abstract suspend fun getLatestLoadedEpisodePubDate(id: String): Long?
+    @Query("SELECT date from episodes WHERE podcast_id = :podcastId ORDER BY date DESC LIMIT 1")
+    abstract suspend fun getLatestLoadedEpisodePubDate(podcastId: String): Long?
 
     /**
      * Get the publication date of the earliest podcast episode which was uploaded
      * to the database for a given podcast ID.
      */
-    @Query("SELECT date from episodes WHERE podcast_id = :id ORDER BY date ASC LIMIT 1")
-    abstract suspend fun getEarliestLoadedEpisodePubDate(id: String): Long?
+    @Query("SELECT date from episodes WHERE podcast_id = :podcastId ORDER BY date ASC LIMIT 1")
+    abstract suspend fun getEarliestLoadedEpisodePubDate(podcastId: String): Long?
+
+    /** Get the number of loaded episodes for a given podcast ID. */
+    @Query("SELECT COUNT(id) FROM episodes WHERE podcast_id = :podcastId")
+    abstract suspend fun getEpisodeCount(podcastId: String): Int
 
     /**
      * Get a Flow with a list of episodes for a given podcast ID. Episodes are sorted
      * by date in descending order. No need to apply [distinctUntilChanged] function
      * since it is already done under the hood.
      */
-    fun getEpisodesFlow(id: String) = getEpisodesFlowRaw(id).distinctUntilChanged()
+    fun getEpisodesFlow(podcastId: String) = getEpisodesFlowRaw(podcastId).distinctUntilChanged()
 
 
 
@@ -59,9 +63,9 @@ abstract class EpisodeDao {
         "SELECT id, title, description, image, audio, audio_length, podcast_id, " +
                 "explicit_content, date " +
                 "FROM episodes " +
-                "WHERE podcast_id = :id " +
+                "WHERE podcast_id = :podcastId " +
                 "ORDER BY date DESC")
-    protected abstract fun getEpisodesFlowRaw(id: String): Flow<List<Episode>>
+    protected abstract fun getEpisodesFlowRaw(podcastId: String): Flow<List<Episode>>
 
     // Helper methods end.
 }
