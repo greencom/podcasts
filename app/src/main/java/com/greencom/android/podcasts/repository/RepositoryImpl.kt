@@ -82,7 +82,7 @@ class RepositoryImpl @Inject constructor(
         return episodeDao.getEpisodesFlow(id)
     }
 
-    // TODO: Get rid of boilerplate code. Write comments.
+    // TODO: Do not fetch if the number of loaded is more than LIMIT.
     override suspend fun fetchEpisodes(
         id: String,
         sortOrder: SortOrder,
