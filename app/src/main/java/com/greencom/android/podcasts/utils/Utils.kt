@@ -21,6 +21,12 @@ const val GLOBAL_TAG = "global___"
 /** String message to use as an exception message to show the appropriate Snackbar. */
 const val NO_CONNECTION = "NO_CONNECTION"
 
+/** Duration used to create crossfade animations. */
+const val CROSSFADE_ANIMATION_DURATION = 150L
+
+/** Duration used to animate player slider thumb radius. */
+const val THUMB_ANIMATION_DURATION = 120L
+
 /**
  * Enum class that represents a sort order. Enum [value]s can be used in ListenApiService
  * methods.
@@ -62,9 +68,6 @@ object EpisodeDiffCallback : DiffUtil.ItemCallback<Episode>() {
 fun showSnackbar(view: View, @StringRes stringRes: Int) {
     Snackbar.make(view, stringRes, Snackbar.LENGTH_SHORT).show()
 }
-
-/** Duration used to create crossfade animations. */
-const val CROSSFADE_ANIMATION_DURATION = 150L
 
 /** Reveal a view with crossfade animation. */
 fun View.revealCrossfade() {

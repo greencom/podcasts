@@ -61,16 +61,10 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         _event.send(ExplorePageEvent.Refreshing)
         when (repository.refreshBestPodcasts(genreId, currentList)) {
             is State.Success -> {
-                _event.send(ExplorePageEvent.Refreshed(
-                    true,
-                    R.string.explore_podcasts_updated
-                ))
+                _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
             }
             is State.Error -> {
-                _event.send(ExplorePageEvent.Refreshed(
-                    false,
-                    R.string.explore_something_went_wrong
-                ))
+                _event.send(ExplorePageEvent.Snackbar(R.string.explore_best_podcasts_error))
             }
 
             // Make `when` expression exhaustive.
@@ -133,12 +127,5 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
 
         /** Represents a Refreshing event triggered by [refreshBestPodcasts] method. */
         object Refreshing : ExplorePageEvent()
-
-        /**
-         * Represents the end of the [Refreshing] event. Contains a message to show
-         * depending on whether the event was successful.
-         */
-        data class Refreshed(val isSuccessful: Boolean, @StringRes val stringRes: Int) :
-                ExplorePageEvent()
     }
 }

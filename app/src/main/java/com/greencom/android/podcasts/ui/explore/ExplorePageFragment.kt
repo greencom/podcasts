@@ -97,7 +97,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
-        val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        val divider = CustomDividerItemDecoration(requireContext())
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
@@ -238,16 +238,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                         event.podcastId
                     )
                 )
-            }
-
-            // Scroll the list up when refreshed.
-            is ExplorePageEvent.Refreshed -> {
-                showSnackbar(binding.root, event.stringRes)
-                if (event.isSuccessful) {
-                    // Wait for a list to update to scroll up.
-                    delay(500)
-                    binding.podcastList.smoothScrollToPosition(0)
-                }
             }
 
             // Show Loading process.
