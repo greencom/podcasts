@@ -9,14 +9,22 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.roundToInt
 
 /**
- * CustomDividerItemDecoration is a [DividerItemDecoration], the only difference is that
- * the divider is not drawn for the last item in the RecyclerView. It supports both
- * [RecyclerView.VERTICAL] and [RecyclerView.HORIZONTAL] orientations.
+ * CustomDividerItemDecoration is a [DividerItemDecoration], but does not draw the divider
+ * after the last element. Additionally, you can specify the number of dividers that this
+ * DividerItemDecoration will skip at the top and bottom of the list using
+ * [numberToSkipAtStart] and [numberToSkipAtEnd], which are default to 0.
+ *
+ * Supports both [RecyclerView.VERTICAL] and [RecyclerView.HORIZONTAL] orientations.
+ * Defaults to [RecyclerView.VERTICAL].
  *
  * Use [setDrawable] for setting the [Drawable] for the divider.
  */
-class CustomDividerItemDecoration(context: Context, private val orientation: Int) :
-    DividerItemDecoration(context, orientation) {
+class CustomDividerItemDecoration(
+    context: Context,
+    private val orientation: Int = RecyclerView.VERTICAL,
+    private val numberToSkipAtStart: Int = 0,
+    private val numberToSkipAtEnd: Int = 0
+) : DividerItemDecoration(context, orientation) {
 
     private val bounds = Rect()
     private lateinit var divider: Drawable
@@ -58,7 +66,7 @@ class CustomDividerItemDecoration(context: Context, private val orientation: Int
         }
 
         val childCount = parent.childCount
-        for (i in 0 until childCount - 1) {
+        for (i in numberToSkipAtStart until childCount - (numberToSkipAtEnd + 1)) {
             val child = parent.getChildAt(i)
             parent.getDecoratedBoundsWithMargins(child, bounds)
             val bottom = bounds.bottom + child.translationY.roundToInt()
@@ -89,7 +97,7 @@ class CustomDividerItemDecoration(context: Context, private val orientation: Int
         }
 
         val childCount = parent.childCount
-        for (i in 0 until childCount - 1) {
+        for (i in numberToSkipAtStart until childCount - (numberToSkipAtEnd + 1)) {
             val child = parent.getChildAt(i)
             parent.getDecoratedBoundsWithMargins(child, bounds)
             val right = bounds.right + child.translationX.roundToInt()

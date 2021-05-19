@@ -178,6 +178,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             is ExplorePageState.Success -> {
                 adapter.submitList(state.podcasts)
                 binding.podcastList.revealCrossfade()
+
                 // Reset error screen alpha.
                 binding.error.root.alpha = 0f
                 // Reset "Try again" button text.
@@ -197,6 +198,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 }
 
                 binding.error.root.revealCrossfade()
+
                 // Reset podcast list alpha.
                 binding.podcastList.alpha = 0f
             }
@@ -220,7 +222,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
                 // Reset loading indicator alpha.
                 binding.error.progressBar.alpha = 0f
-
                 // Reset "Try again" button text.
                 delay(200) // Delay to avoid blinking.
                 binding.error.tryAgain.text = getString(R.string.explore_try_again)

@@ -121,7 +121,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
-        val divider = CustomDividerItemDecoration(requireContext(), RecyclerView.VERTICAL)
+        val divider = CustomDividerItemDecoration(requireContext())
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
