@@ -11,7 +11,7 @@ import coil.transform.RoundedCornersTransformation
 import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastShort
-import com.greencom.android.podcasts.databinding.PodcastItemBinding
+import com.greencom.android.podcasts.databinding.BestPodcastItemBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 
@@ -19,21 +19,21 @@ import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 class BestPodcastAdapter(
     private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
-) : ListAdapter<PodcastShort, ExplorePodcastViewHolder>(PodcastDiffCallback) {
+) : ListAdapter<PodcastShort, BestPodcastViewHolder>(PodcastDiffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExplorePodcastViewHolder {
-        return ExplorePodcastViewHolder.create(parent, navigateToPodcast, updateSubscription)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BestPodcastViewHolder {
+        return BestPodcastViewHolder.create(parent, navigateToPodcast, updateSubscription)
     }
 
-    override fun onBindViewHolder(holder: ExplorePodcastViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: BestPodcastViewHolder, position: Int) {
         val podcast = getItem(position)
         holder.bind(podcast)
     }
 }
 
 /** ViewHolder that represents a single item in the best podcasts list. */
-class ExplorePodcastViewHolder private constructor(
-    private val binding: PodcastItemBinding,
+class BestPodcastViewHolder private constructor(
+    private val binding: BestPodcastItemBinding,
     private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
@@ -82,15 +82,15 @@ class ExplorePodcastViewHolder private constructor(
     }
 
     companion object {
-        /** Create a [ExplorePodcastViewHolder]. */
+        /** Create a [BestPodcastViewHolder]. */
         fun create(
             parent: ViewGroup,
             navigateToPodcast: (String) -> Unit,
             updateSubscription: (String, Boolean) -> Unit
-        ): ExplorePodcastViewHolder {
-            val binding = PodcastItemBinding
+        ): BestPodcastViewHolder {
+            val binding = BestPodcastItemBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return ExplorePodcastViewHolder(binding, navigateToPodcast, updateSubscription)
+            return BestPodcastViewHolder(binding, navigateToPodcast, updateSubscription)
         }
     }
 }

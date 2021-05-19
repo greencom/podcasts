@@ -29,6 +29,7 @@
     <string name="explore_explicit_content_description">Explicit content</string>
     <string name="explore_something_went_wrong">Something went wrong</string>
     <string name="explore_check_connection">Check your internet connection and try again</string>
+    <string name="explore_best_podcasts_error">An error occurred while loading</string>
     <string name="explore_try_again">Try again</string>
     <string name="explore_loading">Loading</string>
     <string name="explore_podcasts_updated">Podcasts have been updated</string>

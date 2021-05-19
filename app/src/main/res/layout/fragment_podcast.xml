@@ -117,7 +117,7 @@
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/episode_count"
                 tools:itemCount="4"
-                tools:listitem="@layout/episode_item" />
+                tools:listitem="@layout/podcast_episode_item" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

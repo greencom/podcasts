@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
-            tools:listitem="@layout/podcast_item" />
+            tools:listitem="@layout/best_podcast_item" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
