@@ -16,7 +16,7 @@ import com.greencom.android.podcasts.utils.PodcastDiffCallback
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
-class ExplorePodcastAdapter(
+class BestPodcastAdapter(
     private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
 ) : ListAdapter<PodcastShort, ExplorePodcastViewHolder>(PodcastDiffCallback) {

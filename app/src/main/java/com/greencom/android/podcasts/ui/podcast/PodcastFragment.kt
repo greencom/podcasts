@@ -52,8 +52,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     private lateinit var podcast: Podcast
 
     /** RecyclerView adapter. */
-    private val adapter: PodcastEpisodeAdapter by lazy {
-        PodcastEpisodeAdapter()
+    private val adapter: PodcastWithEpisodesAdapter by lazy {
+        PodcastWithEpisodesAdapter()
     }
 
     /**

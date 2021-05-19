@@ -11,7 +11,7 @@ import com.greencom.android.podcasts.utils.audioLengthToString
 import com.greencom.android.podcasts.utils.pubDateToString
 
 /** Adapter used for RecyclerView that represents a list of the podcast episodes. */
-class PodcastEpisodeAdapter :
+class PodcastWithEpisodesAdapter :
     ListAdapter<Episode, PodcastEpisodeViewHolder>(EpisodeDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PodcastEpisodeViewHolder {
