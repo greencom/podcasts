@@ -22,7 +22,10 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
     /** Use this instance of the interface to deliver action events. */
     private lateinit var listener: UnsubscribeDialogListener
 
-    /** Interface the host fragment must implement to receive action events from this dialog. */
+    /**
+     * Interface definition for callbacks to be invoked when the user performs actions
+     * in the [UnsubscribeDialog].
+     */
     interface UnsubscribeDialogListener {
 
         /**
