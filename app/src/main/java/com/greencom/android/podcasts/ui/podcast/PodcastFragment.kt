@@ -170,7 +170,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** Handle UI states. */
-    private suspend fun handleUiState(state: PodcastState) {
+    private fun handleUiState(state: PodcastState) {
         binding.list.isVisible = state is PodcastState.Success
         binding.error.root.isVisible = state is PodcastState.Error
         binding.loading.isVisible = state is PodcastState.Loading
@@ -182,9 +182,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 podcast = state.podcast
                 submitToAdapter(podcast)
                 binding.list.revealCrossfade()
-
                 hideErrorScreen()
-                resetTryAgainButton()
             }
 
             // Show error screen.
@@ -208,7 +206,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             // Show a snackbar.
             is PodcastEvent.Snackbar -> {
                 showSnackbar(binding.root, event.stringRes)
-
                 resetTryAgainButton()
             }
 
