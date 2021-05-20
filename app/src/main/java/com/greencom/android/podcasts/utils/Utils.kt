@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastShort
+import com.greencom.android.podcasts.ui.podcast.PodcastWithEpisodesDataItem
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -22,10 +22,10 @@ const val GLOBAL_TAG = "global___"
 const val NO_CONNECTION = "NO_CONNECTION"
 
 /** Duration used to create crossfade animations. */
-const val CROSSFADE_ANIMATION_DURATION = 150L
+const val ANIMATION_DURATION_CROSSFADE = 150L
 
 /** Duration used to animate player slider thumb radius. */
-const val THUMB_ANIMATION_DURATION = 120L
+const val ANIMATION_DURATION_SLIDER_THUMB = 120L
 
 /**
  * Enum class that represents a sort order. Enum [value]s can be used in ListenApiService
@@ -53,14 +53,39 @@ object PodcastDiffCallback : DiffUtil.ItemCallback<PodcastShort>() {
     }
 }
 
-/** Callback for calculating the diff between two non-null [Episode] items in a list. */
-object EpisodeDiffCallback : DiffUtil.ItemCallback<Episode>() {
-    override fun areItemsTheSame(oldItem: Episode, newItem: Episode): Boolean {
-        return oldItem.id == newItem.id
+/**
+ * Callback for calculating the diff between two non-null [PodcastWithEpisodesDataItem]
+ * items in a list.
+ */
+object PodcastWithEpisodesDiffCallback : DiffUtil.ItemCallback<PodcastWithEpisodesDataItem>() {
+    override fun areItemsTheSame(
+        oldItem: PodcastWithEpisodesDataItem,
+        newItem: PodcastWithEpisodesDataItem
+    ): Boolean {
+        return when {
+            oldItem is PodcastWithEpisodesDataItem.PodcastHeader &&
+                    newItem is PodcastWithEpisodesDataItem.PodcastHeader -> oldItem.id == newItem.id
+
+            oldItem is PodcastWithEpisodesDataItem.EpisodeItem &&
+                    newItem is PodcastWithEpisodesDataItem.EpisodeItem -> oldItem.id == newItem.id
+
+            else -> false
+        }
     }
 
-    override fun areContentsTheSame(oldItem: Episode, newItem: Episode): Boolean {
-        return oldItem == newItem
+    override fun areContentsTheSame(
+        oldItem: PodcastWithEpisodesDataItem,
+        newItem: PodcastWithEpisodesDataItem
+    ): Boolean {
+        return when {
+            oldItem is PodcastWithEpisodesDataItem.PodcastHeader &&
+                    newItem is PodcastWithEpisodesDataItem.PodcastHeader -> oldItem == newItem
+
+            oldItem is PodcastWithEpisodesDataItem.EpisodeItem &&
+                    newItem is PodcastWithEpisodesDataItem.EpisodeItem -> oldItem == newItem
+
+            else -> false
+        }
     }
 }
 
@@ -74,14 +99,14 @@ fun View.revealCrossfade() {
     isVisible = true
     animate()
         .alpha(1f)
-        .setDuration(CROSSFADE_ANIMATION_DURATION)
+        .setDuration(ANIMATION_DURATION_CROSSFADE)
 }
 
 /** Hide a view with a crossfade animation. */
 fun View.hideCrossfade() {
     animate()
         .alpha(0f)
-        .setDuration(CROSSFADE_ANIMATION_DURATION)
+        .setDuration(ANIMATION_DURATION_CROSSFADE)
         .withEndAction { isVisible = false }
 }
 
