@@ -13,7 +13,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
@@ -66,7 +65,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Start ExploreFragment postponed transition.
         binding.root.doOnPreDraw { parentFragment?.startPostponedEnterTransition() }
 
@@ -125,9 +123,8 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     /** Fragment views setup. */
     private fun setupViews() {
         // Set alpha to create crossfade animations on reveal.
-        binding.error.root.alpha = 0f
-        binding.error.progressBar.alpha = 0f
-        binding.podcastList.alpha = 0f
+        hideSuccessScreen()
+        hideErrorScreen()
 
         // Fetch the best podcasts from the error screen.
         binding.error.tryAgain.setOnClickListener { viewModel.fetchBestPodcasts(genreId) }
@@ -178,13 +175,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             is ExplorePageState.Success -> {
                 adapter.submitList(state.podcasts)
                 binding.podcastList.revealCrossfade()
-
-                // Reset error screen alpha.
-                binding.error.root.alpha = 0f
-                // Reset "Try again" button text.
-                binding.error.tryAgain.text = getString(R.string.explore_try_again)
-                // Reset loading indicator alpha.
-                binding.error.progressBar.alpha = 0f
+                hideErrorScreen()
             }
 
             // Show error screen.
@@ -198,9 +189,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 }
 
                 binding.error.root.revealCrossfade()
-
-                // Reset podcast list alpha.
-                binding.podcastList.alpha = 0f
+                hideSuccessScreen()
             }
 
             // Make `when` expression exhaustive.
@@ -219,12 +208,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             // Show a snackbar.
             is ExplorePageEvent.Snackbar -> {
                 showSnackbar(binding.root, event.stringRes)
-
-                // Reset loading indicator alpha.
-                binding.error.progressBar.alpha = 0f
-                // Reset "Try again" button text.
-                delay(200) // Delay to avoid blinking.
-                binding.error.tryAgain.text = getString(R.string.explore_try_again)
+                resetTryAgainButton()
             }
 
             // Show UnsubscribeDialog.
@@ -249,6 +233,27 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             // Make `when` expression exhaustive.
             is ExplorePageEvent.Refreshing -> {  }
         }
+    }
+
+    /** Set alpha of the success screen to 0. */
+    private fun hideSuccessScreen() {
+        binding.podcastList.alpha = 0f
+    }
+
+    /** Set alpha of the error screen to 0. */
+    private fun hideErrorScreen() {
+        binding.error.root.alpha = 0f
+        binding.error.progressBar.alpha = 0f
+        // Reset 'Try again' button text.
+        binding.error.tryAgain.text = getString(R.string.explore_try_again)
+    }
+
+    /** Reset 'Try again' button text with a delay to avoid blinking. */
+    private suspend fun resetTryAgainButton() {
+        // Delay to avoid blinking.
+        delay(200)
+        binding.error.tryAgain.text = getString(R.string.explore_try_again)
+        binding.error.tryAgain.isEnabled = true
     }
 
     companion object {

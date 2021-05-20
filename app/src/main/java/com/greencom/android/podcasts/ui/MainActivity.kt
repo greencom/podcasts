@@ -26,7 +26,7 @@ import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
-import com.greencom.android.podcasts.utils.THUMB_ANIMATION_DURATION
+import com.greencom.android.podcasts.utils.ANIMATION_DURATION_SLIDER_THUMB
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 
@@ -329,7 +329,7 @@ class MainActivity : AppCompatActivity() {
                         slider.thumbRadius,
                         thumbRadiusIncreased
                 ).apply {
-                    duration = THUMB_ANIMATION_DURATION
+                    duration = ANIMATION_DURATION_SLIDER_THUMB
                     setAutoCancel(true)
                 }
                 increaseThumb.start()
@@ -342,7 +342,7 @@ class MainActivity : AppCompatActivity() {
                         slider.thumbRadius,
                         thumbRadiusDefault
                 ).apply {
-                    duration = THUMB_ANIMATION_DURATION
+                    duration = ANIMATION_DURATION_SLIDER_THUMB
                     setAutoCancel(true)
                 }
                 decreaseThumb.start()
