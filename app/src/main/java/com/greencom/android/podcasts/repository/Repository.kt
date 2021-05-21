@@ -26,15 +26,28 @@ interface Repository {
 
     /**
      * Fetch the podcast for a given ID from ListenAPI and insert it into the database.
-     * Returns result represented by [State].
+     * Returns the result represented by [State].
      */
-    suspend fun fetchPodcast(id: String): State<PodcastWrapper>
+    suspend fun fetchPodcast(
+        id: String,
+        sortOrder: SortOrder = SortOrder.RECENT_FIRST
+    ): State<PodcastWrapper>
 
-    // TODO
-    fun getEpisodes(id: String): Flow<List<Episode>>
+    /**
+     * Return episodes for a given podcast ID from the database. Default sort order is 'recent
+     * first'.
+     */
+    fun getEpisodes(podcastId: String): Flow<List<Episode>>
 
-    // TODO
-    suspend fun fetchEpisodes(id: String, sortOrder: SortOrder, isForced: Boolean): Flow<State<Unit>>
+    /**
+     * Fetch episodes for a given podcast ID for certain sort order and insert them into
+     * the database. Returns the result represented by [State].
+     *
+     * This method first loads all episodes at the top of the list (depending on the current
+     * sort order) with no limit and then loads episodes at the bottom of the list until the
+     * number of all episodes loaded to the database for this podcast exceeds the limit.
+     */
+    suspend fun fetchEpisodes(id: String, sortOrder: SortOrder, isForced: Boolean): State<Unit>
 
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of

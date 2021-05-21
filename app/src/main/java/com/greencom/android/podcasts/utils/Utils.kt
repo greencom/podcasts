@@ -18,9 +18,6 @@ import kotlin.math.roundToInt
 /** Global tag for logging. */
 const val GLOBAL_TAG = "global___"
 
-/** String message to use as an exception message to show the appropriate Snackbar. */
-const val NO_CONNECTION = "NO_CONNECTION"
-
 /** Duration used to create crossfade animations. */
 const val ANIMATION_DURATION_CROSSFADE = 150L
 

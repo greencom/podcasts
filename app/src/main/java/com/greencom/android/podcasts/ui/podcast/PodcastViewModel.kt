@@ -7,7 +7,6 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
-import com.greencom.android.podcasts.utils.NO_CONNECTION
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,10 +26,6 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     private val _event = Channel<PodcastEvent>(Channel.BUFFERED)
     /** Flow of events represented by [PodcastEvent]. */
     val event = _event.receiveAsFlow()
-
-    private val _progressBar = MutableStateFlow(false)
-    /** StateFlow of episodes progress bar state. */
-    val progressBar = _progressBar.asStateFlow()
 
     /** Job that handles episodes fetching. */
     private var episodesJob: Job? = null
@@ -69,20 +64,9 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     fun fetchEpisodes(id: String, isForced: Boolean = false) {
         episodesJob?.cancel()
         episodesJob = viewModelScope.launch {
-            repository.fetchEpisodes(id, SortOrder.RECENT_FIRST, isForced).collect { state ->
-                when (state) {
-                    is State.Loading -> _progressBar.value = true
-                    is State.Success -> _progressBar.value = false
-                    is State.Error -> {
-                        _progressBar.value = false
-                        if (state.exception.message == NO_CONNECTION) {
-                            _event.send(PodcastEvent.Snackbar(R.string.podcast_no_connection))
-                        } else {
-                            _event.send(PodcastEvent.Snackbar(R.string.podcast_episodes_error))
-                        }
-                    }
-                }
-            }
+            _event.send(PodcastEvent.EpisodesFetchingStarted)
+            repository.fetchEpisodes(id, SortOrder.RECENT_FIRST, isForced)
+            _event.send(PodcastEvent.EpisodesFetchingFinished)
         }
     }
 
@@ -130,5 +114,11 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
 
         /** Represents an UnsubscribeDialog event. */
         data class UnsubscribeDialog(val podcastId: String) : PodcastEvent()
+
+        /** Episodes fetching has started. */
+        object EpisodesFetchingStarted : PodcastEvent()
+
+        /** Episodes fetching has finished. */
+        object EpisodesFetchingFinished : PodcastEvent()
     }
 }

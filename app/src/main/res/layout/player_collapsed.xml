@@ -49,11 +49,11 @@
         android:layout_marginBottom="1dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_play_description"
-        android:tint="?attr/colorOnSurfaceMedium"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_play_outline_24" />
+        app:srcCompat="@drawable/ic_play_outline_24"
+        app:tint="?attr/colorOnSurfaceMedium" />
 
     <!-- TODO: Replace with LinearProgressIndicator -->
     <ProgressBar

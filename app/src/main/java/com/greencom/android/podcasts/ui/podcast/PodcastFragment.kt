@@ -67,7 +67,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Postpone and start enter transition.
-        // TODO: Temporary solution? Maybe rework after moving to SharedElement?
         postponeEnterTransition(100L, TimeUnit.MILLISECONDS)
 
         // Get the podcast ID from the navigation arguments.
@@ -156,16 +155,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 submitToAdapter(episodes)
             }
         }
-
-        // Observe episodes progress bar state.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.progressBar.collectLatest { isActive ->
-                when (isActive) {
-                    true -> binding.episodesProgressBar.revealImmediately()
-                    false -> binding.episodesProgressBar.hideCrossfade()
-                }
-            }
-        }
     }
 
     /** Handle UI states. */
@@ -218,6 +207,14 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show Loading process.
             is PodcastEvent.Fetching -> binding.error.progressBar.revealCrossfade()
+
+            // Show episodes fetching progress bar.
+            is PodcastEvent.EpisodesFetchingStarted ->
+                binding.episodesProgressBar.revealImmediately()
+
+            // Hide episodes fetching progress bar.
+            is PodcastEvent.EpisodesFetchingFinished ->
+                binding.episodesProgressBar.hideCrossfade()
         }
     }
 

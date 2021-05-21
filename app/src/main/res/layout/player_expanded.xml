@@ -122,11 +122,11 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_play_description"
         android:scaleType="fitCenter"
-        android:tint="?attr/colorPlayerPlay"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/slider"
-        app:srcCompat="@drawable/ic_play_circle_24" />
+        app:srcCompat="@drawable/ic_play_circle_24"
+        app:tint="?attr/colorPlayerPlay" />
 
     <ImageButton
         android:id="@+id/backward"
@@ -136,12 +136,12 @@
         android:contentDescription="@string/player_backward_description"
         android:padding="8dp"
         android:scaleType="fitCenter"
-        android:tint="?attr/colorOnSurfaceMedium"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause"
         app:layout_constraintEnd_toStartOf="@+id/play_pause"
         app:layout_constraintStart_toStartOf="@+id/cover"
         app:layout_constraintTop_toTopOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_backward_10_24" />
+        app:srcCompat="@drawable/ic_backward_10_24"
+        app:tint="?attr/colorOnSurfaceMedium" />
 
     <ImageButton
         android:id="@+id/forward"
@@ -151,12 +151,12 @@
         android:contentDescription="@string/player_forward_description"
         android:padding="8dp"
         android:scaleType="fitCenter"
-        android:tint="?attr/colorOnSurfaceMedium"
         app:layout_constraintBottom_toBottomOf="@+id/play_pause"
         app:layout_constraintEnd_toEndOf="@+id/cover"
         app:layout_constraintStart_toEndOf="@+id/play_pause"
         app:layout_constraintTop_toTopOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_forward_30_24" />
+        app:srcCompat="@drawable/ic_forward_30_24"
+        app:tint="?attr/colorOnSurfaceMedium" />
 
     <Button
         android:id="@+id/speed"
@@ -183,9 +183,9 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_options_description"
         android:padding="12dp"
-        android:tint="?attr/colorOnSurfaceMedium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_options_horizontal_24" />
+        app:srcCompat="@drawable/ic_options_horizontal_24"
+        app:tint="?attr/colorOnSurfaceMedium" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
