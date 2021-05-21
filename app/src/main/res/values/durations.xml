@@ -3,6 +3,7 @@
 
     <!-- Transaction animations start -->
     <integer name="nav_slide_enter_duration">150</integer>
+    <!-- A bit longer to get rid of the strange junk. -->
     <integer name="nav_slide_exit_duration">160</integer>
     <integer name="nav_slide_pop_enter_duration">150</integer>
     <integer name="nav_slide_pop_exit_duration">150</integer>
