@@ -89,9 +89,6 @@ class RepositoryImpl @Inject constructor(
         isForced: Boolean
     ): Flow<State<Unit>> = flow {
 
-        // How many episodes have been loaded.
-        var episodesLoaded = 0
-
         // Declare 2 vars for the podcast latest and earliest pub dates and 1 var for the
         // episode list that is top for the current sort order.
         Timber.d("Fetching for $sortOrder")
@@ -178,6 +175,9 @@ class RepositoryImpl @Inject constructor(
             }
         }
 
+        // How many episodes have been loaded.
+        var episodesLoaded = episodeDao.getEpisodeCount(id)
+
         // Declare 2 vars for the top and bottom podcast episodes depending on the current
         // sort order and 2 vars for the top and bottom episodes loaded to the db depending
         // on the current sort order.
@@ -219,7 +219,8 @@ class RepositoryImpl @Inject constructor(
             )
             // Stop fetching after reaching the limit.
             if (result is State.Success) {
-                if (result.data >= EPISODES_LIMIT) {
+                episodesLoaded = result.data
+                if (episodesLoaded >= EPISODES_LIMIT) {
                     Timber.d("$EPISODES_LIMIT or more episodes have been loaded, stop for now")
                     emit(State.Success(Unit))
                     currentCoroutineContext().cancel()
@@ -246,11 +247,13 @@ class RepositoryImpl @Inject constructor(
                         bottomLoadedPubDate!!,
                         bottomPubDate,
                         sortOrder,
-                        true
+                        true,
+                        episodesLoaded
                     )
                     // Stop fetching after reaching the limit.
                     if (result is State.Success) {
-                        if (result.data >= EPISODES_LIMIT) {
+                        episodesLoaded = result.data
+                        if (episodesLoaded >= EPISODES_LIMIT) {
                             Timber.d("$EPISODES_LIMIT or more episodes have been loaded, stop for now")
                             emit(State.Success(Unit))
                             currentCoroutineContext().cancel()
@@ -291,12 +294,14 @@ class RepositoryImpl @Inject constructor(
                         bottomLoadedPubDate!!,
                         bottomPubDate,
                         sortOrder,
-                        true
+                        true,
+                        episodesLoaded
                     )
                     // Stop fetching after reaching the limit.
                     if (result is State.Success) {
+                        episodesLoaded = result.data
                         Timber.d("$EPISODES_LIMIT or more episodes have been loaded, stop for now")
-                        if (result.data >= EPISODES_LIMIT) {
+                        if (episodesLoaded >= EPISODES_LIMIT) {
                             emit(State.Success(Unit))
                             currentCoroutineContext().cancel()
                             return@flow
@@ -378,6 +383,12 @@ class RepositoryImpl @Inject constructor(
         withLimit: Boolean,
         episodesLoaded: Int = 0
     ): State<Int> {
+        // Do not fetch if the loaded number is equal to or more than EPISODES_LIMIT.
+        if (episodesLoaded >= EPISODES_LIMIT) {
+            Timber.d("30 or more episodes are loaded already, do not fetch")
+            return State.Success(episodesLoaded)
+        }
+
         var mEpisodesLoaded = episodesLoaded
         var nextEpisodePubDate = startPubDate
         return try {
