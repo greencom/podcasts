@@ -21,7 +21,6 @@ import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.revealCrossfade
 import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
@@ -198,37 +197,36 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Handle events. */
-    private suspend fun handleEvent(event: ExplorePageEvent) {
+    private fun handleEvent(event: ExplorePageEvent) {
         binding.swipeToRefresh.isRefreshing = event is ExplorePageEvent.Refreshing
         binding.error.tryAgain.isEnabled = event !is ExplorePageEvent.Fetching
         binding.error.progressBar.isVisible = event is ExplorePageEvent.Fetching
 
+        // Change 'Try again' button text.
+        if (event is ExplorePageEvent.Fetching) {
+            binding.error.tryAgain.text = getString(R.string.explore_loading)
+        } else {
+            binding.error.tryAgain.text = getString(R.string.explore_try_again)
+        }
+
         when (event) {
 
             // Show a snackbar.
-            is ExplorePageEvent.Snackbar -> {
-                showSnackbar(binding.root, event.stringRes)
-                resetTryAgainButton()
-            }
+            is ExplorePageEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
 
             // Show UnsubscribeDialog.
             is ExplorePageEvent.UnsubscribeDialog ->
                 UnsubscribeDialog.show(childFragmentManager, event.podcastId)
 
             // Navigate to PodcastFragment.
-            is ExplorePageEvent.NavigateToPodcast -> {
-                findNavController().navigate(
-                    ExploreFragmentDirections.actionExploreFragmentToPodcastFragment(
-                        event.podcastId
-                    )
+            is ExplorePageEvent.NavigateToPodcast -> findNavController().navigate(
+                ExploreFragmentDirections.actionExploreFragmentToPodcastFragment(
+                    event.podcastId
                 )
-            }
+            )
 
             // Show Loading process.
-            is ExplorePageEvent.Fetching -> {
-                binding.error.progressBar.revealCrossfade()
-                binding.error.tryAgain.text = getString(R.string.explore_loading)
-            }
+            is ExplorePageEvent.Fetching -> binding.error.progressBar.revealCrossfade()
 
             // Make `when` expression exhaustive.
             is ExplorePageEvent.Refreshing -> {  }
@@ -243,17 +241,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     /** Set alpha of the error screen to 0. */
     private fun hideErrorScreen() {
         binding.error.root.alpha = 0f
-        binding.error.progressBar.alpha = 0f
-        // Reset 'Try again' button text.
-        binding.error.tryAgain.text = getString(R.string.explore_try_again)
-    }
-
-    /** Reset 'Try again' button text with a delay to avoid blinking. */
-    private suspend fun resetTryAgainButton() {
-        // Delay to avoid blinking.
-        delay(200)
-        binding.error.tryAgain.text = getString(R.string.explore_try_again)
-        binding.error.tryAgain.isEnabled = true
     }
 
     companion object {

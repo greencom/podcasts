@@ -94,6 +94,14 @@ fun showSnackbar(view: View, @StringRes stringRes: Int) {
     Snackbar.make(view, stringRes, Snackbar.LENGTH_SHORT).show()
 }
 
+/** Reveal a view immediately. */
+fun View.revealImmediately() {
+    isVisible = true
+    animate()
+        .alpha(1f)
+        .setDuration(0L)
+}
+
 /** Reveal a view with crossfade animation. */
 fun View.revealCrossfade() {
     isVisible = true

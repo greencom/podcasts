@@ -23,7 +23,6 @@ import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
@@ -162,7 +161,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.progressBar.collectLatest { isActive ->
                 when (isActive) {
-                    true -> binding.episodesProgressBar.revealCrossfade()
+                    true -> binding.episodesProgressBar.revealImmediately()
                     false -> binding.episodesProgressBar.hideCrossfade()
                 }
             }
@@ -197,27 +196,28 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** Handle events. */
-    private suspend fun handleEvent(event: PodcastEvent) {
+    private fun handleEvent(event: PodcastEvent) {
         binding.error.tryAgain.isEnabled = event !is PodcastEvent.Fetching
         binding.error.progressBar.isVisible = event is PodcastEvent.Fetching
+
+        // Change 'Try again' button text.
+        if (event is PodcastEvent.Fetching) {
+            binding.error.tryAgain.text = getString(R.string.explore_loading)
+        } else {
+            binding.error.tryAgain.text = getString(R.string.explore_try_again)
+        }
 
         when (event) {
 
             // Show a snackbar.
-            is PodcastEvent.Snackbar -> {
-                showSnackbar(binding.root, event.stringRes)
-                resetTryAgainButton()
-            }
+            is PodcastEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
 
             // Show UnsubscribeDialog.
             is PodcastEvent.UnsubscribeDialog ->
                 UnsubscribeDialog.show(childFragmentManager, podcast.id)
 
             // Show Loading process.
-            is PodcastEvent.Fetching -> {
-                binding.error.progressBar.revealCrossfade()
-                binding.error.tryAgain.text = getString(R.string.podcast_loading)
-            }
+            is PodcastEvent.Fetching -> binding.error.progressBar.revealCrossfade()
         }
     }
 
@@ -241,16 +241,5 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Set alpha of the error screen to 0. */
     private fun hideErrorScreen() {
         binding.error.root.alpha = 0f
-        binding.error.progressBar.alpha = 0f
-        // Reset "Try again" button text.
-        binding.error.tryAgain.text = getString(R.string.explore_try_again)
-    }
-
-    /** Reset 'Try again' button text with a delay to avoid blinking. */
-    private suspend fun resetTryAgainButton() {
-        // Delay to avoid blinking.
-        delay(200)
-        binding.error.tryAgain.text = getString(R.string.explore_try_again)
-        binding.error.tryAgain.isEnabled = true
     }
 }
