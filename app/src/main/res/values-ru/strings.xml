@@ -25,6 +25,7 @@
     <!-- ExploreFragment start -->
     <string name="explore_search">Поиск</string>
     <string name="explore_subscribe">Подписаться</string>
+    <string name="podcast_scroll_to_top_description">Вернуться наверх</string>
     <string name="explore_subscribed">Подписка оформлена</string>
     <string name="explore_explicit_content_description">Нецензурная лексика</string>
     <string name="explore_something_went_wrong">Что-то пошло не так</string>

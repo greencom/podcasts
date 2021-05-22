@@ -13,7 +13,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
@@ -53,6 +56,30 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
         PodcastWithEpisodesAdapter(viewModel::updateSubscription)
+    }
+
+    // TODO
+    private val onScrollListener: RecyclerView.OnScrollListener by lazy {
+        object : RecyclerView.OnScrollListener() {
+            val layoutManager = binding.list.layoutManager as LinearLayoutManager
+            var visibleItemCount = 0
+            var totalItemCount = 0
+            var firstVisibleItemPosition = 0
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                visibleItemCount = layoutManager.childCount
+                totalItemCount = layoutManager.itemCount
+                firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                // Show and hide the fab.
+                if (dy < 0) {
+                    binding.scrollToTop.show()
+                } else {
+                    binding.scrollToTop.hide()
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -118,8 +145,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         )
         binding.list.apply {
             adapter = this@PodcastFragment.adapter
+            // TODO: Fix the first divider.
             addItemDecoration(divider)
         }
+        binding.list.addOnScrollListener(onScrollListener)
 
         setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
@@ -130,6 +159,18 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // Handle toolbar back button clicks.
         binding.toolbarBack.setOnClickListener { findNavController().navigateUp() }
+
+        // TODO
+        binding.swipeToRefresh.setOnRefreshListener {
+
+        }
+
+        // Scroll to top and hide the fab.
+        binding.scrollToTop.setOnClickListener {
+            binding.list.smoothScrollToPosition(0)
+            binding.appBarLayout.setExpanded(true, true)
+            (it as FloatingActionButton).hide()
+        }
 
         // Fetch the podcast from the error screen.
         binding.error.tryAgain.setOnClickListener { viewModel.fetchPodcast(id) }
