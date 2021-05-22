@@ -1,11 +1,13 @@
 package com.greencom.android.podcasts.utils
 
 import android.content.Context
+import android.util.TypedValue
 import android.view.View
 import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
@@ -113,6 +115,21 @@ fun View.hideCrossfade() {
         .alpha(0f)
         .setDuration(ANIMATION_DURATION_CROSSFADE)
         .withEndAction { isVisible = false }
+}
+
+/** Swipe-to-refresh setup. */
+fun setupSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
+    swipeToRefresh.apply {
+        val color = TypedValue()
+        val backgroundColor = TypedValue()
+        val theme = context.theme
+        theme?.resolveAttribute(R.attr.colorPrimary, color, true)
+        theme?.resolveAttribute(
+            R.attr.colorSwipeToRefreshBackground, backgroundColor, true
+        )
+        setColorSchemeColors(color.data)
+        setProgressBackgroundColorSchemeColor(backgroundColor.data)
+    }
 }
 
 /** Setup given material button as a `Subscribe` toggle button. */

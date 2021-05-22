@@ -120,6 +120,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             adapter = this@PodcastFragment.adapter
             addItemDecoration(divider)
         }
+
+        setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
 
     /** Fragment views setup. */
@@ -159,7 +161,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** Handle UI states. */
     private fun handleUiState(state: PodcastState) {
-        binding.list.isVisible = state is PodcastState.Success
+        binding.swipeToRefresh.isVisible = state is PodcastState.Success
         binding.error.root.isVisible = state is PodcastState.Error
         binding.loading.isVisible = state is PodcastState.Loading
 

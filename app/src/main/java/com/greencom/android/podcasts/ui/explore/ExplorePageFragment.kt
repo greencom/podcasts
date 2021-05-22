@@ -1,7 +1,6 @@
 package com.greencom.android.podcasts.ui.explore
 
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +18,7 @@ import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
 import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
 import com.greencom.android.podcasts.utils.revealCrossfade
+import com.greencom.android.podcasts.utils.setupSwipeToRefresh
 import com.greencom.android.podcasts.utils.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -74,7 +74,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         viewModel.getBestPodcasts(genreId)
 
         setupRecyclerView()
-        setupSwipeToRefresh()
         setupViews()
 
         setObservers()
@@ -102,21 +101,8 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             adapter = this@ExplorePageFragment.adapter
             addItemDecoration(divider)
         }
-    }
 
-    /** Swipe-to-refresh setup. */
-    private fun setupSwipeToRefresh() {
-        binding.swipeToRefresh.apply {
-            val color = TypedValue()
-            val backgroundColor = TypedValue()
-            val theme = context?.theme
-            theme?.resolveAttribute(
-                R.attr.colorSwipeToRefreshBackground, backgroundColor, true
-            )
-            theme?.resolveAttribute(R.attr.colorPrimary, color, true)
-            setProgressBackgroundColorSchemeColor(backgroundColor.data)
-            setColorSchemeColors(color.data)
-        }
+        setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
 
     /** Fragment views setup. */
