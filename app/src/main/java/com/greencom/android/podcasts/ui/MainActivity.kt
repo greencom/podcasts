@@ -25,8 +25,8 @@ import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
-import com.greencom.android.podcasts.utils.OnSwipeListener
 import com.greencom.android.podcasts.utils.ANIMATION_DURATION_SLIDER_THUMB
+import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 
@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
         // Player bottom sheet behavior setup.
         playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
-            setupBottomSheetBehavior(resources.getDimension(R.dimen.bottom_nav_bar_height))
+            setupBottomSheetBehavior()
         }
 
         // Set listeners for the player content.
@@ -68,19 +68,28 @@ class MainActivity : AppCompatActivity() {
         setPlayerExpandedContentListeners()
     }
 
-    /** Initialize views. */
-    private fun initViews() {
-        // Set text selected to run ellipsize animation.
-        binding.player.collapsed.title.isSelected = true
-        // Hide scrim background at start.
-        binding.background.isVisible = false
-        // Set expanded content alpha to zero.
-        binding.player.expanded.root.alpha = 0f
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
 
-        // Obtain app bar colors.
-        statusBarColor = getColor(R.color.background_scrim)
-        theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
-        theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
+        savedInstanceState.apply {
+            playerBehavior.state = getInt(STATE_PLAYER)
+        }
+
+        // Setup player content.
+        val slideOffset = if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) 1f else 0f
+        val bottomNavBarHeight = resources.getDimension(R.dimen.bottom_nav_bar_height)
+        controlPlayerOnBottomSheetStateChanged(playerBehavior.state)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            controlPlayerOnBottomSheetSlideV27(slideOffset, bottomNavBarHeight)
+        } else {
+            controlPlayerOnBottomSheetSlide(slideOffset, bottomNavBarHeight)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt(STATE_PLAYER, playerBehavior.state)
     }
 
     /** Make player closable on back pressed. */
@@ -95,7 +104,7 @@ class MainActivity : AppCompatActivity() {
     /** Make player closable on outside click. */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.action == MotionEvent.ACTION_DOWN &&
-                playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
+            playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
 
             // Create a new empty Rect with [0,0,0,0] values for [left,top,right,bottom].
             val outRect = Rect()
@@ -115,6 +124,21 @@ class MainActivity : AppCompatActivity() {
         }
         // Return super.dispatchTouchEvent() to handle default behavior.
         return super.dispatchTouchEvent(ev)
+    }
+
+    /** Initialize views. */
+    private fun initViews() {
+        // Set text selected to run ellipsize animation.
+        binding.player.collapsed.title.isSelected = true
+        // Hide scrim background at start.
+        binding.background.isVisible = false
+        // Set expanded content alpha to zero.
+        binding.player.expanded.root.alpha = 0f
+
+        // Obtain app bar colors.
+        statusBarColor = getColor(R.color.background_scrim)
+        theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
+        theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
     }
 
     /** Navigation component setup. */
@@ -157,13 +181,10 @@ class MainActivity : AppCompatActivity() {
     /**
      * Set up and add the callback to the player [BottomSheetBehavior] to control
      * the player UI behavior when [BottomSheetBehavior] state and slideOffset change.
-     *
-     * @param bottomNavBarHeight the height of the bottom navigation bar in `px`.
-     *                           Used to calculate the distance the bottom navigation bar
-     *                           needs to be displaced.
      */
-    private fun BottomSheetBehavior<FrameLayout>
-            .setupBottomSheetBehavior(bottomNavBarHeight: Float) {
+    private fun BottomSheetBehavior<FrameLayout>.setupBottomSheetBehavior() {
+
+        val bottomNavBarHeight = resources.getDimension(R.dimen.bottom_nav_bar_height)
 
         /** BottomSheetCallback for API versions below 27. */
         class Callback : BottomSheetBehavior.BottomSheetCallback() {
@@ -421,5 +442,10 @@ class MainActivity : AppCompatActivity() {
             resources.getString(R.string.bottom_nav_explore) -> navigate(R.id.action_global_exploreFragment)
             resources.getString(R.string.bottom_nav_activity) -> navigate(R.id.action_global_activityFragment)
         }
+    }
+
+    companion object {
+        // Saving instance state.
+        private const val STATE_PLAYER = "player_state"
     }
 }
