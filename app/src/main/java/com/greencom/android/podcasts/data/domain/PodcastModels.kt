@@ -1,9 +1,25 @@
 package com.greencom.android.podcasts.data.domain
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Relation
+import com.greencom.android.podcasts.data.database.EpisodeEntity
+
+/** Domain model class that represents a podcast with a list of its episodes. */
+data class PodcastWithEpisodes(
+    @Embedded
+    val podcast: Podcast,
+
+    @Relation(
+        entity = EpisodeEntity::class,
+        parentColumn = "id",
+        entityColumn = "podcast_id"
+    )
+    val episodes: List<Episode>
+)
 
 /**
- * Model class that represents a domain podcast object. Used in cases when all
+ * Domain model class that represents a podcast object. Used in cases when all
  * podcast information needed.
  */
 data class Podcast(
@@ -55,7 +71,7 @@ data class Podcast(
 }
 
 /**
- * Model class that represents a short domain podcast object. Used as items in
+ * Domain model class that represents a short podcast object. Used as items in
  * different podcast lists.
  */
 data class PodcastShort(

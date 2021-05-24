@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.*
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
+import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
@@ -123,10 +124,11 @@ abstract class PodcastDao {
     abstract suspend fun getEarliestPubDate(id: String): Long?
 
     /**
-     * Get a Flow with a podcast for a given ID. No need to apply [distinctUntilChanged]
-     * function since it is already done under the hood.
+     * Get a Flow with a [PodcastWithEpisodes] object for a given podcast ID. No need to apply
+     * [distinctUntilChanged] function since it is already done under the hood.
      */
-    fun getPodcastFlow(id: String) = getPodcastFlowRaw(id).distinctUntilChanged()
+    fun getPodcastWithEpisodesFlow(id: String) =
+        getPodcastWithEpisodesFlowRaw(id).distinctUntilChanged()
 
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID.
@@ -250,18 +252,22 @@ abstract class PodcastDao {
     )
     protected abstract suspend fun getPodcast(id: String): Podcast?
 
-    /** Get a Flow with a podcast for a given ID. */
+    /**
+     * Get a Flow with a [PodcastWithEpisodes] object for a given podcast ID.
+     * Use [getPodcastWithEpisodesFlow] with applied [distinctUntilChanged] function instead.
+     */
+    @Transaction
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
                 "latest_pub_date, earliest_pub_date, subscribed " +
                 "FROM podcasts " +
                 "WHERE id = :id"
     )
-    protected abstract fun getPodcastFlowRaw(id: String): Flow<Podcast?>
+    protected abstract fun getPodcastWithEpisodesFlowRaw(id: String): Flow<PodcastWithEpisodes?>
 
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID. Use
-     * [getBestPodcastsFlow] with applied [distinctUntilChanged] function.
+     * [getBestPodcastsFlow] with applied [distinctUntilChanged] function instead.
      */
     @Query(
         "SELECT id, title, description, image, publisher, explicit_content, subscribed, genre_id " +

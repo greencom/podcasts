@@ -18,8 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.Episode
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
@@ -47,39 +45,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Podcast ID. */
     private var id = ""
 
-    /** The [Podcast] associated with this fragment. */
-    private lateinit var podcast: Podcast
-
-    /** The list of podcast episodes associated with this fragment. */
-    private var episodes = listOf<Episode>()
-
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
         PodcastWithEpisodesAdapter(viewModel::updateSubscription)
-    }
-
-    // TODO
-    private val onScrollListener: RecyclerView.OnScrollListener by lazy {
-        object : RecyclerView.OnScrollListener() {
-            val layoutManager = binding.list.layoutManager as LinearLayoutManager
-            var visibleItemCount = 0
-            var totalItemCount = 0
-            var firstVisibleItemPosition = 0
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                visibleItemCount = layoutManager.childCount
-                totalItemCount = layoutManager.itemCount
-                firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                // Show and hide the fab.
-                if (firstVisibleItemPosition >= 5 && dy < 0) {
-                    binding.scrollToTop.show()
-                } else {
-                    binding.scrollToTop.hide()
-                }
-            }
-        }
     }
 
     override fun onCreateView(
@@ -99,8 +67,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Get the podcast ID from the navigation arguments.
         id = args.podcastId
 
-        // Load the podcast.
-        viewModel.getPodcast(id)
+        // Load a podcast with episodes.
+        viewModel.getPodcastWithEpisodes(id)
 
         setupAppBar()
         setupRecyclerView()
@@ -139,12 +107,38 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
+        // Dividers.
         val divider = CustomDividerItemDecoration(requireContext(), true)
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
+
+        // On scroll listener.
+        val onScrollListener = object : RecyclerView.OnScrollListener() {
+            val layoutManager = binding.list.layoutManager as LinearLayoutManager
+            var visibleItemCount = 0
+            var totalItemCount = 0
+            var firstVisibleItemPosition = 0
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                visibleItemCount = layoutManager.childCount
+                totalItemCount = layoutManager.itemCount
+                firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                // Show and hide the fab.
+                if (firstVisibleItemPosition >= 5 && dy < 0) {
+                    binding.scrollToTop.show()
+                } else {
+                    binding.scrollToTop.hide()
+                }
+            }
+        }
+
         binding.list.apply {
             adapter = this@PodcastFragment.adapter
+            adapter?.stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             addItemDecoration(divider)
             addOnScrollListener(onScrollListener)
         }
@@ -190,13 +184,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 handleEvent(event)
             }
         }
-
-        // Observe podcast episodes.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.getEpisodes(id).collectLatest { episodes ->
-                submitToAdapter(episodes)
-            }
-        }
     }
 
     /** Handle UI states. */
@@ -209,8 +196,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show podcast data.
             is PodcastState.Success -> {
-                podcast = state.podcast
-                submitToAdapter(podcast)
+                adapter.submitHeaderAndList(
+                    state.podcastWithEpisodes.podcast,
+                    state.podcastWithEpisodes.episodes
+                )
                 binding.list.revealCrossfade()
                 hideErrorScreen()
             }
@@ -245,7 +234,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show UnsubscribeDialog.
             is PodcastEvent.UnsubscribeDialog ->
-                UnsubscribeDialog.show(childFragmentManager, podcast.id)
+                UnsubscribeDialog.show(childFragmentManager, id)
 
             // Show Loading process.
             is PodcastEvent.Fetching -> binding.error.progressBar.revealCrossfade()
@@ -258,18 +247,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             is PodcastEvent.EpisodesFetchingFinished ->
                 binding.episodesProgressBar.hideCrossfade()
         }
-    }
-
-    /** Submit a podcast data to [adapter]. */
-    private fun submitToAdapter(podcast: Podcast) {
-        this.podcast = podcast
-        adapter.submitHeaderAndList(this.podcast, this.episodes)
-    }
-
-    /** Submit an episode list to [adapter]. */
-    private fun submitToAdapter(episodes: List<Episode>) {
-        this.episodes = episodes
-        adapter.submitHeaderAndList(this.podcast, this.episodes)
     }
 
     /** Set alpha of the success screen to 0. */

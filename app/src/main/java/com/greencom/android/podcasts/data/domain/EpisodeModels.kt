@@ -2,7 +2,7 @@ package com.greencom.android.podcasts.data.domain
 
 import androidx.room.ColumnInfo
 
-/** Model class that represents a domain episode object. */
+/** Domain model class that represents an episode object. */
 data class Episode(
 
     /** Episode ID. */

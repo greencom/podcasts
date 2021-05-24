@@ -1,8 +1,7 @@
 package com.greencom.android.podcasts.repository
 
-import com.greencom.android.podcasts.data.domain.Episode
-import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
+import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.network.PodcastWrapper
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
@@ -18,11 +17,11 @@ interface Repository {
     suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
 
     /**
-     * Return the podcast for a given ID. The result represented by instances of [State].
-     * If the database already contains the appropriate podcast, return it. Otherwise,
+     * Return a podcast with episodes for a given ID. The result represented by instances of
+     * [State]. If the database already contains the appropriate podcast, return it. Otherwise,
      * fetch the podcast from ListenAPI and insert it into the database.
      */
-    fun getPodcast(id: String): Flow<State<Podcast>>
+    fun getPodcastWithEpisodes(id: String): Flow<State<PodcastWithEpisodes>>
 
     /**
      * Fetch the podcast for a given ID from ListenAPI and insert it into the database.
@@ -32,12 +31,6 @@ interface Repository {
         id: String,
         sortOrder: SortOrder = SortOrder.RECENT_FIRST
     ): State<PodcastWrapper>
-
-    /**
-     * Return episodes for a given podcast ID from the database. Default sort order is 'recent
-     * first'.
-     */
-    fun getEpisodes(podcastId: String): Flow<List<Episode>>
 
     /**
      * Fetch episodes for a given podcast ID for certain sort order and insert them into
