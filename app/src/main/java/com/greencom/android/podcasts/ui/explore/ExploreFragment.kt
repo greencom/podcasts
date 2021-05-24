@@ -25,9 +25,17 @@ class ExploreFragment : Fragment() {
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
-    /** Indicates whether the app bar is collapsed or not. */
+    /** Whether the app bar is collapsed or not. */
     var isAppBarCollapsed = false
         private set
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        savedInstanceState?.apply {
+            isAppBarCollapsed = getBoolean(STATE_APP_BAR)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,6 +54,14 @@ class ExploreFragment : Fragment() {
         setupTabLayout()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.apply {
+            putBoolean(STATE_APP_BAR, isAppBarCollapsed)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         // Clear View binding.
@@ -54,6 +70,9 @@ class ExploreFragment : Fragment() {
 
     /** App bar setup. */
     private fun setupAppBar() {
+        // Restore saved instance state.
+        binding.appBarLayout.setExpanded(!isAppBarCollapsed, false)
+
         // Disable AppBarLayout dragging behavior.
         if (binding.appBarLayout.layoutParams != null) {
             val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
@@ -66,7 +85,7 @@ class ExploreFragment : Fragment() {
             appBarParams.behavior = appBarBehavior
         }
 
-        // Track whether the app bar is collapsed or not.
+        // Monitoring app bar state.
         binding.appBarLayout.addOnOffsetChangedListener(
             AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
                 isAppBarCollapsed = verticalOffset != 0
@@ -85,26 +104,29 @@ class ExploreFragment : Fragment() {
         }.attach()
 
         // Handle TabLayout onTabSelected cases.
+        val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {  }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {  }
+
+            // Pass information about tab reselection to the certain ExplorePageFragment instance
+            // depending on genreId.
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                val tabIndex = binding.tabLayout.selectedTabPosition
+                val genreId = ExploreTabGenre.values()[tabIndex].id
+                childFragmentManager.setFragmentResult(
+                    "${ExplorePageFragment.ON_TAB_RESELECTED}$genreId",
+                    Bundle()
+                )
+                // Expand the app bar.
+                binding.appBarLayout.setExpanded(true, true)
+            }
+        }
         binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
     }
 
-    /** Listener that implements [TabLayout.OnTabSelectedListener] interface. */
-    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {  }
-
-        override fun onTabUnselected(tab: TabLayout.Tab?) {  }
-
-        // Pass information about tab reselection to the certain ExplorePageFragment instance
-        // depending on genreId.
-        override fun onTabReselected(tab: TabLayout.Tab?) {
-            val tabIndex = binding.tabLayout.selectedTabPosition
-            val genreId = ExploreTabGenre.values()[tabIndex].id
-            childFragmentManager.setFragmentResult(
-                "${ExplorePageFragment.ON_TAB_RESELECTED}$genreId",
-                Bundle()
-            )
-            // Expand the app bar.
-            binding.appBarLayout.setExpanded(true, true)
-        }
+    companion object {
+        // Saving instance state.
+        private const val STATE_APP_BAR = "app_bar_state"
     }
 }

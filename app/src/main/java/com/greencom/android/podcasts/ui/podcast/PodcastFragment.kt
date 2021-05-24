@@ -50,6 +50,17 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         PodcastWithEpisodesAdapter(viewModel::updateSubscription)
     }
 
+    /** Whether the app bar is collapsed or not. */
+    private var isAppBarCollapsed = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        savedInstanceState?.apply {
+            isAppBarCollapsed = getBoolean(STATE_APP_BAR)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -77,6 +88,14 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         setObservers()
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.apply {
+            putBoolean(STATE_APP_BAR, isAppBarCollapsed)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         // Cancel adapter coroutine scope in onDetachedFromRecyclerView().
@@ -92,6 +111,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** App bar setup. */
     private fun setupAppBar() {
+        // Restore saved instance state.
+        binding.appBarLayout.setExpanded(!isAppBarCollapsed, false)
+
         // Disable AppBarLayout dragging behavior.
         if (binding.appBarLayout.layoutParams != null) {
             val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
@@ -103,6 +125,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             })
             appBarParams.behavior = appBarBehavior
         }
+
+        // Monitoring app bar state.
+        binding.appBarLayout.addOnOffsetChangedListener(
+            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
+                isAppBarCollapsed = verticalOffset != 0
+            })
     }
 
     /** RecyclerView setup. */
@@ -257,5 +285,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Set alpha of the error screen to 0. */
     private fun hideErrorScreen() {
         binding.error.root.alpha = 0f
+    }
+
+    companion object {
+        // Saving instance state.
+        private const val STATE_APP_BAR = "app_bar_state"
     }
 }
