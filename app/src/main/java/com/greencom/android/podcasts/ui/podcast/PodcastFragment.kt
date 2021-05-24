@@ -146,8 +146,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         binding.list.apply {
             adapter = this@PodcastFragment.adapter
             addItemDecoration(divider)
+            addOnScrollListener(onScrollListener)
         }
-        binding.list.addOnScrollListener(onScrollListener)
 
         setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
