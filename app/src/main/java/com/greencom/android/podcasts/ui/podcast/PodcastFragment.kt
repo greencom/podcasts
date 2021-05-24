@@ -73,7 +73,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
                 // Show and hide the fab.
-                if (dy < 0) {
+                if (firstVisibleItemPosition >= 5 && dy < 0) {
                     binding.scrollToTop.show()
                 } else {
                     binding.scrollToTop.hide()
@@ -139,13 +139,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
-        val divider = CustomDividerItemDecoration(requireContext(), numberToSkipAtStart = 1)
+        val divider = CustomDividerItemDecoration(requireContext(), true)
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
         binding.list.apply {
             adapter = this@PodcastFragment.adapter
-            // TODO: Fix the first divider.
             addItemDecoration(divider)
         }
         binding.list.addOnScrollListener(onScrollListener)

@@ -5,15 +5,18 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.roundToInt
 
 /**
- * CustomDividerItemDecoration behaves like a [DividerItemDecoration], but allows
- * you to specify how many dividers to skip at the beginning and end of the list, passing
- * the appropriate values to the [numberToSkipAtStart] and [numberToSkipAtEnd] parameters.
- * [numberToSkipAtStart] defaults to 0 and [numberToSkipAtEnd] defaults to 1 to skip the
- * divider after the last item of the list.
+ * CustomDividerItemDecoration behaves like a [DividerItemDecoration], but allows you
+ * to specify whether to skip or not the first divider after the first item and the last
+ * divider after the last item.
+ *
+ * Note: consider using default [DividerItemDecoration] with items which "android:layout_width"
+ * and "android:layout_height" parameters are "match_parent" depending on the RecyclerView
+ * orientation. Otherwise, the dividers may not be drawn correctly.
  *
  * It supports both [RecyclerView.VERTICAL] and [RecyclerView.HORIZONTAL] orientations.
  * Defaults to [RecyclerView.VERTICAL].
@@ -22,19 +25,10 @@ import kotlin.math.roundToInt
  */
 class CustomDividerItemDecoration(
     context: Context,
+    private val skipFirst: Boolean = false,
+    private val skipLast: Boolean = true,
     private val orientation: Int = RecyclerView.VERTICAL,
-    private val numberToSkipAtStart: Int = 0,
-    private val numberToSkipAtEnd: Int = 1
 ) : DividerItemDecoration(context, orientation) {
-
-    init {
-        // Check parameters.
-        if (numberToSkipAtStart < 0 || numberToSkipAtEnd < 0) {
-            throw IllegalArgumentException(
-                "numberToSkipAtStart and numberToSkipAtEnd parameters must be at least 0"
-            )
-        }
-    }
 
     private val bounds = Rect()
     private lateinit var divider: Drawable
@@ -46,6 +40,12 @@ class CustomDividerItemDecoration(
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         if (parent.layoutManager == null) return
+
+        try {
+            parent.layoutManager as LinearLayoutManager
+        } catch (e: ClassCastException) {
+            throw ClassCastException("CustomDividerItemDecoration can only be used with LinearLayoutManager")
+        }
 
         when (orientation) {
             VERTICAL -> drawVertical(c, parent)
@@ -76,14 +76,29 @@ class CustomDividerItemDecoration(
         }
 
         val childCount = parent.childCount
-        for (i in numberToSkipAtStart until childCount - numberToSkipAtEnd) {
-            val child = parent.getChildAt(i)
-            parent.getDecoratedBoundsWithMargins(child, bounds)
-            val bottom = bounds.bottom + child.translationY.roundToInt()
-            val top = bottom - divider.intrinsicHeight
-            divider.setBounds(left, top, right, bottom)
-            divider.draw(canvas)
+        val start = if (skipFirst) 1 else 0
+        val last = if (skipLast) 1 else 0
+
+        if ((parent.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() <= start) {
+            for (i in start until childCount - last) {
+                val child = parent.getChildAt(i)
+                parent.getDecoratedBoundsWithMargins(child, bounds)
+                val bottom = bounds.bottom + child.translationY.roundToInt()
+                val top = bottom - divider.intrinsicHeight
+                divider.setBounds(left, top, right, bottom)
+                divider.draw(canvas)
+            }
+        } else {
+            for (i in 0 until childCount - last) {
+                val child = parent.getChildAt(i)
+                parent.getDecoratedBoundsWithMargins(child, bounds)
+                val bottom = bounds.bottom + child.translationY.roundToInt()
+                val top = bottom - divider.intrinsicHeight
+                divider.setBounds(left, top, right, bottom)
+                divider.draw(canvas)
+            }
         }
+
         canvas.restore()
     }
 
@@ -107,14 +122,29 @@ class CustomDividerItemDecoration(
         }
 
         val childCount = parent.childCount
-        for (i in numberToSkipAtStart until childCount - numberToSkipAtEnd) {
-            val child = parent.getChildAt(i)
-            parent.getDecoratedBoundsWithMargins(child, bounds)
-            val right = bounds.right + child.translationX.roundToInt()
-            val left = right - divider.intrinsicWidth
-            divider.setBounds(left, top, right, bottom)
-            divider.draw(canvas)
+        val start = if (skipFirst) 1 else 0
+        val last = if (skipLast) 1 else 0
+
+        if ((parent.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition() <= start) {
+            for (i in start until childCount - last) {
+                val child = parent.getChildAt(i)
+                parent.getDecoratedBoundsWithMargins(child, bounds)
+                val right = bounds.right + child.translationX.roundToInt()
+                val left = right - divider.intrinsicWidth
+                divider.setBounds(left, top, right, bottom)
+                divider.draw(canvas)
+            }
+        } else {
+            for (i in 0 until childCount - last) {
+                val child = parent.getChildAt(i)
+                parent.getDecoratedBoundsWithMargins(child, bounds)
+                val right = bounds.right + child.translationX.roundToInt()
+                val left = right - divider.intrinsicWidth
+                divider.setBounds(left, top, right, bottom)
+                divider.draw(canvas)
+            }
         }
+
         canvas.restore()
     }
 }
