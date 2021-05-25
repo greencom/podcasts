@@ -102,6 +102,13 @@ class PodcastHeaderViewHolder private constructor(
             // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
             if (podcast.subscribed) binding.subscribe.isChecked = true
         }
+
+        // Expand and collapse description text.
+        binding.description.setOnClickListener {
+            binding.description.apply {
+                maxLines = if (maxLines == 5) 50 else 5
+            }
+        }
     }
 
     /** Bind PodcastViewHolder with a given [Podcast]. */

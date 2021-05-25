@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/title"
@@ -73,6 +74,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:maxLines="5"
         android:textColor="?attr/colorOnSurfaceLow"
         app:layout_constraintEnd_toEndOf="@+id/cover"
         app:layout_constraintStart_toStartOf="@+id/title"
