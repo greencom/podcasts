@@ -53,14 +53,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Whether the app bar is collapsed or not. */
     private var isAppBarCollapsed = false
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        savedInstanceState?.apply {
-            isAppBarCollapsed = getBoolean(STATE_APP_BAR)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,8 +64,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Postpone and start enter transition.
         postponeEnterTransition(100L, TimeUnit.MILLISECONDS)
+
+        // Restore instance state.
+        savedInstanceState?.apply {
+            binding.appBarLayout.setExpanded(!getBoolean(STATE_APP_BAR), false)
+        }
 
         // Get the podcast ID from the navigation arguments.
         id = args.podcastId
@@ -111,9 +107,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** App bar setup. */
     private fun setupAppBar() {
-        // Restore saved instance state.
-        binding.appBarLayout.setExpanded(!isAppBarCollapsed, false)
-
         // Disable AppBarLayout dragging behavior.
         if (binding.appBarLayout.layoutParams != null) {
             val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams

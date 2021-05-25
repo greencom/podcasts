@@ -29,14 +29,6 @@ class ExploreFragment : Fragment() {
     var isAppBarCollapsed = false
         private set
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        savedInstanceState?.apply {
-            isAppBarCollapsed = getBoolean(STATE_APP_BAR)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -49,6 +41,11 @@ class ExploreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         postponeEnterTransition()
+
+        // Restore instance state.
+        savedInstanceState?.apply {
+            binding.appBarLayout.setExpanded(!getBoolean(STATE_APP_BAR), false)
+        }
 
         setupAppBar()
         setupTabLayout()
@@ -70,9 +67,6 @@ class ExploreFragment : Fragment() {
 
     /** App bar setup. */
     private fun setupAppBar() {
-        // Restore saved instance state.
-        binding.appBarLayout.setExpanded(!isAppBarCollapsed, false)
-
         // Disable AppBarLayout dragging behavior.
         if (binding.appBarLayout.layoutParams != null) {
             val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
