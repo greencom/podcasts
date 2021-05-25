@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:animateLayoutChanges="true">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/title"
@@ -80,6 +79,39 @@
         app:layout_constraintStart_toStartOf="@+id/title"
         app:layout_constraintTop_toBottomOf="@+id/subscribe"
         tools:text="Евгений Стаховский читает рассказы и повести известных и не очень известных авторов." />
+
+    <View
+        android:id="@+id/description_trailing_gradient"
+        android:layout_width="16dp"
+        android:layout_height="0dp"
+        android:background="@drawable/shape_trailing_gradient"
+        app:layout_constraintBottom_toBottomOf="@+id/description"
+        app:layout_constraintEnd_toStartOf="@+id/description_more"
+        app:layout_constraintTop_toTopOf="@+id/description_more" />
+
+    <TextView
+        android:id="@+id/description_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:paddingStart="16dp"
+        android:text="@string/podcast_more"
+        android:textColor="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/description"
+        app:layout_constraintEnd_toStartOf="@id/description_arrow_down" />
+
+    <ImageView
+        android:id="@+id/description_arrow_down"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?attr/colorSurface"
+        android:contentDescription="@null"
+        android:paddingTop="2dp"
+        app:layout_constraintBottom_toBottomOf="@id/description"
+        app:layout_constraintEnd_toEndOf="@id/description"
+        app:layout_constraintTop_toTopOf="@id/description_more"
+        app:srcCompat="@drawable/ic_arrow_down_24"
+        app:tint="?attr/colorPrimary" />
 
     <View
         android:id="@+id/divider"

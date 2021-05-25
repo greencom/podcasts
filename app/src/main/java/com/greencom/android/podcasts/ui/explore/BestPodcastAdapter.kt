@@ -40,6 +40,7 @@ class BestPodcastViewHolder private constructor(
 
     // View context.
     private val context = binding.root.context
+
     // Podcast associated with this ViewHolder.
     private lateinit var podcast: PodcastShort
 

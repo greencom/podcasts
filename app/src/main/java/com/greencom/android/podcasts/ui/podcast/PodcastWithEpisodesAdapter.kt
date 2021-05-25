@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.ui.podcast
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -92,6 +93,7 @@ class PodcastHeaderViewHolder private constructor(
 
     // View context.
     private val context = binding.root.context
+
     // Podcast associated with this ViewHolder.
     private lateinit var podcast: Podcast
 
@@ -103,10 +105,30 @@ class PodcastHeaderViewHolder private constructor(
             if (podcast.subscribed) binding.subscribe.isChecked = true
         }
 
-        // Expand and collapse description text.
-        binding.description.setOnClickListener {
-            binding.description.apply {
-                maxLines = if (maxLines == 5) 50 else 5
+        // Check line count when the description is laid out.
+        binding.description.doOnLayout {
+            if (binding.description.lineCount <= 5) {
+                // Do not show 'More' button and do not set a click listener.
+                binding.descriptionTrailingGradient.isVisible = false
+                binding.descriptionMore.isVisible = false
+                binding.descriptionArrowDown.isVisible = false
+            } else {
+                // Expand and collapse description text.
+                binding.description.setOnClickListener {
+                    binding.description.apply {
+                        if (maxLines == 5) {
+                            maxLines = 50
+                            binding.descriptionTrailingGradient.isVisible = false
+                            binding.descriptionMore.isVisible = false
+                            binding.descriptionArrowDown.isVisible = false
+                        } else {
+                            maxLines = 5
+                            binding.descriptionTrailingGradient.isVisible = true
+                            binding.descriptionMore.isVisible = true
+                            binding.descriptionArrowDown.isVisible = true
+                        }
+                    }
+                }
             }
         }
     }
