@@ -21,10 +21,10 @@ import kotlin.math.roundToInt
 const val GLOBAL_TAG = "global___"
 
 /** Duration used to create crossfade animations. */
-const val ANIMATION_DURATION_CROSSFADE = 150L
+const val DURATION_CROSSFADE_ANIMATION = 150L
 
 /** Duration used to animate player slider thumb radius. */
-const val ANIMATION_DURATION_SLIDER_THUMB = 120L
+const val DURATION_SLIDER_THUMB_ANIMATION = 120L
 
 /**
  * Enum class that represents a sort order. Enum [value]s can be used in ListenApiService
@@ -106,14 +106,14 @@ fun View.revealCrossfade() {
     isVisible = true
     animate()
         .alpha(1f)
-        .setDuration(ANIMATION_DURATION_CROSSFADE)
+        .setDuration(DURATION_CROSSFADE_ANIMATION)
 }
 
 /** Hide a view with a crossfade animation. */
 fun View.hideCrossfade() {
     animate()
         .alpha(0f)
-        .setDuration(ANIMATION_DURATION_CROSSFADE)
+        .setDuration(DURATION_CROSSFADE_ANIMATION)
         .withEndAction { isVisible = false }
 }
 
