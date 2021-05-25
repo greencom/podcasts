@@ -16,7 +16,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
@@ -27,6 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
+
+private const val SCROLL_TO_TOP_THRESHOLD = 5
 
 @AndroidEntryPoint
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
@@ -69,6 +70,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Restore instance state.
         savedInstanceState?.apply {
             binding.appBarLayout.setExpanded(!getBoolean(STATE_APP_BAR), false)
+            binding.scrollToTop.apply { if (getBoolean(STATE_SCROLL_TO_TOP)) show() else hide() }
         }
 
         // Get the podcast ID from the navigation arguments.
@@ -89,6 +91,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         outState.apply {
             putBoolean(STATE_APP_BAR, isAppBarCollapsed)
+            putBoolean(STATE_SCROLL_TO_TOP, binding.scrollToTop.isOrWillBeShown)
         }
     }
 
@@ -128,18 +131,17 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** RecyclerView setup. */
     private fun setupRecyclerView() {
-        // Dividers.
         val divider = CustomDividerItemDecoration(requireContext(), true)
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
         )
 
-        // On scroll listener.
         val onScrollListener = object : RecyclerView.OnScrollListener() {
             val layoutManager = binding.list.layoutManager as LinearLayoutManager
             var visibleItemCount = 0
             var totalItemCount = 0
             var firstVisibleItemPosition = 0
+            var initialCheckSkipped = false
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -147,11 +149,17 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 totalItemCount = layoutManager.itemCount
                 firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
 
-                // Show and hide the fab.
-                if (firstVisibleItemPosition >= 5 && dy < 0) {
-                    binding.scrollToTop.show()
+                // Show and hide the fab. Skip the initial check to restore instance state.
+                if (initialCheckSkipped) {
+                    binding.scrollToTop.apply {
+                        if (firstVisibleItemPosition >= SCROLL_TO_TOP_THRESHOLD && dy < 0) {
+                            show()
+                        } else {
+                            hide()
+                        }
+                    }
                 } else {
-                    binding.scrollToTop.hide()
+                    initialCheckSkipped = true
                 }
             }
         }
@@ -183,7 +191,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         binding.scrollToTop.setOnClickListener {
             binding.list.smoothScrollToPosition(0)
             binding.appBarLayout.setExpanded(true, true)
-            (it as FloatingActionButton).hide()
         }
 
         // Fetch the podcast from the error screen.
@@ -283,5 +290,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     companion object {
         // Saving instance state.
         private const val STATE_APP_BAR = "app_bar_state"
+        private const val STATE_SCROLL_TO_TOP = "scroll_to_top_state"
     }
 }

@@ -94,6 +94,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="@string/podcast_scroll_to_top_description"
+        android:visibility="invisible"
         app:backgroundTint="?attr/colorSurface"
         app:fabSize="mini"
         app:srcCompat="@drawable/ic_arrow_up_24"
