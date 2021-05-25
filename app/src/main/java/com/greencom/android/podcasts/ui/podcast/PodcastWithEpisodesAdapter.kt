@@ -11,8 +11,8 @@ import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
-import com.greencom.android.podcasts.databinding.PodcastEpisodeItemBinding
-import com.greencom.android.podcasts.databinding.PodcastHeaderBinding
+import com.greencom.android.podcasts.databinding.ItemPodcastEpisodeBinding
+import com.greencom.android.podcasts.databinding.ItemPodcastHeaderBinding
 import com.greencom.android.podcasts.utils.PodcastWithEpisodesDiffCallback
 import com.greencom.android.podcasts.utils.audioLengthToString
 import com.greencom.android.podcasts.utils.pubDateToString
@@ -86,7 +86,7 @@ class PodcastWithEpisodesAdapter(
 
 /** PodcastHeaderViewHolder represents a podcast header in the list. */
 class PodcastHeaderViewHolder private constructor(
-    private val binding: PodcastHeaderBinding,
+    private val binding: ItemPodcastHeaderBinding,
     private val updateSubscription: (String, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
@@ -137,7 +137,7 @@ class PodcastHeaderViewHolder private constructor(
             parent: ViewGroup,
             updateSubscription: (String, Boolean) -> Unit,
         ): PodcastHeaderViewHolder {
-            val binding = PodcastHeaderBinding
+            val binding = ItemPodcastHeaderBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return PodcastHeaderViewHolder(binding, updateSubscription)
         }
@@ -146,7 +146,7 @@ class PodcastHeaderViewHolder private constructor(
 
 /** EpisodeViewHolder represents a single episode item in the list. */
 class EpisodeViewHolder private constructor(
-    private val binding: PodcastEpisodeItemBinding,
+    private val binding: ItemPodcastEpisodeBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     // View context.
@@ -169,7 +169,7 @@ class EpisodeViewHolder private constructor(
         fun create(
             parent: ViewGroup,
         ): EpisodeViewHolder {
-            val binding = PodcastEpisodeItemBinding
+            val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return EpisodeViewHolder(binding)
         }

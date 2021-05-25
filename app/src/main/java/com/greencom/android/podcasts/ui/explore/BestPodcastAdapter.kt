@@ -11,7 +11,7 @@ import coil.transform.RoundedCornersTransformation
 import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastShort
-import com.greencom.android.podcasts.databinding.BestPodcastItemBinding
+import com.greencom.android.podcasts.databinding.ItemBestPodcastBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 
@@ -33,7 +33,7 @@ class BestPodcastAdapter(
 
 /** ViewHolder that represents a single item in the best podcasts list. */
 class BestPodcastViewHolder private constructor(
-    private val binding: BestPodcastItemBinding,
+    private val binding: ItemBestPodcastBinding,
     private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
@@ -88,7 +88,7 @@ class BestPodcastViewHolder private constructor(
             navigateToPodcast: (String) -> Unit,
             updateSubscription: (String, Boolean) -> Unit
         ): BestPodcastViewHolder {
-            val binding = BestPodcastItemBinding
+            val binding = ItemBestPodcastBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return BestPodcastViewHolder(binding, navigateToPodcast, updateSubscription)
         }

@@ -16,13 +16,13 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="4"
-            tools:listitem="@layout/best_podcast_item" />
+            tools:listitem="@layout/item_best_podcast" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include
         android:id="@+id/error"
-        layout="@layout/error_screen"
+        layout="@layout/screen_error"
         android:visibility="gone" />
 
     <ProgressBar

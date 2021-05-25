@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.greencom.android.podcasts.databinding.UnsubscribeDialogBinding
+import com.greencom.android.podcasts.databinding.DialogUnsubscribeBinding
 
 // Initialization parameters.
 private const val PODCAST_ID = "podcast_id"
@@ -15,7 +15,7 @@ private const val PODCAST_ID = "podcast_id"
 class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
-    private var _binding: UnsubscribeDialogBinding? = null
+    private var _binding: DialogUnsubscribeBinding? = null
     /** Non-null View binding. */
     private val binding get() = _binding!!
 
@@ -55,7 +55,7 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         // View binding setup.
-        _binding = UnsubscribeDialogBinding.inflate(inflater, container, false)
+        _binding = DialogUnsubscribeBinding.inflate(inflater, container, false)
         return binding.root
     }
 

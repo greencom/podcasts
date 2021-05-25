@@ -3,7 +3,7 @@
     <style name="Theme.Podcasts" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- System status bar -->
-        <item name="android:statusBarColor">@color/surface_light</item>
+        <item name="android:statusBarColor">@color/light_surface</item>
         <item name="android:windowLightStatusBar">true</item>
 
         <!-- System navigation bar color setup is moved to v27 versions of themes.xml
@@ -17,31 +17,31 @@
         <!-- Default values end -->
 
         <!-- Main colors start -->
-        <item name="colorPrimary">@color/primary_light</item>
+        <item name="colorPrimary">@color/light_primary</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSurface">@color/surface_light</item>
+        <item name="colorSurface">@color/light_surface</item>
         <item name="colorOnSurface">@color/black</item>
-        <item name="android:colorBackground">@color/surface_light</item>
+        <item name="android:colorBackground">@color/light_surface</item>
         <item name="colorOnBackground">@color/black</item>
-        <item name="android:colorEdgeEffect">@color/on_surface_hint_light</item>
+        <item name="android:colorEdgeEffect">@color/light_on_surface_hint</item>
 
-        <item name="colorOnSurfaceHigh">@color/on_surface_high_light</item>
-        <item name="colorOnSurfaceMedium">@color/on_surface_medium_light</item>
-        <item name="colorOnSurfaceLow">@color/on_surface_low_light</item>
-        <item name="colorOnSurfaceHint">@color/on_surface_hint_light</item>
-        <item name="colorOnSurfaceUtil">@color/on_surface_util_light</item>
+        <item name="colorOnSurfaceHigh">@color/light_on_surface_high</item>
+        <item name="colorOnSurfaceMedium">@color/light_on_surface_medium</item>
+        <item name="colorOnSurfaceLow">@color/light_on_surface_low</item>
+        <item name="colorOnSurfaceHint">@color/light_on_surface_hint</item>
+        <item name="colorOnSurfaceUtil">@color/light_on_surface_util</item>
 
-        <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
-        <item name="colorBottomNavViewBackground">@color/surface_light</item>
-        <item name="colorFabRipple">@color/on_surface_util_light</item>
+        <item name="colorSwipeToRefreshBackground">@color/light_surface</item>
+        <item name="colorBottomNavViewBackground">@color/light_surface</item>
+        <item name="colorFabRipple">@color/light_on_surface_util</item>
 
-        <item name="colorBottomSheetBackground">@color/surface_light</item>
-        <item name="colorBottomSheetPill">@color/on_surface_util_light</item>
+        <item name="colorBottomSheetBackground">@color/light_surface</item>
+        <item name="colorBottomSheetPill">@color/light_on_surface_util</item>
         <!-- Main colors end -->
 
         <!-- Specific colors start -->
-        <item name="colorPlayerCollapsedBackground">@color/player_collapsed_background_light</item>
-        <item name="colorPlayerPlay">@color/on_surface_medium_light</item>
+        <item name="colorPlayerCollapsedBackground">@color/light_player_collapsed_background</item>
+        <item name="colorPlayerPlay">@color/light_on_surface_medium</item>
         <!-- Specific colors end -->
 
     </style>

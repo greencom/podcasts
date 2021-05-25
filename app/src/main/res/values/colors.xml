@@ -2,22 +2,22 @@
 <resources>
 
     <!-- Main colors start -->
-    <color name="surface_light">#FFFFFF</color>
-    <color name="surface_dark">#222222</color>
-    <color name="primary_light">#1976D2</color>
-    <color name="primary_dark">#90CAF9</color>
+    <color name="light_surface">#FFFFFF</color>
+    <color name="light_primary">#1976D2</color>
+    <color name="dark_surface">#222222</color>
+    <color name="dark_primary">#90CAF9</color>
 
-    <color name="on_surface_high_light">#212121</color>
-    <color name="on_surface_medium_light">#3C4043</color>
-    <color name="on_surface_low_light">#5F6368</color>
-    <color name="on_surface_hint_light">#80868B</color>
-    <color name="on_surface_util_light">#E0E0E0</color>
+    <color name="light_on_surface_high">#212121</color>
+    <color name="light_on_surface_medium">#3C4043</color>
+    <color name="light_on_surface_low">#5F6368</color>
+    <color name="light_on_surface_hint">#80868B</color>
+    <color name="light_on_surface_util">#E0E0E0</color>
 
-    <color name="on_surface_high_dark">#FFFFFF</color>
-    <color name="on_surface_medium_dark">#DADCE0</color>
-    <color name="on_surface_low_dark">#BDC1C6</color>
-    <color name="on_surface_hint_dark">#969BA1</color>
-    <color name="on_surface_util_dark">#3D3D3D</color>
+    <color name="dark_on_surface_high">#FFFFFF</color>
+    <color name="dark_on_surface_medium">#DADCE0</color>
+    <color name="dark_on_surface_low">#BDC1C6</color>
+    <color name="dark_on_surface_hint">#969BA1</color>
+    <color name="dark_on_surface_util">#3D3D3D</color>
     <!-- Main colors end -->
 
     <!-- Common colors start -->
@@ -30,15 +30,15 @@
 
     <!-- Specific colors start -->
     <color name="background_scrim">#80000000</color>
-    <color name="navigation_bar_on_dialog_dark">#3D3D3D</color>
-    <color name="bottom_nav_view_background_dark">#222223</color>
-    <color name="fab_ripple_dark">#535353</color>
+    <color name="dark_navigation_bar_on_dialog">#3D3D3D</color>
+    <color name="dark_bottom_nav_view_background">#222223</color>
+    <color name="dark_fab_ripple">#535353</color>
 
-    <color name="bottom_sheet_background_dark">#303030</color>
-    <color name="bottom_sheet_pill_dark">#4F4F4F</color>
+    <color name="dark_bottom_sheet_background">#303030</color>
+    <color name="dark_bottom_sheet_pill">#4F4F4F</color>
 
     <color name="player_shadows">#0D000000</color>
-    <color name="player_collapsed_background_light">#FAFAFA</color>
+    <color name="light_player_collapsed_background">#FAFAFA</color>
     <!-- Specific colors end -->
 
 </resources>

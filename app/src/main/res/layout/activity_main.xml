@@ -57,9 +57,9 @@
         android:layout_height="@dimen/bottom_nav_bar_height"
         android:layout_gravity="bottom"
         android:background="?attr/colorBottomNavViewBackground"
-        app:itemIconTint="@color/bottom_nav_view_item"
+        app:itemIconTint="@color/bottom_nav_view_item_text"
         app:itemRippleColor="@null"
-        app:itemTextColor="@color/bottom_nav_view_item"
+        app:itemTextColor="@color/bottom_nav_view_item_text"
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

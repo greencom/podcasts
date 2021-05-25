@@ -4,11 +4,11 @@
     <style name="Theme.Podcasts" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- System status bar -->
-        <item name="android:statusBarColor">@color/surface_dark</item>
+        <item name="android:statusBarColor">@color/dark_surface</item>
         <item name="android:windowLightStatusBar">false</item>
 
         <!-- System navigation bar -->
-        <item name="android:navigationBarColor">@color/surface_dark</item>
+        <item name="android:navigationBarColor">@color/dark_surface</item>
         <item name="android:windowLightNavigationBar">false</item>
 
         <!-- Default values start -->
@@ -18,31 +18,31 @@
         <!-- Default values end -->
 
         <!-- Main colors start -->
-        <item name="colorPrimary">@color/primary_dark</item>
+        <item name="colorPrimary">@color/dark_primary</item>
         <item name="colorOnPrimary">@color/black</item>
-        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorSurface">@color/dark_surface</item>
         <item name="colorOnSurface">@color/white</item>
-        <item name="android:colorBackground">@color/surface_dark</item>
+        <item name="android:colorBackground">@color/dark_surface</item>
         <item name="colorOnBackground">@color/white</item>
-        <item name="android:colorEdgeEffect">@color/on_surface_hint_dark</item>
+        <item name="android:colorEdgeEffect">@color/dark_on_surface_hint</item>
 
-        <item name="colorOnSurfaceHigh">@color/on_surface_high_dark</item>
-        <item name="colorOnSurfaceMedium">@color/on_surface_medium_dark</item>
-        <item name="colorOnSurfaceLow">@color/on_surface_low_dark</item>
-        <item name="colorOnSurfaceHint">@color/on_surface_hint_dark</item>
-        <item name="colorOnSurfaceUtil">@color/on_surface_util_dark</item>
+        <item name="colorOnSurfaceHigh">@color/dark_on_surface_high</item>
+        <item name="colorOnSurfaceMedium">@color/dark_on_surface_medium</item>
+        <item name="colorOnSurfaceLow">@color/dark_on_surface_low</item>
+        <item name="colorOnSurfaceHint">@color/dark_on_surface_hint</item>
+        <item name="colorOnSurfaceUtil">@color/dark_on_surface_util</item>
 
-        <item name="colorSwipeToRefreshBackground">@color/bottom_sheet_background_dark</item>
-        <item name="colorBottomNavViewBackground">@color/bottom_nav_view_background_dark</item>
-        <item name="colorFabRipple">@color/fab_ripple_dark</item>
+        <item name="colorSwipeToRefreshBackground">@color/dark_bottom_sheet_background</item>
+        <item name="colorBottomNavViewBackground">@color/dark_bottom_nav_view_background</item>
+        <item name="colorFabRipple">@color/dark_fab_ripple</item>
 
-        <item name="colorBottomSheetBackground">@color/bottom_sheet_background_dark</item>
-        <item name="colorBottomSheetPill">@color/bottom_sheet_pill_dark</item>
+        <item name="colorBottomSheetBackground">@color/dark_bottom_sheet_background</item>
+        <item name="colorBottomSheetPill">@color/dark_bottom_sheet_pill</item>
         <!-- Main colors end -->
 
         <!-- Specific colors start -->
-        <item name="colorPlayerCollapsedBackground">@color/bottom_sheet_background_dark</item>
-        <item name="colorPlayerPlay">@color/primary_dark</item>
+        <item name="colorPlayerCollapsedBackground">@color/dark_bottom_sheet_background</item>
+        <item name="colorPlayerPlay">@color/dark_primary</item>
         <!-- Specific colors end -->
 
     </style>
