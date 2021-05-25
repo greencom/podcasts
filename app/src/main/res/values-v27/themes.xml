@@ -34,6 +34,7 @@
 
         <item name="colorSwipeToRefreshBackground">@color/surface_light</item>
         <item name="colorBottomNavViewBackground">@color/surface_light</item>
+        <item name="colorFabRipple">@color/on_surface_util_light</item>
 
         <item name="colorBottomSheetBackground">@color/surface_light</item>
         <item name="colorBottomSheetPill">@color/on_surface_util_light</item>

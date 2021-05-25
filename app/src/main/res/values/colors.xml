@@ -32,6 +32,7 @@
     <color name="background_scrim">#80000000</color>
     <color name="navigation_bar_on_dialog_dark">#3D3D3D</color>
     <color name="bottom_nav_view_background_dark">#222223</color>
+    <color name="fab_ripple_dark">#535353</color>
 
     <color name="bottom_sheet_background_dark">#303030</color>
     <color name="bottom_sheet_pill_dark">#4F4F4F</color>

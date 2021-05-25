@@ -33,6 +33,7 @@
 
         <item name="colorSwipeToRefreshBackground">@color/bottom_sheet_background_dark</item>
         <item name="colorBottomNavViewBackground">@color/bottom_nav_view_background_dark</item>
+        <item name="colorFabRipple">@color/fab_ripple_dark</item>
 
         <item name="colorBottomSheetBackground">@color/bottom_sheet_background_dark</item>
         <item name="colorBottomSheetPill">@color/bottom_sheet_pill_dark</item>
