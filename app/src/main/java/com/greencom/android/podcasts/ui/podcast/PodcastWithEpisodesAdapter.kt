@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.ui.podcast
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
@@ -23,6 +24,9 @@ import kotlinx.coroutines.*
 private const val ITEM_VIEW_TYPE_PODCAST_HEADER = 0
 private const val ITEM_VIEW_TYPE_EPISODE = 1
 
+private const val DESCRIPTION_MIN_LINES = 5
+private const val DESCRIPTION_MAX_LINES = 100
+
 /**
  * Adapter used for RecyclerView that represents a list consisting of a podcast header and
  * a list of podcast episodes.
@@ -35,6 +39,9 @@ class PodcastWithEpisodesAdapter(
 
     /** Adapter coroutine scope. */
     private val adapterScope = CoroutineScope(Dispatchers.Default)
+
+    /** Whether the podcast description is expanded. False at start. */
+    private var isPodcastDescriptionExpanded = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
@@ -51,7 +58,7 @@ class PodcastWithEpisodesAdapter(
         when (holder) {
             is PodcastHeaderViewHolder -> {
                 val podcast = getItem(position) as PodcastWithEpisodesDataItem.PodcastHeader
-                holder.bind(podcast.podcast)
+                holder.bind(podcast.podcast, isPodcastDescriptionExpanded)
             }
             is EpisodeViewHolder -> {
                 val episode = getItem(position) as PodcastWithEpisodesDataItem.EpisodeItem
@@ -83,6 +90,14 @@ class PodcastWithEpisodesAdapter(
                 episodes.map { PodcastWithEpisodesDataItem.EpisodeItem(it) }
         withContext(Dispatchers.Main) { submitList(items) }
     }
+
+    /** Expand or collapse the podcast description depending on its current state. */
+    fun expandOrCollapseDescription() {
+        // Update description state.
+        isPodcastDescriptionExpanded = isPodcastDescriptionExpanded.not()
+        // Make the adapter redraw the podcast header with a new description state.
+        notifyItemChanged(0)
+    }
 }
 
 /** PodcastHeaderViewHolder represents a podcast header in the list. */
@@ -107,34 +122,22 @@ class PodcastHeaderViewHolder private constructor(
 
         // Check line count when the description is laid out.
         binding.description.doOnLayout {
-            if (binding.description.lineCount <= 5) {
+            if (binding.description.lineCount <= DESCRIPTION_MIN_LINES) {
                 // Do not show 'More' button and do not set a click listener.
                 binding.descriptionTrailingGradient.isVisible = false
                 binding.descriptionMore.isVisible = false
                 binding.descriptionArrowDown.isVisible = false
             } else {
-                // Expand and collapse description text.
+                // Set OnClickListener to expand and collapse description text.
                 binding.description.setOnClickListener {
-                    binding.description.apply {
-                        if (maxLines == 5) {
-                            maxLines = 50
-                            binding.descriptionTrailingGradient.isVisible = false
-                            binding.descriptionMore.isVisible = false
-                            binding.descriptionArrowDown.isVisible = false
-                        } else {
-                            maxLines = 5
-                            binding.descriptionTrailingGradient.isVisible = true
-                            binding.descriptionMore.isVisible = true
-                            binding.descriptionArrowDown.isVisible = true
-                        }
-                    }
+                    (bindingAdapter as PodcastWithEpisodesAdapter).expandOrCollapseDescription()
                 }
             }
         }
     }
 
     /** Bind PodcastViewHolder with a given [Podcast]. */
-    fun bind(podcast: Podcast) {
+    fun bind(podcast: Podcast, isDescriptionExpanded: Boolean) {
         // Update the podcast associated with this ViewHolder.
         this.podcast = podcast
 
@@ -148,7 +151,9 @@ class PodcastHeaderViewHolder private constructor(
         }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
-        binding.description.text = podcast.description
+        binding.description.text =
+            HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+                .trim()
         binding.explicitContent.isVisible = podcast.explicitContent
         binding.episodeCount.text = context.resources.getQuantityString(
             R.plurals.podcast_episode_count,
@@ -158,6 +163,13 @@ class PodcastHeaderViewHolder private constructor(
 
         // "Subscribe" button setup.
         setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
+
+        // Handle 'isDescriptionExpanded'.
+        binding.descriptionTrailingGradient.isVisible = !isDescriptionExpanded
+        binding.descriptionMore.isVisible = !isDescriptionExpanded
+        binding.descriptionArrowDown.isVisible = !isDescriptionExpanded
+        binding.description.maxLines =
+            if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
     }
 
     companion object {

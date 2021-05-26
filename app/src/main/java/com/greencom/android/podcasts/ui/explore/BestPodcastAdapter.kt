@@ -76,6 +76,7 @@ class BestPodcastViewHolder private constructor(
         // Remove all HTML tags from description.
         binding.description.text =
             HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+                .trim()
         // Show explicit content icon depending on `explicitContent` value.
         binding.explicitContent.isVisible = podcast.explicitContent
         // Setup `Subscribe` button.
