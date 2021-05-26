@@ -80,14 +80,13 @@
         app:layout_constraintTop_toBottomOf="@+id/subscribe"
         tools:text="Евгений Стаховский читает рассказы и повести известных и не очень известных авторов." />
 
-    <View
+    <TextView
         android:id="@+id/description_trailing_gradient"
         android:layout_width="16dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:background="@drawable/shape_trailing_gradient"
         app:layout_constraintBottom_toBottomOf="@+id/description"
-        app:layout_constraintEnd_toStartOf="@+id/description_more"
-        app:layout_constraintTop_toTopOf="@+id/description_more" />
+        app:layout_constraintEnd_toStartOf="@+id/description_more" />
 
     <TextView
         android:id="@+id/description_more"

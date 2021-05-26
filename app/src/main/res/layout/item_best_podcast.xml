@@ -71,8 +71,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:background="@drawable/shape_trailing_gradient"
-            android:paddingStart="32dp"
-            android:text="" />
+            android:paddingStart="32dp" />
 
     </FrameLayout>
 
