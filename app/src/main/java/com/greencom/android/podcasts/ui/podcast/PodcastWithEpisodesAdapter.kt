@@ -26,7 +26,7 @@ private const val ITEM_VIEW_TYPE_EPISODE = 1
 private const val DESCRIPTION_MIN_LINES = 5
 private const val DESCRIPTION_MAX_LINES = 100
 
-private const val DURATION_SORT_ORDER_ANIMATION = 300L
+private const val DURATION_SORT_ORDER_ANIMATION = 200L
 
 /**
  * Adapter used for RecyclerView that represents a list consisting of a podcast header and
