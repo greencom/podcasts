@@ -48,7 +48,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
-        PodcastWithEpisodesAdapter(viewModel::updateSubscription)
+        PodcastWithEpisodesAdapter(
+            viewModel.sortOrder,
+            viewModel::updateSubscription,
+            viewModel::changeSortOrder
+        )
     }
 
     /** Whether the app bar is collapsed or not. */

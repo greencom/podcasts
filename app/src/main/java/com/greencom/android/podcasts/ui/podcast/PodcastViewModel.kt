@@ -29,8 +29,21 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
     /** Flow of events represented by [PodcastEvent]. */
     val event = _event.receiveAsFlow()
 
+    private val _sortOrder = MutableStateFlow(SortOrder.RECENT_FIRST)
+    /** StateFlow with the current [SortOrder] value. Defaults to [SortOrder.RECENT_FIRST]. */
+    val sortOrder = _sortOrder.asStateFlow()
+
     /** Job that handles episodes fetching. */
     private var episodesJob: Job? = null
+
+    /** Reverse the [sortOrder] value. */
+    fun changeSortOrder() {
+        _sortOrder.value = if (_sortOrder.value == SortOrder.RECENT_FIRST) {
+            SortOrder.OLDEST_FIRST
+        } else {
+            SortOrder.RECENT_FIRST
+        }
+    }
 
     /** Load a podcast with episodes for a given ID. The result will be posted to [uiState]. */
     fun getPodcastWithEpisodes(id: String) = viewModelScope.launch {

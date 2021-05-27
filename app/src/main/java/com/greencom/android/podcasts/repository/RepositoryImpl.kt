@@ -32,6 +32,8 @@ import javax.inject.Singleton
  */
 private const val EPISODES_LIMIT = 30
 
+private const val MAX_HOURS_FROM_UPDATE = 6L
+
 /**
  * App [Repository] implementation. Provides access to the ListenAPI network service
  * and the app database tables.
@@ -114,7 +116,7 @@ class RepositoryImpl @Inject constructor(
                 // There is the podcast in the database. Calculate time since the last update.
                 val timeFromLastUpdate = System.currentTimeMillis() - updateDate
 
-                if (timeFromLastUpdate <= TimeUnit.HOURS.toMillis(3)) {
+                if (timeFromLastUpdate <= TimeUnit.HOURS.toMillis(MAX_HOURS_FROM_UPDATE)) {
                     // If the podcast data was recently updated, get latestPubDate and
                     // earliestPubDate from the database.
                     latestPubDate = podcastDao.getLatestPubDate(id)!!

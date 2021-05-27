@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.ui.podcast
 
+import android.animation.ObjectAnimator
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
@@ -15,11 +16,9 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.ItemPodcastEpisodeBinding
 import com.greencom.android.podcasts.databinding.ItemPodcastHeaderBinding
-import com.greencom.android.podcasts.utils.PodcastWithEpisodesDiffCallback
-import com.greencom.android.podcasts.utils.audioLengthToString
-import com.greencom.android.podcasts.utils.pubDateToString
-import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
+import com.greencom.android.podcasts.utils.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
 
 private const val ITEM_VIEW_TYPE_PODCAST_HEADER = 0
 private const val ITEM_VIEW_TYPE_EPISODE = 1
@@ -27,12 +26,16 @@ private const val ITEM_VIEW_TYPE_EPISODE = 1
 private const val DESCRIPTION_MIN_LINES = 5
 private const val DESCRIPTION_MAX_LINES = 100
 
+private const val DURATION_SORT_ORDER_ANIMATION = 300L
+
 /**
  * Adapter used for RecyclerView that represents a list consisting of a podcast header and
  * a list of podcast episodes.
  */
 class PodcastWithEpisodesAdapter(
+    val sortOrder: StateFlow<SortOrder>,
     private val updateSubscription: (String, Boolean) -> Unit,
+    private val changeSortOrder: () -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -47,7 +50,8 @@ class PodcastWithEpisodesAdapter(
         return when (viewType) {
             ITEM_VIEW_TYPE_PODCAST_HEADER -> PodcastHeaderViewHolder.create(
                 parent,
-                updateSubscription
+                updateSubscription,
+                changeSortOrder
             )
             ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(parent)
             else -> throw ClassCastException("Unknown viewType $viewType")
@@ -58,7 +62,7 @@ class PodcastWithEpisodesAdapter(
         when (holder) {
             is PodcastHeaderViewHolder -> {
                 val podcast = getItem(position) as PodcastWithEpisodesDataItem.PodcastHeader
-                holder.bind(podcast.podcast, isPodcastDescriptionExpanded)
+                holder.bind(podcast.podcast, sortOrder.value, isPodcastDescriptionExpanded)
             }
             is EpisodeViewHolder -> {
                 val episode = getItem(position) as PodcastWithEpisodesDataItem.EpisodeItem
@@ -104,6 +108,7 @@ class PodcastWithEpisodesAdapter(
 class PodcastHeaderViewHolder private constructor(
     private val binding: ItemPodcastHeaderBinding,
     private val updateSubscription: (String, Boolean) -> Unit,
+    private val changeSortOrder: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     // View context.
@@ -111,6 +116,8 @@ class PodcastHeaderViewHolder private constructor(
 
     // Podcast associated with this ViewHolder.
     private lateinit var podcast: Podcast
+
+    private var sortOrderAnimator: ObjectAnimator? = null
 
     init {
         // Update subscription to the podcast.
@@ -134,10 +141,20 @@ class PodcastHeaderViewHolder private constructor(
                 }
             }
         }
+
+        // Change sort order.
+        binding.sortOrder.setOnClickListener {
+            changeSortOrder()
+            if ((bindingAdapter as PodcastWithEpisodesAdapter).sortOrder.value == SortOrder.RECENT_FIRST) {
+                rotateSortOrder(0F)
+            } else {
+                rotateSortOrder(180F)
+            }
+        }
     }
 
     /** Bind PodcastViewHolder with a given [Podcast]. */
-    fun bind(podcast: Podcast, isDescriptionExpanded: Boolean) {
+    fun bind(podcast: Podcast, sortOrder: SortOrder, isDescriptionExpanded: Boolean) {
         // Update the podcast associated with this ViewHolder.
         this.podcast = podcast
 
@@ -160,6 +177,7 @@ class PodcastHeaderViewHolder private constructor(
             podcast.episodeCount,
             podcast.episodeCount
         )
+        binding.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
 
         // "Subscribe" button setup.
         setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
@@ -172,15 +190,33 @@ class PodcastHeaderViewHolder private constructor(
             if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
     }
 
+    /** Rotate the 'Sort order' button to a given value. */
+    private fun rotateSortOrder(to: Float) {
+        if (sortOrderAnimator != null) {
+            sortOrderAnimator?.setFloatValues(to)
+        } else {
+            sortOrderAnimator = ObjectAnimator.ofFloat(
+                binding.sortOrder,
+                "rotation",
+                to
+            ).apply {
+                duration = DURATION_SORT_ORDER_ANIMATION
+                setAutoCancel(true)
+            }
+        }
+        sortOrderAnimator?.start()
+    }
+
     companion object {
         /** Create a [PodcastHeaderViewHolder]. */
         fun create(
             parent: ViewGroup,
             updateSubscription: (String, Boolean) -> Unit,
+            changeSortOrder: () -> Unit,
         ): PodcastHeaderViewHolder {
             val binding = ItemPodcastHeaderBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return PodcastHeaderViewHolder(binding, updateSubscription)
+            return PodcastHeaderViewHolder(binding, updateSubscription, changeSortOrder)
         }
     }
 }

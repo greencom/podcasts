@@ -131,4 +131,16 @@
         app:layout_constraintTop_toBottomOf="@+id/divider"
         tools:text="394 Episodes" />
 
+    <ImageButton
+        android:id="@+id/sort_order"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/podcast_sort_order"
+        android:src="@drawable/ic_arrow_down_24"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:tint="?attr/colorOnSurfaceLow" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

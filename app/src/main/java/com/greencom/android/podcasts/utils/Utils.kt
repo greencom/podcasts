@@ -23,9 +23,6 @@ const val GLOBAL_TAG = "global___"
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
 
-/** Duration used to animate player slider thumb radius. */
-const val DURATION_SLIDER_THUMB_ANIMATION = 120L
-
 /**
  * Enum class that represents a sort order. Enum [value]s can be used in ListenApiService
  * methods.

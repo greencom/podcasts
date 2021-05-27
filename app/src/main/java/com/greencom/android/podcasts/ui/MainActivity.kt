@@ -25,10 +25,11 @@ import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
-import com.greencom.android.podcasts.utils.DURATION_SLIDER_THUMB_ANIMATION
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
+
+private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
@@ -47,6 +48,10 @@ class MainActivity : AppCompatActivity() {
     private var statusBarColor = 0
     private var navigationBarColorDefault = TypedValue()
     private var navigationBarColorChanged = TypedValue()
+
+    private var thumbAnimator: ObjectAnimator? = null
+    private var thumbRadiusDefault = 0
+    private var thumbRadiusIncreased = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,7 +109,8 @@ class MainActivity : AppCompatActivity() {
     /** Make player closable on outside click. */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         if (ev.action == MotionEvent.ACTION_DOWN &&
-            playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
+            playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED
+        ) {
 
             // Create a new empty Rect with [0,0,0,0] values for [left,top,right,bottom].
             val outRect = Rect()
@@ -139,6 +145,9 @@ class MainActivity : AppCompatActivity() {
         statusBarColor = getColor(R.color.background_scrim)
         theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
         theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
+
+        thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
+        thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
     }
 
     /** Navigation component setup. */
@@ -243,18 +252,18 @@ class MainActivity : AppCompatActivity() {
         bottomNavBarHeight: Float
     ) {
         // Animate alpha of the player collapsed content.
-        binding.player.collapsed.root.alpha = 1f - slideOffset * 10
-        binding.player.collapsed.progressBar.alpha = 1f - slideOffset * 100
+        binding.player.collapsed.root.alpha = 1F - slideOffset * 10
+        binding.player.collapsed.progressBar.alpha = 1F - slideOffset * 100
 
         // Animate alpha of the player expanded content.
-        binding.player.expanded.root.alpha = (slideOffset * 1.5f) - 0.15f
+        binding.player.expanded.root.alpha = (slideOffset * 1.5F) - 0.15F
 
         // Animate the displacement of the bottomNavBar along the y-axis.
         binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
 
         // Animate player shadow.
-        binding.playerShadowExternal.alpha = 1f - slideOffset * 3
-        binding.playerShadowInternal.alpha = 1f - slideOffset * 3
+        binding.playerShadowExternal.alpha = 1F - slideOffset * 3
+        binding.playerShadowInternal.alpha = 1F - slideOffset * 3
 
         // Animate alpha of the background behind player.
         binding.background.alpha = slideOffset
@@ -271,22 +280,22 @@ class MainActivity : AppCompatActivity() {
      */
     @RequiresApi(Build.VERSION_CODES.O_MR1)
     private fun controlPlayerOnBottomSheetSlideV27(
-            slideOffset: Float,
-            bottomNavBarHeight: Float
+        slideOffset: Float,
+        bottomNavBarHeight: Float
     ) {
         // Animate alpha of the player collapsed content.
-        binding.player.collapsed.root.alpha = 1f - slideOffset * 10
-        binding.player.collapsed.progressBar.alpha = 1f - slideOffset * 100
+        binding.player.collapsed.root.alpha = 1F - slideOffset * 10
+        binding.player.collapsed.progressBar.alpha = 1F - slideOffset * 100
 
         // Animate alpha of the player expanded content.
-        binding.player.expanded.root.alpha = (slideOffset * 1.5f) - 0.15f
+        binding.player.expanded.root.alpha = (slideOffset * 1.5F) - 0.15F
 
         // Animate the displacement of the bottomNavBar along the y-axis.
         binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
 
         // Animate player shadow.
-        binding.playerShadowExternal.alpha = 1f - slideOffset * 3
-        binding.playerShadowInternal.alpha = 1f - slideOffset * 3
+        binding.playerShadowExternal.alpha = 1F - slideOffset * 3
+        binding.playerShadowInternal.alpha = 1F - slideOffset * 3
 
         // Animate alpha of the background behind player.
         binding.background.alpha = slideOffset
@@ -340,31 +349,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         // OnSliderTouchListener is used for animating slider thumb radius.
-        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
-        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
         val onTouchListener = object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
-                val increaseThumb = ObjectAnimator.ofInt(
-                        binding.player.expanded.slider,
-                        "thumbRadius",
-                        thumbRadiusIncreased
-                ).apply {
-                    duration = DURATION_SLIDER_THUMB_ANIMATION
-                    setAutoCancel(true)
-                }
-                increaseThumb.start()
+                animateSliderThumb(thumbRadiusIncreased)
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                val decreaseThumb = ObjectAnimator.ofInt(
-                        binding.player.expanded.slider,
-                        "thumbRadius",
-                        thumbRadiusDefault
-                ).apply {
-                    duration = DURATION_SLIDER_THUMB_ANIMATION
-                    setAutoCancel(true)
-                }
-                decreaseThumb.start()
+                animateSliderThumb(thumbRadiusDefault)
             }
         }
         binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
@@ -440,6 +431,23 @@ class MainActivity : AppCompatActivity() {
             resources.getString(R.string.bottom_nav_explore) -> navigate(R.id.action_global_exploreFragment)
             resources.getString(R.string.bottom_nav_activity) -> navigate(R.id.action_global_activityFragment)
         }
+    }
+
+    /** Animate slider thumb radius to a given value. */
+    private fun animateSliderThumb(to: Int) {
+        if (thumbAnimator != null) {
+            thumbAnimator?.setIntValues(to)
+        } else {
+            thumbAnimator = ObjectAnimator.ofInt(
+                binding.player.expanded.slider,
+                "thumbRadius",
+                to
+            ).apply {
+                duration = DURATION_SLIDER_THUMB_ANIMATION
+                setAutoCancel(true)
+            }
+        }
+        thumbAnimator?.start()
     }
 
     companion object {
