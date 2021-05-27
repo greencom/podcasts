@@ -4,22 +4,24 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
+import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.BaseViewModel
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PodcastViewModel @Inject constructor(private val repository: Repository) : BaseViewModel() {
+class PodcastViewModel @Inject constructor(
+    private val repository: Repository,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<PodcastState>(PodcastState.Loading)
     /** StateFlow of UI state. States are presented by [PodcastState]. */
@@ -47,13 +49,27 @@ class PodcastViewModel @Inject constructor(private val repository: Repository) :
 
     /** Load a podcast with episodes for a given ID. The result will be posted to [uiState]. */
     fun getPodcastWithEpisodes(id: String) = viewModelScope.launch {
-        repository.getPodcastWithEpisodes(id).collectLatest { state ->
-            when (state) {
-                is State.Loading -> _uiState.value = PodcastState.Loading
-                is State.Success -> _uiState.value = PodcastState.Success(state.data)
-                is State.Error -> _uiState.value = PodcastState.Error(state.exception)
+        repository.getPodcastWithEpisodes(id)
+            .combine(sortOrder) { value, sortOrder ->
+                var result = value
+                if (value is State.Success) {
+                    val episodes = if (sortOrder == SortOrder.RECENT_FIRST) {
+                        value.data.episodes.sortedByDescending { it.date }
+                    } else {
+                        value.data.episodes.sortedBy { it.date }
+                    }
+                    result = State.Success(PodcastWithEpisodes(value.data.podcast, episodes))
+                }
+                result
             }
-        }
+            .flowOn(defaultDispatcher)
+            .collectLatest { state ->
+                when (state) {
+                    is State.Loading -> _uiState.value = PodcastState.Loading
+                    is State.Success -> _uiState.value = PodcastState.Success(state.data)
+                    is State.Error -> _uiState.value = PodcastState.Error(state.exception)
+                }
+            }
     }
 
     /** Fetch the podcast from ListenAPI and insert it into the database. */
