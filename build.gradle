@@ -50,6 +50,7 @@ ext {
     material_version = '1.3.0'
     recyclerview_version = '1.2.0'
     swipeRefresh_version = '1.1.0'
+    coroutines_version = '1.5.0'
     jetpackCore_version = '1.5.0'
     legacySupport_version = '1.0.0'
 
@@ -58,6 +59,5 @@ ext {
     robolectric_version = '4.5.1'
     jetpackJUnit_version = '1.1.2'
     arch_version = '2.1.0'
-    coroutines_version = '1.5.0-native-mt'
     jetpackEspresso_version = '3.3.0'
 }

@@ -104,6 +104,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefresh_version"
 
     // Core
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     implementation "androidx.core:core-ktx:$jetpackCore_version"
     implementation "androidx.legacy:legacy-support-v4:$legacySupport_version"
 
