@@ -79,9 +79,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // Get the podcast ID from the navigation arguments.
         id = args.podcastId
+        viewModel.podcastId = id
 
         // Load a podcast with episodes.
-        viewModel.getPodcastWithEpisodes(id)
+        viewModel.getPodcastWithEpisodes()
+        viewModel.fetchEpisodes()
 
         setupAppBar()
         setupRecyclerView()
@@ -198,7 +200,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         // Fetch the podcast from the error screen.
-        binding.error.tryAgain.setOnClickListener { viewModel.fetchPodcast(id) }
+        binding.error.tryAgain.setOnClickListener { viewModel.fetchPodcast() }
     }
 
     /** Set observers for ViewModel observables. */

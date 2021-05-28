@@ -26,7 +26,7 @@
     <string name="explore_search">Поиск</string>
     <string name="explore_subscribe">Подписаться</string>
     <string name="explore_subscribed">Подписка оформлена</string>
-    <string name="explore_explicit_content_description">Нецензурная лексика</string>
+    <string name="explore_explicit_content_description">Содержимое 18+</string>
     <string name="explore_something_went_wrong">Что-то пошло не так</string>
     <string name="explore_check_connection">Проверьте соединение с интернетом и повторите попытку</string>
     <string name="explore_best_podcasts_error">При загрузке возникла ошибка</string>
@@ -54,6 +54,7 @@
     <!-- PodcastFragment start -->
     <string name="podcast_subscribe">Подписаться</string>
     <string name="podcast_subscribed">Подписка оформлена</string>
+    <string name="podcast_explicit_content_description">Содержимое 18+</string>
     <string name="podcast_scroll_to_top_description">Вернуться наверх</string>
     <string name="podcast_more">Подробнее</string>
     <string name="podcast_sort_order">Сортировка</string>

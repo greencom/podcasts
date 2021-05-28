@@ -111,11 +111,14 @@ class PodcastHeaderViewHolder private constructor(
     private val changeSortOrder: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    // View context.
+    /** View context. */
     private val context = binding.root.context
 
-    // Podcast associated with this ViewHolder.
+    /** Podcast associated with this ViewHolder. */
     private lateinit var podcast: Podcast
+
+    /** Whether the description is expandable depending on the line count. */
+    private var isDescriptionExpandable = true
 
     private var sortOrderAnimator: ObjectAnimator? = null
 
@@ -131,6 +134,7 @@ class PodcastHeaderViewHolder private constructor(
         binding.description.doOnLayout {
             if (binding.description.lineCount <= DESCRIPTION_MIN_LINES) {
                 // Do not show 'More' button and do not set a click listener.
+                isDescriptionExpandable = false
                 binding.descriptionTrailingGradient.isVisible = false
                 binding.descriptionMore.isVisible = false
                 binding.descriptionArrowDown.isVisible = false
@@ -183,9 +187,9 @@ class PodcastHeaderViewHolder private constructor(
         setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
 
         // Handle 'isDescriptionExpanded'.
-        binding.descriptionTrailingGradient.isVisible = !isDescriptionExpanded
-        binding.descriptionMore.isVisible = !isDescriptionExpanded
-        binding.descriptionArrowDown.isVisible = !isDescriptionExpanded
+        binding.descriptionTrailingGradient.isVisible = !isDescriptionExpanded && isDescriptionExpandable
+        binding.descriptionMore.isVisible = !isDescriptionExpanded && isDescriptionExpandable
+        binding.descriptionArrowDown.isVisible = !isDescriptionExpanded && isDescriptionExpandable
         binding.description.maxLines =
             if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
     }

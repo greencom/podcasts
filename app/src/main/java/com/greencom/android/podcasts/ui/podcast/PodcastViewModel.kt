@@ -23,6 +23,9 @@ class PodcastViewModel @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel() {
 
+    /** ID of the podcast. */
+    var podcastId = ""
+
     private val _uiState = MutableStateFlow<PodcastState>(PodcastState.Loading)
     /** StateFlow of UI state. States are presented by [PodcastState]. */
     val uiState = _uiState.asStateFlow()
@@ -38,18 +41,19 @@ class PodcastViewModel @Inject constructor(
     /** Job that handles episodes fetching. */
     private var episodesJob: Job? = null
 
-    /** Reverse the [sortOrder] value. */
+    /** Reverse the [sortOrder] value and init episodes fetching. */
     fun changeSortOrder() {
         _sortOrder.value = if (_sortOrder.value == SortOrder.RECENT_FIRST) {
             SortOrder.OLDEST_FIRST
         } else {
             SortOrder.RECENT_FIRST
         }
+        fetchEpisodes()
     }
 
-    /** Load a podcast with episodes for a given ID. The result will be posted to [uiState]. */
-    fun getPodcastWithEpisodes(id: String) = viewModelScope.launch {
-        repository.getPodcastWithEpisodes(id)
+    /** Load a podcast with episodes. The result will be posted to [uiState]. */
+    fun getPodcastWithEpisodes() = viewModelScope.launch {
+        repository.getPodcastWithEpisodes(podcastId)
             .combine(sortOrder) { value, sortOrder -> sortEpisodes(value, sortOrder) }
             .flowOn(defaultDispatcher)
             .collectLatest { state ->
@@ -62,9 +66,9 @@ class PodcastViewModel @Inject constructor(
     }
 
     /** Fetch the podcast from ListenAPI and insert it into the database. */
-    fun fetchPodcast(id: String) = viewModelScope.launch {
+    fun fetchPodcast() = viewModelScope.launch {
         _event.send(PodcastEvent.Fetching)
-        when (repository.fetchPodcast(id)) {
+        when (repository.fetchPodcast(podcastId)) {
             is State.Error -> {
                 _event.send(PodcastEvent.Snackbar(R.string.podcast_something_went_wrong))
             }
@@ -76,11 +80,11 @@ class PodcastViewModel @Inject constructor(
     }
 
     // TODO
-    fun fetchEpisodes(id: String, isForced: Boolean = false) {
+    fun fetchEpisodes(isForced: Boolean = false) {
         episodesJob?.cancel()
         episodesJob = viewModelScope.launch {
             _event.send(PodcastEvent.EpisodesFetchingStarted)
-            repository.fetchEpisodes(id, SortOrder.RECENT_FIRST, isForced)
+            repository.fetchEpisodes(podcastId, sortOrder.value, isForced)
             _event.send(PodcastEvent.EpisodesFetchingFinished)
         }
     }

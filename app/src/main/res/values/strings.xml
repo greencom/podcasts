@@ -54,6 +54,7 @@
     <!-- PodcastFragment start -->
     <string name="podcast_subscribe">Subscribe</string>
     <string name="podcast_subscribed">Subscribed</string>
+    <string name="podcast_explicit_content_description">Explicit content</string>
     <string name="podcast_scroll_to_top_description">Scroll to top</string>
     <string name="podcast_more">More</string>
     <string name="podcast_sort_order">Sort order</string>
