@@ -188,10 +188,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Handle toolbar back button clicks.
         binding.toolbarBack.setOnClickListener { findNavController().navigateUp() }
 
-        // TODO
-        binding.swipeToRefresh.setOnRefreshListener {
-
-        }
+        // Force episodes fetching on swipe-to-refresh.
+        binding.swipeToRefresh.setOnRefreshListener { viewModel.fetchEpisodes(true) }
 
         // Scroll to top and hide the fab.
         binding.scrollToTop.setOnClickListener {
@@ -277,9 +275,13 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             is PodcastEvent.EpisodesFetchingStarted ->
                 binding.episodesProgressBar.revealImmediately()
 
-            // Hide episodes fetching progress bar.
+            // Stop episodes fetching progress bar.
             is PodcastEvent.EpisodesFetchingFinished ->
                 binding.episodesProgressBar.hideCrossfade()
+
+            // Stop episodes swipe-to-refresh indicator.
+            PodcastEvent.EpisodesForcedFetchingFinished ->
+                binding.swipeToRefresh.isRefreshing = false
         }
     }
 

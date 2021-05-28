@@ -79,13 +79,23 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
-    // TODO
+    /**
+     * Fetch episodes for this podcast. Pass `true` to [isForced] to force the fetching regardless
+     * the last update date.
+     */
     fun fetchEpisodes(isForced: Boolean = false) {
         episodesJob?.cancel()
         episodesJob = viewModelScope.launch {
-            _event.send(PodcastEvent.EpisodesFetchingStarted)
-            repository.fetchEpisodes(podcastId, sortOrder.value, isForced)
-            _event.send(PodcastEvent.EpisodesFetchingFinished)
+            try {
+                repository.fetchEpisodes(podcastId, sortOrder.value, isForced, _event)
+            } finally {
+                // Stop the appropriate loading indicator in the 'finally' block.
+                if (isForced) {
+                    _event.send(PodcastEvent.EpisodesForcedFetchingFinished)
+                } else {
+                    _event.send(PodcastEvent.EpisodesFetchingFinished)
+                }
+            }
         }
     }
 
@@ -155,5 +165,8 @@ class PodcastViewModel @Inject constructor(
 
         /** Episodes fetching has finished. */
         object EpisodesFetchingFinished : PodcastEvent()
+
+        /** Episodes forced fetching initialized with swipe-to-refresh has finished. */
+        object EpisodesForcedFetchingFinished : PodcastEvent()
     }
 }

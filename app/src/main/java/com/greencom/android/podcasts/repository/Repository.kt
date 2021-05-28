@@ -3,8 +3,10 @@ package com.greencom.android.podcasts.repository
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.network.PodcastWrapper
+import com.greencom.android.podcasts.ui.podcast.PodcastViewModel
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -40,7 +42,12 @@ interface Repository {
      * sort order) with no limit and then loads episodes at the bottom of the list until the
      * number of all episodes loaded to the database for this podcast exceeds the limit.
      */
-    suspend fun fetchEpisodes(id: String, sortOrder: SortOrder, isForced: Boolean): State<Unit>
+    suspend fun fetchEpisodes(
+        id: String,
+        sortOrder: SortOrder,
+        isForced: Boolean,
+        event: Channel<PodcastViewModel.PodcastEvent>
+    ): State<Unit>
 
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of

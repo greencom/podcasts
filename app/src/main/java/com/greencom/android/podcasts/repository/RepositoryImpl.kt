@@ -9,10 +9,12 @@ import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.*
+import com.greencom.android.podcasts.ui.podcast.PodcastViewModel
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -83,7 +85,8 @@ class RepositoryImpl @Inject constructor(
     override suspend fun fetchEpisodes(
         id: String,
         sortOrder: SortOrder,
-        isForced: Boolean
+        isForced: Boolean,
+        event: Channel<PodcastViewModel.PodcastEvent>
     ): State<Unit> {
 
         // Get episode count that has been loaded for this podcast.
@@ -98,6 +101,7 @@ class RepositoryImpl @Inject constructor(
         if (isForced) {
             // Update the podcast data regardless of the last update time.
 
+            startEpisodesLoadingIndicator(isForced, event)
             when (val result = fetchPodcast(id, sortOrder)) {
                 is State.Success -> {
                     latestPubDate = result.data.latestPubDate
@@ -125,6 +129,7 @@ class RepositoryImpl @Inject constructor(
                     // If the podcast data was updated more than 3 hours ago, update the podcast
                     // data.
 
+                    startEpisodesLoadingIndicator(isForced, event)
                     when (val result = fetchPodcast(id, sortOrder)) {
                         is State.Success -> {
                             latestPubDate = result.data.latestPubDate
@@ -139,6 +144,7 @@ class RepositoryImpl @Inject constructor(
             } else {
                 // There is no podcast in the database, fetch it.
 
+                startEpisodesLoadingIndicator(isForced, event)
                 when (val result = fetchPodcast(id, sortOrder)) {
                     is State.Success -> {
                         latestPubDate = result.data.latestPubDate
@@ -179,6 +185,7 @@ class RepositoryImpl @Inject constructor(
             // depending on the current sort order.
 
             // Insert the episodes that were fetched earlier.
+            startEpisodesLoadingIndicator(isForced, event)
             episodeDao.insert(topEpisodes)
             episodesLoaded = topEpisodes.size
 
@@ -211,6 +218,7 @@ class RepositoryImpl @Inject constructor(
                 // Check if there are episodes at the bottom that should be loaded.
                 if (bottomLoadedPubDate != bottomPubDate) {
 
+                    startEpisodesLoadingIndicator(isForced, event)
                     val result = fetchEpisodesSequentially(
                         id,
                         bottomLoadedPubDate!!,
@@ -232,6 +240,7 @@ class RepositoryImpl @Inject constructor(
                 // Fetch without the limit to ensure that the user will see the appropriate
                 // episodes at the top of the list according to the sort order.
 
+                startEpisodesLoadingIndicator(isForced, event)
                 var result = fetchEpisodesSequentially(
                     id,
                     topLoadedPubDate,
@@ -252,6 +261,7 @@ class RepositoryImpl @Inject constructor(
                 // Check if there are episodes at the bottom that should be loaded.
                 if (bottomLoadedPubDate != bottomPubDate) {
 
+                    startEpisodesLoadingIndicator(isForced, event)
                     result = fetchEpisodesSequentially(
                         id,
                         bottomLoadedPubDate!!,
@@ -364,5 +374,17 @@ class RepositoryImpl @Inject constructor(
         } catch (e: HttpException) {
             State.Error(e)
         }
+    }
+
+    /**
+     * If the fetching was forced by the user, do nothing, since the swipe-to-refreshed
+     * loading indicator has already started by the gesture. Otherwise, push
+     * `EpisodesFetchingStarted` event to [event] channel.
+     */
+    private suspend fun startEpisodesLoadingIndicator(
+        isForced: Boolean,
+        event: Channel<PodcastViewModel.PodcastEvent>
+    ) {
+        if (!isForced) event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
     }
 }
