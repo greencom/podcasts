@@ -25,7 +25,7 @@ interface ListenApiService {
      *               parameter. Default value is `0`.
      * @return A [SearchEpisodeWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("search")
     suspend fun searchEpisode(
             @Query("q") query: String,
@@ -47,7 +47,7 @@ interface ListenApiService {
      *               parameter. Default value is `0`.
      * @return A [SearchPodcastWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("search")
     suspend fun searchPodcast(
             @Query("q") query: String,
@@ -70,7 +70,7 @@ interface ListenApiService {
      *             `oldest_first`. Default is `recent_first`.
      * @return A [PodcastWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("podcasts/{id}")
     suspend fun getPodcast(
         @Path("id") id: String,
@@ -87,7 +87,7 @@ interface ListenApiService {
      * @param region filter best podcasts by country/region. Default is `ru`.
      * @return A [BestPodcastsWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("best_podcasts")
     suspend fun getBestPodcasts(
         @Query("genre_id") genreId: Int,
@@ -101,7 +101,7 @@ interface ListenApiService {
      *
      * @return A [GenresWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTENAPI_KEY")
+    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("genres")
     suspend fun getGenres(): GenresWrapper
 }
