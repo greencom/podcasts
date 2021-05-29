@@ -27,7 +27,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
 
-private const val SCROLL_TO_TOP_THRESHOLD = 5
+private const val FAB_TOP_THRESHOLD = 10
+private const val SMOOTH_SCROLL_THRESHOLD = 100
 
 @AndroidEntryPoint
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
@@ -158,7 +159,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 // Show and hide the fab. Skip the initial check to restore instance state.
                 if (initialCheckSkipped) {
                     binding.scrollToTop.apply {
-                        if (firstVisibleItemPosition >= SCROLL_TO_TOP_THRESHOLD && dy < 0) {
+                        if (firstVisibleItemPosition >= FAB_TOP_THRESHOLD && dy < 0) {
                             show()
                         } else {
                             hide()
@@ -191,10 +192,17 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Force episodes fetching on swipe-to-refresh.
         binding.swipeToRefresh.setOnRefreshListener { viewModel.fetchEpisodes(true) }
 
-        // Scroll to top and hide the fab.
+        // Scroll to top.
         binding.scrollToTop.setOnClickListener {
-            binding.list.smoothScrollToPosition(0)
-            binding.appBarLayout.setExpanded(true, true)
+            // Do smooth scroll only if the user has not scrolled far enough.
+            if ((binding.list.layoutManager as LinearLayoutManager)
+                    .findFirstVisibleItemPosition() <= SMOOTH_SCROLL_THRESHOLD) {
+                binding.list.smoothScrollToPosition(0)
+                binding.appBarLayout.setExpanded(true, true)
+            } else {
+                binding.list.scrollToPosition(0)
+                binding.appBarLayout.setExpanded(true, true)
+            }
         }
 
         // Fetch the podcast from the error screen.
