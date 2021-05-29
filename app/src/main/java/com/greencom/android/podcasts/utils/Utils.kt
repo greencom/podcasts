@@ -160,14 +160,18 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
  * - "1 hr 35 min" in any other case.
  */
 fun audioLengthToString(length: Int, context: Context): String {
-    val hours = (length / TimeUnit.HOURS.toSeconds(1)).toInt()
-    val minutes = ((length - TimeUnit.HOURS.toSeconds(1) * hours) /
-            TimeUnit.MINUTES.toSeconds(1).toFloat()).roundToInt()
+    if (length <= 60) return context.getString(R.string.podcast_length_minutes, 1)
+
+    val hour = TimeUnit.HOURS.toSeconds(1).toInt()
+    val minute = TimeUnit.MINUTES.toSeconds(1).toFloat()
+
+    val hours = length / hour
+    val minutes = ((length - hours * hour) / minute).roundToInt()
 
     return when {
+        hours != 0 && minutes != 0 -> context.getString(R.string.podcast_length_full, hours, minutes)
         hours != 0 && minutes == 0 -> context.getString(R.string.podcast_length_hours, hours)
-        hours == 0 -> context.getString(R.string.podcast_length_minutes, minutes)
-        else -> context.getString(R.string.podcast_length_full, hours, minutes)
+        else -> context.getString(R.string.podcast_length_minutes, minutes)
     }
 }
 

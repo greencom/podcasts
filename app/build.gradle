@@ -48,13 +48,18 @@ android {
     }
 }
 
+// Fix androidTest build crush due to some META-INF whatever it is.
+configurations.all {
+    resolutionStrategy {
+        exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
+
+    }
+}
+
 dependencies {
 
     // Coil
     implementation "io.coil-kt:coil:$coil_version"
-
-    // Paging 3
-    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
