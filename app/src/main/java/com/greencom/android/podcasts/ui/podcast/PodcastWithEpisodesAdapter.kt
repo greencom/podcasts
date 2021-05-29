@@ -233,14 +233,11 @@ class EpisodeViewHolder private constructor(
     // View context.
     private val context = binding.root.context
 
-    // Current time in millis.
-    private val currentTime = System.currentTimeMillis()
-
     /** Bind EpisodeViewHolder with a given [Episode]. */
     fun bind(episode: Episode) {
         binding.title.text = episode.title
         // Date formatting.
-        binding.date.text = pubDateToString(episode.date, currentTime, context)
+        binding.date.text = pubDateToString(episode.date, context)
         // Episode length formatting.
         binding.play.text = audioLengthToString(episode.audioLength, context)
     }

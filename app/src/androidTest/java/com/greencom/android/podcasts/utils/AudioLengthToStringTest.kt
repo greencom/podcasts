@@ -28,7 +28,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_hoursAndMinutesAnd10Seconds() {
+    fun audioLengthToString_1Hour23Minutes10Seconds() {
         val h = 1
         val m = 23
         val s = 10
@@ -41,7 +41,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_hoursAndMinutesAnd50Seconds() {
+    fun audioLengthToString_1Hour23Minutes50Seconds() {
         val h = 1
         val m = 23
         val s = 50
@@ -54,7 +54,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_hoursOnly() {
+    fun audioLengthToString_2Hours() {
         val h = 2
         val m = 0
         val s = 0
@@ -67,7 +67,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_hoursAnd10Seconds() {
+    fun audioLengthToString_2Hours10Seconds() {
         val h = 2
         val m = 0
         val s = 10
@@ -80,7 +80,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_hoursAnd50Seconds() {
+    fun audioLengthToString_2Hours50Seconds() {
         val h = 2
         val m = 0
         val s = 50
@@ -93,7 +93,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_10minutes() {
+    fun audioLengthToString_10Minutes() {
         val h = 0
         val m = 10
         val s = 0
@@ -106,7 +106,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_50minutes() {
+    fun audioLengthToString_50Minutes() {
         val h = 0
         val m = 50
         val s = 0
@@ -119,7 +119,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_minutesAnd10Seconds() {
+    fun audioLengthToString_40Minutes10Seconds() {
         val h = 0
         val m = 40
         val s = 10
@@ -132,7 +132,7 @@ class AudioLengthToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun audioLengthToString_minutesAnd50Seconds() {
+    fun audioLengthToString_40Minutes50Seconds() {
         val h = 0
         val m = 40
         val s = 50

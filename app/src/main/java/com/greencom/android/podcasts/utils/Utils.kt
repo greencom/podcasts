@@ -180,17 +180,26 @@ fun audioLengthToString(length: Int, context: Context): String {
  * than 7 days ago, return the most appropriate date description, otherwise return the date
  * in the format `day, month, year`.
  */
-fun pubDateToString(pubDate: Long, currentDate: Long, context: Context): String {
-    return when (val timeFromNow = currentDate - pubDate) {
+fun pubDateToString(pubDate: Long, context: Context): String {
+    val currentTime = System.currentTimeMillis()
+    return when (val timeFromNow = currentTime - pubDate) {
+
+        // Just now.
         in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.podcast_just_now)
+
+        // N hours ago.
         in (TimeUnit.HOURS.toMillis(1)..TimeUnit.DAYS.toMillis(1)) -> {
             val hours = timeFromNow / TimeUnit.HOURS.toMillis(1)
             context.resources.getQuantityString(R.plurals.podcast_hours_ago, hours.toInt(), hours)
         }
+
+        // N days ago.
         in (TimeUnit.DAYS.toMillis(1))..TimeUnit.DAYS.toMillis(7) -> {
             val days = timeFromNow / TimeUnit.DAYS.toMillis(1)
             context.resources.getQuantityString(R.plurals.podcast_days_ago, days.toInt(), days)
         }
+
+        // Date.
         else -> {
             val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
             dateFormatter.format(pubDate)
