@@ -9,16 +9,24 @@
     <attr name="colorOnSurfaceUtil" format="color" />
     <!-- Main attrs end -->
 
-    <!-- Specific attrs start -->
+    <!-- Other start -->
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
     <attr name="colorFabRipple" format="color" />
+    <!-- Other end -->
 
+    <!-- Bottom Sheet start -->
     <attr name="colorBottomSheetBackground" format="color" />
     <attr name="colorBottomSheetPill" format="color" />
+    <!-- Bottom Sheet end -->
 
+    <!-- Player start -->
     <attr name="colorPlayerCollapsedBackground" format="color" />
     <attr name="colorPlayerPlay" format="color" />
-    <!-- Specific attrs end -->
+    <!-- Player end -->
+
+    <!-- Error screen start -->
+    <attr name="colorErrorRobotWire" format="color" />
+    <!-- Error screen end -->
 
 </resources>

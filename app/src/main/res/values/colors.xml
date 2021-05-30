@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Main colors start -->
+    <!-- Main start -->
     <color name="light_surface">#FFFFFF</color>
-    <color name="light_primary">#1976D2</color>
     <color name="dark_surface">#222222</color>
+    <color name="light_primary">#1976D2</color>
     <color name="dark_primary">#90CAF9</color>
 
     <color name="light_on_surface_high">#212121</color>
@@ -18,27 +18,36 @@
     <color name="dark_on_surface_low">#BDC1C6</color>
     <color name="dark_on_surface_hint">#969BA1</color>
     <color name="dark_on_surface_util">#3D3D3D</color>
-    <!-- Main colors end -->
+    <!-- Main end -->
 
-    <!-- Common colors start -->
+    <!-- Common start -->
     <color name="transparent">#00FFFFFF</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="orange">#EF6C00</color>
     <color name="red">#F44336</color>
-    <!-- Common colors end -->
+    <!-- Common end -->
 
-    <!-- Specific colors start -->
+    <!-- Other start -->
     <color name="background_scrim">#80000000</color>
     <color name="dark_navigation_bar_on_dialog">#3D3D3D</color>
     <color name="dark_bottom_nav_view_background">#222223</color>
     <color name="dark_fab_ripple">#535353</color>
+    <!-- Other end -->
 
+    <!-- Bottom Sheet start -->
     <color name="dark_bottom_sheet_background">#303030</color>
     <color name="dark_bottom_sheet_pill">#4F4F4F</color>
+    <!-- Bottom Sheet end -->
 
+    <!-- Player start -->
     <color name="player_shadows">#0D000000</color>
     <color name="light_player_collapsed_background">#FAFAFA</color>
-    <!-- Specific colors end -->
+    <!-- Player start -->
+
+    <!-- Error screen start -->
+    <color name="light_error_robot_wire">#1C3177</color>
+    <color name="dark_error_robot_wire">#C5DFFF</color>
+    <!-- Error screen start -->
 
 </resources>

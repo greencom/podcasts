@@ -31,19 +31,27 @@
         <item name="colorOnSurfaceLow">@color/dark_on_surface_low</item>
         <item name="colorOnSurfaceHint">@color/dark_on_surface_hint</item>
         <item name="colorOnSurfaceUtil">@color/dark_on_surface_util</item>
+        <!-- Main colors end -->
 
+        <!-- Other start -->
         <item name="colorSwipeToRefreshBackground">@color/dark_bottom_sheet_background</item>
         <item name="colorBottomNavViewBackground">@color/dark_bottom_nav_view_background</item>
         <item name="colorFabRipple">@color/dark_fab_ripple</item>
+        <!-- Other end -->
 
+        <!-- Bottom Sheet start -->
         <item name="colorBottomSheetBackground">@color/dark_bottom_sheet_background</item>
         <item name="colorBottomSheetPill">@color/dark_bottom_sheet_pill</item>
-        <!-- Main colors end -->
+        <!-- Bottom Sheet end -->
 
-        <!-- Specific colors start -->
+        <!-- Player start -->
         <item name="colorPlayerCollapsedBackground">@color/dark_bottom_sheet_background</item>
         <item name="colorPlayerPlay">@color/dark_primary</item>
-        <!-- Specific colors end -->
+        <!-- Player end -->
+
+        <!-- Error screen start -->
+        <item name="colorErrorRobotWire">@color/dark_error_robot_wire</item>
+        <!-- Error screen end -->
 
     </style>
 </resources>
