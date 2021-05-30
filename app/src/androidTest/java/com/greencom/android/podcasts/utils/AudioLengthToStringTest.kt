@@ -36,7 +36,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_full, h, m))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_full, h, m))
     }
 
     @Test
@@ -49,7 +49,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_full, h, m + 1))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_full, h, m + 1))
     }
 
     @Test
@@ -62,7 +62,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_hours, h))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_hours, h))
     }
 
     @Test
@@ -75,7 +75,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_hours, h))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_hours, h))
     }
 
     @Test
@@ -88,7 +88,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_full, h, 1))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_full, h, 1))
     }
 
     @Test
@@ -101,7 +101,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_minutes, m))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m))
     }
 
     @Test
@@ -114,7 +114,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_minutes, m))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m))
     }
 
     @Test
@@ -127,7 +127,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_minutes, m))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m))
     }
 
     @Test
@@ -140,7 +140,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_minutes, m + 1))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m + 1))
     }
 
     @Test
@@ -153,7 +153,7 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_minutes, 1))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, 1))
     }
 
     @Test
@@ -166,6 +166,6 @@ class AudioLengthToStringTest {
 
         val result = audioLengthToString(length, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_length_minutes, 1))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, 1))
     }
 }

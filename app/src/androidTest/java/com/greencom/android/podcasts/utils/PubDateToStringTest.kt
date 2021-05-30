@@ -31,7 +31,7 @@ class PubDateToStringTest {
 
         val result = pubDateToString(date, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_just_now))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_pub_just_now))
     }
 
     @Test
@@ -41,7 +41,7 @@ class PubDateToStringTest {
 
         val result = pubDateToString(date, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_just_now))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_pub_just_now))
     }
 
     @Test
@@ -53,7 +53,7 @@ class PubDateToStringTest {
 
         val result = pubDateToString(date, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_just_now))
+        assertThat(result).isEqualTo(context.getString(R.string.episode_pub_just_now))
     }
 
     @Test
@@ -65,7 +65,7 @@ class PubDateToStringTest {
 
         assertThat(result).isEqualTo(
             context.resources.getQuantityString(
-                R.plurals.podcast_hours_ago,
+                R.plurals.episode_pub_hours_ago,
                 1,
                 1
             )
@@ -81,7 +81,7 @@ class PubDateToStringTest {
 
         assertThat(result).isEqualTo(
             context.resources.getQuantityString(
-                R.plurals.podcast_hours_ago,
+                R.plurals.episode_pub_hours_ago,
                 6,
                 6
             )
@@ -99,7 +99,7 @@ class PubDateToStringTest {
 
         assertThat(result).isEqualTo(
             context.resources.getQuantityString(
-                R.plurals.podcast_hours_ago,
+                R.plurals.episode_pub_hours_ago,
                 23,
                 23
             )
@@ -115,7 +115,7 @@ class PubDateToStringTest {
 
         assertThat(result).isEqualTo(
             context.resources.getQuantityString(
-                R.plurals.podcast_days_ago,
+                R.plurals.episode_pub_days_ago,
                 1,
                 1
             )
@@ -133,7 +133,7 @@ class PubDateToStringTest {
 
         assertThat(result).isEqualTo(
             context.resources.getQuantityString(
-                R.plurals.podcast_days_ago,
+                R.plurals.episode_pub_days_ago,
                 3,
                 3
             )
@@ -152,7 +152,7 @@ class PubDateToStringTest {
 
         assertThat(result).isEqualTo(
             context.resources.getQuantityString(
-                R.plurals.podcast_days_ago,
+                R.plurals.episode_pub_days_ago,
                 6,
                 6
             )
