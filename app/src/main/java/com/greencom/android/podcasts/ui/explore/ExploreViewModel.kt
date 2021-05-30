@@ -45,30 +45,17 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
      */
     fun fetchBestPodcasts(genreId: Int) = viewModelScope.launch {
         _event.send(ExplorePageEvent.Fetching)
-        when (repository.fetchBestPodcasts(genreId)) {
-            is State.Error -> {
-                _event.send(ExplorePageEvent.Snackbar(R.string.loading_error))
-            }
-
-            // Make `when` expression exhaustive.
-            is State.Loading -> {  }
-            is State.Success -> {  }
-        }
+        val result = repository.fetchBestPodcasts(genreId)
+        if (result is State.Error) _event.send(ExplorePageEvent.Snackbar(R.string.loading_error))
     }
 
     /** Refresh the best podcasts for a given genre ID. */
     fun refreshBestPodcasts(genreId: Int, currentList: List<PodcastShort>) = viewModelScope.launch {
         _event.send(ExplorePageEvent.Refreshing)
         when (repository.refreshBestPodcasts(genreId, currentList)) {
-            is State.Success -> {
-                _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
-            }
-            is State.Error -> {
-                _event.send(ExplorePageEvent.Snackbar(R.string.loading_error))
-            }
-
-            // Make `when` expression exhaustive.
-            is State.Loading -> {  }
+            is State.Success -> _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
+            is State.Error -> _event.send(ExplorePageEvent.Snackbar(R.string.loading_error))
+            else -> {  }
         }
     }
 

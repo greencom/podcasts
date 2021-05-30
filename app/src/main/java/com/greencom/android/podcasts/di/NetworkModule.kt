@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.di
 
+import com.greencom.android.podcasts.network.LISTEN_API_KEY
 import com.greencom.android.podcasts.network.ListenApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -43,15 +44,15 @@ object NetworkModule {
 
     /** Provides an instance of [OkHttpClient] with logging to use in `Retrofit.Builder()`. */
     @Provides
-    fun provideHttpClient(logging: HttpLoggingInterceptor): OkHttpClient {
+    fun provideHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(logging)
+            .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+            .addInterceptor {
+                val request = it.request().newBuilder()
+                    .header("X-ListenAPI-Key", LISTEN_API_KEY)
+                    .build()
+                it.proceed(request)
+            }
             .build()
-    }
-
-    /** Provides [HttpLoggingInterceptor] of [HttpLoggingInterceptor.Level.BASIC] level. */
-    @Provides
-    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
-        return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
     }
 }

@@ -68,15 +68,8 @@ class PodcastViewModel @Inject constructor(
     /** Fetch the podcast from ListenAPI and insert it into the database. */
     fun fetchPodcast() = viewModelScope.launch {
         _event.send(PodcastEvent.Fetching)
-        when (repository.fetchPodcast(podcastId)) {
-            is State.Error -> {
-                _event.send(PodcastEvent.Snackbar(R.string.something_went_wrong))
-            }
-
-            // Make `when` expression exhaustive.
-            is State.Loading -> {  }
-            is State.Success -> {  }
-        }
+        val result = repository.fetchPodcast(podcastId)
+        if (result is State.Error) _event.send(PodcastEvent.Snackbar(R.string.loading_error))
     }
 
     /**
@@ -87,9 +80,10 @@ class PodcastViewModel @Inject constructor(
         episodesJob?.cancel()
         episodesJob = viewModelScope.launch {
             try {
-                repository.fetchEpisodes(podcastId, sortOrder.value, isForced, _event)
+                val result = repository.fetchEpisodes(podcastId, sortOrder.value, isForced, _event)
+                if (result is State.Error) _event.send(PodcastEvent.Snackbar(R.string.loading_error))
             } finally {
-                // Stop the appropriate loading indicator in the 'finally' block.
+                // Stop the appropriate loading indicator.
                 if (isForced) {
                     _event.send(PodcastEvent.EpisodesForcedFetchingFinished)
                 } else {

@@ -1,14 +1,12 @@
 package com.greencom.android.podcasts.network
 
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
  * Interface that defines the methods for interacting with ListenAPI.
- * Available methods: [searchEpisode], [searchPodcast], [getPodcast], [getBestPodcasts],
- * [getGenres].
+ * Available methods: [searchEpisode], [searchPodcast], [getPodcast], [getBestPodcasts].
  */
 interface ListenApiService {
 
@@ -23,9 +21,8 @@ interface ListenApiService {
      *             if needed to search for podcasts, use [searchPodcast] instead.
      * @param offset offset for pagination. Use `nextOffset` from response for this
      *               parameter. Default value is `0`.
-     * @return A [SearchEpisodeWrapper] object.
+     * @return [SearchEpisodeWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("search")
     suspend fun searchEpisode(
             @Query("q") query: String,
@@ -45,9 +42,8 @@ interface ListenApiService {
      *             if needed to search for episodes, use [searchEpisode] instead.
      * @param offset offset for pagination. Use `nextOffset` from response for this
      *               parameter. Default value is `0`.
-     * @return A [SearchPodcastWrapper] object.
+     * @return [SearchPodcastWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("search")
     suspend fun searchPodcast(
             @Query("q") query: String,
@@ -68,14 +64,13 @@ interface ListenApiService {
      *                           10 episodes, depending on the value of the [sort] parameter.
      * @param sort Sort the episodes of this podcast. Available values: `recent_first`,
      *             `oldest_first`. Default is `recent_first`.
-     * @return A [PodcastWrapper] object.
+     * @return [PodcastWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("podcasts/{id}")
     suspend fun getPodcast(
         @Path("id") id: String,
         @Query("next_episode_pub_date") nextEpisodePubDate: Long?,
-        @Query("sort") sort: String = "recent_first",
+        @Query("sort") sort: String,
     ): PodcastWrapper
 
     /**
@@ -85,23 +80,12 @@ interface ListenApiService {
      * @param genreId what genre podcasts to get. Use `0` to get the overall best podcasts.
      * @param page page number of the response. Default is `1`.
      * @param region filter best podcasts by country/region. Default is `ru`.
-     * @return A [BestPodcastsWrapper] object.
+     * @return [BestPodcastsWrapper] object.
      */
-    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
     @GET("best_podcasts")
     suspend fun getBestPodcasts(
         @Query("genre_id") genreId: Int,
         @Query("page") page: Int = 1,
         @Query("region") region: String = "ru",
     ): BestPodcastsWrapper
-
-    /**
-     * Get podcast genres that are supported in Listen Notes. The genre ID can be
-     * passed to other endpoints as a parameter to get podcasts in a specific genre.
-     *
-     * @return A [GenresWrapper] object.
-     */
-    @Headers("X-ListenAPI-Key: $LISTEN_API_KEY")
-    @GET("genres")
-    suspend fun getGenres(): GenresWrapper
 }

@@ -10,6 +10,7 @@ import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.*
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel
+import com.greencom.android.podcasts.utils.ImpossibleCaseException
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import kotlinx.coroutines.CoroutineDispatcher
@@ -113,8 +114,7 @@ class RepositoryImpl @Inject constructor(
                     topEpisodes = result.data.episodesToDatabase()
                 }
                 is State.Error -> return result
-                // Impossible case.
-                else -> throw Exception()
+                else -> throw ImpossibleCaseException()
             }
         } else {
             // Check when the podcast data was updated last time.
@@ -141,8 +141,7 @@ class RepositoryImpl @Inject constructor(
                             topEpisodes = result.data.episodesToDatabase()
                         }
                         is State.Error -> return result
-                        // Impossible case.
-                        else -> throw Exception()
+                        else -> throw ImpossibleCaseException()
                     }
                 }
             } else {
@@ -156,8 +155,7 @@ class RepositoryImpl @Inject constructor(
                         topEpisodes = result.data.episodesToDatabase()
                     }
                     is State.Error -> return result
-                    // Impossible case.
-                    else -> throw Exception()
+                    else -> throw ImpossibleCaseException()
                 }
             }
         }
@@ -206,8 +204,7 @@ class RepositoryImpl @Inject constructor(
             return when (result) {
                 is State.Success -> State.Success(Unit)
                 is State.Error -> result
-                // Impossible case.
-                else -> throw Exception()
+                else -> throw ImpossibleCaseException()
             }
         } else {
             // There are episodes in the database for this podcast.
@@ -234,12 +231,11 @@ class RepositoryImpl @Inject constructor(
                     return when (result) {
                         is State.Success -> State.Success(Unit)
                         is State.Error -> result
-                        // Impossible case.
-                        else -> throw Exception()
+                        else -> throw ImpossibleCaseException()
                     }
                 }
             } else {
-                // There are episodes at top that should be loaded, fetch them in reverse order
+                // There are episodes at the top that should be loaded, fetch them in reverse order
                 // to ensure that there are no spaces between loaded episodes in the database.
                 // Fetch without the limit to ensure that the user will see the appropriate
                 // episodes at the top of the list according to the sort order.
@@ -255,8 +251,7 @@ class RepositoryImpl @Inject constructor(
                 when (result) {
                     is State.Success -> episodesLoaded += result.data
                     is State.Error -> return result
-                    // Impossible case.
-                    else -> throw Exception()
+                    else -> throw ImpossibleCaseException()
                 }
 
                 // Return if the number of loaded episodes is greater than limit.
@@ -277,8 +272,7 @@ class RepositoryImpl @Inject constructor(
                     return when (result) {
                         is State.Success -> State.Success(Unit)
                         is State.Error -> result
-                        // Impossible case.
-                        else -> throw Exception()
+                        else -> throw ImpossibleCaseException()
                     }
                 }
             }
@@ -396,9 +390,7 @@ class RepositoryImpl @Inject constructor(
         return if (isRetrofitSafe) {
             block()
         } else {
-            val result = withContext(ioDispatcher) {
-                block()
-            }
+            val result = withContext(ioDispatcher) { block() }
             isRetrofitSafe = true
             result
         }
