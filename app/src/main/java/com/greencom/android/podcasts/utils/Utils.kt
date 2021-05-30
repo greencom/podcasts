@@ -134,7 +134,7 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
     button.apply {
         if (subscribed) {
             isChecked = true
-            text = context.getString(R.string.explore_subscribed)
+            text = context.getString(R.string.subscribed)
             icon = ResourcesCompat.getDrawable(
                 context.resources,
                 R.drawable.ic_check_24,
@@ -142,7 +142,7 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
             )
         } else {
             isChecked = false
-            text = context.getString(R.string.explore_subscribe)
+            text = context.getString(R.string.subscribe)
             icon = ResourcesCompat.getDrawable(
                 context.resources,
                 R.drawable.ic_add_24,
@@ -160,7 +160,7 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
  * - "1 hr 35 min" in any other case.
  */
 fun audioLengthToString(length: Int, context: Context): String {
-    if (length <= 60) return context.getString(R.string.podcast_length_minutes, 1)
+    if (length <= 60) return context.getString(R.string.episode_length_minutes, 1)
 
     val hour = TimeUnit.HOURS.toSeconds(1).toInt()
     val minute = TimeUnit.MINUTES.toSeconds(1).toFloat()
@@ -169,9 +169,9 @@ fun audioLengthToString(length: Int, context: Context): String {
     val minutes = ((length - hours * hour) / minute).roundToInt()
 
     return when {
-        hours != 0 && minutes != 0 -> context.getString(R.string.podcast_length_full, hours, minutes)
-        hours != 0 && minutes == 0 -> context.getString(R.string.podcast_length_hours, hours)
-        else -> context.getString(R.string.podcast_length_minutes, minutes)
+        hours != 0 && minutes != 0 -> context.getString(R.string.episode_length_full, hours, minutes)
+        hours != 0 && minutes == 0 -> context.getString(R.string.episode_length_hours, hours)
+        else -> context.getString(R.string.episode_length_minutes, minutes)
     }
 }
 
@@ -185,18 +185,18 @@ fun pubDateToString(pubDate: Long, context: Context): String {
     return when (val timeFromNow = currentTime - pubDate) {
 
         // Just now.
-        in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.podcast_just_now)
+        in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.episode_pub_just_now)
 
         // N hours ago.
         in (TimeUnit.HOURS.toMillis(1)..TimeUnit.DAYS.toMillis(1)) -> {
             val hours = timeFromNow / TimeUnit.HOURS.toMillis(1)
-            context.resources.getQuantityString(R.plurals.podcast_hours_ago, hours.toInt(), hours)
+            context.resources.getQuantityString(R.plurals.episode_pub_hours_ago, hours.toInt(), hours)
         }
 
         // N days ago.
         in (TimeUnit.DAYS.toMillis(1))..TimeUnit.DAYS.toMillis(7) -> {
             val days = timeFromNow / TimeUnit.DAYS.toMillis(1)
-            context.resources.getQuantityString(R.plurals.podcast_days_ago, days.toInt(), days)
+            context.resources.getQuantityString(R.plurals.episode_pub_days_ago, days.toInt(), days)
         }
 
         // Date.

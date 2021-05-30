@@ -262,9 +262,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // Change 'Try again' button text.
         if (event is PodcastEvent.Fetching) {
-            binding.error.tryAgain.text = getString(R.string.explore_loading)
+            binding.error.tryAgain.text = getString(R.string.loading)
         } else {
-            binding.error.tryAgain.text = getString(R.string.explore_try_again)
+            binding.error.tryAgain.text = getString(R.string.try_again)
         }
 
         when (event) {

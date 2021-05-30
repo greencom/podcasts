@@ -47,7 +47,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
         _event.send(ExplorePageEvent.Fetching)
         when (repository.fetchBestPodcasts(genreId)) {
             is State.Error -> {
-                _event.send(ExplorePageEvent.Snackbar(R.string.explore_best_podcasts_error))
+                _event.send(ExplorePageEvent.Snackbar(R.string.loading_error))
             }
 
             // Make `when` expression exhaustive.
@@ -64,7 +64,7 @@ class ExploreViewModel @Inject constructor(private val repository: Repository) :
                 _event.send(ExplorePageEvent.Snackbar(R.string.explore_podcasts_updated))
             }
             is State.Error -> {
-                _event.send(ExplorePageEvent.Snackbar(R.string.explore_best_podcasts_error))
+                _event.send(ExplorePageEvent.Snackbar(R.string.loading_error))
             }
 
             // Make `when` expression exhaustive.

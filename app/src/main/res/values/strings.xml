@@ -3,14 +3,51 @@
 
     <string name="app_name">Podcasts</string>
 
-    <!-- Player strings start -->
-    <string name="player_cover_description">Cover</string>
-    <string name="player_play_description">Play</string>
-    <string name="player_pause_description">Pause</string>
-    <string name="player_backward_description">Backward</string>
-    <string name="player_forward_description">Forward</string>
-    <string name="player_options_description">Options</string>
-    <!-- Player strings end -->
+    <!-- Common start -->
+    <string name="subscribe">Subscribe</string>
+    <string name="subscribed">Subscribed</string>
+    <string name="search">Search</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="check_connection">Check your internet connection and try again</string>
+    <string name="loading_error">An error occurred while loading</string>
+    <string name="try_again">Try again</string>
+    <string name="loading">Loading</string>
+    <string name="more">More</string>
+
+    <string name="episode_pub_just_now">Just now</string>
+    <plurals name="episode_pub_hours_ago">
+        <item quantity="zero">%d hours ago</item>
+        <item quantity="one">%d hour ago</item>
+        <item quantity="two">%d hours ago</item>
+        <item quantity="few">%d hours ago</item>
+        <item quantity="many">%d hours ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="episode_pub_days_ago">
+        <item quantity="zero">%d days ago</item>
+        <item quantity="one">%d day ago</item>
+        <item quantity="two">%d days ago</item>
+        <item quantity="few">%d days ago</item>
+        <item quantity="many">%d days ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+
+    <string name="episode_length_full">%1$d hr %2$d min</string>
+    <string name="episode_length_hours">%1$d hr</string>
+    <string name="episode_length_minutes">%1$d min</string>
+
+    <string name="description_back">Go back</string>
+    <string name="description_explicit_content">Explicit content</string>
+    <string name="description_scroll_to_top">Scroll to top</string>
+    <string name="description_cover">Podcast cover</string>
+    <!-- Common end -->
+
+    <!-- Player start -->
+    <string name="player_description_play_pause">Play and pause</string>
+    <string name="player_description_backward">Back 10 seconds</string>
+    <string name="player_description_forward">Forward 30 seconds</string>
+    <string name="player_description_options">Options</string>
+    <!-- Player end -->
 
     <!-- Bottom navigation start -->
     <string name="bottom_nav_home">Home</string>
@@ -23,19 +60,7 @@
     <!-- HomeFragment end -->
 
     <!-- ExploreFragment start -->
-    <string name="explore_search">Search</string>
-    <string name="explore_subscribe">Subscribe</string>
-    <string name="explore_subscribed">Subscribed</string>
-    <string name="explore_explicit_content_description">Explicit content</string>
-    <string name="explore_something_went_wrong">Something went wrong</string>
-    <string name="explore_check_connection">Check your internet connection and try again</string>
-    <string name="explore_best_podcasts_error">An error occurred while loading</string>
-    <string name="explore_try_again">Try again</string>
-    <string name="explore_loading">Loading</string>
-    <string name="explore_podcasts_updated">Podcasts have been updated</string>
-    <string name="explore_back_description">Go back</string>
-    <!-- Do not forget to update ExploreTabGenre enum class,
-    if you edit this array (except non-genre `Main`). -->
+    <!-- Do not forget to update ExploreTabGenre enum class, if you edit this array. -->
     <string-array name="explore_tabs">
         <item>Main</item>
         <item>News</item>
@@ -49,19 +74,11 @@
         <item>Sports</item>
         <item>Health &amp; Fitness</item>
     </string-array>
+    <string name="explore_podcasts_updated">Podcasts have been updated</string>
     <!-- ExploreFragment end -->
 
     <!-- PodcastFragment start -->
-    <string name="podcast_subscribe">Subscribe</string>
-    <string name="podcast_subscribed">Subscribed</string>
-    <string name="podcast_explicit_content_description">Explicit content</string>
-    <string name="podcast_scroll_to_top_description">Scroll to top</string>
-    <string name="podcast_more">More</string>
-    <string name="podcast_sort_order">Sort order</string>
-    <string name="podcast_no_connection">No connection</string>
-    <string name="podcast_something_went_wrong">Something went wrong</string>
-    <string name="podcast_episodes_error">An error occurred while loading episodes</string>
-    <string name="podcast_loading">Loading</string>
+    <string name="podcast_description_sort_order">Episodes sorting</string>
     <plurals name="podcast_episode_count">
         <item quantity="zero">%d Episodes</item>
         <item quantity="one">%d Episode</item>
@@ -69,26 +86,6 @@
         <item quantity="few">%d Episodes</item>
         <item quantity="many">%d Episodes</item>
         <item quantity="other">%d Episodes</item>
-    </plurals>
-    <string name="podcast_length_full">%1$d hr %2$d min</string>
-    <string name="podcast_length_hours">%1$d hr</string>
-    <string name="podcast_length_minutes">%1$d min</string>
-    <string name="podcast_just_now">Just now</string>
-    <plurals name="podcast_days_ago">
-        <item quantity="zero">%d days ago</item>
-        <item quantity="one">%d day ago</item>
-        <item quantity="two">%d days ago</item>
-        <item quantity="few">%d days ago</item>
-        <item quantity="many">%d days ago</item>
-        <item quantity="other">%d days ago</item>
-    </plurals>
-    <plurals name="podcast_hours_ago">
-        <item quantity="zero">%d hours ago</item>
-        <item quantity="one">%d hour ago</item>
-        <item quantity="two">%d hours ago</item>
-        <item quantity="few">%d hours ago</item>
-        <item quantity="many">%d hours ago</item>
-        <item quantity="other">%d hours ago</item>
     </plurals>
     <!-- PodcastFragment end -->
 

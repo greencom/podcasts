@@ -70,7 +70,7 @@ class PodcastViewModel @Inject constructor(
         _event.send(PodcastEvent.Fetching)
         when (repository.fetchPodcast(podcastId)) {
             is State.Error -> {
-                _event.send(PodcastEvent.Snackbar(R.string.podcast_something_went_wrong))
+                _event.send(PodcastEvent.Snackbar(R.string.something_went_wrong))
             }
 
             // Make `when` expression exhaustive.

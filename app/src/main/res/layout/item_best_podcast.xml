@@ -19,7 +19,7 @@
             android:id="@+id/cover"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:contentDescription="@string/player_cover_description"
+            android:contentDescription="@string/description_cover"
             tools:srcCompat="@drawable/tools_podcast_cover_1400" />
 
         <LinearLayout
@@ -86,8 +86,8 @@
             style="@style/ToggleButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/explore_subscribe"
-            app:icon="@drawable/ic_add_24" />
+            app:icon="@drawable/ic_add_24"
+            tools:text="@string/subscribe" />
 
         <ImageView
             android:id="@+id/explicit_content"
@@ -95,7 +95,7 @@
             android:layout_height="20dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="8dp"
-            android:contentDescription="@string/explore_explicit_content_description"
+            android:contentDescription="@string/description_explicit_content"
             app:srcCompat="@drawable/ic_explicit_outline_24"
             app:tint="@color/orange" />
 

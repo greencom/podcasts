@@ -55,7 +55,7 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/explore_back_description"
+                android:contentDescription="@string/description_back"
                 android:src="@drawable/ic_arrow_back_24"
                 app:tint="?attr/colorOnSurfaceLow" />
 
@@ -93,7 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="@string/podcast_scroll_to_top_description"
+        android:contentDescription="@string/description_scroll_to_top"
         android:visibility="invisible"
         app:backgroundTint="?attr/colorSurface"
         app:fabSize="mini"

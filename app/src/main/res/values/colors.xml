@@ -30,7 +30,6 @@
 
     <!-- Other start -->
     <color name="background_scrim">#80000000</color>
-    <color name="dark_navigation_bar_on_dialog">#3D3D3D</color>
     <color name="dark_bottom_nav_view_background">#222223</color>
     <color name="dark_fab_ripple">#535353</color>
     <!-- Other end -->

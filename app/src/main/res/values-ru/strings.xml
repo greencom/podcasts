@@ -3,14 +3,51 @@
 
     <string name="app_name">Подкасты</string>
 
-    <!-- Player strings start -->
-    <string name="player_cover_description">Обложка</string>
-    <string name="player_play_description">Играть</string>
-    <string name="player_pause_description">Пауза</string>
-    <string name="player_backward_description">Назад</string>
-    <string name="player_forward_description">Вперёд</string>
-    <string name="player_options_description">Дополнительно</string>
-    <!-- Player strings end -->
+    <!-- Common start -->
+    <string name="subscribe">Подписаться</string>
+    <string name="subscribed">Подписка оформлена</string>
+    <string name="search">Поиск</string>
+    <string name="something_went_wrong">Что-то пошло не так</string>
+    <string name="check_connection">Проверьте соединение с интернетом и повторите попытку</string>
+    <string name="loading_error">При загрузке возникла ошибка</string>
+    <string name="try_again">Повторить</string>
+    <string name="loading">Загрузка</string>
+    <string name="more">Подробнее</string>
+
+    <string name="episode_pub_just_now">Только что</string>
+    <plurals name="episode_pub_hours_ago" tools:ignore="UnusedQuantity">
+        <item quantity="zero">%d часов назад</item>
+        <item quantity="one">%d час назад</item>
+        <item quantity="two">%d часа назад</item>
+        <item quantity="few">%d часа назад</item>
+        <item quantity="many">%d часов назад</item>
+        <item quantity="other">%d часов назад</item>
+    </plurals>
+    <plurals name="episode_pub_days_ago" tools:ignore="UnusedQuantity">
+        <item quantity="zero">%d дней назад</item>
+        <item quantity="one">%d день назад</item>
+        <item quantity="two">%d дня назад</item>
+        <item quantity="few">%d дня назад</item>
+        <item quantity="many">%d дней назад</item>
+        <item quantity="other">%d дней назад</item>
+    </plurals>
+
+    <string name="episode_length_full">%1$d ч. %2$d мин.</string>
+    <string name="episode_length_hours">%1$d ч.</string>
+    <string name="episode_length_minutes">%1$d мин.</string>
+
+    <string name="description_back">Назад</string>
+    <string name="description_explicit_content">Содержимое 18+</string>
+    <string name="description_scroll_to_top">Вернуться наверх</string>
+    <string name="description_cover">Обложка подкаста</string>
+    <!-- Common end -->
+
+    <!-- Player start -->
+    <string name="player_description_play_pause">Играть и пауза</string>
+    <string name="player_description_backward">Назад на 10 секунд</string>
+    <string name="player_description_forward">Вперёд на 30 секунд</string>
+    <string name="player_description_options">Опции</string>
+    <!-- Player end -->
 
     <!-- Bottom navigation start -->
     <string name="bottom_nav_home">Главная</string>
@@ -23,19 +60,7 @@
     <!-- HomeFragment end -->
 
     <!-- ExploreFragment start -->
-    <string name="explore_search">Поиск</string>
-    <string name="explore_subscribe">Подписаться</string>
-    <string name="explore_subscribed">Подписка оформлена</string>
-    <string name="explore_explicit_content_description">Содержимое 18+</string>
-    <string name="explore_something_went_wrong">Что-то пошло не так</string>
-    <string name="explore_check_connection">Проверьте соединение с интернетом и повторите попытку</string>
-    <string name="explore_best_podcasts_error">При загрузке возникла ошибка</string>
-    <string name="explore_try_again">Повторить</string>
-    <string name="explore_loading">Загрузка</string>
-    <string name="explore_podcasts_updated">Список обновлен</string>
-    <string name="explore_back_description">Вернуться назад</string>
-    <!-- Do not forget to update ExploreTabGenre enum class,
-    if you edit this array (except non-genre `Главное`). -->
+    <!-- Do not forget to update ExploreTabGenre enum class, if you edit this array. -->
     <string-array name="explore_tabs">
         <item>Главное</item>
         <item>Новости</item>
@@ -49,19 +74,11 @@
         <item>Спорт</item>
         <item>Здоровье и Фитнес</item>
     </string-array>
+    <string name="explore_podcasts_updated">Подкасты обновлены</string>
     <!-- ExploreFragment end -->
 
     <!-- PodcastFragment start -->
-    <string name="podcast_subscribe">Подписаться</string>
-    <string name="podcast_subscribed">Подписка оформлена</string>
-    <string name="podcast_explicit_content_description">Содержимое 18+</string>
-    <string name="podcast_scroll_to_top_description">Вернуться наверх</string>
-    <string name="podcast_more">Подробнее</string>
-    <string name="podcast_sort_order">Сортировка</string>
-    <string name="podcast_no_connection">Нет соединения</string>
-    <string name="podcast_something_went_wrong">Что-то пошло не так</string>
-    <string name="podcast_episodes_error">При загрузке эпизодов возникла ошибка</string>
-    <string name="podcast_loading">Загрузка</string>
+    <string name="podcast_description_sort_order">Сортировка эпизодов</string>
     <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
         <item quantity="zero">%d Эпизодов</item>
         <item quantity="one">%d Эпизод</item>
@@ -69,26 +86,6 @@
         <item quantity="few">%d Эпизода</item>
         <item quantity="many">%d Эпизодов</item>
         <item quantity="other">%d Эпизодов</item>
-    </plurals>
-    <string name="podcast_length_full">%1$d ч. %2$d мин.</string>
-    <string name="podcast_length_hours">%1$d ч.</string>
-    <string name="podcast_length_minutes">%1$d мин.</string>
-    <string name="podcast_just_now">Только что</string>
-    <plurals name="podcast_days_ago" tools:ignore="UnusedQuantity">
-        <item quantity="zero">%d дней назад</item>
-        <item quantity="one">%d день назад</item>
-        <item quantity="two">%d дня назад</item>
-        <item quantity="few">%d дня назад</item>
-        <item quantity="many">%d дней назад</item>
-        <item quantity="other">%d дней назад</item>
-    </plurals>
-    <plurals name="podcast_hours_ago" tools:ignore="UnusedQuantity">
-        <item quantity="zero">%d часов назад</item>
-        <item quantity="one">%d час назад</item>
-        <item quantity="two">%d часа назад</item>
-        <item quantity="few">%d часа назад</item>
-        <item quantity="many">%d часов назад</item>
-        <item quantity="other">%d часов назад</item>
     </plurals>
     <!-- PodcastFragment end -->
 
