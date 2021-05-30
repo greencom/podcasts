@@ -47,6 +47,13 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
+    /**
+     * Is retrofit main-safe to call from Dispatchers.Main or not. Used inside [safeRetrofitCall]
+     * to do the first call in [withContext] wrapper and any other without it. See more in
+     * [safeRetrofitCall] documentation.
+     */
+    private var isRetrofitSafe = false
+
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
     }
@@ -67,7 +74,7 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun fetchPodcast(id: String, sortOrder: SortOrder): State<PodcastWrapper> {
         return try {
-            val response = withContext(ioDispatcher) {
+            val response = safeRetrofitCall {
                 listenApi.getPodcast(id, null, sortOrder.value)
             }
             podcastDao.insert(response.podcastToDatabase())
@@ -296,9 +303,7 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
         return try {
-            val response = withContext(ioDispatcher) {
-                listenApi.getBestPodcasts(genreId)
-            }
+            val response = safeRetrofitCall { listenApi.getBestPodcasts(genreId) }
             podcastDao.insertWithGenre(response.toDatabase())
             State.Success(Unit)
         } catch (e: IOException) {
@@ -314,9 +319,7 @@ class RepositoryImpl @Inject constructor(
     ): State<Unit> {
         return try {
             // Fetch a new list from ListenAPI.
-            val newList = withContext(ioDispatcher) {
-                listenApi.getBestPodcasts(genreId).toDatabase()
-            }
+            val newList = safeRetrofitCall { listenApi.getBestPodcasts(genreId).toDatabase() }
             // Filter old podcasts.
             val newIds = newList.map { it.id }
             val oldList = currentList
@@ -352,17 +355,15 @@ class RepositoryImpl @Inject constructor(
         var nextEpisodePubDate = startPubDate
 
         return try {
-            withContext(ioDispatcher) {
-                while (nextEpisodePubDate != endPubDate) {
-                    val response = listenApi.getPodcast(id, nextEpisodePubDate, sortOrder.value)
-                    episodeDao.insert(response.episodesToDatabase())
-                    nextEpisodePubDate = response.nextEpisodePubDate
-                    // Stop fetching after reaching the limit.
-                    mEpisodesLoaded += response.episodes.size
-                    if (withLimit) {
-                        if (mEpisodesLoaded >= EPISODES_LIMIT) break
-                    }
+            while (nextEpisodePubDate != endPubDate) {
+                val response = safeRetrofitCall {
+                    listenApi.getPodcast(id, nextEpisodePubDate, sortOrder.value)
                 }
+                episodeDao.insert(response.episodesToDatabase())
+                nextEpisodePubDate = response.nextEpisodePubDate
+                // Stop fetching after reaching the limit.
+                mEpisodesLoaded += response.episodes.size
+                if (withLimit && mEpisodesLoaded >= EPISODES_LIMIT) break
             }
             State.Success(mEpisodesLoaded)
         } catch (e: IOException) {
@@ -382,5 +383,24 @@ class RepositoryImpl @Inject constructor(
         event: Channel<PodcastViewModel.PodcastEvent>
     ) {
         if (!isForced) event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
+    }
+
+    /**
+     * Makes a safe Retrofit call and returns the result. The first overall call will be wrapped
+     * in [withContext] function and any other will be done without it.
+     *
+     * Note: this function is needed due to some strange Retrofit bug, which produces UI freeze
+     * on the first Retrofit call.
+     */
+    private suspend fun <T> safeRetrofitCall(block: suspend () -> T): T {
+        return if (isRetrofitSafe) {
+            block()
+        } else {
+            val result = withContext(ioDispatcher) {
+                block()
+            }
+            isRetrofitSafe = true
+            result
+        }
     }
 }
