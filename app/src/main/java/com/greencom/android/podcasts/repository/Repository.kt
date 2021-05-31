@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Repository {
 
+    // TODO: Test code.
+    suspend fun deleteEpisodes()
+
     /** Update subscription to a Podcast by ID with a given value. */
     suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
 
@@ -48,6 +51,16 @@ interface Repository {
         isForced: Boolean,
         event: Channel<PodcastViewModel.PodcastEvent>
     ): State<Unit>
+
+    /**
+     * Fetch more episodes on scroll for a given podcast ID for certain sort order and insert
+     * them into the database. Returns the result represented by [State].
+     */
+    suspend fun fetchMoreEpisodes(
+        id: String,
+        sortOrder: SortOrder,
+        event: Channel<PodcastViewModel.PodcastEvent>
+    ): State<Int>
 
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of

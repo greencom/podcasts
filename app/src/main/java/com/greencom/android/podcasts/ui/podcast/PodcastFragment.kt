@@ -145,16 +145,21 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         val onScrollListener = object : RecyclerView.OnScrollListener() {
             val layoutManager = binding.list.layoutManager as LinearLayoutManager
-            var visibleItemCount = 0
             var totalItemCount = 0
             var firstVisibleItemPosition = 0
+            var lastVisibleItemPosition = 0
             var initialCheckSkipped = false
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                visibleItemCount = layoutManager.childCount
                 totalItemCount = layoutManager.itemCount
                 firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+
+                // Fetch more episodes.
+                if (totalItemCount >= 10 && lastVisibleItemPosition >= totalItemCount - 10 && dy > 0) {
+                    viewModel.fetchMoreEpisodes()
+                }
 
                 // Show and hide the fab. Skip the initial check to restore instance state.
                 if (initialCheckSkipped) {

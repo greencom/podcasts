@@ -48,6 +48,9 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
+    // TODO: Test code.
+    override suspend fun deleteEpisodes() = episodeDao.clear()
+
     /**
      * Is retrofit main-safe to call from Dispatchers.Main or not. Used inside [safeRetrofitCall]
      * to do the first call in [withContext] wrapper and any other without it. See more in
@@ -279,6 +282,41 @@ class RepositoryImpl @Inject constructor(
         }
 
         return State.Success(Unit)
+    }
+
+    override suspend fun fetchMoreEpisodes(
+        id: String,
+        sortOrder: SortOrder,
+        event: Channel<PodcastViewModel.PodcastEvent>
+    ): State<Int> {
+        val bottomPubDate: Long // Date of the earliest/latest podcast pub date.
+        val bottomLoadedPubDate: Long // Date of the earliest/latest loaded episode pub date.
+
+        // !! operators are safe here since the function can be called only if the episode
+        // count is greater than 10.
+        if (sortOrder == SortOrder.RECENT_FIRST) {
+            bottomPubDate = podcastDao.getEarliestPubDate(id)!!
+            bottomLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(id)!!
+        } else {
+            bottomPubDate = podcastDao.getLatestPubDate(id)!!
+            bottomLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(id)!!
+        }
+
+        if (bottomLoadedPubDate == bottomPubDate) return State.Success(0)
+
+        event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
+        val result = fetchEpisodesSequentially(
+            id,
+            bottomLoadedPubDate,
+            bottomPubDate,
+            sortOrder,
+            true
+        )
+        return when (result) {
+            is State.Success -> result
+            is State.Error -> result
+            else -> throw ImpossibleCaseException()
+        }
     }
 
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = flow {
