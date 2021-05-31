@@ -9,6 +9,10 @@ import androidx.room.Query
 @Dao
 abstract class EpisodeDao {
 
+    // TODO: Test code.
+    @Query("DELETE FROM episodes")
+    abstract suspend fun clear()
+
     /**
      * Insert an [EpisodeEntity] object into the database. [OnConflictStrategy.IGNORE]
      * on conflict.

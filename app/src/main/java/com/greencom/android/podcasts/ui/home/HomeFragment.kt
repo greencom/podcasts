@@ -35,7 +35,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Switch night mode.
+        // TODO: Test code.
         binding.nightModeButton.setOnClickListener {
             when (AppCompatDelegate.getDefaultNightMode()) {
                 AppCompatDelegate.MODE_NIGHT_UNSPECIFIED ->
@@ -45,6 +45,11 @@ class HomeFragment : Fragment() {
                 AppCompatDelegate.MODE_NIGHT_YES ->
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
+        }
+
+        // TODO: Test code.
+        binding.deleteEpisodes.setOnClickListener {
+            viewModel.deleteEpisodes()
         }
     }
 
