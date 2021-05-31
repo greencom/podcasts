@@ -32,7 +32,8 @@ import javax.inject.Singleton
  * Note: episodes loaded to the top of the sorted list are not counted to ensure that the
  * user will see the appropriate episodes at the top of the list according to the sort order.
  */
-private const val EPISODES_LIMIT = 30
+private const val EPISODES_LIMIT_DEFAULT = 30
+private const val EPISODES_LIMIT_NONE = 0
 
 private const val MAX_HOURS_FROM_UPDATE = 6L
 
@@ -96,6 +97,7 @@ class RepositoryImpl @Inject constructor(
         isForced: Boolean,
         event: Channel<PodcastViewModel.PodcastEvent>
     ): State<Unit> {
+        val limit = EPISODES_LIMIT_DEFAULT
 
         // Get episode count that has been loaded for this podcast.
         var episodesLoaded = episodeDao.getEpisodeCount(id)
@@ -197,12 +199,12 @@ class RepositoryImpl @Inject constructor(
             // Fetch next episodes sequentially.
             val nextEpisodePubDate = if (topEpisodes.isNotEmpty()) topEpisodes.last().date else null
             val result = fetchEpisodesSequentially(
-                id,
-                nextEpisodePubDate,
-                bottomPubDate,
-                sortOrder,
-                true,
-                episodesLoaded
+                id = id,
+                startPubDate = nextEpisodePubDate,
+                endPubDate = bottomPubDate,
+                sortOrder = sortOrder,
+                limit = limit,
+                episodesLoaded = episodesLoaded
             )
             return when (result) {
                 is State.Success -> State.Success(Unit)
@@ -217,19 +219,19 @@ class RepositoryImpl @Inject constructor(
                 // Top episodes are loaded already.
 
                 // Return if the number of loaded episodes is greater than limit.
-                if (episodesLoaded >= EPISODES_LIMIT) return State.Success(Unit)
+                if (episodesLoaded >= limit) return State.Success(Unit)
 
                 // Check if there are episodes at the bottom that should be loaded.
                 if (bottomLoadedPubDate != bottomPubDate) {
 
                     startEpisodesLoadingIndicator(isForced, event)
                     val result = fetchEpisodesSequentially(
-                        id,
-                        bottomLoadedPubDate!!,
-                        bottomPubDate,
-                        sortOrder,
-                        true,
-                        episodesLoaded
+                        id = id,
+                        startPubDate = bottomLoadedPubDate!!,
+                        endPubDate = bottomPubDate,
+                        sortOrder = sortOrder,
+                        limit = limit,
+                        episodesLoaded = episodesLoaded
                     )
                     return when (result) {
                         is State.Success -> State.Success(Unit)
@@ -245,11 +247,11 @@ class RepositoryImpl @Inject constructor(
 
                 startEpisodesLoadingIndicator(isForced, event)
                 var result = fetchEpisodesSequentially(
-                    id,
-                    topLoadedPubDate,
-                    topPubDate,
-                    sortOrder.reverse(),
-                    false
+                    id = id,
+                    startPubDate = topLoadedPubDate,
+                    endPubDate = topPubDate,
+                    sortOrder = sortOrder.reverse(),
+                    limit = EPISODES_LIMIT_NONE
                 )
                 when (result) {
                     is State.Success -> episodesLoaded += result.data
@@ -258,19 +260,19 @@ class RepositoryImpl @Inject constructor(
                 }
 
                 // Return if the number of loaded episodes is greater than limit.
-                if (episodesLoaded >= EPISODES_LIMIT) return State.Success(Unit)
+                if (episodesLoaded >= limit) return State.Success(Unit)
 
                 // Check if there are episodes at the bottom that should be loaded.
                 if (bottomLoadedPubDate != bottomPubDate) {
 
                     startEpisodesLoadingIndicator(isForced, event)
                     result = fetchEpisodesSequentially(
-                        id,
-                        bottomLoadedPubDate!!,
-                        bottomPubDate,
-                        sortOrder,
-                        true,
-                        episodesLoaded
+                        id = id,
+                        startPubDate = bottomLoadedPubDate!!,
+                        endPubDate = bottomPubDate,
+                        sortOrder = sortOrder,
+                        limit = limit,
+                        episodesLoaded = episodesLoaded
                     )
                     return when (result) {
                         is State.Success -> State.Success(Unit)
@@ -306,11 +308,11 @@ class RepositoryImpl @Inject constructor(
 
         event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
         val result = fetchEpisodesSequentially(
-            id,
-            bottomLoadedPubDate,
-            bottomPubDate,
-            sortOrder,
-            true
+            id = id,
+            startPubDate = bottomLoadedPubDate,
+            endPubDate = bottomPubDate,
+            sortOrder = sortOrder,
+            limit = EPISODES_LIMIT_DEFAULT
         )
         return when (result) {
             is State.Success -> result
@@ -370,21 +372,22 @@ class RepositoryImpl @Inject constructor(
 
     /**
      * This method fetches podcast episodes sequentially from [startPubDate] to
-     * [endPubDate] for [sortOrder]. Additionally, you can specify whether the method
-     * needs to track the number of loaded episodes to stop when the number exceeds the
-     * [EPISODES_LIMIT]. Returns result represented by [State] with the number of loaded
-     * episodes.
+     * [endPubDate] for [sortOrder]. Additionally, you can specify the [limit] and the start
+     * count of the loaded episodes to stop when the number exceeds the limit. If the limit
+     * is zero or [EPISODES_LIMIT_NONE], load without limit.
+     * Returns result represented by [State] with the number of loaded episodes.
      */
     private suspend fun fetchEpisodesSequentially(
         id: String,
         startPubDate: Long?,
         endPubDate: Long,
         sortOrder: SortOrder,
-        withLimit: Boolean,
+        limit: Int,
         episodesLoaded: Int = 0
     ): State<Int> {
         var mEpisodesLoaded = episodesLoaded
         var nextEpisodePubDate = startPubDate
+        val withLimit = limit > 0
 
         return try {
             while (nextEpisodePubDate != endPubDate) {
@@ -393,9 +396,9 @@ class RepositoryImpl @Inject constructor(
                 }
                 episodeDao.insert(response.episodesToDatabase())
                 nextEpisodePubDate = response.nextEpisodePubDate
-                // Stop fetching after reaching the limit.
                 mEpisodesLoaded += response.episodes.size
-                if (withLimit && mEpisodesLoaded >= EPISODES_LIMIT) break
+                // Stop fetching after reaching the limit.
+                if (withLimit && mEpisodesLoaded >= limit) break
             }
             State.Success(mEpisodesLoaded)
         } catch (e: IOException) {
