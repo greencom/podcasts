@@ -37,14 +37,8 @@ class PodcastViewModel @Inject constructor(
 
     var podcastId = ""
 
-    /** Job that handles episodes fetching process init by [fetchEpisodes]. */
-    private var fetchEpisodesJob: Job? = null
-
-    /** Job that handles episodes fetching process process init by [fetchMoreEpisodes]. */
-    private var fetchMoreEpisodesJob: Job? = null
-
-    /** Indicates whether episodes are fetching by any function right now. */
-    private var areEpisodesLoading = false
+    /** Job that handles episodes fetching. */
+    private var episodesJob: Job? = null
 
     /** Reverse the [sortOrder] value and init episodes fetching. */
     fun changeSortOrder() {
@@ -82,17 +76,12 @@ class PodcastViewModel @Inject constructor(
      * the last update date.
      */
     fun fetchEpisodes(isForced: Boolean = false) {
-        // Cancel all previous fetching processes.
-        fetchEpisodesJob?.cancel()
-        fetchMoreEpisodesJob?.cancel()
-
-        fetchEpisodesJob = viewModelScope.launch {
+        episodesJob?.cancel()
+        episodesJob = viewModelScope.launch {
             try {
-                areEpisodesLoading = true
                 val result = repository.fetchEpisodes(podcastId, sortOrder.value, isForced, _event)
                 if (result is State.Error) _event.send(PodcastEvent.Snackbar(R.string.loading_error))
             } finally {
-                areEpisodesLoading = false
                 // Stop the appropriate loading indicator.
                 if (isForced) {
                     _event.send(PodcastEvent.EpisodesForcedFetchingFinished)
@@ -105,13 +94,11 @@ class PodcastViewModel @Inject constructor(
 
     /** Use this function to fetch more episodes for this podcast on scroll. */
     fun fetchMoreEpisodes() {
-        if (!areEpisodesLoading) {
-            fetchMoreEpisodesJob = viewModelScope.launch {
+        if (episodesJob?.isActive == false) {
+            episodesJob = viewModelScope.launch {
                 try {
-                    areEpisodesLoading = true
                     repository.fetchMoreEpisodes(podcastId, sortOrder.value, _event)
                 } finally {
-                    areEpisodesLoading = false
                     _event.send(PodcastEvent.EpisodesFetchingFinished)
                 }
             }
