@@ -16,6 +16,8 @@ import com.greencom.android.podcasts.ui.podcast.PodcastWithEpisodesDataItem
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 /** Global tag for logging. */
 const val GLOBAL_TAG = "global___"
@@ -159,14 +161,12 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
  * - "35 min", if the number of hours is zero.
  * - "1 hr 35 min" in any other case.
  */
-fun audioLengthToString(length: Int, context: Context): String {
-    if (length <= 60) return context.getString(R.string.episode_length_minutes, 1)
+@ExperimentalTime
+fun audioLengthToString(length: Duration, context: Context): String {
+    if (length.inWholeSeconds <= 60) return context.getString(R.string.episode_length_minutes, 1)
 
-    val hour = TimeUnit.HOURS.toSeconds(1).toInt()
-    val minute = TimeUnit.MINUTES.toSeconds(1).toFloat()
-
-    val hours = length / hour
-    val minutes = ((length - hours * hour) / minute).roundToInt()
+    val hours = length.inWholeHours.toInt()
+    val minutes = ((length - Duration.hours(hours)) / Duration.minutes(1)).roundToInt()
 
     return when {
         hours != 0 && minutes != 0 -> context.getString(R.string.episode_length_full, hours, minutes)

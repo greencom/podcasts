@@ -19,6 +19,8 @@ import com.greencom.android.podcasts.databinding.ItemPodcastHeaderBinding
 import com.greencom.android.podcasts.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 private const val ITEM_VIEW_TYPE_PODCAST_HEADER = 0
 private const val ITEM_VIEW_TYPE_EPISODE = 1
@@ -58,6 +60,7 @@ class PodcastWithEpisodesAdapter(
         }
     }
 
+    @ExperimentalTime
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is PodcastHeaderViewHolder -> {
@@ -234,12 +237,13 @@ class EpisodeViewHolder private constructor(
     private val context = binding.root.context
 
     /** Bind EpisodeViewHolder with a given [Episode]. */
+    @ExperimentalTime
     fun bind(episode: Episode) {
         binding.title.text = episode.title
         // Date formatting.
         binding.date.text = pubDateToString(episode.date, context)
         // Episode length formatting.
-        binding.play.text = audioLengthToString(episode.audioLength, context)
+        binding.play.text = audioLengthToString(Duration.seconds(episode.audioLength), context)
     }
 
     companion object {

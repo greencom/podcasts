@@ -10,7 +10,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class AudioLengthToStringTest {
@@ -34,7 +37,7 @@ class AudioLengthToStringTest {
         val s = 10
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_full, h, m))
     }
@@ -47,7 +50,7 @@ class AudioLengthToStringTest {
         val s = 50
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_full, h, m + 1))
     }
@@ -60,7 +63,7 @@ class AudioLengthToStringTest {
         val s = 0
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_hours, h))
     }
@@ -73,7 +76,7 @@ class AudioLengthToStringTest {
         val s = 10
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_hours, h))
     }
@@ -86,7 +89,7 @@ class AudioLengthToStringTest {
         val s = 50
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_full, h, 1))
     }
@@ -99,7 +102,7 @@ class AudioLengthToStringTest {
         val s = 0
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m))
     }
@@ -112,7 +115,7 @@ class AudioLengthToStringTest {
         val s = 0
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m))
     }
@@ -125,7 +128,7 @@ class AudioLengthToStringTest {
         val s = 10
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m))
     }
@@ -138,7 +141,7 @@ class AudioLengthToStringTest {
         val s = 50
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, m + 1))
     }
@@ -151,7 +154,7 @@ class AudioLengthToStringTest {
         val s = 10
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, 1))
     }
@@ -164,7 +167,7 @@ class AudioLengthToStringTest {
         val s = 50
         val length = h.hours() + m.minutes() + s.seconds()
 
-        val result = audioLengthToString(length, context)
+        val result = audioLengthToString(Duration.seconds(length), context)
 
         assertThat(result).isEqualTo(context.getString(R.string.episode_length_minutes, 1))
     }
