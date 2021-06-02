@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -119,16 +118,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** App bar setup. */
     private fun setupAppBar() {
         // Disable AppBarLayout dragging behavior.
-        if (binding.appBarLayout.layoutParams != null) {
-            val appBarParams = binding.appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
-            val appBarBehavior = AppBarLayout.Behavior()
-            appBarBehavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
-                override fun canDrag(appBarLayout: AppBarLayout): Boolean {
-                    return false
-                }
-            })
-            appBarParams.behavior = appBarBehavior
-        }
+        setAppBarLayoutCanDrag(binding.appBarLayout, false)
 
         // Track app bar state.
         binding.appBarLayout.addOnOffsetChangedListener(object : AppBarLayoutStateChangeListener() {

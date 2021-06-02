@@ -4,10 +4,12 @@ import android.content.Context
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
@@ -69,6 +71,20 @@ object PodcastWithEpisodesDiffCallback : DiffUtil.ItemCallback<PodcastWithEpisod
 
             else -> false
         }
+    }
+}
+
+/** Allows control over whether the given AppBarLayout can be dragged or not. */
+fun setAppBarLayoutCanDrag(appBarLayout: AppBarLayout, canDrag: Boolean) {
+    if (appBarLayout.layoutParams != null) {
+        val appBarParams = appBarLayout.layoutParams as CoordinatorLayout.LayoutParams
+        val appBarBehavior = AppBarLayout.Behavior()
+        appBarBehavior.setDragCallback(object : AppBarLayout.Behavior.DragCallback() {
+            override fun canDrag(appBarLayout: AppBarLayout): Boolean {
+                return canDrag
+            }
+        })
+        appBarParams.behavior = appBarBehavior
     }
 }
 

@@ -2,8 +2,7 @@ package com.greencom.android.podcasts.utils
 
 import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener.AppBarLayoutState
-import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener.AppBarLayoutState.COLLAPSED
-import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener.AppBarLayoutState.EXPANDED
+import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener.AppBarLayoutState.*
 import kotlin.math.abs
 
 /**
@@ -14,7 +13,7 @@ abstract class AppBarLayoutStateChangeListener : AppBarLayout.OnOffsetChangedLis
 
     /**
      * Enum class that defines [AppBarLayout]'s states. The state could be either [EXPANDED]
-     * or [COLLAPSED].
+     * or [COLLAPSED] or [IDLE].
      */
     enum class AppBarLayoutState {
         EXPANDED,
@@ -22,7 +21,7 @@ abstract class AppBarLayoutStateChangeListener : AppBarLayout.OnOffsetChangedLis
         IDLE
     }
 
-    private var currentState = AppBarLayoutState.IDLE
+    private var currentState = IDLE
 
     /** Called when the AppBarLayout's state has been changed. */
     abstract fun onStateChanged(appBarLayout: AppBarLayout, newState: AppBarLayoutState)
@@ -41,6 +40,13 @@ abstract class AppBarLayoutStateChangeListener : AppBarLayout.OnOffsetChangedLis
                     onStateChanged(appBarLayout, COLLAPSED)
                 }
                 currentState = COLLAPSED
+            }
+
+            else -> {
+                if (currentState != IDLE) {
+                    onStateChanged(appBarLayout, IDLE)
+                }
+                currentState = IDLE
             }
         }
     }
