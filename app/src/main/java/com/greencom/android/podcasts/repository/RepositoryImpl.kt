@@ -107,8 +107,9 @@ class RepositoryImpl @Inject constructor(
         val earliestPubDate: Long?
         var topEpisodes = listOf<EpisodeEntity>()
 
-        // Whether the update was forced by the user.
+        // Check if the update was forced by the user.
         if (isForced) {
+            // isForced == true
             // Update the podcast data regardless of the last update time.
 
             startEpisodesLoadingIndicator(isForced, event)
@@ -122,10 +123,12 @@ class RepositoryImpl @Inject constructor(
                 else -> throw ImpossibleCaseException()
             }
         } else {
+            // isForced == false
             // Check when the podcast data was updated last time.
             val updateDate = podcastDao.getUpdateDate(podcastId)
 
             if (updateDate != null) {
+                // updateDate != null
                 // There is the podcast in the database. Calculate time since the last update.
                 val timeFromLastUpdate = System.currentTimeMillis() - updateDate
 
@@ -150,6 +153,7 @@ class RepositoryImpl @Inject constructor(
                     }
                 }
             } else {
+                // updateDate == null
                 // There is no podcast in the database, fetch it.
 
                 startEpisodesLoadingIndicator(isForced, event)
@@ -191,6 +195,7 @@ class RepositoryImpl @Inject constructor(
 
 
         if (topLoadedPubDate == null) {
+            // topLoadedPubDate == null
             // There are no episodes in the database for this podcast. Fetch episodes
             // depending on the current sort order.
 
@@ -215,10 +220,12 @@ class RepositoryImpl @Inject constructor(
                 else -> throw ImpossibleCaseException()
             }
         } else {
+            // topLoadedPubDate != null
             // There are episodes in the database for this podcast.
 
             // Check if there are episodes at the top that should be loaded.
             if (topLoadedPubDate == topPubDate) {
+                // topLoadedPubDate == topPubDate
                 // Top episodes are loaded already.
 
                 // Return if the number of loaded episodes is greater than limit.
@@ -243,6 +250,7 @@ class RepositoryImpl @Inject constructor(
                     }
                 }
             } else {
+                // topLoadedPubDate != topPubDate
                 // There are episodes at the top that should be loaded, fetch them in reverse order
                 // to ensure that there are no spaces between loaded episodes in the database.
                 // Fetch without the limit to ensure that the user will see the appropriate
