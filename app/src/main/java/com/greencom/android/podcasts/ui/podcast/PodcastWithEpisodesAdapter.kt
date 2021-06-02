@@ -152,10 +152,9 @@ class PodcastHeaderViewHolder private constructor(
         // Change sort order.
         binding.sortOrder.setOnClickListener {
             changeSortOrder()
-            if ((bindingAdapter as PodcastWithEpisodesAdapter).sortOrder.value == SortOrder.RECENT_FIRST) {
-                rotateSortOrder(0F)
-            } else {
-                rotateSortOrder(180F)
+            when ((bindingAdapter as PodcastWithEpisodesAdapter).sortOrder.value) {
+                SortOrder.RECENT_FIRST -> rotateSortOrder(0F)
+                SortOrder.OLDEST_FIRST -> rotateSortOrder(180F)
             }
         }
     }
@@ -189,7 +188,7 @@ class PodcastHeaderViewHolder private constructor(
         // "Subscribe" button setup.
         setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
 
-        // Handle 'isDescriptionExpanded'.
+        // Handle description state.
         binding.descriptionTrailingGradient.isVisible = !isDescriptionExpanded && isDescriptionExpandable
         binding.descriptionMore.isVisible = !isDescriptionExpanded && isDescriptionExpandable
         binding.descriptionArrowDown.isVisible = !isDescriptionExpanded && isDescriptionExpandable

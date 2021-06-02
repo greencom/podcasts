@@ -63,24 +63,24 @@ class RepositoryImpl @Inject constructor(
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
     }
 
-    override fun getPodcastWithEpisodes(id: String): Flow<State<PodcastWithEpisodes>> = flow {
+    override fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>> = flow {
         emit(State.Loading)
-        podcastDao.getPodcastWithEpisodesFlow(id).collect { podcastWithEpisodes ->
+        podcastDao.getPodcastWithEpisodesFlow(podcastId).collect { podcastWithEpisodes ->
             // If the database already contains the appropriate podcast, return it.
             if (podcastWithEpisodes != null) {
                 emit(State.Success(podcastWithEpisodes))
             } else {
                 // Otherwise, fetch the podcast from ListenAPI and insert into the database.
-                val result = fetchPodcast(id)
+                val result = fetchPodcast(podcastId)
                 if (result is State.Error) emit(result)
             }
         }
     }
 
-    override suspend fun fetchPodcast(id: String, sortOrder: SortOrder): State<PodcastWrapper> {
+    override suspend fun fetchPodcast(podcastId: String, sortOrder: SortOrder): State<PodcastWrapper> {
         return try {
             val response = safeRetrofitCall {
-                listenApi.getPodcast(id, null, sortOrder.value)
+                listenApi.getPodcast(podcastId, null, sortOrder.value)
             }
             podcastDao.insert(response.podcastToDatabase())
             State.Success(response)
@@ -92,7 +92,7 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchEpisodes(
-        id: String,
+        podcastId: String,
         sortOrder: SortOrder,
         isForced: Boolean,
         event: Channel<PodcastViewModel.PodcastEvent>
@@ -100,7 +100,7 @@ class RepositoryImpl @Inject constructor(
         val limit = EPISODES_LIMIT_DEFAULT
 
         // Get episode count that has been loaded for this podcast.
-        var episodesLoaded = episodeDao.getEpisodeCount(id)
+        var episodesLoaded = episodeDao.getEpisodeCount(podcastId)
 
         // Podcast latest and earliest pub dates.
         val latestPubDate: Long?
@@ -112,7 +112,7 @@ class RepositoryImpl @Inject constructor(
             // Update the podcast data regardless of the last update time.
 
             startEpisodesLoadingIndicator(isForced, event)
-            when (val result = fetchPodcast(id, sortOrder)) {
+            when (val result = fetchPodcast(podcastId, sortOrder)) {
                 is State.Success -> {
                     latestPubDate = result.data.latestPubDate
                     earliestPubDate = result.data.earliestPubDate
@@ -123,7 +123,7 @@ class RepositoryImpl @Inject constructor(
             }
         } else {
             // Check when the podcast data was updated last time.
-            val updateDate = podcastDao.getUpdateDate(id)
+            val updateDate = podcastDao.getUpdateDate(podcastId)
 
             if (updateDate != null) {
                 // There is the podcast in the database. Calculate time since the last update.
@@ -132,14 +132,14 @@ class RepositoryImpl @Inject constructor(
                 if (timeFromLastUpdate <= TimeUnit.HOURS.toMillis(MAX_HOURS_FROM_UPDATE)) {
                     // If the podcast data was recently updated, get latestPubDate and
                     // earliestPubDate from the database.
-                    latestPubDate = podcastDao.getLatestPubDate(id)!!
-                    earliestPubDate = podcastDao.getEarliestPubDate(id)!!
+                    latestPubDate = podcastDao.getLatestPubDate(podcastId)!!
+                    earliestPubDate = podcastDao.getEarliestPubDate(podcastId)!!
                 } else {
                     // If the podcast data was updated more than 3 hours ago, update the podcast
                     // data.
 
                     startEpisodesLoadingIndicator(isForced, event)
-                    when (val result = fetchPodcast(id, sortOrder)) {
+                    when (val result = fetchPodcast(podcastId, sortOrder)) {
                         is State.Success -> {
                             latestPubDate = result.data.latestPubDate
                             earliestPubDate = result.data.earliestPubDate
@@ -153,7 +153,7 @@ class RepositoryImpl @Inject constructor(
                 // There is no podcast in the database, fetch it.
 
                 startEpisodesLoadingIndicator(isForced, event)
-                when (val result = fetchPodcast(id, sortOrder)) {
+                when (val result = fetchPodcast(podcastId, sortOrder)) {
                     is State.Success -> {
                         latestPubDate = result.data.latestPubDate
                         earliestPubDate = result.data.earliestPubDate
@@ -174,16 +174,19 @@ class RepositoryImpl @Inject constructor(
         val bottomLoadedPubDate: Long?
 
         // Obtain values.
-        if (sortOrder == SortOrder.RECENT_FIRST) {
-            topPubDate = latestPubDate
-            bottomPubDate = earliestPubDate
-            topLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(id)
-            bottomLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(id)
-        } else {
-            topPubDate = earliestPubDate
-            bottomPubDate = latestPubDate
-            topLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(id)
-            bottomLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(id)
+        when (sortOrder) {
+            SortOrder.RECENT_FIRST -> {
+                topPubDate = latestPubDate
+                bottomPubDate = earliestPubDate
+                topLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(podcastId)
+                bottomLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(podcastId)
+            }
+            SortOrder.OLDEST_FIRST -> {
+                topPubDate = earliestPubDate
+                bottomPubDate = latestPubDate
+                topLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(podcastId)
+                bottomLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(podcastId)
+            }
         }
 
 
@@ -199,7 +202,7 @@ class RepositoryImpl @Inject constructor(
             // Fetch next episodes sequentially.
             val nextEpisodePubDate = if (topEpisodes.isNotEmpty()) topEpisodes.last().date else null
             val result = fetchEpisodesSequentially(
-                id = id,
+                podcastId = podcastId,
                 startPubDate = nextEpisodePubDate,
                 endPubDate = bottomPubDate,
                 sortOrder = sortOrder,
@@ -226,7 +229,7 @@ class RepositoryImpl @Inject constructor(
 
                     startEpisodesLoadingIndicator(isForced, event)
                     val result = fetchEpisodesSequentially(
-                        id = id,
+                        podcastId = podcastId,
                         startPubDate = bottomLoadedPubDate!!,
                         endPubDate = bottomPubDate,
                         sortOrder = sortOrder,
@@ -247,7 +250,7 @@ class RepositoryImpl @Inject constructor(
 
                 startEpisodesLoadingIndicator(isForced, event)
                 var result = fetchEpisodesSequentially(
-                    id = id,
+                    podcastId = podcastId,
                     startPubDate = topLoadedPubDate,
                     endPubDate = topPubDate,
                     sortOrder = sortOrder.reverse(),
@@ -267,7 +270,7 @@ class RepositoryImpl @Inject constructor(
 
                     startEpisodesLoadingIndicator(isForced, event)
                     result = fetchEpisodesSequentially(
-                        id = id,
+                        podcastId = podcastId,
                         startPubDate = bottomLoadedPubDate!!,
                         endPubDate = bottomPubDate,
                         sortOrder = sortOrder,
@@ -287,7 +290,7 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchMoreEpisodes(
-        id: String,
+        podcastId: String,
         sortOrder: SortOrder,
         event: Channel<PodcastViewModel.PodcastEvent>
     ): State<Int> {
@@ -296,19 +299,22 @@ class RepositoryImpl @Inject constructor(
 
         // !! operators are safe here since the function can be called only if the episode
         // count is greater than 10.
-        if (sortOrder == SortOrder.RECENT_FIRST) {
-            bottomPubDate = podcastDao.getEarliestPubDate(id)!!
-            bottomLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(id)!!
-        } else {
-            bottomPubDate = podcastDao.getLatestPubDate(id)!!
-            bottomLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(id)!!
+        when (sortOrder) {
+            SortOrder.RECENT_FIRST -> {
+                bottomPubDate = podcastDao.getEarliestPubDate(podcastId)!!
+                bottomLoadedPubDate = episodeDao.getEarliestLoadedEpisodePubDate(podcastId)!!
+            }
+            SortOrder.OLDEST_FIRST -> {
+                bottomPubDate = podcastDao.getLatestPubDate(podcastId)!!
+                bottomLoadedPubDate = episodeDao.getLatestLoadedEpisodePubDate(podcastId)!!
+            }
         }
 
         if (bottomLoadedPubDate == bottomPubDate) return State.Success(0)
 
         event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
         val result = fetchEpisodesSequentially(
-            id = id,
+            podcastId = podcastId,
             startPubDate = bottomLoadedPubDate,
             endPubDate = bottomPubDate,
             sortOrder = sortOrder,
@@ -378,7 +384,7 @@ class RepositoryImpl @Inject constructor(
      * Returns result represented by [State] with the number of loaded episodes.
      */
     private suspend fun fetchEpisodesSequentially(
-        id: String,
+        podcastId: String,
         startPubDate: Long?,
         endPubDate: Long,
         sortOrder: SortOrder,
@@ -392,7 +398,7 @@ class RepositoryImpl @Inject constructor(
         return try {
             while (nextEpisodePubDate != endPubDate) {
                 val response = safeRetrofitCall {
-                    listenApi.getPodcast(id, nextEpisodePubDate, sortOrder.value)
+                    listenApi.getPodcast(podcastId, nextEpisodePubDate, sortOrder.value)
                 }
                 episodeDao.insert(response.episodesToDatabase())
                 nextEpisodePubDate = response.nextEpisodePubDate

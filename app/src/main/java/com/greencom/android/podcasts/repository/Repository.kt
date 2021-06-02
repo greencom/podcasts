@@ -26,14 +26,14 @@ interface Repository {
      * [State]. If the database already contains the appropriate podcast, return it. Otherwise,
      * fetch the podcast from ListenAPI and insert it into the database.
      */
-    fun getPodcastWithEpisodes(id: String): Flow<State<PodcastWithEpisodes>>
+    fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>>
 
     /**
      * Fetch the podcast for a given ID from ListenAPI and insert it into the database.
      * Returns the result represented by [State].
      */
     suspend fun fetchPodcast(
-        id: String,
+        podcastId: String,
         sortOrder: SortOrder = SortOrder.RECENT_FIRST
     ): State<PodcastWrapper>
 
@@ -46,7 +46,7 @@ interface Repository {
      * number of all episodes loaded to the database for this podcast exceeds the limit.
      */
     suspend fun fetchEpisodes(
-        id: String,
+        podcastId: String,
         sortOrder: SortOrder,
         isForced: Boolean,
         event: Channel<PodcastViewModel.PodcastEvent>
@@ -57,7 +57,7 @@ interface Repository {
      * them into the database. Returns the result represented by [State].
      */
     suspend fun fetchMoreEpisodes(
-        id: String,
+        podcastId: String,
         sortOrder: SortOrder,
         event: Channel<PodcastViewModel.PodcastEvent>
     ): State<Int>

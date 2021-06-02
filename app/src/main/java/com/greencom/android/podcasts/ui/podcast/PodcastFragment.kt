@@ -45,7 +45,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     private val args: PodcastFragmentArgs by navArgs()
 
     /** Podcast ID. */
-    private var id = ""
+    private var podcastId = ""
 
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
@@ -79,8 +79,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         // Get the podcast ID from the navigation arguments.
-        id = args.podcastId
-        viewModel.podcastId = id
+        podcastId = args.podcastId
+        viewModel.podcastId = podcastId
 
         // Load a podcast with episodes.
         viewModel.getPodcastWithEpisodes()
@@ -279,7 +279,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show UnsubscribeDialog.
             is PodcastEvent.UnsubscribeDialog ->
-                UnsubscribeDialog.show(childFragmentManager, id)
+                UnsubscribeDialog.show(childFragmentManager, podcastId)
 
             // Show Loading process.
             is PodcastEvent.Fetching -> binding.error.progressBar.revealCrossfade()
