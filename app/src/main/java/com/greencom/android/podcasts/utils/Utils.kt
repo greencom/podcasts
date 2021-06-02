@@ -121,9 +121,8 @@ fun setupSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
     swipeToRefresh.apply {
         val color = TypedValue()
         val backgroundColor = TypedValue()
-        val theme = context.theme
-        theme?.resolveAttribute(R.attr.colorPrimary, color, true)
-        theme?.resolveAttribute(
+        context.theme?.resolveAttribute(R.attr.colorPrimary, color, true)
+        context.theme?.resolveAttribute(
             R.attr.colorSwipeToRefreshBackground, backgroundColor, true
         )
         setColorSchemeColors(color.data)
@@ -181,8 +180,7 @@ fun audioLengthToString(length: Duration, context: Context): String {
  * in the format `day, month, year`.
  */
 fun pubDateToString(pubDate: Long, context: Context): String {
-    val currentTime = System.currentTimeMillis()
-    return when (val timeFromNow = currentTime - pubDate) {
+    return when (val timeFromNow = System.currentTimeMillis() - pubDate) {
 
         // Just now.
         in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.episode_pub_just_now)
