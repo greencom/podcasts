@@ -11,6 +11,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
+import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -26,7 +27,7 @@ class ExploreFragment : Fragment() {
     private val binding get() = _binding!!
 
     /** Whether the app bar is collapsed or not. */
-    var isAppBarCollapsed = false
+    var isAppBarExpanded = true
         private set
 
     override fun onCreateView(
@@ -44,7 +45,7 @@ class ExploreFragment : Fragment() {
 
         // Restore instance state.
         savedInstanceState?.apply {
-            binding.appBarLayout.setExpanded(!getBoolean(STATE_APP_BAR), false)
+            binding.appBarLayout.setExpanded(getBoolean(STATE_IS_APP_BAR_EXPANDED), false)
         }
 
         setupAppBar()
@@ -55,7 +56,7 @@ class ExploreFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         outState.apply {
-            putBoolean(STATE_APP_BAR, isAppBarCollapsed)
+            putBoolean(STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded)
         }
     }
 
@@ -80,11 +81,15 @@ class ExploreFragment : Fragment() {
         }
 
         // Track app bar state.
-        // TODO: Create onStateChangeListener, move to isExpanded
-        binding.appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                isAppBarCollapsed = verticalOffset != 0
-            })
+        binding.appBarLayout.addOnOffsetChangedListener(object : AppBarLayoutStateChangeListener() {
+            override fun onStateChanged(appBarLayout: AppBarLayout, newState: AppBarLayoutState) {
+                when (newState) {
+                    AppBarLayoutState.EXPANDED -> isAppBarExpanded = true
+                    AppBarLayoutState.COLLAPSED -> isAppBarExpanded = false
+                    else -> {  }
+                }
+            }
+        })
     }
 
     /** TabLayout and ViewPager2 setup. */
@@ -122,6 +127,6 @@ class ExploreFragment : Fragment() {
 
     companion object {
         // Saving instance state.
-        private const val STATE_APP_BAR = "app_bar_state"
+        private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
     }
 }

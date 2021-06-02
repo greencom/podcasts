@@ -169,11 +169,11 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             // Show error screen.
             is ExplorePageState.Error -> {
                 // Position the progress bar depending on ExplorePodcast app bar state.
-                if ((parentFragment as ExploreFragment).isAppBarCollapsed) {
-                    binding.error.progressBar.translationY = 0f
-                } else {
+                if ((parentFragment as ExploreFragment).isAppBarExpanded) {
                     // TODO: Use the appropriate value after app bar rework.
                     binding.error.progressBar.translationY = -(resources.getDimension(R.dimen.bottom_nav_bar_height))
+                } else {
+                    binding.error.progressBar.translationY = 0F
                 }
 
                 binding.error.root.revealCrossfade()
@@ -224,12 +224,12 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** Set alpha of the success screen to 0. */
     private fun hideSuccessScreen() {
-        binding.podcastList.alpha = 0f
+        binding.podcastList.alpha = 0F
     }
 
     /** Set alpha of the error screen to 0. */
     private fun hideErrorScreen() {
-        binding.error.root.alpha = 0f
+        binding.error.root.alpha = 0F
     }
 
     companion object {

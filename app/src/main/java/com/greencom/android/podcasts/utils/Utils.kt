@@ -81,7 +81,7 @@ fun showSnackbar(view: View, @StringRes stringRes: Int) {
 fun View.revealImmediately() {
     isVisible = true
     animate()
-        .alpha(1f)
+        .alpha(1F)
         .setDuration(0L)
 }
 
@@ -89,14 +89,14 @@ fun View.revealImmediately() {
 fun View.revealCrossfade() {
     isVisible = true
     animate()
-        .alpha(1f)
+        .alpha(1F)
         .setDuration(DURATION_CROSSFADE_ANIMATION)
 }
 
 /** Hide a view with a crossfade animation. */
 fun View.hideCrossfade() {
     animate()
-        .alpha(0f)
+        .alpha(0F)
         .setDuration(DURATION_CROSSFADE_ANIMATION)
         .withEndAction { isVisible = false }
 }

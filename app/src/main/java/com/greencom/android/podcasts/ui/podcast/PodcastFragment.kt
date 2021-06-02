@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
-import kotlin.math.abs
 
 private const val FAB_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100
@@ -132,14 +131,15 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         // Track app bar state.
-        // TODO: Create onStateChangeListener
-        binding.appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
-                when (abs(verticalOffset)) {
-                    0 -> isAppBarExpanded.value = true
-                    appBarLayout.totalScrollRange -> isAppBarExpanded.value = false
+        binding.appBarLayout.addOnOffsetChangedListener(object : AppBarLayoutStateChangeListener() {
+            override fun onStateChanged(appBarLayout: AppBarLayout, newState: AppBarLayoutState) {
+                when (newState) {
+                    AppBarLayoutState.EXPANDED -> isAppBarExpanded.value = true
+                    AppBarLayoutState.COLLAPSED -> isAppBarExpanded.value = false
+                    else -> {  }
                 }
-            })
+            }
+        })
     }
 
     /** RecyclerView setup. */
@@ -326,17 +326,17 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** Set alpha of the success screen to 0. */
     private fun hideSuccessScreen() {
-        binding.list.alpha = 0f
+        binding.list.alpha = 0F
     }
 
     /** Set alpha of the error screen to 0. */
     private fun hideErrorScreen() {
-        binding.error.root.alpha = 0f
+        binding.error.root.alpha = 0F
     }
 
     companion object {
         // Saving instance state.
-        private const val STATE_IS_APP_BAR_EXPANDED = "app_bar_state"
-        private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "scroll_to_top_state"
+        private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
+        private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "state_is_scroll_to_top_shown"
     }
 }
