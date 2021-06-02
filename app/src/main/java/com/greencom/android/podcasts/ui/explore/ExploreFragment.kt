@@ -79,7 +79,8 @@ class ExploreFragment : Fragment() {
             appBarParams.behavior = appBarBehavior
         }
 
-        // Monitoring app bar state.
+        // Track app bar state.
+        // TODO: Create onStateChangeListener, move to isExpanded
         binding.appBarLayout.addOnOffsetChangedListener(
             AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
                 isAppBarCollapsed = verticalOffset != 0

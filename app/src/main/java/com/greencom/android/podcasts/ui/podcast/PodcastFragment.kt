@@ -23,9 +23,12 @@ import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 private const val FAB_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100
@@ -44,8 +47,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Navigation Safe Args. */
     private val args: PodcastFragmentArgs by navArgs()
 
-    /** Podcast ID. */
     private var podcastId = ""
+
+    /** Is the app bar expanded. `false` means it is collapsed. */
+    private val isAppBarExpanded = MutableStateFlow(true)
 
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
@@ -55,9 +60,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             viewModel::changeSortOrder
         )
     }
-
-    /** Whether the app bar is collapsed or not. */
-    private var isAppBarCollapsed = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,8 +76,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // Restore instance state.
         savedInstanceState?.apply {
-            binding.appBarLayout.setExpanded(!getBoolean(STATE_APP_BAR), false)
-            binding.scrollToTop.apply { if (getBoolean(STATE_SCROLL_TO_TOP)) show() else hide() }
+            binding.appBarLayout.setExpanded(getBoolean(STATE_IS_APP_BAR_EXPANDED), false)
+            binding.scrollToTop.apply { if (getBoolean(STATE_IS_SCROLL_TO_TOP_SHOWN)) show() else hide() }
         }
 
         // Get the podcast ID from the navigation arguments.
@@ -97,8 +99,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         super.onSaveInstanceState(outState)
 
         outState.apply {
-            putBoolean(STATE_APP_BAR, isAppBarCollapsed)
-            putBoolean(STATE_SCROLL_TO_TOP, binding.scrollToTop.isOrWillBeShown)
+            putBoolean(STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded.value)
+            putBoolean(STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
         }
     }
 
@@ -129,10 +131,14 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             appBarParams.behavior = appBarBehavior
         }
 
-        // Monitoring app bar state.
+        // Track app bar state.
+        // TODO: Create onStateChangeListener
         binding.appBarLayout.addOnOffsetChangedListener(
-            AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->
-                isAppBarCollapsed = verticalOffset != 0
+            AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+                when (abs(verticalOffset)) {
+                    0 -> isAppBarExpanded.value = true
+                    appBarLayout.totalScrollRange -> isAppBarExpanded.value = false
+                }
             })
     }
 
@@ -148,7 +154,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             var totalItemCount = 0
             var firstVisibleItemPosition = 0
             var lastVisibleItemPosition = 0
-            var initialCheckSkipped = false
+            var scrollToTopInitialCheckSkipped = false
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -161,8 +167,15 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                     viewModel.fetchMoreEpisodes()
                 }
 
+                // Show and hide the podcast title in the app bar.
+                if (firstVisibleItemPosition >= 1) {
+                    binding.appBarTitle.revealImmediately()
+                } else {
+                    binding.appBarTitle.hideCrossfade()
+                }
+
                 // Show and hide the fab. Skip the initial check to restore instance state.
-                if (initialCheckSkipped) {
+                if (scrollToTopInitialCheckSkipped) {
                     binding.scrollToTop.apply {
                         if (firstVisibleItemPosition >= FAB_TOP_THRESHOLD && dy < 0) {
                             show()
@@ -171,7 +184,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                         }
                     }
                 } else {
-                    initialCheckSkipped = true
+                    scrollToTopInitialCheckSkipped = true
                 }
             }
         }
@@ -192,7 +205,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         hideErrorScreen()
 
         // Handle toolbar back button clicks.
-        binding.toolbarBack.setOnClickListener { findNavController().navigateUp() }
+        binding.appBarBack.setOnClickListener { findNavController().navigateUp() }
 
         // Force episodes fetching on swipe-to-refresh.
         binding.swipeToRefresh.setOnRefreshListener { viewModel.fetchEpisodes(true) }
@@ -229,6 +242,18 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 handleEvent(event)
             }
         }
+
+        // Observe app bar state to run title animation.
+        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+            isAppBarExpanded.collectLatest {
+                if (it) {
+                    delay(750) // Delay animation.
+                    binding.appBarTitle.isSelected = true
+                } else {
+                    binding.appBarTitle.isSelected = false
+                }
+            }
+        }
     }
 
     /** Handle UI states. */
@@ -241,6 +266,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show podcast data.
             is PodcastState.Success -> {
+                binding.appBarTitle.text = state.podcastWithEpisodes.podcast.title
                 adapter.submitHeaderAndList(
                     state.podcastWithEpisodes.podcast,
                     state.podcastWithEpisodes.episodes
@@ -310,7 +336,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     companion object {
         // Saving instance state.
-        private const val STATE_APP_BAR = "app_bar_state"
-        private const val STATE_SCROLL_TO_TOP = "scroll_to_top_state"
+        private const val STATE_IS_APP_BAR_EXPANDED = "app_bar_state"
+        private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "scroll_to_top_state"
     }
 }
