@@ -23,6 +23,8 @@ class PodcastViewModel @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : BaseViewModel() {
 
+    var podcastId = ""
+
     private val _uiState = MutableStateFlow<PodcastState>(PodcastState.Loading)
     /** StateFlow of UI state. States are presented by [PodcastState]. */
     val uiState = _uiState.asStateFlow()
@@ -35,18 +37,16 @@ class PodcastViewModel @Inject constructor(
     /** StateFlow with the current [SortOrder] value. Defaults to [SortOrder.RECENT_FIRST]. */
     val sortOrder = _sortOrder.asStateFlow()
 
-    var podcastId = ""
-
     /** Job that handles episodes fetching. */
     private var episodesJob: Job? = null
 
+    /** Are there episodes at the bottom of a list that should be loaded. */
+    private var moreEpisodesNeededAtBottom = true
+
     /** Reverse the [sortOrder] value and init episodes fetching. */
     fun changeSortOrder() {
-        _sortOrder.value = if (_sortOrder.value == SortOrder.RECENT_FIRST) {
-            SortOrder.OLDEST_FIRST
-        } else {
-            SortOrder.RECENT_FIRST
-        }
+        _sortOrder.value = sortOrder.value.reverse()
+        // Initiate a new process of loading episodes.
         fetchEpisodes()
     }
 
@@ -55,6 +55,7 @@ class PodcastViewModel @Inject constructor(
         repository.getPodcastWithEpisodes(podcastId)
             .combine(sortOrder) { value, sortOrder -> sortEpisodes(value, sortOrder) }
             .flowOn(defaultDispatcher)
+            .onEach(::checkBottomEpisodes)
             .collectLatest { state ->
                 when (state) {
                     is State.Loading -> _uiState.value = PodcastState.Loading
@@ -73,7 +74,7 @@ class PodcastViewModel @Inject constructor(
 
     /**
      * Fetch episodes for this podcast. Pass `true` to [isForced] to force the fetching regardless
-     * the last update date.
+     * the last update date. The previous [episodesJob] will be canceled.
      */
     fun fetchEpisodes(isForced: Boolean = false) {
         episodesJob?.cancel()
@@ -92,9 +93,12 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
-    /** Use this function to fetch more episodes for this podcast on scroll. */
+    /**
+     * Use this function to fetch more episodes for this podcast on scroll. Fetching
+     * will not start if [episodesJob] is active.
+     */
     fun fetchMoreEpisodes() {
-        if (episodesJob?.isActive == false) {
+        if (moreEpisodesNeededAtBottom && episodesJob?.isActive == false) {
             episodesJob = viewModelScope.launch {
                 try {
                     repository.fetchMoreEpisodes(podcastId, sortOrder.value, _event)
@@ -131,14 +135,35 @@ class PodcastViewModel @Inject constructor(
         sortOrder: SortOrder
     ): State<PodcastWithEpisodes> {
         if (value is State.Success) {
-            val episodes = if (sortOrder == SortOrder.RECENT_FIRST) {
-                value.data.episodes.sortedByDescending { it.date }
-            } else {
-                value.data.episodes.sortedBy { it.date }
+            val episodes = when (sortOrder) {
+                SortOrder.RECENT_FIRST -> value.data.episodes.sortedByDescending { it.date }
+                SortOrder.OLDEST_FIRST -> value.data.episodes.sortedBy { it.date }
             }
             return State.Success(PodcastWithEpisodes(value.data.podcast, episodes))
         }
         return value
+    }
+
+    /**
+     * Check if there are episodes at the bottom of the list that should be loaded.
+     * Result will be posted to [moreEpisodesNeededAtBottom].
+     */
+    private fun checkBottomEpisodes(state: State<PodcastWithEpisodes>) {
+        if (state is State.Success) {
+            // Return if the list is empty.
+            if (state.data.episodes.isEmpty()) return
+
+            // Get the latest or earliest podcast pub date depending on the current sort order.
+            // This date represents the date of the episode that should be the last in the list
+            // for the current sort order.
+            val bottomPubDate = when (sortOrder.value) {
+                SortOrder.RECENT_FIRST -> state.data.podcast.earliestPubDate
+                SortOrder.OLDEST_FIRST -> state.data.podcast.latestPubDate
+            }
+
+            // Compare the last loaded episode pub date and bottomPubDate.
+            moreEpisodesNeededAtBottom = state.data.episodes.last().date != bottomPubDate
+        }
     }
 
     /** Sealed class that represents the UI state of the [PodcastFragment]. */
