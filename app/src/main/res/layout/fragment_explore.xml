@@ -66,6 +66,7 @@
                 app:tabMode="scrollable"
                 app:tabPaddingEnd="16dp"
                 app:tabPaddingStart="16dp"
+                app:tabRippleColor="@color/tab_ripple_color"
                 app:tabTextAppearance="@style/TabLayout.Tab.Text" />
 
             <View
