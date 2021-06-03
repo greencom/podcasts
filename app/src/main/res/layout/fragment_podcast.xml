@@ -51,10 +51,10 @@
 
             <ImageButton
                 android:id="@+id/app_bar_back"
+                style="@style/ImageButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/description_back"
                 android:src="@drawable/ic_arrow_back_24"
                 app:tint="?attr/colorOnSurfaceLow" />

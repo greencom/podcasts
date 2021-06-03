@@ -116,10 +116,11 @@
 
     <ImageButton
         android:id="@+id/play_pause"
+        style="@style/ImageButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="10dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
+        android:background="@drawable/ripple_image_button_background_32"
         android:contentDescription="@string/player_description_play_pause"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
@@ -130,9 +131,9 @@
 
     <ImageButton
         android:id="@+id/backward"
+        style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_description_backward"
         android:padding="8dp"
         android:scaleType="fitCenter"
@@ -145,9 +146,9 @@
 
     <ImageButton
         android:id="@+id/forward"
+        style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_description_forward"
         android:padding="8dp"
         android:scaleType="fitCenter"
@@ -160,14 +161,13 @@
 
     <Button
         android:id="@+id/speed"
+        style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="28dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto_medium"
         android:padding="0dp"
         android:text="1.0x"
-        android:textAppearance="?attr/textAppearanceBody1"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -176,11 +176,11 @@
 
     <ImageButton
         android:id="@+id/options"
+        style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="15dp"
         android:layout_marginEnd="28dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_description_options"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="parent"

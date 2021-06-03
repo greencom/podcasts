@@ -132,10 +132,10 @@
 
     <ImageButton
         android:id="@+id/sort_order"
+        style="@style/ImageButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginTop="12dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/podcast_description_sort_order"
         android:src="@drawable/ic_arrow_down_24"
         app:layout_constraintEnd_toEndOf="@+id/cover"

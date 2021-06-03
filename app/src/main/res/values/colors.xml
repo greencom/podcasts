@@ -3,8 +3,9 @@
 
     <!-- Main start -->
     <color name="light_surface">#FFFFFF</color>
-    <color name="dark_surface">#222222</color>
     <color name="light_primary">#1976D2</color>
+
+    <color name="dark_surface">#222222</color>
     <color name="dark_primary">#90CAF9</color>
 
     <color name="light_on_surface_high">#212121</color>
@@ -20,6 +21,7 @@
     <color name="dark_on_surface_util">#3D3D3D</color>
     <!-- Main end -->
 
+
     <!-- Common start -->
     <color name="transparent">#00FFFFFF</color>
     <color name="white">#FFFFFF</color>
@@ -28,24 +30,34 @@
     <color name="red">#F44336</color>
     <!-- Common end -->
 
+
     <!-- Other start -->
     <color name="background_scrim">#80000000</color>
+
+    <color name="light_image_button_background_ripple">#C8C8C8</color>
+
+    <color name="dark_image_button_background_ripple">#646464</color>
     <color name="dark_bottom_nav_view_background">#222223</color>
     <color name="dark_fab_ripple">#535353</color>
     <!-- Other end -->
+
 
     <!-- Bottom Sheet start -->
     <color name="dark_bottom_sheet_background">#303030</color>
     <color name="dark_bottom_sheet_pill">#4F4F4F</color>
     <!-- Bottom Sheet end -->
 
+
     <!-- Player start -->
     <color name="player_shadows">#0D000000</color>
+
     <color name="light_player_collapsed_background">#FAFAFA</color>
     <!-- Player start -->
 
+
     <!-- Error screen start -->
     <color name="light_error_robot_wire">#1C3177</color>
+
     <color name="dark_error_robot_wire">#C5DFFF</color>
     <!-- Error screen start -->
 

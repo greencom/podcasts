@@ -43,11 +43,11 @@
 
     <ImageButton
         android:id="@+id/play_pause"
+        style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="4dp"
         android:layout_marginBottom="1dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/player_description_play_pause"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

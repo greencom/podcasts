@@ -13,6 +13,7 @@
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
     <attr name="colorFabRipple" format="color" />
+    <attr name="colorImageButtonBackgroundRipple" format="color" />
     <!-- Other end -->
 
     <!-- Bottom Sheet start -->

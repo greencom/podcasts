@@ -2,7 +2,6 @@
 <resources>
 
     <!-- BottomSheetDialog start -->
-
     <style name="BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheet</item>
     </style>
@@ -23,16 +22,16 @@
         <item name="cornerSizeTopLeft">16dp</item>
         <item name="cornerSizeTopRight">16dp</item>
     </style>
-
     <!-- BottomSheetDialog end -->
+
 
     <!-- TabLayout tab text. -->
     <style name="TabLayout.Tab.Text" parent="TextAppearance.AppCompat.Body1">
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
-    <!-- Buttons start -->
 
+    <!-- Buttons start -->
     <!-- Button. -->
     <style name="Button" parent="Widget.MaterialComponents.Button">
         <item name="textAllCaps">false</item>
@@ -59,6 +58,10 @@
         <item name="strokeColor">@color/toggle_button_stroke</item>
     </style>
 
+    <!-- ImageButton. -->
+    <style name="ImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">@drawable/ripple_image_button_background_24</item>
+    </style>
     <!-- Buttons end -->
 
 </resources>

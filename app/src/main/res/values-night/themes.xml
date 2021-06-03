@@ -36,6 +36,7 @@
         <item name="colorSwipeToRefreshBackground">@color/dark_bottom_sheet_background</item>
         <item name="colorBottomNavViewBackground">@color/dark_bottom_nav_view_background</item>
         <item name="colorFabRipple">@color/dark_fab_ripple</item>
+        <item name="colorImageButtonBackgroundRipple">@color/dark_image_button_background_ripple</item>
         <!-- Other end -->
 
         <!-- Bottom Sheet start -->
