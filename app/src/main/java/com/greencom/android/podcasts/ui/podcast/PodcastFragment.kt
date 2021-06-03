@@ -143,6 +143,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             val layoutManager = binding.list.layoutManager as LinearLayoutManager
             var totalItemCount = 0
             var firstVisibleItemPosition = 0
+            var firstCompletelyVisibleItemPosition = 0
             var lastVisibleItemPosition = 0
             var scrollToTopInitialCheckSkipped = false
 
@@ -150,6 +151,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 super.onScrolled(recyclerView, dx, dy)
                 totalItemCount = layoutManager.itemCount
                 firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                firstCompletelyVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
                 lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
                 // Fetch more episodes.
@@ -162,6 +164,13 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                     binding.appBarTitle.revealImmediately()
                 } else {
                     binding.appBarTitle.hideCrossfade()
+                }
+
+                // Show and hide app bar divider.
+                if (firstCompletelyVisibleItemPosition > 0) {
+                    binding.appBarDivider.revealImmediately()
+                } else {
+                    binding.appBarDivider.hideCrossfade()
                 }
 
                 // Show and hide the fab. Skip the initial check to restore instance state.

@@ -38,14 +38,14 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_with_progress_bar_height"
+        android:layout_height="@dimen/app_bar_height"
         android:background="@null"
         app:elevation="0dp"
         app:liftOnScroll="false">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/app_bar_height"
+            android:layout_height="52dp"
             android:orientation="horizontal"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
@@ -78,13 +78,26 @@
 
         </LinearLayout>
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/episodes_progress_bar"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            android:visibility="gone"
-            app:trackColor="?attr/colorSurface" />
+            android:layout_height="4dp">
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/episodes_progress_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:trackColor="?attr/colorSurface" />
+
+            <View
+                android:id="@+id/app_bar_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="bottom"
+                android:background="?attr/colorOnSurfaceUtil" />
+
+        </FrameLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 

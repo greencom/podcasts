@@ -4,7 +4,6 @@
     <!-- Global start -->
     <dimen name="bottom_nav_bar_height">56dp</dimen>
     <dimen name="app_bar_height">56dp</dimen>
-    <dimen name="app_bar_with_progress_bar_height">60dp</dimen>
     <!-- Global end -->
 
     <!-- Corners start -->
