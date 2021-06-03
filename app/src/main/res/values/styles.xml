@@ -50,12 +50,12 @@
     <!-- Toggle outlined button with icon and rounded corners. -->
     <style name="ToggleButton" parent="OutlinedButton">
         <item name="android:checkable">true</item>
-        <item name="android:textColor">@color/toggle_button_text</item>
+        <item name="android:textColor">@color/toggle_button_text_color</item>
         <item name="android:paddingStart">8dp</item>
         <!-- cornerRadius value with a margin to make sure that the button will be round on any scale. -->
         <item name="cornerRadius">56dp</item>
         <item name="iconTint">?attr/colorPrimary</item>
-        <item name="strokeColor">@color/toggle_button_stroke</item>
+        <item name="strokeColor">@color/toggle_button_stroke_color</item>
     </style>
 
     <!-- ImageButton. -->
