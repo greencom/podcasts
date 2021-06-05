@@ -49,13 +49,13 @@ class MainActivity : AppCompatActivity() {
     private var navigationBarColorDefault = TypedValue()
     private var navigationBarColorChanged = TypedValue()
 
+    // Slider thumb animator.
     private var thumbAnimator: ObjectAnimator? = null
     private var thumbRadiusDefault = 0
     private var thumbRadiusIncreased = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Setup player content.
-        val slideOffset = if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) 1f else 0f
+        val slideOffset = if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) 1F else 0F
         val bottomNavBarHeight = resources.getDimension(R.dimen.bottom_nav_bar_height)
         controlPlayerOnBottomSheetStateChanged(playerBehavior.state)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -139,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         // Hide scrim background at start.
         binding.background.isVisible = false
         // Set expanded content alpha to zero.
-        binding.player.expanded.root.alpha = 0f
+        binding.player.expanded.root.alpha = 0F
 
         // Obtain app bar colors.
         statusBarColor = getColor(R.color.background_scrim)
