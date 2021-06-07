@@ -166,7 +166,7 @@ class PodcastHeaderViewHolder private constructor(
 
         binding.cover.load(podcast.image) {
             transformations(RoundedCornersTransformation(
-                context.resources.getDimension(R.dimen.corner_radius_medium)
+                context.resources.getDimension(R.dimen.coil_rounded_corners)
             ))
             crossfade(true)
             placeholder(R.drawable.shape_placeholder)

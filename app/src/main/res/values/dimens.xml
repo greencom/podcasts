@@ -7,9 +7,7 @@
     <!-- Global end -->
 
     <!-- Corners start -->
-    <dimen name="corner_radius_small">4dp</dimen>
-    <dimen name="corner_radius_medium">8dp</dimen>
-    <dimen name="corner_radius_large">16dp</dimen>
+    <dimen name="coil_rounded_corners">4dp</dimen>
     <!-- Corners end -->
 
     <!-- Player start -->
