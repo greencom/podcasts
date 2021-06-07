@@ -23,7 +23,6 @@ class ExploreFragment : Fragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExploreBinding? = null
-    /** Non-null View binding. */
     private val binding get() = _binding!!
 
     /** Whether the app bar is collapsed or not. */

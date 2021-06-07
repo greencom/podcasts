@@ -36,13 +36,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentPodcastBinding? = null
-    /** Non-null View binding. */
     private val binding get() = _binding!!
 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
-    /** Navigation Safe Args. */
     private val args: PodcastFragmentArgs by navArgs()
 
     private var podcastId = ""

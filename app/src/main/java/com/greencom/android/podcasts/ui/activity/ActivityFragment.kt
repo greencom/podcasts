@@ -11,7 +11,6 @@ class ActivityFragment : Fragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentActivityBinding? = null
-    /** Non-null View binding. */
     private val binding get() = _binding!!
 
     override fun onCreateView(

@@ -16,10 +16,9 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: DialogUnsubscribeBinding? = null
-    /** Non-null View binding. */
     private val binding get() = _binding!!
 
-    /** Use this instance of the interface to deliver action events. */
+    /** Use this instance of the [UnsubscribeDialogListener] interface to deliver action events. */
     private lateinit var listener: UnsubscribeDialogListener
 
     /**
