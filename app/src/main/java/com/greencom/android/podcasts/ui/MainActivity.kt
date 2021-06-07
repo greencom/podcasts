@@ -38,7 +38,6 @@ private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    /** View binding. */
     private lateinit var binding: ActivityMainBinding
 
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */

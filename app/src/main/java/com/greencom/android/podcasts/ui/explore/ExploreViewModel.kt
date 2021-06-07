@@ -1,11 +1,11 @@
 package com.greencom.android.podcasts.ui.explore
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.repository.Repository
-import com.greencom.android.podcasts.ui.BaseViewModel
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 /** ViewModel used by instances of [ExplorePageFragment]. */
 @HiltViewModel
-class ExploreViewModel @Inject constructor(private val repository: Repository) : BaseViewModel() {
+class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ExplorePageState>(ExplorePageState.Loading)
     /** StateFlow of UI states. States are presented by [ExplorePageState]. */

@@ -1,12 +1,12 @@
 package com.greencom.android.podcasts.ui.podcast
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.repository.Repository
-import com.greencom.android.podcasts.ui.BaseViewModel
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class PodcastViewModel @Inject constructor(
     private val repository: Repository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
-) : BaseViewModel() {
+) : ViewModel() {
 
     var podcastId = ""
 
