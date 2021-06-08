@@ -14,6 +14,9 @@ import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
 
+// Saving instance state.
+private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
+
 /**
  * Contains lists of the best podcasts for different genres implemented as tabs for
  * the TabLayout.
@@ -113,10 +116,5 @@ class ExploreFragment : Fragment() {
             }
         }
         binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
-    }
-
-    companion object {
-        // Saving instance state.
-        private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
     }
 }

@@ -28,7 +28,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
 
-private const val FAB_TOP_THRESHOLD = 10
+// Saving instance state.
+private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
+private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "state_is_scroll_to_top_shown"
+
+private const val FAB_DISTANCE_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100
 
 @AndroidEntryPoint
@@ -174,7 +178,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 // Show and hide the fab. Skip the initial check to restore instance state.
                 if (scrollToTopInitialCheckSkipped) {
                     binding.scrollToTop.apply {
-                        if (firstVisibleItemPosition >= FAB_TOP_THRESHOLD && dy < 0) {
+                        if (firstVisibleItemPosition >= FAB_DISTANCE_TOP_THRESHOLD && dy < 0) {
                             show()
                         } else {
                             hide()
@@ -329,11 +333,5 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Set alpha of the error screen to 0. */
     private fun hideErrorScreen() {
         binding.error.root.alpha = 0F
-    }
-
-    companion object {
-        // Saving instance state.
-        private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
-        private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "state_is_scroll_to_top_shown"
     }
 }

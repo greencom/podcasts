@@ -94,6 +94,7 @@ fun showSnackbar(view: View, @StringRes stringRes: Int) {
 }
 
 /** Reveal a view immediately. */
+@Suppress("UsePropertyAccessSyntax")
 fun View.revealImmediately() {
     isVisible = true
     animate()
@@ -102,6 +103,7 @@ fun View.revealImmediately() {
 }
 
 /** Reveal a view with crossfade animation. */
+@Suppress("UsePropertyAccessSyntax")
 fun View.revealCrossfade() {
     isVisible = true
     animate()

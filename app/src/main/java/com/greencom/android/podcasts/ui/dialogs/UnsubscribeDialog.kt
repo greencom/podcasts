@@ -79,7 +79,7 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
     companion object {
 
         /** UnsubscribeDialog tag. */
-        const val TAG = "UnsubscribeDialog"
+        const val TAG = "unsubscribe_dialog"
 
         /**
          * Create and display [UnsubscribeDialog] with a given podcast ID. Make sure to pass in

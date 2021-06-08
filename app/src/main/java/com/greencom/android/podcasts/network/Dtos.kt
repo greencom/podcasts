@@ -299,28 +299,3 @@ data class BestPodcastsWrapper(
         val earliestPubDate: Long,
     )
 }
-
-/** Wrapper class for a [ListenApiService.getGenres] response. */
-data class GenresWrapper(
-
-    /** A list of genres. */
-    @Json(name = "genres")
-    val genres: List<GenresItem>
-) {
-
-    /** Wrapper class for a single genre object in the [GenresWrapper.genres] list. */
-    data class GenresItem(
-
-        /** Genre ID. */
-        @Json(name = "id")
-        val id: Int,
-
-        /** Genre name. */
-        @Json(name = "name")
-        val name: String,
-
-        /** Parent genre ID. */
-        @Json(name = "parent_id")
-        val parentId: Int?,
-    )
-}

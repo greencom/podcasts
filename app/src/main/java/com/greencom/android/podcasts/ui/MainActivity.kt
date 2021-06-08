@@ -29,6 +29,9 @@ import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.roundToInt
 
+// Saving instance state.
+private const val STATE_PLAYER_BEHAVIOR = "state_player_behavior"
+
 private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
 
 /**
@@ -50,8 +53,6 @@ class MainActivity : AppCompatActivity() {
 
     // Slider thumb animator.
     private var thumbAnimator: ObjectAnimator? = null
-    private var thumbRadiusDefault = 0
-    private var thumbRadiusIncreased = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,24 +60,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initViews()
-        setupNavigation()
-
         // Player bottom sheet behavior setup.
         playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
             setupBottomSheetBehavior()
         }
 
-        // Set listeners for the player content.
-        setPlayerCollapsedContentListeners()
-        setPlayerExpandedContentListeners()
+        initViews()
+        setupNavigation()
+        setPlayerListeners()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
         savedInstanceState.apply {
-            playerBehavior.state = getInt(STATE_PLAYER)
+            playerBehavior.state = getInt(STATE_PLAYER_BEHAVIOR)
         }
 
         // Setup player content.
@@ -93,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putInt(STATE_PLAYER, playerBehavior.state)
+        outState.putInt(STATE_PLAYER_BEHAVIOR, playerBehavior.state)
     }
 
     /** Make player closable on back pressed. */
@@ -145,8 +143,19 @@ class MainActivity : AppCompatActivity() {
         theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
         theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
 
-        thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
-        thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
+        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
+        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
+        // OnSliderTouchListener is used for animating slider thumb radius.
+        val onTouchListener = object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {
+                animateSliderThumb(thumbRadiusIncreased)
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                animateSliderThumb(thumbRadiusDefault)
+            }
+        }
+        binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
     }
 
     /** Navigation component setup. */
@@ -314,10 +323,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Set listeners for the collapsed content of the player. */
+    /** Set listeners for the player's content. */
     @SuppressLint("ClickableViewAccessibility")
-    private fun setPlayerCollapsedContentListeners() {
+    private fun setPlayerListeners() {
 
+        // COLLAPSED
         // Expand the player on the frame click.
         binding.player.collapsed.root.setOnClickListener {
             expandPlayer()
@@ -338,26 +348,24 @@ class MainActivity : AppCompatActivity() {
         binding.player.collapsed.playPause.setOnClickListener {
 
         }
-    }
 
-    /** Set listeners for the expanded content of the player. */
-    private fun setPlayerExpandedContentListeners() {
+
+        // EXPANDED.
+        binding.player.expanded.playPause.setOnClickListener {
+
+        }
 
         binding.player.expanded.slider.addOnChangeListener { _, _, _ ->
 
         }
 
-        // OnSliderTouchListener is used for animating slider thumb radius.
-        val onTouchListener = object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                animateSliderThumb(thumbRadiusIncreased)
-            }
+        binding.player.expanded.backward.setOnClickListener {
 
-            override fun onStopTrackingTouch(slider: Slider) {
-                animateSliderThumb(thumbRadiusDefault)
-            }
         }
-        binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
+
+        binding.player.expanded.forward.setOnClickListener {
+
+        }
 
         // The expanded content of the player is not disabled at application start
         // (because of bug?), so prevent random click on the invisible podcast cover
@@ -370,28 +378,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.player.expanded.playPause.setOnClickListener {
-
-        }
-        binding.player.expanded.backward.setOnClickListener {
-
-        }
-        binding.player.expanded.forward.setOnClickListener {
-
-        }
         binding.player.expanded.title.setOnClickListener {
-
-        }
-        binding.player.expanded.title.setOnClickListener {
-
-        }
-        binding.player.expanded.publisher.setOnClickListener {
-
-        }
-        binding.player.expanded.speed.setOnClickListener {
-
-        }
-        binding.player.expanded.options.setOnClickListener {
 
         }
     }
@@ -447,10 +434,5 @@ class MainActivity : AppCompatActivity() {
             }
         }
         thumbAnimator?.start()
-    }
-
-    companion object {
-        // Saving instance state.
-        private const val STATE_PLAYER = "player_state"
     }
 }
