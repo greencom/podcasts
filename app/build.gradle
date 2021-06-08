@@ -58,6 +58,10 @@ configurations.all {
 
 dependencies {
 
+    // Media2
+    implementation "androidx.media2:media2-session:$media2_version"
+    implementation "androidx.media2:media2-player:$media2_version"
+
     // Coil
     implementation "io.coil-kt:coil:$coil_version"
 

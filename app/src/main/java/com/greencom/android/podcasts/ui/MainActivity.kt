@@ -2,9 +2,14 @@ package com.greencom.android.podcasts.ui
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.Rect
+import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -14,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.media2.session.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -22,11 +28,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
+import com.greencom.android.podcasts.player.PlayerService
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
+import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
 // Saving instance state.
@@ -46,6 +55,44 @@ class MainActivity : AppCompatActivity() {
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
+    // TODO
+    private lateinit var mediaController: MediaController
+    private lateinit var mediaSessionToken: SessionToken
+
+    // TODO
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Timber.d("serviceConnection: onServiceConnected() called")
+            val binder = service as PlayerService.PlayerServiceBinder
+            mediaSessionToken = binder.getSessionToken()
+
+            mediaController = MediaController.Builder(this@MainActivity)
+                .setSessionToken(mediaSessionToken)
+                .setControllerCallback(Executors.newSingleThreadExecutor(), mediaControllerCallback)
+                .build()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Timber.d("serviceConnection: onServiceDisconnected() called")
+        }
+    }
+
+    // TODO
+    private val mediaControllerCallback = object : MediaController.ControllerCallback() {
+        override fun onConnected(
+            controller: MediaController,
+            allowedCommands: SessionCommandGroup
+        ) {
+            Timber.d("mediaControllerCallback: onConnected() called")
+            super.onConnected(controller, allowedCommands)
+        }
+
+        override fun onDisconnected(controller: MediaController) {
+            Timber.d("mediaControllerCallback: onDisconnected() called")
+            super.onDisconnected(controller)
+        }
+    }
+
     // App bar colors.
     private var statusBarColor = 0
     private var navigationBarColorDefault = TypedValue()
@@ -59,6 +106,13 @@ class MainActivity : AppCompatActivity() {
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        volumeControlStream = AudioManager.STREAM_MUSIC
+
+        // TODO
+        Intent(this, PlayerService::class.java).apply {
+            action = MediaLibraryService.SERVICE_INTERFACE
+        }.also { intent -> bindService(intent, serviceConnection, BIND_AUTO_CREATE) }
 
         // Player bottom sheet behavior setup.
         playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {

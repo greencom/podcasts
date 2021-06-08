@@ -21,5 +21,11 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".player.PlayerService">
+            <intent-filter>
+                <action android:name="androidx.media2.session.MediaSessionService" />
+            </intent-filter>
+        </service>
+
     </application>
 </manifest>
