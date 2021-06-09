@@ -1,14 +1,18 @@
 package com.greencom.android.podcasts.player
 
 import android.content.Intent
+import android.media.AudioAttributes
 import android.os.Binder
 import android.os.IBinder
+import androidx.media.AudioAttributesCompat
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaSession
 import androidx.media2.session.MediaSessionService
 import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
+import retrofit2.http.Url
 import timber.log.Timber
+import java.net.URL
 import java.util.concurrent.Executors
 
 class PlayerService : MediaSessionService() {
@@ -52,6 +56,12 @@ class PlayerService : MediaSessionService() {
 
         mediaPlayer = MediaPlayer(this).apply {
             registerPlayerCallback(Executors.newSingleThreadExecutor(), mediaPlayerCallback)
+            setAudioAttributes(
+                AudioAttributesCompat.Builder()
+                    .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
+                    .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+                    .build()
+            )
         }
 
         mediaSession = MediaSession.Builder(this, mediaPlayer)
