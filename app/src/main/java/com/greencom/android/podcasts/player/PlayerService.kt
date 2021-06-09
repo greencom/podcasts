@@ -42,11 +42,17 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    private val mediaPlayerCallback = object : MediaPlayer.PlayerCallback() {
+
+    }
+
     override fun onCreate() {
         super.onCreate()
         Timber.d("PlayerService: onCreate() called")
 
-        mediaPlayer = MediaPlayer(this)
+        mediaPlayer = MediaPlayer(this).apply {
+            registerPlayerCallback(Executors.newSingleThreadExecutor(), mediaPlayerCallback)
+        }
 
         mediaSession = MediaSession.Builder(this, mediaPlayer)
             .setSessionCallback(Executors.newSingleThreadExecutor(), mediaSessionCallback)
@@ -64,6 +70,7 @@ class PlayerService : MediaSessionService() {
         Timber.d("PlayerService: onDestroy() called")
 
         mediaSession.close()
+        mediaPlayer.unregisterPlayerCallback(mediaPlayerCallback)
         mediaPlayer.close()
     }
 
