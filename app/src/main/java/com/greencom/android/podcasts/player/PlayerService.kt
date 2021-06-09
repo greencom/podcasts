@@ -46,9 +46,9 @@ class PlayerService : MediaSessionService() {
         super.onCreate()
         Timber.d("PlayerService: onCreate() called")
 
-        mediaPlayer = MediaPlayer(baseContext)
+        mediaPlayer = MediaPlayer(this)
 
-        mediaSession = MediaSession.Builder(baseContext, mediaPlayer)
+        mediaSession = MediaSession.Builder(this, mediaPlayer)
             .setSessionCallback(Executors.newSingleThreadExecutor(), mediaSessionCallback)
             .build()
     }
