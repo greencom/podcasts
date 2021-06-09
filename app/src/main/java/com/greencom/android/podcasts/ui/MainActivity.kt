@@ -124,6 +124,11 @@ class MainActivity : AppCompatActivity() {
         setPlayerListeners()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaController.close()
+    }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
