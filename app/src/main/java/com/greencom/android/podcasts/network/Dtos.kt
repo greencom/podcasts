@@ -197,9 +197,11 @@ data class PodcastWrapper(
     /**
      * Pass it to the `nextEpisodePubDate` parameter of [ListenApiService.getPodcast]
      * to paginate through episodes of that podcast.
+     *
+     * Note: Nullable because of ListenAPI bug(?) that may return null.
      */
     @Json(name = "next_episode_pub_date")
-    val nextEpisodePubDate: Long,
+    val nextEpisodePubDate: Long?,
 ) {
 
     /** Wrapper class for a single episode object in the [PodcastWrapper.episodes] list. */
