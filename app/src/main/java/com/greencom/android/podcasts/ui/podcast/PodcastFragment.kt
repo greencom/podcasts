@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 
 // Saving instance state.
-private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
-private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "state_is_scroll_to_top_shown"
+private const val STATE_IS_APP_BAR_EXPANDED = "STATE_IS_APP_BAR_EXPANDED"
+private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "STATE_IS_SCROLL_TO_TOP_SHOWN"
 
 private const val FAB_DISTANCE_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100

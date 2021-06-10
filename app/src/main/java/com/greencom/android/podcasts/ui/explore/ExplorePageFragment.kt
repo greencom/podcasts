@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
 // Initialization parameters.
-private const val GENRE_ID = "genre_id"
+private const val GENRE_ID = "GENRE_ID"
 
 /**
  * Represents all pages of the ViewPager2 in the ExploreFragment. Each page contains
@@ -238,7 +238,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
          * Key prefix used to pass and retrieve data about reselected tab
          * in [ExploreFragment] between fragments.
          */
-        const val ON_TAB_RESELECTED = "explore_page_on_tab_reselected"
+        const val ON_TAB_RESELECTED = "EXPLORE_PAGE_ON_TAB_RESELECTED"
 
         /**
          * Use this factory method to create a new instance of

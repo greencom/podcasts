@@ -15,7 +15,7 @@ import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
 
 // Saving instance state.
-private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
+private const val STATE_IS_APP_BAR_EXPANDED = "STATE_IS_APP_BAR_EXPANDED"
 
 /**
  * Contains lists of the best podcasts for different genres implemented as tabs for

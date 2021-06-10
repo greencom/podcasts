@@ -9,7 +9,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.greencom.android.podcasts.databinding.DialogUnsubscribeBinding
 
 // Initialization parameters.
-private const val PODCAST_ID = "podcast_id"
+private const val PODCAST_ID = "PODCAST_ID"
 
 /** Dialog that appears on Unsubscribe click. Use [show] to create and display this dialog. */
 class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
@@ -79,7 +79,7 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
     companion object {
 
         /** UnsubscribeDialog tag. */
-        const val TAG = "unsubscribe_dialog"
+        const val TAG = "UNSUBSCRIBE_DIALOG_TAG"
 
         /**
          * Create and display [UnsubscribeDialog] with a given podcast ID. Make sure to pass in

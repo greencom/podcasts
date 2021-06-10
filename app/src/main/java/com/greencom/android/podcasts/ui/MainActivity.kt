@@ -47,7 +47,7 @@ import timber.log.Timber
 import kotlin.math.roundToInt
 
 // Saving instance state.
-private const val STATE_PLAYER_BEHAVIOR = "state_player_behavior"
+private const val STATE_PLAYER_BEHAVIOR = "STATE_PLAYER_BEHAVIOR"
 
 private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
 
