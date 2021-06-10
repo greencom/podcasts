@@ -59,6 +59,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mediaController: MediaController
     private lateinit var mediaSessionToken: SessionToken
 
+    // App bar colors.
+    private var statusBarColor = 0
+    private var navigationBarColorDefault = TypedValue()
+    private var navigationBarColorChanged = TypedValue()
+
+    // Slider thumb animator.
+    private var thumbAnimator: ObjectAnimator? = null
+
     // TODO
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -93,14 +101,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // App bar colors.
-    private var statusBarColor = 0
-    private var navigationBarColorDefault = TypedValue()
-    private var navigationBarColorChanged = TypedValue()
-
-    // Slider thumb animator.
-    private var thumbAnimator: ObjectAnimator? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // View binding setup.
@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         Intent(this, PlayerService::class.java).apply {
-            action = MediaLibraryService.SERVICE_INTERFACE
+            action = MediaSessionService.SERVICE_INTERFACE
         }.also { intent -> bindService(intent, serviceConnection, BIND_AUTO_CREATE) }
 
         // Player bottom sheet behavior setup.
