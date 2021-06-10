@@ -38,6 +38,7 @@ class PodcastWithEpisodesAdapter(
     val sortOrder: StateFlow<SortOrder>,
     private val updateSubscription: (String, Boolean) -> Unit,
     private val changeSortOrder: () -> Unit,
+    private val playEpisode: (Episode) -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -55,7 +56,10 @@ class PodcastWithEpisodesAdapter(
                 updateSubscription,
                 changeSortOrder
             )
-            ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(parent)
+            ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(
+                parent,
+                playEpisode
+            )
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
     }
@@ -114,7 +118,6 @@ class PodcastHeaderViewHolder private constructor(
     private val changeSortOrder: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    /** View context. */
     private val context = binding.root.context
 
     /** Podcast associated with this ViewHolder. */
@@ -161,7 +164,6 @@ class PodcastHeaderViewHolder private constructor(
 
     /** Bind PodcastViewHolder with a given [Podcast]. */
     fun bind(podcast: Podcast, sortOrder: SortOrder, isDescriptionExpanded: Boolean) {
-        // Update the podcast associated with this ViewHolder.
         this.podcast = podcast
 
         binding.cover.load(podcast.image) {
@@ -174,9 +176,10 @@ class PodcastHeaderViewHolder private constructor(
         }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
-        binding.description.text =
-            HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
-                .trim()
+        binding.description.text = HtmlCompat.fromHtml(
+            podcast.description,
+            HtmlCompat.FROM_HTML_MODE_LEGACY
+        ).toString().trim()
         binding.explicitContent.isVisible = podcast.explicitContent
         binding.episodeCount.text = context.resources.getQuantityString(
             R.plurals.podcast_episode_count,
@@ -230,14 +233,26 @@ class PodcastHeaderViewHolder private constructor(
 /** EpisodeViewHolder represents a single episode item in the list. */
 class EpisodeViewHolder private constructor(
     private val binding: ItemPodcastEpisodeBinding,
+    private val playEpisode: (Episode) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    // View context.
     private val context = binding.root.context
+
+    /** Episode associated with this ViewHolder. */
+    private lateinit var episode: Episode
+
+    init {
+        // TODO
+        binding.play.setOnClickListener {
+            playEpisode(episode)
+        }
+    }
 
     /** Bind EpisodeViewHolder with a given [Episode]. */
     @ExperimentalTime
     fun bind(episode: Episode) {
+        this.episode = episode
+
         binding.title.text = episode.title
         // Date formatting.
         binding.date.text = pubDateToString(episode.date, context)
@@ -249,10 +264,11 @@ class EpisodeViewHolder private constructor(
         /** Create an [EpisodeViewHolder]. */
         fun create(
             parent: ViewGroup,
+            playEpisode: (Episode) -> Unit,
         ): EpisodeViewHolder {
             val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return EpisodeViewHolder(binding)
+            return EpisodeViewHolder(binding, playEpisode)
         }
     }
 }

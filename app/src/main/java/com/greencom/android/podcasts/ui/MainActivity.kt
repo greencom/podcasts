@@ -14,28 +14,36 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
+import androidx.media2.player.MediaPlayer
 import androidx.media2.session.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import coil.load
+import coil.transform.RoundedCornersTransformation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.PlayerService
+import com.greencom.android.podcasts.player.PlayerViewModel
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
-import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
 // Saving instance state.
@@ -51,13 +59,17 @@ private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val collapsedPlayer get() = binding.player.collapsed
+    private val expandedPlayer get() = binding.player.expanded
+
+    // TODO
+    private val playerViewModel: PlayerViewModel by viewModels()
+
+    // TODO
+    private var previousPlayedEpisode: PlayerViewModel.EpisodeMetadata? = null
 
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
-
-    // TODO
-    private lateinit var mediaController: MediaController
-    private lateinit var mediaSessionToken: SessionToken
 
     // App bar colors.
     private var statusBarColor = 0
@@ -72,32 +84,12 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             Timber.d("serviceConnection: onServiceConnected() called")
             val binder = service as PlayerService.PlayerServiceBinder
-            mediaSessionToken = binder.getSessionToken()
-
-            mediaController = MediaController.Builder(this@MainActivity)
-                .setSessionToken(mediaSessionToken)
-                .setControllerCallback(Executors.newSingleThreadExecutor(), mediaControllerCallback)
-                .build()
+            val mediaSessionToken = binder.getSessionToken()
+            playerViewModel.createMediaController(this@MainActivity, mediaSessionToken)
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
             Timber.d("serviceConnection: onServiceDisconnected() called")
-        }
-    }
-
-    // TODO
-    private val mediaControllerCallback = object : MediaController.ControllerCallback() {
-        override fun onConnected(
-            controller: MediaController,
-            allowedCommands: SessionCommandGroup
-        ) {
-            Timber.d("mediaControllerCallback: onConnected() called")
-            super.onConnected(controller, allowedCommands)
-        }
-
-        override fun onDisconnected(controller: MediaController) {
-            Timber.d("mediaControllerCallback: onDisconnected() called")
-            super.onDisconnected(controller)
         }
     }
 
@@ -107,6 +99,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // TODO
         volumeControlStream = AudioManager.STREAM_MUSIC
 
         // TODO
@@ -122,11 +115,52 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupNavigation()
         setPlayerListeners()
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaController.close()
+        // TODO
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            playerViewModel.playerState.collect { state ->
+                when (state) {
+                    MediaPlayer.PLAYER_STATE_PLAYING -> {
+                        collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
+                        expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+                    }
+                    MediaPlayer.PLAYER_STATE_PAUSED -> {
+                        collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
+                        expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
+                    }
+                }
+            }
+        }
+
+        // TODO
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            playerViewModel.currentEpisode.collectLatest { episode ->
+                previousPlayedEpisode?.let { previousEpisode ->
+                    if (episode == previousEpisode) return@collectLatest
+                }
+                previousPlayedEpisode = episode
+
+                collapsedPlayer.title.text = episode.title
+                collapsedPlayer.cover.load(episode.image) {
+                    transformations(RoundedCornersTransformation(
+                        resources.getDimension(R.dimen.coil_rounded_corners)
+                    ))
+                    crossfade(true)
+                    placeholder(R.drawable.shape_placeholder)
+                    error(R.drawable.shape_placeholder)
+                }
+
+                expandedPlayer.title.text = episode.title
+                expandedPlayer.cover.load(episode.image) {
+                    transformations(RoundedCornersTransformation(
+                        resources.getDimension(R.dimen.coil_rounded_corners)
+                    ))
+                    crossfade(true)
+                    placeholder(R.drawable.shape_placeholder)
+                    error(R.drawable.shape_placeholder)
+                }
+            }
+        }
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -191,11 +225,11 @@ class MainActivity : AppCompatActivity() {
     /** Initialize views. */
     private fun initViews() {
         // Set text selected to run ellipsize animation.
-        binding.player.collapsed.title.isSelected = true
+        collapsedPlayer.title.isSelected = true
         // Hide scrim background at start.
         binding.background.isVisible = false
         // Set expanded content alpha to zero.
-        binding.player.expanded.root.alpha = 0F
+        expandedPlayer.root.alpha = 0F
 
         // Obtain app bar colors.
         statusBarColor = getColor(R.color.background_scrim)
@@ -214,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                 animateSliderThumb(thumbRadiusDefault)
             }
         }
-        binding.player.expanded.slider.addOnSliderTouchListener(onTouchListener)
+        expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
     }
 
     /** Navigation component setup. */
@@ -301,13 +335,13 @@ class MainActivity : AppCompatActivity() {
         // Hide the scrim background when the player is collapsed.
         binding.background.isVisible = newState != BottomSheetBehavior.STATE_COLLAPSED
         // Disable the player collapsed content when the player is expanded.
-        binding.player.collapsed.root.isClickable = newState == BottomSheetBehavior.STATE_COLLAPSED
+        collapsedPlayer.root.isClickable = newState == BottomSheetBehavior.STATE_COLLAPSED
         // Disable the player expanded content when the player is collapsed.
-        binding.player.expanded.root.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
-        binding.player.expanded.cover.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
+        expandedPlayer.root.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
+        expandedPlayer.cover.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
         // Set text selected to run ellipsize animation.
-        binding.player.collapsed.title.isSelected = newState != BottomSheetBehavior.STATE_EXPANDED
-        binding.player.expanded.title.isSelected = newState != BottomSheetBehavior.STATE_COLLAPSED
+        collapsedPlayer.title.isSelected = newState != BottomSheetBehavior.STATE_EXPANDED
+        expandedPlayer.title.isSelected = newState != BottomSheetBehavior.STATE_COLLAPSED
     }
 
     /**
@@ -319,11 +353,11 @@ class MainActivity : AppCompatActivity() {
         bottomNavBarHeight: Float
     ) {
         // Animate alpha of the player collapsed content.
-        binding.player.collapsed.root.alpha = 1F - slideOffset * 10
-        binding.player.collapsed.progressBar.alpha = 1F - slideOffset * 100
+        collapsedPlayer.root.alpha = 1F - slideOffset * 10
+        collapsedPlayer.progressBar.alpha = 1F - slideOffset * 100
 
         // Animate alpha of the player expanded content.
-        binding.player.expanded.root.alpha = (slideOffset * 1.5F) - 0.15F
+        expandedPlayer.root.alpha = (slideOffset * 1.5F) - 0.15F
 
         // Animate the displacement of the bottomNavBar along the y-axis.
         binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
@@ -351,11 +385,11 @@ class MainActivity : AppCompatActivity() {
         bottomNavBarHeight: Float
     ) {
         // Animate alpha of the player collapsed content.
-        binding.player.collapsed.root.alpha = 1F - slideOffset * 10
-        binding.player.collapsed.progressBar.alpha = 1F - slideOffset * 100
+        collapsedPlayer.root.alpha = 1F - slideOffset * 10
+        collapsedPlayer.progressBar.alpha = 1F - slideOffset * 100
 
         // Animate alpha of the player expanded content.
-        binding.player.expanded.root.alpha = (slideOffset * 1.5F) - 0.15F
+        expandedPlayer.root.alpha = (slideOffset * 1.5F) - 0.15F
 
         // Animate the displacement of the bottomNavBar along the y-axis.
         binding.bottomNavBar.translationY = slideOffset * bottomNavBarHeight * 10
@@ -388,48 +422,54 @@ class MainActivity : AppCompatActivity() {
 
         // COLLAPSED
         // Expand the player on the frame click.
-        binding.player.collapsed.root.setOnClickListener {
+        collapsedPlayer.root.setOnClickListener {
             expandPlayer()
         }
         // Expand the player on frame swipe.
-        binding.player.collapsed.root.setOnTouchListener(object : OnSwipeListener(this) {
+        collapsedPlayer.root.setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeUp() {
                 expandPlayer()
             }
         })
         // Expand the player on play/pause button swipe.
-        binding.player.collapsed.playPause.setOnTouchListener(object : OnSwipeListener(this) {
+        collapsedPlayer.playPause.setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeUp() {
                 expandPlayer()
             }
         })
 
-        binding.player.collapsed.playPause.setOnClickListener {
-
+        collapsedPlayer.playPause.setOnClickListener {
+            when {
+                playerViewModel.isPlaying -> playerViewModel.pause()
+                playerViewModel.isPaused -> playerViewModel.play()
+            }
         }
 
 
         // EXPANDED.
-        binding.player.expanded.playPause.setOnClickListener {
+        expandedPlayer.playPause.setOnClickListener {
+            when {
+                playerViewModel.isPlaying -> playerViewModel.pause()
+                playerViewModel.isPaused -> playerViewModel.play()
+            }
+        }
+
+        expandedPlayer.slider.addOnChangeListener { _, _, _ ->
 
         }
 
-        binding.player.expanded.slider.addOnChangeListener { _, _, _ ->
+        expandedPlayer.backward.setOnClickListener {
 
         }
 
-        binding.player.expanded.backward.setOnClickListener {
-
-        }
-
-        binding.player.expanded.forward.setOnClickListener {
+        expandedPlayer.forward.setOnClickListener {
 
         }
 
         // The expanded content of the player is not disabled at application start
         // (because of bug?), so prevent random click on the invisible podcast cover
         // by checking the state of player bottom sheet. If player is collapsed, expand it.
-        binding.player.expanded.cover.setOnClickListener {
+        expandedPlayer.cover.setOnClickListener {
             if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
@@ -437,7 +477,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.player.expanded.title.setOnClickListener {
+        expandedPlayer.title.setOnClickListener {
 
         }
     }
@@ -484,7 +524,7 @@ class MainActivity : AppCompatActivity() {
             thumbAnimator?.setIntValues(to)
         } else {
             thumbAnimator = ObjectAnimator.ofInt(
-                binding.player.expanded.slider,
+                expandedPlayer.slider,
                 "thumbRadius",
                 to
             ).apply {

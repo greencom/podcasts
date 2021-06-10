@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
+import com.greencom.android.podcasts.player.PlayerViewModel
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
@@ -27,6 +29,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import java.util.concurrent.TimeUnit
+import kotlin.time.ExperimentalTime
 
 // Saving instance state.
 private const val STATE_IS_APP_BAR_EXPANDED = "state_is_app_bar_expanded"
@@ -35,6 +38,7 @@ private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "state_is_scroll_to_top_shown"
 private const val FAB_DISTANCE_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100
 
+@ExperimentalTime
 @AndroidEntryPoint
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
@@ -44,6 +48,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
+
+    // TODO
+    private val playerViewModel: PlayerViewModel by activityViewModels()
 
     private val args: PodcastFragmentArgs by navArgs()
 
@@ -57,7 +64,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         PodcastWithEpisodesAdapter(
             viewModel.sortOrder,
             viewModel::updateSubscription,
-            viewModel::changeSortOrder
+            viewModel::changeSortOrder,
+            playerViewModel::playEpisode
         )
     }
 
