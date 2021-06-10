@@ -9,6 +9,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import coil.request.ImageRequest
+import coil.transform.RoundedCornersTransformation
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
@@ -206,4 +208,18 @@ fun pubDateToString(pubDate: Long, context: Context): String {
             dateFormatter.format(pubDate)
         }
     }
+}
+
+/**
+ * App-specific default Coil builder. Uses [context] to access resource files.
+ * Applies rounded corners transformation, crossfade animation and sets resources for the
+ * placeholder and the error.
+ */
+fun ImageRequest.Builder.coilDefaultBuilder(context: Context) {
+    transformations(RoundedCornersTransformation(
+        context.resources.getDimension(R.dimen.coil_rounded_corners)
+    ))
+    crossfade(true)
+    placeholder(R.drawable.shape_placeholder)
+    error(R.drawable.shape_placeholder)
 }

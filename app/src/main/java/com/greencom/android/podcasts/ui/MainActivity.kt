@@ -28,7 +28,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import coil.load
-import coil.transform.RoundedCornersTransformation
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
@@ -40,6 +39,7 @@ import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
+import com.greencom.android.podcasts.utils.coilDefaultBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -142,22 +142,12 @@ class MainActivity : AppCompatActivity() {
 
                 collapsedPlayer.title.text = episode.title
                 collapsedPlayer.cover.load(episode.image) {
-                    transformations(RoundedCornersTransformation(
-                        resources.getDimension(R.dimen.coil_rounded_corners)
-                    ))
-                    crossfade(true)
-                    placeholder(R.drawable.shape_placeholder)
-                    error(R.drawable.shape_placeholder)
+                    coilDefaultBuilder(this@MainActivity)
                 }
 
                 expandedPlayer.title.text = episode.title
                 expandedPlayer.cover.load(episode.image) {
-                    transformations(RoundedCornersTransformation(
-                        resources.getDimension(R.dimen.coil_rounded_corners)
-                    ))
-                    crossfade(true)
-                    placeholder(R.drawable.shape_placeholder)
-                    error(R.drawable.shape_placeholder)
+                    coilDefaultBuilder(this@MainActivity)
                 }
             }
         }

@@ -9,7 +9,6 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.transform.RoundedCornersTransformation
 import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
@@ -166,14 +165,7 @@ class PodcastHeaderViewHolder private constructor(
     fun bind(podcast: Podcast, sortOrder: SortOrder, isDescriptionExpanded: Boolean) {
         this.podcast = podcast
 
-        binding.cover.load(podcast.image) {
-            transformations(RoundedCornersTransformation(
-                context.resources.getDimension(R.dimen.coil_rounded_corners)
-            ))
-            crossfade(true)
-            placeholder(R.drawable.shape_placeholder)
-            error(R.drawable.shape_placeholder)
-        }
+        binding.cover.load(podcast.image) { coilDefaultBuilder(context) }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
         binding.description.text = HtmlCompat.fromHtml(
