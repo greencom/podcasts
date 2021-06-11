@@ -145,7 +145,8 @@ class PlayerService : MediaSessionService() {
     }
 
     inner class PlayerServiceBinder : Binder() {
-        fun getSessionToken(): SessionToken = mediaSession.token
+        val sessionToken: SessionToken
+            get() = mediaSession.token
     }
 
     companion object {

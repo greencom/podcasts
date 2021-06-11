@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             Timber.d("serviceConnection: onServiceConnected() called")
             val binder = service as PlayerService.PlayerServiceBinder
-            val mediaSessionToken = binder.getSessionToken()
+            val mediaSessionToken = binder.sessionToken
             playerViewModel.createMediaController(this@MainActivity, mediaSessionToken)
         }
 
