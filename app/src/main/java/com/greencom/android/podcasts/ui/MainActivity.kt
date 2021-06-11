@@ -40,6 +40,8 @@ import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.OnSwipeListener
 import com.greencom.android.podcasts.utils.coilDefaultBuilder
+import com.greencom.android.podcasts.utils.timestampCurrent
+import com.greencom.android.podcasts.utils.timestampLeft
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -162,6 +164,16 @@ class MainActivity : AppCompatActivity() {
             playerViewModel.currentPosition.collect { position ->
                 expandedPlayer.slider.value = position.toFloat()
                 collapsedPlayer.progressBar.progress = position.toInt()
+
+                expandedPlayer.timeCurrent.text = timestampCurrent(
+                    position = position,
+                    context = this@MainActivity
+                )
+                expandedPlayer.timeLeft.text = timestampLeft(
+                    position = position,
+                    duration = playerViewModel.duration,
+                    context = this@MainActivity
+                )
             }
         }
     }
@@ -296,7 +308,6 @@ class MainActivity : AppCompatActivity() {
      * the player UI behavior when [BottomSheetBehavior] state and slideOffset change.
      */
     private fun BottomSheetBehavior<FrameLayout>.setupBottomSheetBehavior() {
-
         val bottomNavBarHeight = resources.getDimension(R.dimen.bottom_nav_bar_height)
 
         /** BottomSheetCallback for API versions below 27. */

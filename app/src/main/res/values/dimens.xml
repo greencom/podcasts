@@ -2,6 +2,8 @@
 <resources>
 
     <!-- Global start -->
+    <dimen name="bottom_sheet_pill_height">4dp</dimen>
+    <dimen name="bottom_sheet_pill_width">36dp</dimen>
     <dimen name="bottom_nav_bar_height">56dp</dimen>
     <dimen name="app_bar_height">56dp</dimen>
     <!-- Global end -->
