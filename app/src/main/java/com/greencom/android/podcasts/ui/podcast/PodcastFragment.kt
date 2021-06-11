@@ -256,7 +256,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             isAppBarExpanded.collectLatest {
                 if (it) {
-                    delay(750) // Delay animation.
+                    delay(1000) // Delay animation.
                     binding.appBarTitle.isSelected = true
                 } else {
                     binding.appBarTitle.isSelected = false

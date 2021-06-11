@@ -43,6 +43,8 @@ import com.greencom.android.podcasts.utils.coilDefaultBuilder
 import com.greencom.android.podcasts.utils.timestampCurrent
 import com.greencom.android.podcasts.utils.timestampLeft
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
@@ -83,6 +85,9 @@ class MainActivity : AppCompatActivity() {
     // Slider thumb animator.
     private var thumbAnimator: ObjectAnimator? = null
 
+    /** Is the player expanded. `false` means collapsed. Used to delay text marquee animations. */
+    private val isPlayerExpanded = MutableStateFlow(false)
+
     // TODO
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -119,6 +124,23 @@ class MainActivity : AppCompatActivity() {
         initViews()
         setupNavigation()
         setPlayerListeners()
+
+        // TODO
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            isPlayerExpanded.collectLatest {
+                if (it) {
+                    collapsedPlayer.title.isSelected = false
+                    delay(1000) // Delay animation.
+                    expandedPlayer.title.isSelected = true
+                    expandedPlayer.publisher.isSelected = true
+                } else {
+                    expandedPlayer.title.isSelected = false
+                    expandedPlayer.publisher.isSelected = false
+                    delay(1000) // Delay animation.
+                    collapsedPlayer.title.isSelected = true
+                }
+            }
+        }
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
@@ -346,6 +368,11 @@ class MainActivity : AppCompatActivity() {
      * state change.
      */
     private fun controlPlayerOnBottomSheetStateChanged(newState: Int) {
+        when (newState) {
+            BottomSheetBehavior.STATE_EXPANDED -> isPlayerExpanded.value = true
+            BottomSheetBehavior.STATE_COLLAPSED -> isPlayerExpanded.value = false
+        }
+
         // Hide the scrim background when the player is collapsed.
         binding.background.isVisible = newState != BottomSheetBehavior.STATE_COLLAPSED
         // Disable the player collapsed content when the player is expanded.
@@ -353,9 +380,6 @@ class MainActivity : AppCompatActivity() {
         // Disable the player expanded content when the player is collapsed.
         expandedPlayer.root.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
         expandedPlayer.cover.isClickable = newState == BottomSheetBehavior.STATE_EXPANDED
-        // Set text selected to run ellipsize animation.
-        collapsedPlayer.title.isSelected = newState != BottomSheetBehavior.STATE_EXPANDED
-        expandedPlayer.title.isSelected = newState != BottomSheetBehavior.STATE_COLLAPSED
     }
 
     /**
