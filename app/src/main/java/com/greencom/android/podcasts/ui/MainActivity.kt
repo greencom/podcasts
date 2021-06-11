@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import kotlin.math.roundToInt
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // Saving instance state.
@@ -270,14 +271,24 @@ class MainActivity : AppCompatActivity() {
         // Set expanded content alpha to zero.
         expandedPlayer.root.alpha = 0F
 
+        // Slider label formatter.
+        expandedPlayer.slider.setLabelFormatter { position ->
+            Duration.milliseconds(position.toLong()).toComponents { hours, minutes, seconds, _ ->
+                return@setLabelFormatter when (hours) {
+                    0 -> getString(R.string.time_stamp_current_format_m_s, minutes, seconds)
+                    else -> getString(R.string.time_stamp_current_format_h_m_s, hours, minutes, seconds)
+                }
+            }
+        }
+
         // Obtain app bar colors.
         statusBarColor = getColor(R.color.background_scrim)
         theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
         theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
 
+        // OnSliderTouchListener is used for animating slider thumb radius.
         val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
         val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
-        // OnSliderTouchListener is used for animating slider thumb radius.
         val onTouchListener = object : Slider.OnSliderTouchListener {
             override fun onStartTrackingTouch(slider: Slider) {
                 animateSliderThumb(thumbRadiusIncreased)
