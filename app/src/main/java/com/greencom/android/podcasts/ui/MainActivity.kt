@@ -187,15 +187,17 @@ class MainActivity : AppCompatActivity() {
                 expandedPlayer.slider.value = position.toFloat()
                 collapsedPlayer.progressBar.progress = position.toInt()
 
-                expandedPlayer.timeCurrent.text = timestampCurrent(
-                    position = position,
-                    context = this@MainActivity
-                )
-                expandedPlayer.timeLeft.text = timestampLeft(
-                    position = position,
-                    duration = playerViewModel.duration,
-                    context = this@MainActivity
-                )
+                if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    expandedPlayer.timeCurrent.text = timestampCurrent(
+                        position = position,
+                        context = this@MainActivity
+                    )
+                    expandedPlayer.timeLeft.text = timestampLeft(
+                        position = position,
+                        duration = playerViewModel.duration,
+                        context = this@MainActivity
+                    )
+                }
             }
         }
     }

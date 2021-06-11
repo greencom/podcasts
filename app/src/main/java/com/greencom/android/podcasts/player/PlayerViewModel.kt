@@ -81,7 +81,7 @@ class PlayerViewModel : ViewModel() {
                         if (mediaController.currentPosition <= duration) {
                             _currentPosition.emit(mediaController.currentPosition)
                         }
-                        delay(100)
+                        delay(500)
                     }
                 }
             }
