@@ -3,6 +3,14 @@
 
     <string name="app_name">Podcasts</string>
 
+    <!-- Formatting start -->
+    <string name="time_stamp_current_format_m_s" translatable="false">%d:%02d</string>
+    <string name="time_stamp_current_format_h_m_s" translatable="false">%d:%02d:%02d</string>
+    <string name="time_stamp_left_format_m_s" translatable="false">-%d:%02d</string>
+    <string name="time_stamp_left_format_h_m_s" translatable="false">-%d:%02d:%02d</string>
+    <!-- Formatting end -->
+
+
     <!-- Common start -->
     <string name="subscribe">Subscribe</string>
     <string name="subscribed">Subscribed</string>
@@ -42,6 +50,7 @@
     <string name="description_cover">Podcast cover</string>
     <!-- Common end -->
 
+
     <!-- Player start -->
     <string name="player_description_play_pause">Play and pause</string>
     <string name="player_description_backward">Back 10 seconds</string>
@@ -49,15 +58,18 @@
     <string name="player_description_options">Options</string>
     <!-- Player end -->
 
+
     <!-- Bottom navigation start -->
     <string name="bottom_nav_home">Home</string>
     <string name="bottom_nav_explore">Explore</string>
     <string name="bottom_nav_activity">Activity</string>
     <!-- Bottom navigation end -->
 
+
     <!-- HomeFragment start -->
     <string name="home_dark_theme">Night mode</string>
     <!-- HomeFragment end -->
+
 
     <!-- ExploreFragment start -->
     <!-- Do not forget to update ExploreTabGenre enum class, if you edit this array. -->
@@ -77,6 +89,7 @@
     <string name="explore_podcasts_updated">Podcasts have been updated</string>
     <!-- ExploreFragment end -->
 
+
     <!-- PodcastFragment start -->
     <string name="podcast_description_sort_order">Episodes sorting</string>
     <plurals name="podcast_episode_count">
@@ -88,6 +101,7 @@
         <item quantity="other">%d Episodes</item>
     </plurals>
     <!-- PodcastFragment end -->
+
 
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Unsubscribe</string>

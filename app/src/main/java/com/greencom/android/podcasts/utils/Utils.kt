@@ -210,6 +210,28 @@ fun pubDateToString(pubDate: Long, context: Context): String {
     }
 }
 
+/** Converts the current position to a String timestamp that represents the current time. */
+@ExperimentalTime
+fun timestampCurrent(position: Long, context: Context): String {
+    Duration.milliseconds(position).toComponents { hours, minutes, seconds, _ ->
+        return when (hours) {
+            0 -> context.getString(R.string.time_stamp_current_format_m_s, minutes, seconds)
+            else -> context.getString(R.string.time_stamp_current_format_h_m_s, hours, minutes, seconds)
+        }
+    }
+}
+
+/** Converts the current position to a String timestamp that represents the remaining time. */
+@ExperimentalTime
+fun timestampLeft(position: Long, duration: Long, context: Context): String {
+    Duration.milliseconds(duration - position).toComponents { hours, minutes, seconds, _ ->
+        return when (hours) {
+            0 -> context.getString(R.string.time_stamp_left_format_m_s, minutes, seconds)
+            else -> context.getString(R.string.time_stamp_left_format_h_m_s, hours, minutes, seconds)
+        }
+    }
+}
+
 /**
  * App-specific default Coil builder. Uses [context] to access resource files.
  * Applies rounded corners transformation, crossfade animation and sets resources for the

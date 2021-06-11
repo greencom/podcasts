@@ -55,16 +55,14 @@
         app:srcCompat="@drawable/ic_play_outline_24"
         app:tint="?attr/colorOnSurfaceMedium" />
 
-    <!-- TODO: Replace with LinearProgressIndicator -->
-    <ProgressBar
+    <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_bar"
-        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="wrap_content"
         android:progress="40"
-        android:progressBackgroundTint="?attr/colorPlayerCollapsedBackground"
-        android:progressTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:trackColor="?attr/colorPlayerCollapsedBackground"
+        app:trackThickness="1dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

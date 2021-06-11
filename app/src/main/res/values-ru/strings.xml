@@ -42,6 +42,7 @@
     <string name="description_cover">Обложка подкаста</string>
     <!-- Common end -->
 
+
     <!-- Player start -->
     <string name="player_description_play_pause">Играть и пауза</string>
     <string name="player_description_backward">Назад на 10 секунд</string>
@@ -49,15 +50,18 @@
     <string name="player_description_options">Опции</string>
     <!-- Player end -->
 
+
     <!-- Bottom navigation start -->
     <string name="bottom_nav_home">Главная</string>
     <string name="bottom_nav_explore">Находки</string>
     <string name="bottom_nav_activity">Активность</string>
     <!-- Bottom navigation end -->
 
+
     <!-- HomeFragment start -->
     <string name="home_dark_theme">Тёмная тема</string>
     <!-- HomeFragment end -->
+
 
     <!-- ExploreFragment start -->
     <!-- Do not forget to update ExploreTabGenre enum class, if you edit this array. -->
@@ -77,6 +81,7 @@
     <string name="explore_podcasts_updated">Подкасты обновлены</string>
     <!-- ExploreFragment end -->
 
+
     <!-- PodcastFragment start -->
     <string name="podcast_description_sort_order">Сортировка эпизодов</string>
     <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
@@ -88,6 +93,7 @@
         <item quantity="other">%d Эпизодов</item>
     </plurals>
     <!-- PodcastFragment end -->
+
 
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Отписаться</string>

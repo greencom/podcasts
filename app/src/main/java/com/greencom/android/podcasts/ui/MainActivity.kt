@@ -45,6 +45,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import kotlin.math.roundToInt
+import kotlin.time.ExperimentalTime
 
 // Saving instance state.
 private const val STATE_PLAYER_BEHAVIOR = "STATE_PLAYER_BEHAVIOR"
@@ -55,6 +56,7 @@ private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
  * MainActivity is the entry point for the app. This is where the Navigation component,
  * bottom navigation bar, and player bottom sheet are configured.
  */
+@ExperimentalTime
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -149,6 +151,17 @@ class MainActivity : AppCompatActivity() {
                 expandedPlayer.cover.load(episode.image) {
                     coilDefaultBuilder(this@MainActivity)
                 }
+
+                expandedPlayer.slider.valueTo = playerViewModel.duration.toFloat()
+                collapsedPlayer.progressBar.max = playerViewModel.duration.toInt()
+            }
+        }
+
+        // TODO
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            playerViewModel.currentPosition.collect { position ->
+                expandedPlayer.slider.value = position.toFloat()
+                collapsedPlayer.progressBar.progress = position.toInt()
             }
         }
     }

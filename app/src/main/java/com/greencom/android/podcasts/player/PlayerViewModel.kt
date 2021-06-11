@@ -12,6 +12,8 @@ import androidx.media2.session.MediaController
 import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.data.domain.Episode
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -30,11 +32,19 @@ class PlayerViewModel : ViewModel() {
     private val _playerState = MutableSharedFlow<Int>(1)
     val playerState = _playerState.asSharedFlow()
 
+    private val _currentPosition = MutableSharedFlow<Long>(1)
+    val currentPosition = _currentPosition.asSharedFlow()
+
+    private var currentPositionJob: Job? = null
+
     val isPlaying: Boolean
         get() = mediaController.playerState == MediaPlayer.PLAYER_STATE_PLAYING
 
     val isPaused: Boolean
         get() = mediaController.playerState == MediaPlayer.PLAYER_STATE_PAUSED
+
+    val duration: Long
+        get() = mediaController.duration
 
     private val mediaControllerCallback = object : MediaController.ControllerCallback() {
         override fun onConnected(
@@ -64,6 +74,18 @@ class PlayerViewModel : ViewModel() {
         override fun onPlayerStateChanged(controller: MediaController, state: Int) {
             Timber.d("mediaControllerCallback: onPlayerStateChanged() called")
             viewModelScope.launch { _playerState.emit(state) }
+
+            if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
+                currentPositionJob = viewModelScope.launch {
+                    while (true) {
+                        if (mediaController.currentPosition <= duration) {
+                            _currentPosition.emit(mediaController.currentPosition)
+                        }
+                        delay(100)
+                    }
+                }
+            }
+            if (state == MediaPlayer.PLAYER_STATE_PAUSED) currentPositionJob?.cancel()
         }
     }
 
