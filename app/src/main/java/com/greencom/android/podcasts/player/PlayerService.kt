@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Binder
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import androidx.media.AudioAttributesCompat
 import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
@@ -12,13 +13,14 @@ import androidx.media2.common.SessionPlayer
 import androidx.media2.common.UriMediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.*
+import com.greencom.android.podcasts.utils.GLOBAL_TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import timber.log.Timber
 import java.util.concurrent.Executors
 
+// TODO
 class PlayerService : MediaSessionService() {
 
     private lateinit var mediaSession: MediaSession
@@ -32,12 +34,12 @@ class PlayerService : MediaSessionService() {
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main)
 
-    private val mediaSessionCallback = object : MediaSession.SessionCallback() {
+    private val sessionCallback = object : MediaSession.SessionCallback() {
         override fun onConnect(
             session: MediaSession,
             controller: MediaSession.ControllerInfo
         ): SessionCommandGroup? {
-            Timber.d("mediaSessionCallback: onConnect() called")
+            Log.d(GLOBAL_TAG,"sessionCallback: onConnect() called")
             return super.onConnect(session, controller)
         }
 
@@ -45,7 +47,7 @@ class PlayerService : MediaSessionService() {
             session: MediaSession,
             controller: MediaSession.ControllerInfo
         ) {
-            Timber.d("mediaSessionCallback: onPostConnect() called")
+            Log.d(GLOBAL_TAG,"sessionCallback: onPostConnect() called")
             super.onPostConnect(session, controller)
         }
 
@@ -53,7 +55,7 @@ class PlayerService : MediaSessionService() {
             session: MediaSession,
             controller: MediaSession.ControllerInfo
         ) {
-            Timber.d("mediaSessionCallback: onDisconnected() called")
+            Log.d(GLOBAL_TAG,"sessionCallback: onDisconnected() called")
             super.onDisconnected(session, controller)
         }
 
@@ -61,7 +63,9 @@ class PlayerService : MediaSessionService() {
             session: MediaSession,
             controller: MediaSession.ControllerInfo
         ): Int {
+            Log.d(GLOBAL_TAG,"sessionCallback: onSkipForward() called")
             val result = player.seekTo(player.currentPosition + SKIP_FORWARD_VALUE).get()
+            if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipForward ERROR, code ${result.resultCode}")
             return result.resultCode
         }
 
@@ -69,7 +73,9 @@ class PlayerService : MediaSessionService() {
             session: MediaSession,
             controller: MediaSession.ControllerInfo
         ): Int {
+            Log.d(GLOBAL_TAG,"sessionCallback: onSkipBackward() called")
             val result = player.seekTo(player.currentPosition - SKIP_BACKWARD_VALUE).get()
+            if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipBackward ERROR, code ${result.resultCode}")
             return result.resultCode
         }
 
@@ -79,30 +85,30 @@ class PlayerService : MediaSessionService() {
             uri: Uri,
             extras: Bundle?
         ): Int {
-            Timber.d("mediaSessionCallback: onSetMediaUri() called")
-
+            Log.d(GLOBAL_TAG,"sessionCallback: onSetMediaUri() called")
             resetPlayer()
 
             val mediaItemBuilder = UriMediaItem.Builder(uri)
             if (extras != null) {
                 mediaItemBuilder.setMetadata(
                     MediaMetadata.Builder()
-                        .putString(MediaMetadata.METADATA_KEY_TITLE, extras.getString(TITLE))
-                        .putString(MediaMetadata.METADATA_KEY_ART_URI, extras.getString(IMAGE_URL))
-                        .putLong(MediaMetadata.METADATA_KEY_DURATION, extras.getLong(DURATION))
+                        .putString(ID, extras.getString(ID))
+                        .putString(TITLE, extras.getString(TITLE))
+                        .putString(ART_URI, extras.getString(ART_URI))
+                        .putLong(DURATION, extras.getLong(DURATION))
                         .build()
                 )
             }
 
             var result = player.setMediaItem(mediaItemBuilder.build()).get()
             if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                Timber.d("setMediaItem ERROR, code ${result.resultCode}")
+                Log.d(GLOBAL_TAG, "setMediaItem ERROR, code ${result.resultCode}")
                 return result.resultCode
             }
 
             result = player.prepare().get()
             if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                Timber.d("prepare ERROR, code ${result.resultCode}")
+                Log.d(GLOBAL_TAG, "prepare ERROR, code ${result.resultCode}")
                 return result.resultCode
             }
 
@@ -111,9 +117,9 @@ class PlayerService : MediaSessionService() {
         }
     }
 
-    private val mediaPlayerCallback = object : MediaPlayer.PlayerCallback() {
+    private val playerCallback = object : MediaPlayer.PlayerCallback() {
         override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
-            Timber.d("mediaPlayerCallback: onPlayerStateChanged() called, playerState is $playerState")
+            Log.d(GLOBAL_TAG,"playerCallback: onPlayerStateChanged() called, playerState $playerState")
             super.onPlayerStateChanged(player, playerState)
         }
 
@@ -122,44 +128,44 @@ class PlayerService : MediaSessionService() {
             item: MediaItem?,
             buffState: Int
         ) {
-            Timber.d("mediaPlayerCallback: onBufferingStateChanged() called, buffState is $buffState")
+            Log.d(GLOBAL_TAG,"mediaPlayerCallback: onBufferingStateChanged() called, buffState $buffState")
             super.onBufferingStateChanged(player, item, buffState)
         }
     }
 
     override fun onCreate() {
         super.onCreate()
-        Timber.d("PlayerService: onCreate() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onCreate() called")
 
         player = MediaPlayer(this).apply {
-            registerPlayerCallback(Executors.newSingleThreadExecutor(), mediaPlayerCallback)
+            registerPlayerCallback(Executors.newSingleThreadExecutor(), playerCallback)
             setAudioAttributes(audioAttrs)
         }
 
         mediaSession = MediaSession.Builder(this, player)
-            .setSessionCallback(Executors.newSingleThreadExecutor(), mediaSessionCallback)
+            .setSessionCallback(Executors.newSingleThreadExecutor(), sessionCallback)
             .build()
     }
 
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
-        Timber.d("PlayerService: onBind() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onBind() called")
         return PlayerServiceBinder()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Timber.d("PlayerService: onDestroy() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onDestroy() called")
 
         serviceScope.cancel()
 
         mediaSession.close()
-        player.unregisterPlayerCallback(mediaPlayerCallback)
+        player.unregisterPlayerCallback(playerCallback)
         player.close()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
-        Timber.d("PlayerService: onGetSession() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onGetSession() called")
         return mediaSession
     }
 
@@ -174,11 +180,12 @@ class PlayerService : MediaSessionService() {
     }
 
     companion object {
-        const val TITLE = "TITLE"
-        const val IMAGE_URL = "IMAGE_URL"
-        const val DURATION = "DURATION"
+        const val ID = MediaMetadata.METADATA_KEY_MEDIA_ID
+        const val TITLE = MediaMetadata.METADATA_KEY_TITLE
+        const val ART_URI = MediaMetadata.METADATA_KEY_ART_URI
+        const val DURATION = MediaMetadata.METADATA_KEY_DURATION
 
-        const val SKIP_FORWARD_VALUE = 30000
-        const val SKIP_BACKWARD_VALUE = 10000
+        const val SKIP_FORWARD_VALUE = 30_000
+        const val SKIP_BACKWARD_VALUE = 10_000
     }
 }

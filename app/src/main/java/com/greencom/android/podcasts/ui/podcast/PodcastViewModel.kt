@@ -4,8 +4,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
+import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
@@ -16,9 +18,11 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class PodcastViewModel @Inject constructor(
+    private val player: PlayerServiceConnection,
     private val repository: Repository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -42,6 +46,12 @@ class PodcastViewModel @Inject constructor(
 
     /** Are there episodes at the bottom of a list that should be loaded. */
     private var moreEpisodesNeededAtBottom = true
+
+    // TODO
+    @ExperimentalTime
+    fun playEpisode(episodes: Episode) {
+        player.playEpisode(episodes)
+    }
 
     /** Reverse the [sortOrder] value and init episodes fetching. */
     fun changeSortOrder() {

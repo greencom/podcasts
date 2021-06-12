@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
-import com.greencom.android.podcasts.player.PlayerViewModel
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
@@ -49,9 +47,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
-    // TODO
-    private val playerViewModel: PlayerViewModel by activityViewModels()
-
     private val args: PodcastFragmentArgs by navArgs()
 
     private var podcastId = ""
@@ -65,7 +60,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             viewModel.sortOrder,
             viewModel::updateSubscription,
             viewModel::changeSortOrder,
-            playerViewModel::playEpisode
+            viewModel::playEpisode
         )
     }
 

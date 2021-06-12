@@ -10,6 +10,7 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -34,20 +35,16 @@ import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.PlayerService
-import com.greencom.android.podcasts.player.PlayerViewModel
+import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
-import com.greencom.android.podcasts.utils.OnSwipeListener
-import com.greencom.android.podcasts.utils.coilDefaultBuilder
-import com.greencom.android.podcasts.utils.timestampCurrent
-import com.greencom.android.podcasts.utils.timestampLeft
+import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -70,10 +67,10 @@ class MainActivity : AppCompatActivity() {
     private val expandedPlayer get() = binding.player.expanded
 
     // TODO
-    private val playerViewModel: PlayerViewModel by viewModels()
+    private val viewModel: MainActivityViewModel by viewModels()
 
     // TODO
-    private var previousPlayedEpisode: PlayerViewModel.EpisodeMetadata? = null
+    private var previousPlayedEpisode: PlayerServiceConnection.CurrentEpisode? = null
 
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
@@ -92,14 +89,14 @@ class MainActivity : AppCompatActivity() {
     // TODO
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Timber.d("serviceConnection: onServiceConnected() called")
+            Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected() called")
             val binder = service as PlayerService.PlayerServiceBinder
             val mediaSessionToken = binder.sessionToken
-            playerViewModel.createMediaController(this@MainActivity, mediaSessionToken)
+            viewModel.createMediaController(this@MainActivity, mediaSessionToken)
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            Timber.d("serviceConnection: onServiceDisconnected() called")
+            Log.d(GLOBAL_TAG, "serviceConnection: onServiceDisconnected() called")
         }
     }
 
@@ -145,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
-            playerViewModel.playerState.collect { state ->
+            viewModel.playerState.collect { state ->
                 when (state) {
                     MediaPlayer.PLAYER_STATE_PLAYING -> {
                         collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
@@ -161,11 +158,14 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
-            playerViewModel.currentEpisode.collectLatest { episode ->
+            viewModel.currentEpisode.collectLatest { episode ->
                 previousPlayedEpisode?.let { previousEpisode ->
                     if (episode == previousEpisode) return@collectLatest
                 }
                 previousPlayedEpisode = episode
+
+                expandedPlayer.slider.valueTo = viewModel.duration.toFloat()
+                collapsedPlayer.progressBar.max = viewModel.duration.toInt()
 
                 collapsedPlayer.title.text = episode.title
                 collapsedPlayer.cover.load(episode.image) {
@@ -176,15 +176,12 @@ class MainActivity : AppCompatActivity() {
                 expandedPlayer.cover.load(episode.image) {
                     coilDefaultBuilder(this@MainActivity)
                 }
-
-                expandedPlayer.slider.valueTo = playerViewModel.duration.toFloat()
-                collapsedPlayer.progressBar.max = playerViewModel.duration.toInt()
             }
         }
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
-            playerViewModel.currentPosition.collect { position ->
+            viewModel.currentPosition.collect { position ->
                 expandedPlayer.slider.value = position.toFloat()
                 collapsedPlayer.progressBar.progress = position.toInt()
             }
@@ -466,8 +463,8 @@ class MainActivity : AppCompatActivity() {
 
         collapsedPlayer.playPause.setOnClickListener {
             when {
-                playerViewModel.isPlaying -> playerViewModel.pause()
-                playerViewModel.isPaused -> playerViewModel.play()
+                viewModel.isPlaying -> viewModel.pause()
+                viewModel.isPaused -> viewModel.play()
             }
         }
 
@@ -475,8 +472,8 @@ class MainActivity : AppCompatActivity() {
         // EXPANDED.
         expandedPlayer.playPause.setOnClickListener {
             when {
-                playerViewModel.isPlaying -> playerViewModel.pause()
-                playerViewModel.isPaused -> playerViewModel.play()
+                viewModel.isPlaying -> viewModel.pause()
+                viewModel.isPaused -> viewModel.play()
             }
         }
 
@@ -486,14 +483,14 @@ class MainActivity : AppCompatActivity() {
         val onTouchListener = object : Slider.OnSliderTouchListener {
             var playerWasPlaying = false
             override fun onStartTrackingTouch(slider: Slider) {
-                playerWasPlaying = playerViewModel.isPlaying
-                playerViewModel.pause()
+                playerWasPlaying = viewModel.isPlaying
+                viewModel.pause()
                 animateSliderThumb(thumbRadiusIncreased)
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                playerViewModel.seekTo(slider.value.toLong())
-                if (playerWasPlaying) playerViewModel.play()
+                viewModel.seekTo(slider.value.toLong())
+                if (playerWasPlaying) viewModel.play()
                 animateSliderThumb(thumbRadiusDefault)
             }
         }
@@ -509,13 +506,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         expandedPlayer.backward.setOnClickListener {
-            playerViewModel.skipBackward()
+            viewModel.skipBackward()
             val newSliderValue = expandedPlayer.slider.value - PlayerService.SKIP_BACKWARD_VALUE
             expandedPlayer.slider.value = if (newSliderValue >= 0) newSliderValue else 0F
         }
 
         expandedPlayer.forward.setOnClickListener {
-            playerViewModel.skipForward()
+            viewModel.skipForward()
             val newSliderValue = expandedPlayer.slider.value + PlayerService.SKIP_FORWARD_VALUE
             expandedPlayer.slider.value = if (newSliderValue <= expandedPlayer.slider.valueTo) {
                 newSliderValue
