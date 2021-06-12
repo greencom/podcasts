@@ -42,8 +42,8 @@ class PodcastWithEpisodesAdapter(
     PodcastWithEpisodesDiffCallback
 ) {
 
-    /** Adapter coroutine scope. */
-    private val adapterScope = CoroutineScope(Dispatchers.Default)
+    private val adapterJob = SupervisorJob()
+    private val adapterScope = CoroutineScope(adapterJob + Dispatchers.Default)
 
     /** Whether the podcast description is expanded. False at start. */
     private var isPodcastDescriptionExpanded = false
