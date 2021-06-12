@@ -187,18 +187,6 @@ class MainActivity : AppCompatActivity() {
             playerViewModel.currentPosition.collect { position ->
                 expandedPlayer.slider.value = position.toFloat()
                 collapsedPlayer.progressBar.progress = position.toInt()
-
-                if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                    expandedPlayer.timeCurrent.text = timestampCurrent(
-                        position = position,
-                        context = this@MainActivity
-                    )
-                    expandedPlayer.timeLeft.text = timestampLeft(
-                        position = position,
-                        duration = playerViewModel.duration,
-                        context = this@MainActivity
-                    )
-                }
             }
         }
     }
@@ -285,20 +273,6 @@ class MainActivity : AppCompatActivity() {
         statusBarColor = getColor(R.color.background_scrim)
         theme.resolveAttribute(R.attr.colorSurface, navigationBarColorDefault, true)
         theme.resolveAttribute(R.attr.colorBottomSheetBackground, navigationBarColorChanged, true)
-
-        // OnSliderTouchListener is used for animating slider thumb radius.
-        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
-        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
-        val onTouchListener = object : Slider.OnSliderTouchListener {
-            override fun onStartTrackingTouch(slider: Slider) {
-                animateSliderThumb(thumbRadiusIncreased)
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                animateSliderThumb(thumbRadiusDefault)
-            }
-        }
-        expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
     }
 
     /** Navigation component setup. */
@@ -468,6 +442,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Set listeners for the player's content. */
+    // TODO
     @SuppressLint("ClickableViewAccessibility")
     private fun setPlayerListeners() {
 
@@ -505,16 +480,46 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        expandedPlayer.slider.addOnChangeListener { _, _, _ ->
+        // TODO
+        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
+        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
+        val onTouchListener = object : Slider.OnSliderTouchListener {
+            var playerWasPlaying = false
+            override fun onStartTrackingTouch(slider: Slider) {
+                playerWasPlaying = playerViewModel.isPlaying
+                playerViewModel.pause()
+                animateSliderThumb(thumbRadiusIncreased)
+            }
 
+            override fun onStopTrackingTouch(slider: Slider) {
+                playerViewModel.seekTo(slider.value.toLong())
+                if (playerWasPlaying) playerViewModel.play()
+                animateSliderThumb(thumbRadiusDefault)
+            }
+        }
+        expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
+
+        expandedPlayer.slider.addOnChangeListener { slider, value, _ ->
+            expandedPlayer.timeCurrent.text = timestampCurrent(value.toLong(),this)
+            expandedPlayer.timeLeft.text = timestampLeft(
+                position = value.toLong(),
+                duration = slider.valueTo.toLong(),
+                context = this
+            )
         }
 
         expandedPlayer.backward.setOnClickListener {
-
+            playerViewModel.skipBackward()
+            val newSliderValue = expandedPlayer.slider.value - PlayerService.SKIP_BACKWARD_VALUE
+            expandedPlayer.slider.value = if (newSliderValue >= 0) newSliderValue else 0F
         }
 
         expandedPlayer.forward.setOnClickListener {
-
+            playerViewModel.skipForward()
+            val newSliderValue = expandedPlayer.slider.value + PlayerService.SKIP_FORWARD_VALUE
+            expandedPlayer.slider.value = if (newSliderValue <= expandedPlayer.slider.valueTo) {
+                newSliderValue
+            } else expandedPlayer.slider.valueTo
         }
 
         // The expanded content of the player is not disabled at application start

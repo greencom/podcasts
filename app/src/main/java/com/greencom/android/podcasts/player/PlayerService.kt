@@ -12,6 +12,10 @@ import androidx.media2.common.SessionPlayer
 import androidx.media2.common.UriMediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import timber.log.Timber
 import java.util.concurrent.Executors
 
@@ -24,6 +28,9 @@ class PlayerService : MediaSessionService() {
         .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
         .setUsage(AudioAttributesCompat.USAGE_MEDIA)
         .build()
+
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main)
 
     private val mediaSessionCallback = object : MediaSession.SessionCallback() {
         override fun onConnect(
@@ -48,6 +55,22 @@ class PlayerService : MediaSessionService() {
         ) {
             Timber.d("mediaSessionCallback: onDisconnected() called")
             super.onDisconnected(session, controller)
+        }
+
+        override fun onSkipForward(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ): Int {
+            val result = player.seekTo(player.currentPosition + SKIP_FORWARD_VALUE).get()
+            return result.resultCode
+        }
+
+        override fun onSkipBackward(
+            session: MediaSession,
+            controller: MediaSession.ControllerInfo
+        ): Int {
+            val result = player.seekTo(player.currentPosition - SKIP_BACKWARD_VALUE).get()
+            return result.resultCode
         }
 
         override fun onSetMediaUri(
@@ -84,7 +107,6 @@ class PlayerService : MediaSessionService() {
             }
 
             player.play()
-
             return SessionResult.RESULT_SUCCESS
         }
     }
@@ -129,6 +151,8 @@ class PlayerService : MediaSessionService() {
         super.onDestroy()
         Timber.d("PlayerService: onDestroy() called")
 
+        serviceScope.cancel()
+
         mediaSession.close()
         player.unregisterPlayerCallback(mediaPlayerCallback)
         player.close()
@@ -153,5 +177,8 @@ class PlayerService : MediaSessionService() {
         const val TITLE = "TITLE"
         const val IMAGE_URL = "IMAGE_URL"
         const val DURATION = "DURATION"
+
+        const val SKIP_FORWARD_VALUE = 30000
+        const val SKIP_BACKWARD_VALUE = 10000
     }
 }

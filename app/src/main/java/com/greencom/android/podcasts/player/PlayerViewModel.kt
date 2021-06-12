@@ -75,6 +75,7 @@ class PlayerViewModel : ViewModel() {
             Timber.d("mediaControllerCallback: onPlayerStateChanged() called")
             viewModelScope.launch { _playerState.emit(state) }
 
+            currentPositionJob?.cancel()
             if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
                 currentPositionJob = viewModelScope.launch {
                     while (true) {
@@ -85,7 +86,6 @@ class PlayerViewModel : ViewModel() {
                     }
                 }
             }
-            if (state == MediaPlayer.PLAYER_STATE_PAUSED) currentPositionJob?.cancel()
         }
     }
 
@@ -100,6 +100,18 @@ class PlayerViewModel : ViewModel() {
 
     fun pause() {
         mediaController.pause()
+    }
+
+    fun skipForward() {
+        mediaController.skipForward()
+    }
+
+    fun skipBackward() {
+        mediaController.skipBackward()
+    }
+
+    fun seekTo(position: Long) {
+        mediaController.seekTo(position)
     }
 
     @ExperimentalTime
