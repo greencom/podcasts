@@ -94,7 +94,8 @@ class PlayerService : MediaSessionService() {
                     MediaMetadata.Builder()
                         .putString(ID, extras.getString(ID))
                         .putString(TITLE, extras.getString(TITLE))
-                        .putString(ART_URI, extras.getString(ART_URI))
+                        .putString(PUBLISHER, extras.getString(PUBLISHER))
+                        .putString(IMAGE_URI, extras.getString(IMAGE_URI))
                         .putLong(DURATION, extras.getLong(DURATION))
                         .build()
                 )
@@ -182,7 +183,8 @@ class PlayerService : MediaSessionService() {
     companion object {
         const val ID = MediaMetadata.METADATA_KEY_MEDIA_ID
         const val TITLE = MediaMetadata.METADATA_KEY_TITLE
-        const val ART_URI = MediaMetadata.METADATA_KEY_ART_URI
+        const val PUBLISHER = MediaMetadata.METADATA_KEY_AUTHOR
+        const val IMAGE_URI = MediaMetadata.METADATA_KEY_ART_URI
         const val DURATION = MediaMetadata.METADATA_KEY_DURATION
 
         const val SKIP_FORWARD_VALUE = 30_000

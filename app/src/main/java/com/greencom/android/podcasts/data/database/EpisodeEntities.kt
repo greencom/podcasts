@@ -21,6 +21,10 @@ data class EpisodeEntity(
     @ColumnInfo(name = "description")
     val description: String,
 
+    /** Podcast publisher. */
+    @ColumnInfo(name = "publisher")
+    val publisher: String,
+
     /** Image URL. */
     @ColumnInfo(name = "image")
     val image: String,

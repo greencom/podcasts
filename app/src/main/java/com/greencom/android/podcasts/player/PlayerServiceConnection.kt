@@ -5,7 +5,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.media2.common.MediaItem
-import androidx.media2.common.MediaMetadata
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaController
 import androidx.media2.session.SessionCommandGroup
@@ -77,7 +76,8 @@ class PlayerServiceConnection @Inject constructor() {
             bundleOf(
                 Pair(PlayerService.ID, episode.id),
                 Pair(PlayerService.TITLE, episode.title),
-                Pair(PlayerService.ART_URI, episode.image),
+                Pair(PlayerService.PUBLISHER, episode.publisher),
+                Pair(PlayerService.IMAGE_URI, episode.image),
                 Pair(PlayerService.DURATION, Duration.seconds(episode.audioLength).inWholeMilliseconds)
             )
         )
@@ -101,10 +101,11 @@ class PlayerServiceConnection @Inject constructor() {
         override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
             Log.d(GLOBAL_TAG, "controllerCallback: onCurrentMediaItemChanged()")
             scope.launch {
-                val id = item?.metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID) ?: ""
-                val title = item?.metadata?.getString(MediaMetadata.METADATA_KEY_TITLE) ?: ""
-                val image = item?.metadata?.getString(MediaMetadata.METADATA_KEY_ART_URI) ?: ""
-                val episodeMetadata = CurrentEpisode(id, title, image)
+                val id = item?.metadata?.getString(PlayerService.ID) ?: ""
+                val title = item?.metadata?.getString(PlayerService.TITLE) ?: ""
+                val publisher = item?.metadata?.getString(PlayerService.PUBLISHER) ?: ""
+                val image = item?.metadata?.getString(PlayerService.IMAGE_URI) ?: ""
+                val episodeMetadata = CurrentEpisode(id, title, publisher, image)
                 _currentEpisode.emit(episodeMetadata)
             }
         }
@@ -143,6 +144,7 @@ class PlayerServiceConnection @Inject constructor() {
     data class CurrentEpisode(
         val id: String,
         val title: String,
+        val publisher: String,
         val image: String,
     )
 }

@@ -173,6 +173,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 expandedPlayer.title.text = episode.title
+                expandedPlayer.publisher.text = episode.publisher
                 expandedPlayer.cover.load(episode.image) {
                     coilDefaultBuilder(this@MainActivity)
                 }
