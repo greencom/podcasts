@@ -115,7 +115,7 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/ripple_image_button_background_32"
+        android:background="@drawable/ripple_image_button_background_36"
         android:contentDescription="@string/player_description_play_pause"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
