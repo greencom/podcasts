@@ -91,11 +91,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         viewModel.getPodcastWithEpisodes()
         viewModel.fetchEpisodes()
 
-        setupAppBar()
-        setupRecyclerView()
-        setupViews()
-
-        setObservers()
+        initAppBar()
+        initRecyclerView()
+        initViews()
+        initObservers()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -121,7 +120,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** App bar setup. */
-    private fun setupAppBar() {
+    private fun initAppBar() {
         // Disable AppBarLayout dragging behavior.
         setAppBarLayoutCanDrag(binding.appBarLayout, false)
 
@@ -138,7 +137,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** RecyclerView setup. */
-    private fun setupRecyclerView() {
+    private fun initRecyclerView() {
         val divider = CustomDividerItemDecoration(requireContext(), true)
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
@@ -205,7 +204,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** Fragment views setup. */
-    private fun setupViews() {
+    private fun initViews() {
         hideErrorScreen()
 
         // Handle toolbar back button clicks.
@@ -232,7 +231,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     }
 
     /** Set observers for ViewModel observables. */
-    private fun setObservers() {
+    private fun initObservers() {
         // Observe UI states.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.uiState.collectLatest { state ->

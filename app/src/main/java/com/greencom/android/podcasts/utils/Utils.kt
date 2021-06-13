@@ -6,6 +6,7 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -98,6 +99,7 @@ fun showSnackbar(view: View, @StringRes stringRes: Int) {
 /** Reveal a view immediately. */
 @Suppress("UsePropertyAccessSyntax")
 fun View.revealImmediately() {
+    if (isVisible && alpha == 1F) return
     isVisible = true
     animate()
         .alpha(1F)
@@ -107,14 +109,25 @@ fun View.revealImmediately() {
 /** Reveal a view with crossfade animation. */
 @Suppress("UsePropertyAccessSyntax")
 fun View.revealCrossfade() {
+    if (isVisible && alpha == 1F) return
     isVisible = true
     animate()
         .alpha(1F)
         .setDuration(DURATION_CROSSFADE_ANIMATION)
 }
 
+/** Hide a view immediately. This function also sets the alpha to zero. */
+fun View.hideImmediately() {
+    if (isGone && alpha == 0F) return
+    animate()
+        .alpha(0F)
+        .setDuration(0L)
+        .withEndAction { isVisible = false }
+}
+
 /** Hide a view with a crossfade animation. */
 fun View.hideCrossfade() {
+    if (isGone && alpha == 0F) return
     animate()
         .alpha(0F)
         .setDuration(DURATION_CROSSFADE_ANIMATION)

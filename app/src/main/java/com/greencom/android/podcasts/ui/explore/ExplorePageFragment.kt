@@ -74,11 +74,10 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         // Load the best podcasts.
         viewModel.getBestPodcasts(genreId)
 
-        setupRecyclerView()
-        setupViews()
-
-        setObservers()
-        setFragmentResultListeners()
+        initRecyclerView()
+        initViews()
+        initObservers()
+        initFragmentResultListeners()
     }
 
     override fun onDestroyView() {
@@ -93,7 +92,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** RecyclerView setup. */
-    private fun setupRecyclerView() {
+    private fun initRecyclerView() {
         val divider = CustomDividerItemDecoration(requireContext())
         divider.setDrawable(
             ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
@@ -109,7 +108,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Fragment views setup. */
-    private fun setupViews() {
+    private fun initViews() {
         // Set alpha to create crossfade animations on reveal.
         hideSuccessScreen()
         hideErrorScreen()
@@ -124,7 +123,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Set observers for ViewModel observables. */
-    private fun setObservers() {
+    private fun initObservers() {
         // Observe UI states.
         viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
             viewModel.uiState.collectLatest { state ->
@@ -141,7 +140,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     /** Set fragment result listeners. */
-    private fun setFragmentResultListeners() {
+    private fun initFragmentResultListeners() {
         // Scroll the list of the best podcasts on tab reselection.
         parentFragmentManager.setFragmentResultListener(
             "$ON_TAB_RESELECTED$genreId",

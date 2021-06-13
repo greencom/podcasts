@@ -50,8 +50,8 @@ class ExploreFragment : Fragment() {
             binding.appBarLayout.setExpanded(getBoolean(STATE_IS_APP_BAR_EXPANDED), false)
         }
 
-        setupAppBar()
-        setupTabLayout()
+        initAppBar()
+        initTabLayout()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -69,7 +69,7 @@ class ExploreFragment : Fragment() {
     }
 
     /** App bar setup. */
-    private fun setupAppBar() {
+    private fun initAppBar() {
         // Disable AppBarLayout dragging behavior.
         setAppBarLayoutCanDrag(binding.appBarLayout, false)
 
@@ -86,7 +86,7 @@ class ExploreFragment : Fragment() {
     }
 
     /** TabLayout and ViewPager2 setup. */
-    private fun setupTabLayout() {
+    private fun initTabLayout() {
         val pagerAdapter = ExploreViewPagerAdapter(this)
         binding.pager.adapter = pagerAdapter
 

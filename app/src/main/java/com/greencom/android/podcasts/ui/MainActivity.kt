@@ -108,20 +108,13 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         volumeControlStream = AudioManager.STREAM_MUSIC
-
-        // TODO
         Intent(this, PlayerService::class.java).apply {
             action = MediaSessionService.SERVICE_INTERFACE
         }.also { intent -> bindService(intent, serviceConnection, BIND_AUTO_CREATE) }
 
-        // Player bottom sheet behavior setup.
-        playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
-            setupBottomSheetBehavior()
-        }
-
         initViews()
-        setupNavigation()
-        setPlayerListeners()
+        initNavigation()
+        initPlayerListeners()
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
@@ -250,6 +243,11 @@ class MainActivity : AppCompatActivity() {
 
     /** Initialize views. */
     private fun initViews() {
+        // Player bottom sheet behavior setup.
+        playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
+            setupBottomSheetBehavior()
+        }
+
         // Set text selected to run ellipsize animation.
         collapsedPlayer.title.isSelected = true
         // Hide scrim background at start.
@@ -274,7 +272,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Navigation component setup. */
-    private fun setupNavigation() {
+    private fun initNavigation() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         // Use NavHostFragment.navController instead of findNavController() for now
@@ -442,7 +440,7 @@ class MainActivity : AppCompatActivity() {
     /** Set listeners for the player's content. */
     // TODO
     @SuppressLint("ClickableViewAccessibility")
-    private fun setPlayerListeners() {
+    private fun initPlayerListeners() {
 
         // COLLAPSED
         // Expand the player on the frame click.
