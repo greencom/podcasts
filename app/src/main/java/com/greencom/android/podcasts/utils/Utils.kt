@@ -8,7 +8,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.DiffUtil
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
@@ -16,8 +15,6 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.PodcastShort
-import com.greencom.android.podcasts.ui.podcast.PodcastWithEpisodesDataItem
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -30,51 +27,41 @@ const val GLOBAL_TAG = "global___"
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
 
-/** Callback for calculating the diff between two non-null [PodcastShort] items in a list. */
-object PodcastDiffCallback : DiffUtil.ItemCallback<PodcastShort>() {
-    override fun areItemsTheSame(oldItem: PodcastShort, newItem: PodcastShort): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: PodcastShort, newItem: PodcastShort): Boolean {
-        return oldItem == newItem
-    }
+/** Reveal a view immediately. */
+@Suppress("UsePropertyAccessSyntax")
+fun View.revealImmediately() {
+    isVisible = true
+    alpha = 1F
 }
 
-/**
- * Callback for calculating the diff between two non-null [PodcastWithEpisodesDataItem]
- * items in a list.
- */
-object PodcastWithEpisodesDiffCallback : DiffUtil.ItemCallback<PodcastWithEpisodesDataItem>() {
-    override fun areItemsTheSame(
-        oldItem: PodcastWithEpisodesDataItem,
-        newItem: PodcastWithEpisodesDataItem
-    ): Boolean {
-        return when {
-            oldItem is PodcastWithEpisodesDataItem.PodcastHeader &&
-                    newItem is PodcastWithEpisodesDataItem.PodcastHeader -> oldItem.id == newItem.id
+/** Hide a view immediately. This function also sets the alpha to zero. */
+fun View.hideImmediately() {
+    isVisible = false
+    alpha = 0F
+}
 
-            oldItem is PodcastWithEpisodesDataItem.EpisodeItem &&
-                    newItem is PodcastWithEpisodesDataItem.EpisodeItem -> oldItem.id == newItem.id
+/** Reveal a view with crossfade animation. */
+@Suppress("UsePropertyAccessSyntax")
+fun View.revealCrossfade() {
+    if (isVisible && alpha == 1F) return
+    isVisible = true
+    animate()
+        .alpha(1F)
+        .setDuration(DURATION_CROSSFADE_ANIMATION)
+}
 
-            else -> false
-        }
-    }
+/** Hide a view with a crossfade animation. */
+fun View.hideCrossfade() {
+    if (isGone && alpha == 0F) return
+    animate()
+        .alpha(0F)
+        .setDuration(DURATION_CROSSFADE_ANIMATION)
+        .withEndAction { isVisible = false }
+}
 
-    override fun areContentsTheSame(
-        oldItem: PodcastWithEpisodesDataItem,
-        newItem: PodcastWithEpisodesDataItem
-    ): Boolean {
-        return when {
-            oldItem is PodcastWithEpisodesDataItem.PodcastHeader &&
-                    newItem is PodcastWithEpisodesDataItem.PodcastHeader -> oldItem == newItem
-
-            oldItem is PodcastWithEpisodesDataItem.EpisodeItem &&
-                    newItem is PodcastWithEpisodesDataItem.EpisodeItem -> oldItem == newItem
-
-            else -> false
-        }
-    }
+/** Show a Snackbar with a given string res ID message. */
+fun showSnackbar(view: View, @StringRes stringRes: Int) {
+    Snackbar.make(view, stringRes, Snackbar.LENGTH_SHORT).show()
 }
 
 /** Allows control over whether the given AppBarLayout can be dragged or not. */
@@ -89,49 +76,6 @@ fun setAppBarLayoutCanDrag(appBarLayout: AppBarLayout, canDrag: Boolean) {
         })
         appBarParams.behavior = appBarBehavior
     }
-}
-
-/** Show a Snackbar with a given string res ID message. */
-fun showSnackbar(view: View, @StringRes stringRes: Int) {
-    Snackbar.make(view, stringRes, Snackbar.LENGTH_SHORT).show()
-}
-
-/** Reveal a view immediately. */
-@Suppress("UsePropertyAccessSyntax")
-fun View.revealImmediately() {
-    if (isVisible && alpha == 1F) return
-    isVisible = true
-    animate()
-        .alpha(1F)
-        .setDuration(0L)
-}
-
-/** Reveal a view with crossfade animation. */
-@Suppress("UsePropertyAccessSyntax")
-fun View.revealCrossfade() {
-    if (isVisible && alpha == 1F) return
-    isVisible = true
-    animate()
-        .alpha(1F)
-        .setDuration(DURATION_CROSSFADE_ANIMATION)
-}
-
-/** Hide a view immediately. This function also sets the alpha to zero. */
-fun View.hideImmediately() {
-    if (isGone && alpha == 0F) return
-    animate()
-        .alpha(0F)
-        .setDuration(0L)
-        .withEndAction { isVisible = false }
-}
-
-/** Hide a view with a crossfade animation. */
-fun View.hideCrossfade() {
-    if (isGone && alpha == 0F) return
-    animate()
-        .alpha(0F)
-        .setDuration(DURATION_CROSSFADE_ANIMATION)
-        .withEndAction { isVisible = false }
 }
 
 /** Swipe-to-refresh setup. */

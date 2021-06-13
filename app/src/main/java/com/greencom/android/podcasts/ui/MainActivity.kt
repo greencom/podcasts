@@ -182,6 +182,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putInt(STATE_PLAYER_BEHAVIOR, playerBehavior.state)
+    }
+
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
@@ -198,12 +204,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             controlPlayerOnBottomSheetSlide(slideOffset, bottomNavBarHeight)
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.putInt(STATE_PLAYER_BEHAVIOR, playerBehavior.state)
     }
 
     /** Make player closable on back pressed. */
@@ -283,6 +283,103 @@ class MainActivity : AppCompatActivity() {
             setupWithNavController(navController)
             // Handle Navigation behavior when the bottom navigation item is reselected.
             setupOnBottomItemReselectedBehavior(navHostFragment, navController)
+        }
+    }
+
+    /** Set listeners for the player's content. */
+    // TODO
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initPlayerListeners() {
+
+        // COLLAPSED
+        // Expand the player on the frame click.
+        collapsedPlayer.root.setOnClickListener {
+            expandPlayer()
+        }
+        // Expand the player on frame swipe.
+        collapsedPlayer.root.setOnTouchListener(object : OnSwipeListener(this) {
+            override fun onSwipeUp() {
+                expandPlayer()
+            }
+        })
+        // Expand the player on play/pause button swipe.
+        collapsedPlayer.playPause.setOnTouchListener(object : OnSwipeListener(this) {
+            override fun onSwipeUp() {
+                expandPlayer()
+            }
+        })
+
+        collapsedPlayer.playPause.setOnClickListener {
+            when {
+                viewModel.isPlaying -> viewModel.pause()
+                viewModel.isPaused -> viewModel.play()
+            }
+        }
+
+
+        // EXPANDED.
+        expandedPlayer.playPause.setOnClickListener {
+            when {
+                viewModel.isPlaying -> viewModel.pause()
+                viewModel.isPaused -> viewModel.play()
+            }
+        }
+
+        // TODO
+        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
+        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
+        val onTouchListener = object : Slider.OnSliderTouchListener {
+            var playerWasPlaying = false
+            override fun onStartTrackingTouch(slider: Slider) {
+                playerWasPlaying = viewModel.isPlaying
+                viewModel.pause()
+                animateSliderThumb(thumbRadiusIncreased)
+            }
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                viewModel.seekTo(slider.value.toLong())
+                if (playerWasPlaying) viewModel.play()
+                animateSliderThumb(thumbRadiusDefault)
+            }
+        }
+        expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
+
+        expandedPlayer.slider.addOnChangeListener { slider, value, _ ->
+            expandedPlayer.timeCurrent.text = timestampCurrent(value.toLong(),this)
+            expandedPlayer.timeLeft.text = timestampLeft(
+                position = value.toLong(),
+                duration = slider.valueTo.toLong(),
+                context = this
+            )
+        }
+
+        expandedPlayer.backward.setOnClickListener {
+            viewModel.skipBackward()
+            val newSliderValue = expandedPlayer.slider.value - PlayerService.SKIP_BACKWARD_VALUE
+            expandedPlayer.slider.value = if (newSliderValue >= 0) newSliderValue else 0F
+        }
+
+        expandedPlayer.forward.setOnClickListener {
+            viewModel.skipForward()
+            val newSliderValue = expandedPlayer.slider.value + PlayerService.SKIP_FORWARD_VALUE
+            expandedPlayer.slider.value = if (newSliderValue <= expandedPlayer.slider.valueTo) {
+                newSliderValue
+            } else expandedPlayer.slider.valueTo
+        }
+
+        // The expanded content of the player is not disabled at application start
+        // (because of bug?), so prevent random click on the invisible podcast cover
+        // by checking the state of player bottom sheet. If player is collapsed, expand it.
+        expandedPlayer.cover.setOnClickListener {
+            if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+                playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            } else {
+
+            }
+        }
+
+        expandedPlayer.title.setOnClickListener {
+
         }
     }
 
@@ -437,108 +534,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Set listeners for the player's content. */
-    // TODO
-    @SuppressLint("ClickableViewAccessibility")
-    private fun initPlayerListeners() {
-
-        // COLLAPSED
-        // Expand the player on the frame click.
-        collapsedPlayer.root.setOnClickListener {
-            expandPlayer()
-        }
-        // Expand the player on frame swipe.
-        collapsedPlayer.root.setOnTouchListener(object : OnSwipeListener(this) {
-            override fun onSwipeUp() {
-                expandPlayer()
-            }
-        })
-        // Expand the player on play/pause button swipe.
-        collapsedPlayer.playPause.setOnTouchListener(object : OnSwipeListener(this) {
-            override fun onSwipeUp() {
-                expandPlayer()
-            }
-        })
-
-        collapsedPlayer.playPause.setOnClickListener {
-            when {
-                viewModel.isPlaying -> viewModel.pause()
-                viewModel.isPaused -> viewModel.play()
-            }
-        }
-
-
-        // EXPANDED.
-        expandedPlayer.playPause.setOnClickListener {
-            when {
-                viewModel.isPlaying -> viewModel.pause()
-                viewModel.isPaused -> viewModel.play()
-            }
-        }
-
-        // TODO
-        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
-        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
-        val onTouchListener = object : Slider.OnSliderTouchListener {
-            var playerWasPlaying = false
-            override fun onStartTrackingTouch(slider: Slider) {
-                playerWasPlaying = viewModel.isPlaying
-                viewModel.pause()
-                animateSliderThumb(thumbRadiusIncreased)
-            }
-
-            override fun onStopTrackingTouch(slider: Slider) {
-                viewModel.seekTo(slider.value.toLong())
-                if (playerWasPlaying) viewModel.play()
-                animateSliderThumb(thumbRadiusDefault)
-            }
-        }
-        expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
-
-        expandedPlayer.slider.addOnChangeListener { slider, value, _ ->
-            expandedPlayer.timeCurrent.text = timestampCurrent(value.toLong(),this)
-            expandedPlayer.timeLeft.text = timestampLeft(
-                position = value.toLong(),
-                duration = slider.valueTo.toLong(),
-                context = this
-            )
-        }
-
-        expandedPlayer.backward.setOnClickListener {
-            viewModel.skipBackward()
-            val newSliderValue = expandedPlayer.slider.value - PlayerService.SKIP_BACKWARD_VALUE
-            expandedPlayer.slider.value = if (newSliderValue >= 0) newSliderValue else 0F
-        }
-
-        expandedPlayer.forward.setOnClickListener {
-            viewModel.skipForward()
-            val newSliderValue = expandedPlayer.slider.value + PlayerService.SKIP_FORWARD_VALUE
-            expandedPlayer.slider.value = if (newSliderValue <= expandedPlayer.slider.valueTo) {
-                newSliderValue
-            } else expandedPlayer.slider.valueTo
-        }
-
-        // The expanded content of the player is not disabled at application start
-        // (because of bug?), so prevent random click on the invisible podcast cover
-        // by checking the state of player bottom sheet. If player is collapsed, expand it.
-        expandedPlayer.cover.setOnClickListener {
-            if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
-                playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            } else {
-
-            }
-        }
-
-        expandedPlayer.title.setOnClickListener {
-
-        }
-    }
-
     /** Expand the player if it is collapsed. */
     private fun expandPlayer() {
         if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
             playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
+    }
+
+    /** Animate slider thumb radius to a given value. */
+    private fun animateSliderThumb(to: Int) {
+        if (thumbAnimator != null) {
+            thumbAnimator?.setIntValues(to)
+        } else {
+            thumbAnimator = ObjectAnimator.ofInt(
+                expandedPlayer.slider,
+                "thumbRadius",
+                to
+            ).apply {
+                duration = DURATION_SLIDER_THUMB_ANIMATION
+                setAutoCancel(true)
+            }
+        }
+        thumbAnimator?.start()
     }
 
     /**
@@ -568,22 +585,5 @@ class MainActivity : AppCompatActivity() {
             resources.getString(R.string.bottom_nav_explore) -> navigate(R.id.action_global_exploreFragment)
             resources.getString(R.string.bottom_nav_activity) -> navigate(R.id.action_global_activityFragment)
         }
-    }
-
-    /** Animate slider thumb radius to a given value. */
-    private fun animateSliderThumb(to: Int) {
-        if (thumbAnimator != null) {
-            thumbAnimator?.setIntValues(to)
-        } else {
-            thumbAnimator = ObjectAnimator.ofInt(
-                expandedPlayer.slider,
-                "thumbRadius",
-                to
-            ).apply {
-                duration = DURATION_SLIDER_THUMB_ANIMATION
-                setAutoCancel(true)
-            }
-        }
-        thumbAnimator?.start()
     }
 }

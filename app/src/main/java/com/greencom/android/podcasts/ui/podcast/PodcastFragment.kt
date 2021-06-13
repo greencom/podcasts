@@ -47,11 +47,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
+    // Navigation arguments.
     private val args: PodcastFragmentArgs by navArgs()
 
     private var podcastId = ""
 
-    /** Is the app bar expanded. `false` means it is collapsed. */
+    /** Is the app bar expanded. `false` means collapsed. */
     private val isAppBarExpanded = MutableStateFlow(true)
 
     /** RecyclerView adapter. */
@@ -109,7 +110,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     override fun onDestroyView() {
         super.onDestroyView()
         // Cancel adapter coroutine scope in onDetachedFromRecyclerView().
-        adapter.onDetachedFromRecyclerView(binding.list)
+        binding.list.adapter = null
         // Clear View binding.
         _binding = null
     }
@@ -164,17 +165,13 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 }
 
                 // Show and hide the podcast title in the app bar.
-                if (firstVisibleItemPosition >= 1) {
-                    binding.appBarTitle.revealImmediately()
-                } else {
-                    binding.appBarTitle.hideCrossfade()
+                binding.appBarTitle.apply {
+                    if (firstVisibleItemPosition >= 1) revealImmediately() else hideCrossfade()
                 }
 
                 // Show and hide app bar divider.
-                if (firstCompletelyVisibleItemPosition > 0) {
-                    binding.appBarDivider.revealImmediately()
-                } else {
-                    binding.appBarDivider.hideCrossfade()
+                binding.appBarDivider.apply {
+                    if (firstCompletelyVisibleItemPosition > 0) revealImmediately() else hideCrossfade()
                 }
 
                 // Show and hide the fab. Skip the initial check to restore instance state.
@@ -205,13 +202,16 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** Fragment views setup. */
     private fun initViews() {
-        hideErrorScreen()
+        // Hide all screens to then reveal them with crossfade animations.
+        hideScreens()
 
         // Handle toolbar back button clicks.
         binding.appBarBack.setOnClickListener { findNavController().navigateUp() }
 
         // Force episodes fetching on swipe-to-refresh.
-        binding.swipeToRefresh.setOnRefreshListener { viewModel.fetchEpisodes(true) }
+        binding.swipeToRefresh.setOnRefreshListener {
+            viewModel.fetchEpisodes(true)
+        }
 
         // Scroll to top.
         binding.scrollToTop.setOnClickListener {
@@ -227,7 +227,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         // Fetch the podcast from the error screen.
-        binding.error.tryAgain.setOnClickListener { viewModel.fetchPodcast() }
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchPodcast()
+        }
     }
 
     /** Set observers for ViewModel observables. */
@@ -262,30 +264,23 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Handle UI states. */
     private fun handleUiState(state: PodcastState) {
         binding.swipeToRefresh.isVisible = state is PodcastState.Success
-        binding.error.root.isVisible = state is PodcastState.Error
-        binding.loading.isVisible = state is PodcastState.Loading
 
         when (state) {
-
-            // Show podcast data.
+            // Show success screen.
             is PodcastState.Success -> {
+                showSuccessScreen()
                 binding.appBarTitle.text = state.podcastWithEpisodes.podcast.title
                 adapter.submitHeaderAndList(
                     state.podcastWithEpisodes.podcast,
                     state.podcastWithEpisodes.episodes
                 )
-                binding.list.revealCrossfade()
-                hideErrorScreen()
             }
 
             // Show error screen.
-            is PodcastState.Error -> {
-                binding.error.root.revealCrossfade()
-                hideSuccessScreen()
-            }
+            is PodcastState.Error -> showErrorScreen()
 
-            // Make `when` expression exhaustive.
-            is PodcastState.Loading -> {  }
+            // Show loading screen.
+            is PodcastState.Loading -> showLoadingScreen()
         }
     }
 
@@ -302,38 +297,59 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         when (event) {
-
             // Show a snackbar.
             is PodcastEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
 
             // Show UnsubscribeDialog.
-            is PodcastEvent.UnsubscribeDialog ->
+            is PodcastEvent.UnsubscribeDialog -> {
                 UnsubscribeDialog.show(childFragmentManager, podcastId)
+            }
 
             // Show Loading process.
             is PodcastEvent.Fetching -> binding.error.progressBar.revealCrossfade()
 
             // Show episodes fetching progress bar.
-            is PodcastEvent.EpisodesFetchingStarted ->
+            is PodcastEvent.EpisodesFetchingStarted -> {
                 binding.episodesProgressBar.revealImmediately()
+            }
 
             // Stop episodes fetching progress bar.
-            is PodcastEvent.EpisodesFetchingFinished ->
+            is PodcastEvent.EpisodesFetchingFinished -> {
                 binding.episodesProgressBar.hideCrossfade()
+            }
 
             // Stop episodes swipe-to-refresh indicator.
-            PodcastEvent.EpisodesForcedFetchingFinished ->
+            PodcastEvent.EpisodesForcedFetchingFinished -> {
                 binding.swipeToRefresh.isRefreshing = false
+            }
         }
     }
 
-    /** Set alpha of the success screen to 0. */
-    private fun hideSuccessScreen() {
-        binding.list.alpha = 0F
+    /** Show success screen and hide all others. */
+    private fun showSuccessScreen() {
+        binding.list.revealCrossfade()
+        binding.error.root.hideImmediately()
+        binding.loading.hideImmediately()
     }
 
-    /** Set alpha of the error screen to 0. */
-    private fun hideErrorScreen() {
-        binding.error.root.alpha = 0F
+    /** Show loading screen and hide all others. */
+    private fun showLoadingScreen() {
+        binding.loading.revealImmediately()
+        binding.list.hideImmediately()
+        binding.error.root.hideImmediately()
+    }
+
+    /** Show error screen and hide all others. */
+    private fun showErrorScreen() {
+        binding.error.root.revealCrossfade()
+        binding.loading.hideImmediately()
+        binding.list.hideImmediately()
+    }
+
+    /** Hide all screens. */
+    private fun hideScreens() {
+        binding.list.hideImmediately()
+        binding.error.root.hideImmediately()
+        binding.loading.hideImmediately()
     }
 }

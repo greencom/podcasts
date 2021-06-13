@@ -17,10 +17,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
-import com.greencom.android.podcasts.utils.CustomDividerItemDecoration
-import com.greencom.android.podcasts.utils.revealCrossfade
-import com.greencom.android.podcasts.utils.setupSwipeToRefresh
-import com.greencom.android.podcasts.utils.showSnackbar
+import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -51,7 +48,10 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** RecyclerView adapter. */
     private val adapter: BestPodcastAdapter by lazy {
-        BestPodcastAdapter(viewModel::navigateToPodcast, viewModel::updateSubscription)
+        BestPodcastAdapter(
+            viewModel::navigateToPodcast,
+            viewModel::updateSubscription
+        )
     }
 
     override fun onCreateView(
@@ -109,12 +109,13 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** Fragment views setup. */
     private fun initViews() {
-        // Set alpha to create crossfade animations on reveal.
-        hideSuccessScreen()
-        hideErrorScreen()
+        // Hide all screens to then reveal them with crossfade animations.
+        hideScreens()
 
         // Fetch the best podcasts from the error screen.
-        binding.error.tryAgain.setOnClickListener { viewModel.fetchBestPodcasts(genreId) }
+        binding.error.tryAgain.setOnClickListener {
+            viewModel.fetchBestPodcasts(genreId)
+        }
 
         // Refresh the podcasts with swipe-to-refresh gesture.
         binding.swipeToRefresh.setOnRefreshListener {
@@ -145,28 +146,23 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         parentFragmentManager.setFragmentResultListener(
             "$ON_TAB_RESELECTED$genreId",
             viewLifecycleOwner
-        ) { _, _ ->
-            binding.podcastList.smoothScrollToPosition(0)
-        }
+        ) { _, _ -> binding.podcastList.smoothScrollToPosition(0) }
     }
 
     /** Handle UI states. */
     private fun handleUiState(state: ExplorePageState) {
         binding.swipeToRefresh.isVisible = state is ExplorePageState.Success
-        binding.error.root.isVisible = state is ExplorePageState.Error
-        binding.loading.isVisible = state is ExplorePageState.Loading
 
         when (state) {
-
-            // Show podcast list.
+            // Show success screen.
             is ExplorePageState.Success -> {
+                showSuccessScreen()
                 adapter.submitList(state.podcasts)
-                binding.podcastList.revealCrossfade()
-                hideErrorScreen()
             }
 
             // Show error screen.
             is ExplorePageState.Error -> {
+                showErrorScreen()
                 // Position the progress bar depending on ExplorePodcast app bar state.
                 if ((parentFragment as ExploreFragment).isAppBarExpanded) {
                     // TODO: Use the appropriate value after app bar rework.
@@ -174,13 +170,10 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 } else {
                     binding.error.progressBar.translationY = 0F
                 }
-
-                binding.error.root.revealCrossfade()
-                hideSuccessScreen()
             }
 
-            // Make `when` expression exhaustive.
-            is ExplorePageState.Loading -> {  }
+            // Show loading screen.
+            is ExplorePageState.Loading -> showLoadingScreen()
         }
     }
 
@@ -198,37 +191,55 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         }
 
         when (event) {
-
             // Show a snackbar.
             is ExplorePageEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
 
             // Show UnsubscribeDialog.
-            is ExplorePageEvent.UnsubscribeDialog ->
+            is ExplorePageEvent.UnsubscribeDialog -> {
                 UnsubscribeDialog.show(childFragmentManager, event.podcastId)
+            }
 
             // Navigate to PodcastFragment.
-            is ExplorePageEvent.NavigateToPodcast -> findNavController().navigate(
-                ExploreFragmentDirections.actionExploreFragmentToPodcastFragment(
-                    event.podcastId
+            is ExplorePageEvent.NavigateToPodcast -> {
+                findNavController().navigate(
+                    ExploreFragmentDirections.actionExploreFragmentToPodcastFragment(event.podcastId)
                 )
-            )
+            }
 
             // Show Loading process.
-            is ExplorePageEvent.Fetching -> binding.error.progressBar.revealCrossfade()
+            is ExplorePageEvent.Fetching -> binding.error.progressBar.revealImmediately()
 
             // Make `when` expression exhaustive.
             is ExplorePageEvent.Refreshing -> {  }
         }
     }
 
-    /** Set alpha of the success screen to 0. */
-    private fun hideSuccessScreen() {
-        binding.podcastList.alpha = 0F
+    /** Show success screen and hide all others. */
+    private fun showSuccessScreen() {
+        binding.podcastList.revealCrossfade()
+        binding.loading.hideImmediately()
+        binding.error.root.hideImmediately()
     }
 
-    /** Set alpha of the error screen to 0. */
-    private fun hideErrorScreen() {
-        binding.error.root.alpha = 0F
+    /** Show loading screen and hide all others. */
+    private fun showLoadingScreen() {
+        binding.loading.revealImmediately()
+        binding.podcastList.hideImmediately()
+        binding.error.root.hideImmediately()
+    }
+
+    /** Show error screen and hide all others. */
+    private fun showErrorScreen() {
+        binding.error.root.revealCrossfade()
+        binding.loading.hideImmediately()
+        binding.podcastList.hideImmediately()
+    }
+
+    /** Hide all screens. */
+    private fun hideScreens() {
+        binding.podcastList.hideImmediately()
+        binding.error.root.hideImmediately()
+        binding.loading.hideImmediately()
     }
 
     companion object {
