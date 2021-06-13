@@ -127,10 +127,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // Track app bar state.
         binding.appBarLayout.addOnOffsetChangedListener(object : AppBarLayoutStateChangeListener() {
-            override fun onStateChanged(appBarLayout: AppBarLayout, newState: AppBarLayoutState) {
+            override fun onStateChanged(appBarLayout: AppBarLayout, newState: Int) {
                 when (newState) {
-                    AppBarLayoutState.EXPANDED -> isAppBarExpanded.value = true
-                    AppBarLayoutState.COLLAPSED -> isAppBarExpanded.value = false
+                    EXPANDED -> isAppBarExpanded.value = true
+                    COLLAPSED -> isAppBarExpanded.value = false
                     else -> {  }
                 }
             }

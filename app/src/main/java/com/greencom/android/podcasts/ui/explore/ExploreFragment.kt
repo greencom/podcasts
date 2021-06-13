@@ -75,10 +75,10 @@ class ExploreFragment : Fragment() {
 
         // Track app bar state.
         binding.appBarLayout.addOnOffsetChangedListener(object : AppBarLayoutStateChangeListener() {
-            override fun onStateChanged(appBarLayout: AppBarLayout, newState: AppBarLayoutState) {
+            override fun onStateChanged(appBarLayout: AppBarLayout, newState: Int) {
                 when (newState) {
-                    AppBarLayoutState.EXPANDED -> isAppBarExpanded = true
-                    AppBarLayoutState.COLLAPSED -> isAppBarExpanded = false
+                    EXPANDED -> isAppBarExpanded = true
+                    COLLAPSED -> isAppBarExpanded = false
                     else -> {  }
                 }
             }
