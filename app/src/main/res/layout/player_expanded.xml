@@ -28,8 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/tools_podcast_cover_1400"
-        tools:srcCompat="@drawable/tools_podcast_cover_1400" />
+        tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/title"
@@ -43,7 +42,6 @@
         android:marqueeRepeatLimit="marquee_forever"
         android:paddingHorizontal="40dp"
         android:singleLine="true"
-        android:text="Герта Мюллер — Чёрный парк"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/cover"
@@ -60,7 +58,6 @@
         android:gravity="center_horizontal"
         android:paddingHorizontal="40dp"
         android:singleLine="true"
-        android:text="Чтение"
         android:textColor="?attr/colorOnSurfaceLow"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="@+id/cover"
@@ -75,9 +72,6 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="24dp"
-        android:value="40"
-        android:valueFrom="0"
-        android:valueTo="100"
         app:haloRadius="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +85,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="1:00"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/backward"
@@ -102,7 +95,6 @@
         android:id="@+id/time_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="-39:00"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/time_current"

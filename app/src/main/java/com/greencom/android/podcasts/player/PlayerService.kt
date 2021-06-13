@@ -23,6 +23,9 @@ import java.util.concurrent.Executors
 // TODO
 class PlayerService : MediaSessionService() {
 
+    private val serviceJob = SupervisorJob()
+    private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main)
+
     private lateinit var mediaSession: MediaSession
     private lateinit var player: MediaPlayer
 
@@ -30,9 +33,6 @@ class PlayerService : MediaSessionService() {
         .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
         .setUsage(AudioAttributesCompat.USAGE_MEDIA)
         .build()
-
-    private val serviceJob = SupervisorJob()
-    private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main)
 
     private val sessionCallback = object : MediaSession.SessionCallback() {
         override fun onConnect(

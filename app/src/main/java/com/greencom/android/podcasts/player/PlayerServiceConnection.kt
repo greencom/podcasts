@@ -24,6 +24,9 @@ import kotlin.time.ExperimentalTime
 @Singleton
 class PlayerServiceConnection @Inject constructor() {
 
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.Main)
+
     private lateinit var controller: MediaController
 
     private val _currentEpisode = MutableSharedFlow<CurrentEpisode>(1)
@@ -43,9 +46,6 @@ class PlayerServiceConnection @Inject constructor() {
 
     val duration: Long
         get() = controller.duration
-
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + Dispatchers.Main)
 
     private var currentPositionJob: Job? = null
 
