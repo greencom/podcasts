@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_bar_chart_24">
+    <target
+        android:name="first_column"
+        android:animation="@animator/bar_chart_first_column" />
+    <target
+        android:name="second_column"
+        android:animation="@animator/bar_chart_second_column" />
+    <target
+        android:name="third_column"
+        android:animation="@animator/bar_chart_third_column" />
+</animated-vector>
