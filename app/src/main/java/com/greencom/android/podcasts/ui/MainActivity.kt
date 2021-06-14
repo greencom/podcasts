@@ -45,6 +45,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -84,6 +85,9 @@ class MainActivity : AppCompatActivity() {
     private val isPlayerExpanded = MutableStateFlow(false)
 
     // TODO
+    private val skipValue = MutableStateFlow(0L)
+
+    // TODO
     private val navHostLayoutParams: CoordinatorLayout.LayoutParams by lazy {
         CoordinatorLayout.LayoutParams(
             CoordinatorLayout.LayoutParams.MATCH_PARENT,
@@ -102,19 +106,19 @@ class MainActivity : AppCompatActivity() {
 
                 // TODO: Обновить начальные состояние здесь?
                 Log.d(GLOBAL_TAG, "TEST: currentEpisode is ${viewModel.currentEpisode.value}")
-                val navHostBottomMargin = if (viewModel.currentEpisode.value.isEmpty()) {
+                val navHostBottomMargin: Int
+                if (viewModel.currentEpisode.value.isEmpty()) {
                     binding.player.root.hideImmediately()
                     binding.playerShadowInternal.hideImmediately()
                     binding.playerShadowExternal.hideImmediately()
-                    resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
+                    navHostBottomMargin = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
                 } else {
                     binding.player.root.revealCrossfade()
                     binding.playerShadowInternal.revealCrossfade()
                     binding.playerShadowExternal.revealCrossfade()
-                    resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
+                    navHostBottomMargin = resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
                 }
                 navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
-                binding.navHostFragment.layoutParams = navHostLayoutParams
 
                 if (viewModel.currentEpisode.value.isNotEmpty()) {
                     val episode = viewModel.currentEpisode.value
@@ -163,6 +167,18 @@ class MainActivity : AppCompatActivity() {
             action = MediaSessionService.SERVICE_INTERFACE
         }.also { intent -> bindService(intent, serviceConnection, BIND_AUTO_CREATE) }
 
+        // TODO
+        val navHostBottomMargin = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
+        navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
+        binding.navHostFragment.layoutParams = navHostLayoutParams
+
+        // TODO
+        expandedPlayer.coverMask.load(R.drawable.cover_mask_300px) {
+            coilDefaultBuilder(this@MainActivity)
+        }
+        expandedPlayer.coverMask.hideImmediately()
+        expandedPlayer.skipHint.hideImmediately()
+
         initViews()
         initNavigation()
         initPlayerListeners()
@@ -180,6 +196,43 @@ class MainActivity : AppCompatActivity() {
                     expandedPlayer.publisher.isSelected = false
                     delay(1000) // Delay animation.
                     collapsedPlayer.title.isSelected = true
+                }
+            }
+        }
+
+        // TODO
+        addRepeatingJob(Lifecycle.State.STARTED) {
+            skipValue.collectLatest { value ->
+                if (value != 0L) {
+                    expandedPlayer.coverMask.revealCrossfade(0.6F)
+                    expandedPlayer.skipHint.revealCrossfade()
+                    expandedPlayer.skipHint.text = skipHintText(value)
+
+                    delay(1000)
+                    val newValue = (expandedPlayer.slider.value + value).toLong()
+                    when {
+                        newValue <= 0L -> {
+                            viewModel.seekTo(0L)
+                            expandedPlayer.slider.value = 0F
+                            collapsedPlayer.progressBar.progress = 0
+                        }
+                        newValue >= viewModel.duration -> {
+                            viewModel.seekTo(viewModel.duration)
+                            expandedPlayer.slider.value = (viewModel.duration).toFloat()
+                            collapsedPlayer.progressBar.progress = (viewModel.duration).toInt()
+                        }
+                        else -> {
+                            viewModel.seekTo(newValue)
+                            expandedPlayer.slider.value = newValue.toFloat()
+                            collapsedPlayer.progressBar.progress = newValue.toInt()
+                        }
+                    }
+                    expandedPlayer.coverMask.hideCrossfade()
+                    expandedPlayer.skipHint.hideCrossfade()
+                    skipValue.value = 0L
+                } else {
+                    expandedPlayer.coverMask.hideCrossfade()
+                    expandedPlayer.skipHint.hideCrossfade()
                 }
             }
         }
@@ -415,11 +468,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         expandedPlayer.backward.setOnClickListener {
-            viewModel.skipBackward()
+            skipValue.value -= PlayerService.SKIP_BACKWARD_VALUE
         }
 
         expandedPlayer.forward.setOnClickListener {
-            viewModel.skipForward()
+            skipValue.value += PlayerService.SKIP_FORWARD_VALUE
         }
 
         // The expanded content of the player is not disabled at application start
@@ -428,13 +481,7 @@ class MainActivity : AppCompatActivity() {
         expandedPlayer.cover.setOnClickListener {
             if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            } else {
-
             }
-        }
-
-        expandedPlayer.title.setOnClickListener {
-
         }
     }
 
@@ -611,6 +658,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
         thumbAnimator?.start()
+    }
+
+    // TODO
+    private fun skipHintText(value: Long): String {
+        val valueInSeconds = abs(value / 1000)
+        val minutes = valueInSeconds / 60
+        val seconds = valueInSeconds - minutes * 60
+        return if (minutes == 0L) {
+            if (value > 0) {
+                getString(R.string.skip_format_positive_s, seconds)
+            } else {
+                getString(R.string.skip_format_negative_s, seconds)
+            }
+        } else {
+            if (value > 0) {
+                getString(R.string.skip_format_positive_m_s, minutes, seconds)
+            } else {
+                getString(R.string.skip_format_negative_m_s, minutes, seconds)
+            }
+        }
     }
 
     /**

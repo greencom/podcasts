@@ -41,6 +41,9 @@ class PlayerServiceConnection @Inject constructor() {
     val isPlaying: Boolean
         get() = controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
 
+    val isNotPlaying: Boolean
+        get() = !isPlaying
+
     val isPaused: Boolean
         get() = controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
 
@@ -94,14 +97,6 @@ class PlayerServiceConnection @Inject constructor() {
 
     fun pause() {
         controller.pause()
-    }
-
-    fun skipForward() {
-        controller.skipForward()
-    }
-
-    fun skipBackward() {
-        controller.skipBackward()
     }
 
     fun seekTo(position: Long) {

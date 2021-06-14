@@ -7,7 +7,6 @@ import com.greencom.android.podcasts.player.PlayerServiceConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
-import kotlin.time.ExperimentalTime
 
 // TODO
 @HiltViewModel
@@ -27,6 +26,9 @@ class MainActivityViewModel @Inject constructor(
     val isPlaying: Boolean
         get() = player.isPlaying
 
+    val isNotPlaying: Boolean
+        get() = player.isNotPlaying
+
     val isPaused: Boolean
         get() = player.isPaused
 
@@ -39,14 +41,6 @@ class MainActivityViewModel @Inject constructor(
 
     fun pause() {
         player.pause()
-    }
-
-    fun skipForward() {
-        player.skipForward()
-    }
-
-    fun skipBackward() {
-        player.skipBackward()
     }
 
     fun seekTo(position: Long) {

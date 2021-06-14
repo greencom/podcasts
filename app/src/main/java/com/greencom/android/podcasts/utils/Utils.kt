@@ -29,9 +29,9 @@ const val DURATION_CROSSFADE_ANIMATION = 150L
 
 /** Reveal a view immediately. */
 @Suppress("UsePropertyAccessSyntax")
-fun View.revealImmediately() {
+fun View.revealImmediately(toAlpha: Float = 1F) {
     isVisible = true
-    alpha = 1F
+    alpha = toAlpha
 }
 
 /** Hide a view immediately. This function also sets the alpha to zero. */
@@ -42,11 +42,11 @@ fun View.hideImmediately() {
 
 /** Reveal a view with crossfade animation. */
 @Suppress("UsePropertyAccessSyntax")
-fun View.revealCrossfade() {
-    if (isVisible && alpha == 1F) return
+fun View.revealCrossfade(toAlpha: Float = 1F) {
+    if (isVisible && alpha == toAlpha) return
     isVisible = true
     animate()
-        .alpha(1F)
+        .alpha(toAlpha)
         .setDuration(DURATION_CROSSFADE_ANIMATION)
 }
 

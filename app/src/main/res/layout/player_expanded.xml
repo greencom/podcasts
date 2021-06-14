@@ -30,6 +30,28 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <ImageView
+        android:id="@+id/cover_mask"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@null"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="@id/cover"
+        app:layout_constraintStart_toStartOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover" />
+
+    <TextView
+        android:id="@+id/skip_hint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/dark_on_surface_high"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="@id/cover"
+        app:layout_constraintStart_toStartOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover"
+        tools:text="+1:30" />
+
     <TextView
         android:id="@+id/title"
         android:layout_width="match_parent"
