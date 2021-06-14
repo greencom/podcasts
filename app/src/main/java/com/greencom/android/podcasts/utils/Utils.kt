@@ -27,8 +27,25 @@ const val GLOBAL_TAG = "global___"
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
 
+/**
+ * Reveal or hide a view depending on the [show] parameter. This function also sets the
+ * alpha of the view to zero when the view is being hidden.
+ *
+ * @param show show or hide a view.
+ * @param animate perform with a crossfade animation or not. Defaults to `true`.
+ * @param toAlpha can be used as a custom alpha value when showing a view. Not used when
+ *                the view is being hidden from the screen. Defaults to `1F`.
+ */
+fun View.show(show: Boolean, animate: Boolean = true, toAlpha: Float = 1F) {
+    when {
+        show && animate -> revealCrossfade(toAlpha)
+        show && !animate -> revealImmediately(toAlpha)
+        !show && animate -> hideCrossfade()
+        !show && !animate -> hideImmediately()
+    }
+}
+
 /** Reveal a view immediately. */
-@Suppress("UsePropertyAccessSyntax")
 fun View.revealImmediately(toAlpha: Float = 1F) {
     isVisible = true
     alpha = toAlpha
