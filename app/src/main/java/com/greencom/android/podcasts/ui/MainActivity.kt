@@ -18,6 +18,7 @@ import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -35,7 +36,6 @@ import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.PlayerService
-import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
@@ -69,9 +69,6 @@ class MainActivity : AppCompatActivity() {
     // TODO
     private val viewModel: MainActivityViewModel by viewModels()
 
-    // TODO
-    private var previousPlayedEpisode: PlayerServiceConnection.CurrentEpisode? = null
-
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
@@ -87,16 +84,70 @@ class MainActivity : AppCompatActivity() {
     private val isPlayerExpanded = MutableStateFlow(false)
 
     // TODO
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected() called")
-            val binder = service as PlayerService.PlayerServiceBinder
-            val mediaSessionToken = binder.sessionToken
-            viewModel.createMediaController(this@MainActivity, mediaSessionToken)
-        }
+    private val navHostLayoutParams: CoordinatorLayout.LayoutParams by lazy {
+        CoordinatorLayout.LayoutParams(
+            CoordinatorLayout.LayoutParams.MATCH_PARENT,
+            CoordinatorLayout.LayoutParams.MATCH_PARENT
+        )
+    }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            Log.d(GLOBAL_TAG, "serviceConnection: onServiceDisconnected() called")
+    // TODO
+    private val serviceConnection: ServiceConnection by lazy {
+        object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected() called")
+                val binder = service as PlayerService.PlayerServiceBinder
+                val mediaSessionToken = binder.sessionToken
+                viewModel.createMediaController(this@MainActivity, mediaSessionToken)
+
+                // TODO: Обновить начальные состояние здесь?
+                Log.d(GLOBAL_TAG, "TEST: currentEpisode is ${viewModel.currentEpisode.value}")
+                val navHostBottomMargin = if (viewModel.currentEpisode.value.isEmpty()) {
+                    binding.player.root.hideImmediately()
+                    binding.playerShadowInternal.hideImmediately()
+                    binding.playerShadowExternal.hideImmediately()
+                    resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
+                } else {
+                    binding.player.root.revealCrossfade()
+                    binding.playerShadowInternal.revealCrossfade()
+                    binding.playerShadowExternal.revealCrossfade()
+                    resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
+                }
+                navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
+                binding.navHostFragment.layoutParams = navHostLayoutParams
+
+                if (viewModel.currentEpisode.value.isNotEmpty()) {
+                    val episode = viewModel.currentEpisode.value
+                    collapsedPlayer.apply {
+                        title.text = episode.title
+                        progressBar.max = viewModel.duration.toInt()
+                        progressBar.progress = viewModel.currentPosition.value.toInt()
+                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                    }
+                    expandedPlayer.apply {
+                        title.text = episode.title
+                        publisher.text = episode.publisher
+                        slider.valueTo = viewModel.duration.toFloat()
+                        slider.value = viewModel.currentPosition.value.toFloat()
+                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                    }
+
+                    when {
+                        viewModel.isPlaying -> {
+                            collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
+                            expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+                        }
+                        viewModel.isPaused -> {
+                            collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
+                            expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
+                        }
+                    }
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                Log.d(GLOBAL_TAG, "serviceConnection: onServiceDisconnected() called")
+            }
         }
     }
 
@@ -152,23 +203,33 @@ class MainActivity : AppCompatActivity() {
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.currentEpisode.collectLatest { episode ->
-                previousPlayedEpisode?.let { previousEpisode ->
-                    if (episode == previousEpisode) return@collectLatest
+                val navHostBottomMargin = if (episode.isEmpty()) {
+                    binding.player.root.hideImmediately()
+                    binding.playerShadowInternal.hideImmediately()
+                    binding.playerShadowExternal.hideImmediately()
+                    resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
+                } else {
+                    binding.player.root.revealCrossfade()
+                    binding.playerShadowInternal.revealCrossfade()
+                    binding.playerShadowExternal.revealCrossfade()
+                    resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
                 }
-                previousPlayedEpisode = episode
+                navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
 
-                expandedPlayer.slider.valueTo = viewModel.duration.toFloat()
-                collapsedPlayer.progressBar.max = viewModel.duration.toInt()
-
-                collapsedPlayer.title.text = episode.title
-                collapsedPlayer.cover.load(episode.image) {
-                    coilDefaultBuilder(this@MainActivity)
-                }
-
-                expandedPlayer.title.text = episode.title
-                expandedPlayer.publisher.text = episode.publisher
-                expandedPlayer.cover.load(episode.image) {
-                    coilDefaultBuilder(this@MainActivity)
+                if (episode.isNotEmpty()) {
+                    collapsedPlayer.apply {
+                        title.text = episode.title
+                        progressBar.max = viewModel.duration.toInt()
+                        progressBar.progress = viewModel.currentPosition.value.toInt()
+                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                    }
+                    expandedPlayer.apply {
+                        title.text = episode.title
+                        publisher.text = episode.publisher
+                        slider.valueTo = viewModel.duration.toFloat()
+                        slider.value = viewModel.currentPosition.value.toFloat()
+                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                    }
                 }
             }
         }
@@ -331,15 +392,15 @@ class MainActivity : AppCompatActivity() {
         val onTouchListener = object : Slider.OnSliderTouchListener {
             var playerWasPlaying = false
             override fun onStartTrackingTouch(slider: Slider) {
+                animateSliderThumb(thumbRadiusIncreased)
                 playerWasPlaying = viewModel.isPlaying
                 viewModel.pause()
-                animateSliderThumb(thumbRadiusIncreased)
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
+                animateSliderThumb(thumbRadiusDefault)
                 viewModel.seekTo(slider.value.toLong())
                 if (playerWasPlaying) viewModel.play()
-                animateSliderThumb(thumbRadiusDefault)
             }
         }
         expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
@@ -355,16 +416,10 @@ class MainActivity : AppCompatActivity() {
 
         expandedPlayer.backward.setOnClickListener {
             viewModel.skipBackward()
-            val newSliderValue = expandedPlayer.slider.value - PlayerService.SKIP_BACKWARD_VALUE
-            expandedPlayer.slider.value = if (newSliderValue >= 0) newSliderValue else 0F
         }
 
         expandedPlayer.forward.setOnClickListener {
             viewModel.skipForward()
-            val newSliderValue = expandedPlayer.slider.value + PlayerService.SKIP_FORWARD_VALUE
-            expandedPlayer.slider.value = if (newSliderValue <= expandedPlayer.slider.valueTo) {
-                newSliderValue
-            } else expandedPlayer.slider.valueTo
         }
 
         // The expanded content of the player is not disabled at application start

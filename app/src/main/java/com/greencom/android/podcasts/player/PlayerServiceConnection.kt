@@ -12,8 +12,8 @@ import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.utils.GLOBAL_TAG
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,14 +29,14 @@ class PlayerServiceConnection @Inject constructor() {
 
     private lateinit var controller: MediaController
 
-    private val _currentEpisode = MutableSharedFlow<CurrentEpisode>(1)
-    val currentEpisode = _currentEpisode.asSharedFlow()
+    private val _currentEpisode = MutableStateFlow(CurrentEpisode.empty())
+    val currentEpisode = _currentEpisode.asStateFlow()
 
-    private val _playerState = MutableSharedFlow<Int>(1)
-    val playerState = _playerState.asSharedFlow()
+    private val _playerState = MutableStateFlow(MediaPlayer.PLAYER_STATE_IDLE)
+    val playerState = _playerState.asStateFlow()
 
-    private val _currentPosition = MutableSharedFlow<Long>(1)
-    val currentPosition = _currentPosition.asSharedFlow()
+    private val _currentPosition = MutableStateFlow(0L)
+    val currentPosition = _currentPosition.asStateFlow()
 
     val isPlaying: Boolean
         get() = controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
@@ -48,6 +48,45 @@ class PlayerServiceConnection @Inject constructor() {
         get() = controller.duration
 
     private var currentPositionJob: Job? = null
+
+    private val controllerCallback: MediaController.ControllerCallback by lazy {
+        object : MediaController.ControllerCallback() {
+            override fun onConnected(
+                controller: MediaController,
+                allowedCommands: SessionCommandGroup
+            ) {
+                Log.d(GLOBAL_TAG, "controllerCallback: onConnected()")
+                super.onConnected(controller, allowedCommands)
+            }
+
+            override fun onDisconnected(controller: MediaController) {
+                Log.d(GLOBAL_TAG, "controllerCallback: onDisconnected()")
+                super.onDisconnected(controller)
+            }
+
+            override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
+                Log.d(GLOBAL_TAG, "controllerCallback: onCurrentMediaItemChanged()")
+                _currentEpisode.value = CurrentEpisode.from(item)
+            }
+
+            override fun onPlayerStateChanged(controller: MediaController, state: Int) {
+                Log.d(GLOBAL_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
+                _playerState.value = state
+
+                currentPositionJob?.cancel()
+                if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
+                    currentPositionJob = scope.launch {
+                        while (true) {
+                            if (controller.currentPosition <= duration) {
+                                _currentPosition.value = controller.currentPosition
+                            }
+                            delay(500)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun play() {
         controller.play()
@@ -83,51 +122,6 @@ class PlayerServiceConnection @Inject constructor() {
         )
     }
 
-    private val controllerCallback = object : MediaController.ControllerCallback() {
-
-        override fun onConnected(
-            controller: MediaController,
-            allowedCommands: SessionCommandGroup
-        ) {
-            Log.d(GLOBAL_TAG, "controllerCallback: onConnected()")
-            super.onConnected(controller, allowedCommands)
-        }
-
-        override fun onDisconnected(controller: MediaController) {
-            Log.d(GLOBAL_TAG, "controllerCallback: onDisconnected()")
-            super.onDisconnected(controller)
-        }
-
-        override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
-            Log.d(GLOBAL_TAG, "controllerCallback: onCurrentMediaItemChanged()")
-            scope.launch {
-                val id = item?.metadata?.getString(PlayerService.ID) ?: ""
-                val title = item?.metadata?.getString(PlayerService.TITLE) ?: ""
-                val publisher = item?.metadata?.getString(PlayerService.PUBLISHER) ?: ""
-                val image = item?.metadata?.getString(PlayerService.IMAGE_URI) ?: ""
-                val episodeMetadata = CurrentEpisode(id, title, publisher, image)
-                _currentEpisode.emit(episodeMetadata)
-            }
-        }
-
-        override fun onPlayerStateChanged(controller: MediaController, state: Int) {
-            Log.d(GLOBAL_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
-            scope.launch { _playerState.emit(state) }
-
-            currentPositionJob?.cancel()
-            if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
-                currentPositionJob = scope.launch {
-                    while (true) {
-                        if (controller.currentPosition <= duration) {
-                            _currentPosition.emit(controller.currentPosition)
-                        }
-                        delay(500)
-                    }
-                }
-            }
-        }
-    }
-
     fun createMediaController(context: Context, sessionToken: SessionToken) {
         if (this::controller.isInitialized) return
 
@@ -135,6 +129,12 @@ class PlayerServiceConnection @Inject constructor() {
             .setSessionToken(sessionToken)
             .setControllerCallback(Executors.newSingleThreadExecutor(), controllerCallback)
             .build()
+
+        _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
+        _playerState.value = controller.playerState
+        _currentPosition.value = if (controller.currentPosition == MediaPlayer.UNKNOWN_TIME) {
+            0L
+        } else controller.currentPosition
     }
 
     fun close() {
@@ -146,5 +146,27 @@ class PlayerServiceConnection @Inject constructor() {
         val title: String,
         val publisher: String,
         val image: String,
-    )
+    ) {
+
+        fun isEmpty(): Boolean {
+            return id.isBlank() && title.isBlank() && publisher.isBlank() && image.isBlank()
+        }
+
+        fun isNotEmpty(): Boolean = !isEmpty()
+
+        companion object {
+            private const val EMPTY = ""
+
+            fun empty(): CurrentEpisode = CurrentEpisode(EMPTY, EMPTY, EMPTY, EMPTY)
+
+            fun from(mediaItem: MediaItem?): CurrentEpisode {
+                return CurrentEpisode(
+                    id = mediaItem?.metadata?.getString(PlayerService.ID) ?: EMPTY,
+                    title = mediaItem?.metadata?.getString(PlayerService.TITLE) ?: EMPTY,
+                    publisher = mediaItem?.metadata?.getString(PlayerService.PUBLISHER) ?: EMPTY,
+                    image = mediaItem?.metadata?.getString(PlayerService.IMAGE_URI) ?: EMPTY,
+                )
+            }
+        }
+    }
 }

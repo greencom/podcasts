@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 // TODO
 @HiltViewModel
@@ -14,13 +15,13 @@ class MainActivityViewModel @Inject constructor(
     private val player: PlayerServiceConnection,
 ) : ViewModel() {
 
-    val currentEpisode: SharedFlow<PlayerServiceConnection.CurrentEpisode>
+    val currentEpisode: StateFlow<PlayerServiceConnection.CurrentEpisode>
         get() = player.currentEpisode
 
-    val playerState: SharedFlow<Int>
+    val playerState: StateFlow<Int>
         get() = player.playerState
 
-    val currentPosition: SharedFlow<Long>
+    val currentPosition: StateFlow<Long>
         get() = player.currentPosition
 
     val isPlaying: Boolean

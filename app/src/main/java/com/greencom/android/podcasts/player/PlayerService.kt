@@ -23,114 +23,120 @@ import java.util.concurrent.Executors
 // TODO
 class PlayerService : MediaSessionService() {
 
-    private val serviceJob = SupervisorJob()
-    private val serviceScope = CoroutineScope(serviceJob + Dispatchers.Main)
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.Main)
 
     private lateinit var mediaSession: MediaSession
     private lateinit var player: MediaPlayer
 
-    private val audioAttrs = AudioAttributesCompat.Builder()
-        .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
-        .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-        .build()
+    private val audioAttrs: AudioAttributesCompat by lazy {
+        AudioAttributesCompat.Builder()
+            .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
+            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+            .build()
+    }
 
-    private val sessionCallback = object : MediaSession.SessionCallback() {
-        override fun onConnect(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ): SessionCommandGroup? {
-            Log.d(GLOBAL_TAG,"sessionCallback: onConnect() called")
-            return super.onConnect(session, controller)
-        }
-
-        override fun onPostConnect(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ) {
-            Log.d(GLOBAL_TAG,"sessionCallback: onPostConnect() called")
-            super.onPostConnect(session, controller)
-        }
-
-        override fun onDisconnected(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ) {
-            Log.d(GLOBAL_TAG,"sessionCallback: onDisconnected() called")
-            super.onDisconnected(session, controller)
-        }
-
-        override fun onSkipForward(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ): Int {
-            Log.d(GLOBAL_TAG,"sessionCallback: onSkipForward() called")
-            val result = player.seekTo(player.currentPosition + SKIP_FORWARD_VALUE).get()
-            if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipForward ERROR, code ${result.resultCode}")
-            return result.resultCode
-        }
-
-        override fun onSkipBackward(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo
-        ): Int {
-            Log.d(GLOBAL_TAG,"sessionCallback: onSkipBackward() called")
-            val result = player.seekTo(player.currentPosition - SKIP_BACKWARD_VALUE).get()
-            if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipBackward ERROR, code ${result.resultCode}")
-            return result.resultCode
-        }
-
-        override fun onSetMediaUri(
-            session: MediaSession,
-            controller: MediaSession.ControllerInfo,
-            uri: Uri,
-            extras: Bundle?
-        ): Int {
-            Log.d(GLOBAL_TAG,"sessionCallback: onSetMediaUri() called")
-            resetPlayer()
-
-            val mediaItemBuilder = UriMediaItem.Builder(uri)
-            if (extras != null) {
-                mediaItemBuilder.setMetadata(
-                    MediaMetadata.Builder()
-                        .putString(ID, extras.getString(ID))
-                        .putString(TITLE, extras.getString(TITLE))
-                        .putString(PUBLISHER, extras.getString(PUBLISHER))
-                        .putString(IMAGE_URI, extras.getString(IMAGE_URI))
-                        .putLong(DURATION, extras.getLong(DURATION))
-                        .build()
-                )
+    private val sessionCallback: MediaSession.SessionCallback by lazy {
+        object : MediaSession.SessionCallback() {
+            override fun onConnect(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo
+            ): SessionCommandGroup? {
+                Log.d(GLOBAL_TAG,"sessionCallback: onConnect() called")
+                return super.onConnect(session, controller)
             }
 
-            var result = player.setMediaItem(mediaItemBuilder.build()).get()
-            if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                Log.d(GLOBAL_TAG, "setMediaItem ERROR, code ${result.resultCode}")
+            override fun onPostConnect(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo
+            ) {
+                Log.d(GLOBAL_TAG,"sessionCallback: onPostConnect() called")
+                super.onPostConnect(session, controller)
+            }
+
+            override fun onDisconnected(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo
+            ) {
+                Log.d(GLOBAL_TAG,"sessionCallback: onDisconnected() called")
+                super.onDisconnected(session, controller)
+            }
+
+            override fun onSkipForward(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo
+            ): Int {
+                Log.d(GLOBAL_TAG,"sessionCallback: onSkipForward() called")
+                val result = player.seekTo(player.currentPosition + SKIP_FORWARD_VALUE).get()
+                if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipForward ERROR, code ${result.resultCode}")
                 return result.resultCode
             }
 
-            result = player.prepare().get()
-            if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                Log.d(GLOBAL_TAG, "prepare ERROR, code ${result.resultCode}")
+            override fun onSkipBackward(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo
+            ): Int {
+                Log.d(GLOBAL_TAG,"sessionCallback: onSkipBackward() called")
+                val result = player.seekTo(player.currentPosition - SKIP_BACKWARD_VALUE).get()
+                if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipBackward ERROR, code ${result.resultCode}")
                 return result.resultCode
             }
 
-            player.play()
-            return SessionResult.RESULT_SUCCESS
+            override fun onSetMediaUri(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo,
+                uri: Uri,
+                extras: Bundle?
+            ): Int {
+                Log.d(GLOBAL_TAG,"sessionCallback: onSetMediaUri() called")
+                resetPlayer()
+
+                val mediaItemBuilder = UriMediaItem.Builder(uri)
+                if (extras != null) {
+                    mediaItemBuilder.setMetadata(
+                        MediaMetadata.Builder()
+                            .putString(ID, extras.getString(ID))
+                            .putString(TITLE, extras.getString(TITLE))
+                            .putString(PUBLISHER, extras.getString(PUBLISHER))
+                            .putString(IMAGE_URI, extras.getString(IMAGE_URI))
+                            .putLong(DURATION, extras.getLong(DURATION))
+                            .build()
+                    )
+                }
+
+                var result = player.setMediaItem(mediaItemBuilder.build()).get()
+                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
+                    Log.d(GLOBAL_TAG, "setMediaItem ERROR, code ${result.resultCode}")
+                    return result.resultCode
+                }
+
+                result = player.prepare().get()
+                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
+                    Log.d(GLOBAL_TAG, "prepare ERROR, code ${result.resultCode}")
+                    return result.resultCode
+                }
+
+                player.play()
+                return SessionResult.RESULT_SUCCESS
+            }
         }
     }
 
-    private val playerCallback = object : MediaPlayer.PlayerCallback() {
-        override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
-            Log.d(GLOBAL_TAG,"playerCallback: onPlayerStateChanged() called, playerState $playerState")
-            super.onPlayerStateChanged(player, playerState)
-        }
+    private val playerCallback: MediaPlayer.PlayerCallback by lazy {
+        object : MediaPlayer.PlayerCallback() {
+            override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
+                Log.d(GLOBAL_TAG,"playerCallback: onPlayerStateChanged() called, playerState $playerState")
+                super.onPlayerStateChanged(player, playerState)
+            }
 
-        override fun onBufferingStateChanged(
-            player: SessionPlayer,
-            item: MediaItem?,
-            buffState: Int
-        ) {
-            Log.d(GLOBAL_TAG,"mediaPlayerCallback: onBufferingStateChanged() called, buffState $buffState")
-            super.onBufferingStateChanged(player, item, buffState)
+            override fun onBufferingStateChanged(
+                player: SessionPlayer,
+                item: MediaItem?,
+                buffState: Int
+            ) {
+                Log.d(GLOBAL_TAG,"playerCallback: onBufferingStateChanged() called, buffState $buffState")
+                super.onBufferingStateChanged(player, item, buffState)
+            }
         }
     }
 
@@ -157,9 +163,7 @@ class PlayerService : MediaSessionService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(GLOBAL_TAG,"PlayerService: onDestroy() called")
-
-        serviceScope.cancel()
-
+        scope.cancel()
         mediaSession.close()
         player.unregisterPlayerCallback(playerCallback)
         player.close()
