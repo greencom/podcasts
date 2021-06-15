@@ -206,27 +206,11 @@ class MainActivity : AppCompatActivity() {
                 if (value != 0L) {
                     expandedPlayer.coverMask.revealCrossfade(0.6F)
                     expandedPlayer.skipHint.revealCrossfade()
-                    expandedPlayer.skipHint.text = skipHintText(value)
+                    expandedPlayer.skipHint.text = getSkipHintText(value)
 
                     delay(1000)
                     val newValue = (expandedPlayer.slider.value + value).toLong()
-                    when {
-                        newValue <= 0L -> {
-                            viewModel.seekTo(0L)
-                            expandedPlayer.slider.value = 0F
-                            collapsedPlayer.progressBar.progress = 0
-                        }
-                        newValue >= viewModel.duration -> {
-                            viewModel.seekTo(viewModel.duration)
-                            expandedPlayer.slider.value = (viewModel.duration).toFloat()
-                            collapsedPlayer.progressBar.progress = (viewModel.duration).toInt()
-                        }
-                        else -> {
-                            viewModel.seekTo(newValue)
-                            expandedPlayer.slider.value = newValue.toFloat()
-                            collapsedPlayer.progressBar.progress = newValue.toInt()
-                        }
-                    }
+                    viewModel.seekTo(newValue)
                     expandedPlayer.coverMask.hideCrossfade()
                     expandedPlayer.skipHint.hideCrossfade()
                     skipValue.value = 0L
@@ -406,17 +390,14 @@ class MainActivity : AppCompatActivity() {
     private fun initPlayerListeners() {
 
         // COLLAPSED
-        // Expand the player on the frame click.
         collapsedPlayer.root.setOnClickListener {
             expandPlayer()
         }
-        // Expand the player on frame swipe.
         collapsedPlayer.root.setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeUp() {
                 expandPlayer()
             }
         })
-        // Expand the player on play/pause button swipe.
         collapsedPlayer.playPause.setOnTouchListener(object : OnSwipeListener(this) {
             override fun onSwipeUp() {
                 expandPlayer()
@@ -661,7 +642,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
-    private fun skipHintText(value: Long): String {
+    private fun getSkipHintText(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
         val seconds = valueInSeconds - minutes * 60

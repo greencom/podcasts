@@ -100,7 +100,13 @@ class PlayerServiceConnection @Inject constructor() {
     }
 
     fun seekTo(position: Long) {
-        controller.seekTo(position)
+        val validPosition = when {
+            position <= 0L -> 0L
+            position >= controller.duration -> controller.duration
+            else -> position
+        }
+        controller.seekTo(validPosition)
+        _currentPosition.value = validPosition
     }
 
     @ExperimentalTime
