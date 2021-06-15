@@ -242,15 +242,15 @@ class MainActivity : AppCompatActivity() {
                 if (episode.isNotEmpty()) {
                     collapsedPlayer.apply {
                         title.text = episode.title
+                        progressBar.progress = 0
                         progressBar.max = viewModel.duration.toInt()
-                        progressBar.progress = viewModel.currentPosition.value.toInt()
                         cover.load(episode.image) { coverBuilder(this@MainActivity) }
                     }
                     expandedPlayer.apply {
                         title.text = episode.title
                         publisher.text = episode.publisher
+                        slider.value = 0F
                         slider.valueTo = viewModel.duration.toFloat()
-                        slider.value = viewModel.currentPosition.value.toFloat()
                         cover.load(episode.image) { coverBuilder(this@MainActivity) }
                     }
                 }
