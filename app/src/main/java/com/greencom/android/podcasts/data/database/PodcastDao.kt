@@ -192,15 +192,16 @@ abstract class PodcastDao {
      * Use [insert] and [insertWithGenre] methods directly to safely insert
      * and update podcasts in the `podcasts` table.
      */
-    @Query(
-        "INSERT INTO podcasts (id, title, description, image, publisher, explicit_content, " +
-                "episode_count, latest_pub_date, earliest_pub_date, subscribed, genre_id, update_date) " +
-                "SELECT t.id, t.title, t.description, t.image, t.publisher, t.explicit_content, " +
-                "t.episode_count, t.latest_pub_date, t.earliest_pub_date, t.subscribed, t.genre_id, t.update_date " +
-                "FROM podcasts_temp t " +
-                "LEFT JOIN podcasts ON t.id = podcasts.id " +
-                "WHERE podcasts.id IS NULL"
-    )
+    @Query("""
+        INSERT INTO podcasts (id, title, description, image, publisher, explicit_content,
+            episode_count, latest_pub_date, earliest_pub_date, subscribed, genre_id, update_date)
+        SELECT t.id, t.title, t.description, t.image, t.publisher, t.explicit_content,
+            t.episode_count, t.latest_pub_date, t.earliest_pub_date, t.subscribed, t.genre_id,
+            t.update_date
+        FROM podcasts_temp t
+        LEFT JOIN podcasts ON t.id = podcasts.id
+        WHERE podcasts.id IS NULL
+    """)
     protected abstract suspend fun merge()
 
     /**
@@ -231,12 +232,12 @@ abstract class PodcastDao {
     protected abstract suspend fun updatePartialWithGenre(podcasts: List<PodcastEntityPartialWithGenre>)
 
     /** Get a podcast from the `podcasts_temp` table for a given ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, earliest_pub_date, subscribed " +
-                "FROM podcasts_temp " +
-                "WHERE id = :id"
-    )
+    @Query("""
+        SELECT id, title, description, image, publisher, explicit_content, episode_count,
+            latest_pub_date, earliest_pub_date, subscribed
+        FROM podcasts_temp
+        WHERE id = :id
+    """)
     protected abstract suspend fun getPodcastFromTemp(id: String): Podcast?
 
     /** Clear the `podcasts_temp` table. */
@@ -244,12 +245,12 @@ abstract class PodcastDao {
     protected abstract suspend fun clearTemp()
 
     /** Get a podcast for a given ID. */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, earliest_pub_date, subscribed " +
-                "FROM podcasts " +
-                "WHERE id = :id"
-    )
+    @Query("""
+        SELECT id, title, description, image, publisher, explicit_content, episode_count,
+            latest_pub_date, earliest_pub_date, subscribed
+        FROM podcasts
+        WHERE id = :id
+    """)
     protected abstract suspend fun getPodcast(id: String): Podcast?
 
     /**
@@ -257,23 +258,23 @@ abstract class PodcastDao {
      * Use [getPodcastWithEpisodesFlow] with applied [distinctUntilChanged] function instead.
      */
     @Transaction
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, episode_count, " +
-                "latest_pub_date, earliest_pub_date, subscribed " +
-                "FROM podcasts " +
-                "WHERE id = :id"
-    )
+    @Query("""
+        SELECT id, title, description, image, publisher, explicit_content, episode_count,
+            latest_pub_date, earliest_pub_date, subscribed
+        FROM podcasts
+        WHERE id = :id
+    """)
     protected abstract fun getPodcastWithEpisodesFlowRaw(id: String): Flow<PodcastWithEpisodes?>
 
     /**
      * Get a Flow with a [PodcastShort] list of the best podcasts for a given genre ID. Use
      * [getBestPodcastsFlow] with applied [distinctUntilChanged] function instead.
      */
-    @Query(
-        "SELECT id, title, description, image, publisher, explicit_content, subscribed, genre_id " +
-                "FROM podcasts " +
-                "WHERE genre_id = :genreId"
-    )
+    @Query("""
+        SELECT id, title, description, image, publisher, explicit_content, subscribed, genre_id
+        FROM podcasts
+        WHERE genre_id = :genreId
+    """)
     protected abstract fun getBestPodcastsFlowRaw(genreId: Int): Flow<List<PodcastShort>>
 
     // Helper methods end.
