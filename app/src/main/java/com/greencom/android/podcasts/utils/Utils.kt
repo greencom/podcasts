@@ -207,11 +207,11 @@ fun timestampLeft(position: Long, duration: Long, context: Context): String {
 }
 
 /**
- * App-specific default Coil builder. Uses [context] to access resource files.
+ * Default Coil builder for a podcast's cover. Uses [context] to access resource files.
  * Applies rounded corners transformation, crossfade animation and sets resources for the
  * placeholder and the error.
  */
-fun ImageRequest.Builder.coilDefaultBuilder(context: Context) {
+fun ImageRequest.Builder.coverBuilder(context: Context) {
     transformations(RoundedCornersTransformation(
         context.resources.getDimension(R.dimen.coil_rounded_corners)
     ))

@@ -165,7 +165,7 @@ class PodcastHeaderViewHolder private constructor(
     fun bind(podcast: Podcast, sortOrder: SortOrder, isDescriptionExpanded: Boolean) {
         this.podcast = podcast
 
-        binding.cover.load(podcast.image) { coilDefaultBuilder(context) }
+        binding.cover.load(podcast.image) { coverBuilder(context) }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
         binding.description.text = HtmlCompat.fromHtml(

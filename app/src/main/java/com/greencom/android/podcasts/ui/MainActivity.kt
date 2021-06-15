@@ -126,14 +126,14 @@ class MainActivity : AppCompatActivity() {
                         title.text = episode.title
                         progressBar.max = viewModel.duration.toInt()
                         progressBar.progress = viewModel.currentPosition.value.toInt()
-                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
                     }
                     expandedPlayer.apply {
                         title.text = episode.title
                         publisher.text = episode.publisher
                         slider.valueTo = viewModel.duration.toFloat()
                         slider.value = viewModel.currentPosition.value.toFloat()
-                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
                     }
 
                     when {
@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         expandedPlayer.coverMask.load(R.drawable.cover_mask_300px) {
-            coilDefaultBuilder(this@MainActivity)
+            coverBuilder(this@MainActivity)
         }
         expandedPlayer.coverMask.hideImmediately()
         expandedPlayer.skipHint.hideImmediately()
@@ -274,14 +274,14 @@ class MainActivity : AppCompatActivity() {
                         title.text = episode.title
                         progressBar.max = viewModel.duration.toInt()
                         progressBar.progress = viewModel.currentPosition.value.toInt()
-                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
                     }
                     expandedPlayer.apply {
                         title.text = episode.title
                         publisher.text = episode.publisher
                         slider.valueTo = viewModel.duration.toFloat()
                         slider.value = viewModel.currentPosition.value.toFloat()
-                        cover.load(episode.image) { coilDefaultBuilder(this@MainActivity) }
+                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
                     }
                 }
             }

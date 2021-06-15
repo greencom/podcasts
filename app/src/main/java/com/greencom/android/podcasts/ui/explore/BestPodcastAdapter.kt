@@ -11,7 +11,7 @@ import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.databinding.ItemBestPodcastBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
-import com.greencom.android.podcasts.utils.coilDefaultBuilder
+import com.greencom.android.podcasts.utils.coverBuilder
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 
 /** Adapter used for RecyclerView that represents a list of best podcasts. */
@@ -62,7 +62,7 @@ class BestPodcastViewHolder private constructor(
         // Update the podcast associated with this ViewHolder.
         this.podcast = podcast
 
-        binding.cover.load(podcast.image) { coilDefaultBuilder(context) }
+        binding.cover.load(podcast.image) { coverBuilder(context) }
         binding.title.text = podcast.title
         binding.publisher.text = podcast.publisher
         // Remove all HTML tags from description.
