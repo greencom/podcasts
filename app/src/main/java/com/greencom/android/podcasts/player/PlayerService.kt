@@ -163,10 +163,10 @@ class PlayerService : MediaSessionService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(GLOBAL_TAG,"PlayerService: onDestroy() called")
-        scope.cancel()
         mediaSession.close()
         player.unregisterPlayerCallback(playerCallback)
         player.close()
+        scope.cancel()
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {

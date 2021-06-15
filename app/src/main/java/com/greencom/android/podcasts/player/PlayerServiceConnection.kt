@@ -118,8 +118,6 @@ class PlayerServiceConnection @Inject constructor() {
     }
 
     fun createMediaController(context: Context, sessionToken: SessionToken) {
-        if (this::controller.isInitialized) return
-
         controller = MediaController.Builder(context)
             .setSessionToken(sessionToken)
             .setControllerCallback(Executors.newSingleThreadExecutor(), controllerCallback)
@@ -133,6 +131,7 @@ class PlayerServiceConnection @Inject constructor() {
     }
 
     fun close() {
+        controller.close()
         scope.cancel()
     }
 
