@@ -54,6 +54,7 @@ import kotlin.time.ExperimentalTime
 private const val STATE_PLAYER_BEHAVIOR = "STATE_PLAYER_BEHAVIOR"
 
 private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
+private const val ALPHA_SKIP_HINT_BACKGROUND = 0.5F
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
@@ -173,11 +174,10 @@ class MainActivity : AppCompatActivity() {
         binding.navHostFragment.layoutParams = navHostLayoutParams
 
         // TODO
-        expandedPlayer.coverMask.load(R.drawable.cover_mask_300px) {
+        expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
             coverBuilder(this@MainActivity)
         }
-        expandedPlayer.coverMask.hideImmediately()
-        expandedPlayer.skipHint.hideImmediately()
+        hideSkipHint(true)
 
         initViews()
         initNavigation()
@@ -203,21 +203,7 @@ class MainActivity : AppCompatActivity() {
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
             skipValue.collectLatest { value ->
-                if (value != 0L) {
-                    expandedPlayer.coverMask.revealCrossfade(0.6F)
-                    expandedPlayer.skipHint.revealCrossfade()
-                    expandedPlayer.skipHint.text = getSkipHintText(value)
-
-                    delay(1000)
-                    val newValue = (expandedPlayer.slider.value + value).toLong()
-                    viewModel.seekTo(newValue)
-                    expandedPlayer.coverMask.hideCrossfade()
-                    expandedPlayer.skipHint.hideCrossfade()
-                    skipValue.value = 0L
-                } else {
-                    expandedPlayer.coverMask.hideCrossfade()
-                    expandedPlayer.skipHint.hideCrossfade()
-                }
+                showSkipHint(value)
             }
         }
 
@@ -642,22 +628,56 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
+    private suspend fun showSkipHint(value: Long) {
+        if (value == 0L) {
+            hideSkipHint()
+            return
+        }
+
+        if (value > 0) {
+            expandedPlayer.skipHintBackward.hideImmediately()
+            expandedPlayer.skipHintBackground.rotation = 0F
+            expandedPlayer.skipHintForward.text = getSkipHintText(value)
+            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.skipHintForward.revealCrossfade()
+        } else {
+            expandedPlayer.skipHintForward.hideImmediately()
+            expandedPlayer.skipHintBackground.rotation = 180F
+            expandedPlayer.skipHintBackward.text = getSkipHintText(value)
+            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.skipHintBackward.revealCrossfade()
+        }
+
+        delay(1000)
+        val newValue = (expandedPlayer.slider.value + value).toLong()
+        viewModel.seekTo(newValue)
+
+        hideSkipHint()
+        skipValue.value = 0L
+    }
+
+    // TODO
+    private fun hideSkipHint(immediately: Boolean = false) {
+        if (immediately) {
+            expandedPlayer.skipHintBackground.hideImmediately()
+            expandedPlayer.skipHintBackward.hideImmediately()
+            expandedPlayer.skipHintForward.hideImmediately()
+        } else {
+            expandedPlayer.skipHintBackground.hideCrossfade()
+            expandedPlayer.skipHintBackward.hideCrossfade()
+            expandedPlayer.skipHintForward.hideCrossfade()
+        }
+    }
+
+    // TODO
     private fun getSkipHintText(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
         val seconds = valueInSeconds - minutes * 60
         return if (minutes == 0L) {
-            if (value > 0) {
-                getString(R.string.skip_format_positive_s, seconds)
-            } else {
-                getString(R.string.skip_format_negative_s, seconds)
-            }
+            getString(R.string.skip_hint_format_s, seconds)
         } else {
-            if (value > 0) {
-                getString(R.string.skip_format_positive_m_s, minutes, seconds)
-            } else {
-                getString(R.string.skip_format_negative_m_s, minutes, seconds)
-            }
+            getString(R.string.skip_hint_format_m_s, minutes, seconds)
         }
     }
 

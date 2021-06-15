@@ -4,10 +4,8 @@
     <string name="app_name">Podcasts</string>
 
     <!-- Formatting start -->
-    <string name="skip_format_positive_s" translatable="false">+0:%02d</string>
-    <string name="skip_format_positive_m_s" translatable="false">+%d:%02d</string>
-    <string name="skip_format_negative_s" translatable="false">-0:%02d</string>
-    <string name="skip_format_negative_m_s" translatable="false">-%d:%02d</string>
+    <string name="skip_hint_format_s" translatable="false">0:%02d</string>
+    <string name="skip_hint_format_m_s" translatable="false">%d:%02d</string>
 
     <string name="time_stamp_current_format_m_s" translatable="false">%d:%02d</string>
     <string name="time_stamp_current_format_h_m_s" translatable="false">%d:%02d:%02d</string>

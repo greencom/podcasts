@@ -31,7 +31,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <ImageView
-        android:id="@+id/cover_mask"
+        android:id="@+id/skip_hint_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@null"
@@ -41,16 +41,39 @@
         app:layout_constraintTop_toTopOf="@id/cover" />
 
     <TextView
-        android:id="@+id/skip_hint"
+        android:id="@+id/skip_hint_backward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_arrow_left_24"
+        android:fontFamily="@font/roboto_medium"
+        android:includeFontPadding="false"
         android:textColor="@color/dark_on_surface_high"
-        android:textSize="28sp"
+        android:textSize="20sp"
+        app:drawableTint="@color/dark_on_surface_high"
         app:layout_constraintBottom_toBottomOf="@id/cover"
-        app:layout_constraintEnd_toEndOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
+        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="@id/cover"
         app:layout_constraintTop_toTopOf="@id/cover"
-        tools:text="+1:30" />
+        tools:text="0:20" />
+
+    <TextView
+        android:id="@+id/skip_hint_forward"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/ic_arrow_right_24"
+        android:elegantTextHeight="false"
+        android:fontFamily="@font/roboto_medium"
+        android:includeFontPadding="false"
+        android:textColor="@color/dark_on_surface_high"
+        android:textSize="20sp"
+        app:drawableTint="@color/dark_on_surface_high"
+        app:layout_constraintBottom_toBottomOf="@id/cover"
+        app:layout_constraintEnd_toEndOf="@+id/cover"
+        app:layout_constraintHorizontal_bias="0.85"
+        app:layout_constraintStart_toStartOf="@id/cover"
+        app:layout_constraintTop_toTopOf="@id/cover"
+        tools:text="1:30" />
 
     <TextView
         android:id="@+id/title"
