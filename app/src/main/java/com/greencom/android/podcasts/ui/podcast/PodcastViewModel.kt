@@ -63,9 +63,9 @@ class PodcastViewModel @Inject constructor(
     /** Load a podcast with episodes. The result will be posted to [uiState]. */
     fun getPodcastWithEpisodes() = viewModelScope.launch {
         repository.getPodcastWithEpisodes(podcastId)
-            .combine(sortOrder) { value, sortOrder -> sortEpisodes(value, sortOrder) }
-            .flowOn(defaultDispatcher)
+            .combine(sortOrder) { state, sortOrder -> sortEpisodes(state, sortOrder) }
             .onEach(::checkBottomEpisodes)
+            .flowOn(defaultDispatcher)
             .collectLatest { state ->
                 when (state) {
                     is State.Loading -> _uiState.value = PodcastState.Loading
@@ -141,17 +141,17 @@ class PodcastViewModel @Inject constructor(
 
     /** Sort episodes according to a given [sortOrder] value. */
     private fun sortEpisodes(
-        value: State<PodcastWithEpisodes>,
+        state: State<PodcastWithEpisodes>,
         sortOrder: SortOrder
     ): State<PodcastWithEpisodes> {
-        if (value is State.Success) {
+        if (state is State.Success) {
             val episodes = when (sortOrder) {
-                SortOrder.RECENT_FIRST -> value.data.episodes.sortedByDescending { it.date }
-                SortOrder.OLDEST_FIRST -> value.data.episodes.sortedBy { it.date }
+                SortOrder.RECENT_FIRST -> state.data.episodes.sortedByDescending { it.date }
+                SortOrder.OLDEST_FIRST -> state.data.episodes.sortedBy { it.date }
             }
-            return State.Success(PodcastWithEpisodes(value.data.podcast, episodes))
+            return State.Success(PodcastWithEpisodes(state.data.podcast, episodes))
         }
-        return value
+        return state
     }
 
     /**
