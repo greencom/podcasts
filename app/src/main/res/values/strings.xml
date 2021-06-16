@@ -94,6 +94,11 @@
 
 
     <!-- PodcastFragment start -->
+    <string name="podcast_completed">Completed</string>
+    <string name="podcast_playing">Playing</string>
+    <string name="podcast_time_left_m">%d min left</string>
+    <string name="podcast_time_left_h_m">%d h %d min left</string>
+    <string name="podcast_time_left_almost_over">Almost over</string>
     <string name="podcast_description_sort_order">Episodes sorting</string>
     <plurals name="podcast_episode_count">
         <item quantity="zero">%d Episodes</item>

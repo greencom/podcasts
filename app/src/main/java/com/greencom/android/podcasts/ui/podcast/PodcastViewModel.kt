@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.ui.podcast
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media2.player.MediaPlayer
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
@@ -53,6 +54,16 @@ class PodcastViewModel @Inject constructor(
         player.playEpisode(episodes)
     }
 
+    // TODO
+    fun play() {
+        player.play()
+    }
+
+    // TODO
+    fun pause() {
+        player.pause()
+    }
+
     /** Reverse the [sortOrder] value and init episodes fetching. */
     fun changeSortOrder() {
         _sortOrder.value = sortOrder.value.reverse()
@@ -63,8 +74,14 @@ class PodcastViewModel @Inject constructor(
     /** Load a podcast with episodes. The result will be posted to [uiState]. */
     fun getPodcastWithEpisodes() = viewModelScope.launch {
         repository.getPodcastWithEpisodes(podcastId)
-            .combine(sortOrder) { state, sortOrder -> sortEpisodes(state, sortOrder) }
+            .combine(sortOrder) { flowState, sortOrder -> sortEpisodes(flowState, sortOrder) }
             .onEach(::checkBottomEpisodes)
+            .combine(player.currentEpisode) { flowState, currentEpisode ->
+                setCurrentEpisode(flowState, currentEpisode)
+            }
+            .combine(player.playerState) { flowState, playerState ->
+                setCurrentEpisodeState(flowState, playerState)
+            }
             .flowOn(defaultDispatcher)
             .collectLatest { state ->
                 when (state) {
@@ -141,17 +158,17 @@ class PodcastViewModel @Inject constructor(
 
     /** Sort episodes according to a given [sortOrder] value. */
     private fun sortEpisodes(
-        state: State<PodcastWithEpisodes>,
+        flowState: State<PodcastWithEpisodes>,
         sortOrder: SortOrder
     ): State<PodcastWithEpisodes> {
-        if (state is State.Success) {
+        if (flowState is State.Success) {
             val episodes = when (sortOrder) {
-                SortOrder.RECENT_FIRST -> state.data.episodes.sortedByDescending { it.date }
-                SortOrder.OLDEST_FIRST -> state.data.episodes.sortedBy { it.date }
+                SortOrder.RECENT_FIRST -> flowState.data.episodes.sortedByDescending { it.date }
+                SortOrder.OLDEST_FIRST -> flowState.data.episodes.sortedBy { it.date }
             }
-            return State.Success(PodcastWithEpisodes(state.data.podcast, episodes))
+            return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
-        return state
+        return flowState
     }
 
     /**
@@ -174,6 +191,46 @@ class PodcastViewModel @Inject constructor(
             // Compare the last loaded episode pub date and bottomPubDate.
             moreEpisodesNeededAtBottom = state.data.episodes.last().date != bottomPubDate
         }
+    }
+
+    // TODO
+    private fun setCurrentEpisode(
+        flowState: State<PodcastWithEpisodes>,
+        currentEpisode: PlayerServiceConnection.CurrentEpisode
+    ): State<PodcastWithEpisodes> {
+        if (flowState is State.Success) {
+            val episodes = flowState.data.episodes.map { episode ->
+                if (episode.id == currentEpisode.id) {
+                    return@map episode.copy(isCurrentlySelected = true)
+                }
+                episode
+            }
+            return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
+        }
+        return flowState
+    }
+
+    // TODO
+    private fun setCurrentEpisodeState(
+        flowState: State<PodcastWithEpisodes>,
+        playerState: Int
+    ): State<PodcastWithEpisodes> {
+        if (flowState is State.Success) {
+            val episodes = flowState.data.episodes.map { episode ->
+                if (episode.isCurrentlySelected) {
+                    return@map when (playerState) {
+                        MediaPlayer.PLAYER_STATE_PLAYING -> episode.copy(isPlaying = true)
+                        MediaPlayer.PLAYER_STATE_PAUSED -> {
+                            episode.copy(position = player.currentPosition.value)
+                        }
+                        else -> episode
+                    }
+                }
+                episode
+            }
+            return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
+        }
+        return flowState
     }
 
     /** Sealed class that represents the UI state of the [PodcastFragment]. */

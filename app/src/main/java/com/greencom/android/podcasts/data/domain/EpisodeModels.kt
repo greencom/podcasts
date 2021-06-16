@@ -1,9 +1,10 @@
 package com.greencom.android.podcasts.data.domain
 
 import androidx.room.ColumnInfo
+import androidx.room.Ignore
 
 /** Domain model class that represents an episode object. */
-data class Episode(
+data class Episode @JvmOverloads constructor(
 
     /** Episode ID. */
     @ColumnInfo(name = "id")
@@ -52,4 +53,12 @@ data class Episode(
     // TODO
     @ColumnInfo(name = "position")
     val position: Long,
+
+    // TODO
+    @Ignore
+    val isCurrentlySelected: Boolean = false,
+
+    // TODO
+    @Ignore
+    val isPlaying: Boolean = false,
 )

@@ -1,6 +1,9 @@
 package com.greencom.android.podcasts.utils
 
 import android.content.Context
+import android.graphics.drawable.AnimatedVectorDrawable
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.StringRes
@@ -9,6 +12,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import coil.request.ImageRequest
 import coil.transform.RoundedCornersTransformation
 import com.google.android.material.appbar.AppBarLayout
@@ -26,6 +30,15 @@ const val GLOBAL_TAG = "global___"
 
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
+
+// TODO
+fun Drawable.animateVectorDrawable() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        (this as AnimatedVectorDrawable).start()
+    } else {
+        (this as AnimatedVectorDrawableCompat).start()
+    }
+}
 
 /**
  * Reveal or hide a view depending on the [show] parameter. This function also sets the
@@ -182,6 +195,19 @@ fun pubDateToString(pubDate: Long, context: Context): String {
             dateFormatter.format(pubDate)
         }
     }
+}
+
+// TODO
+@ExperimentalTime
+fun timeLeftToString(position: Long, duration: Duration, context: Context): String {
+    Duration.milliseconds(duration.inWholeMilliseconds - position)
+        .toComponents { hours, minutes, _, _ ->
+            return when {
+                hours == 0 && minutes < 1 -> context.getString(R.string.podcast_time_left_almost_over)
+                hours == 0 -> context.getString(R.string.podcast_time_left_m, minutes)
+                else -> context.getString(R.string.podcast_time_left_h_m, hours, minutes)
+            }
+        }
 }
 
 /** Converts the current position to a String timestamp that represents the current time. */

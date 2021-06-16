@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.ui.podcast
 import android.animation.ObjectAnimator
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
@@ -38,6 +39,8 @@ class PodcastWithEpisodesAdapter(
     private val updateSubscription: (String, Boolean) -> Unit,
     private val changeSortOrder: () -> Unit,
     private val playEpisode: (Episode) -> Unit,
+    private val play: () -> Unit,
+    private val pause: () -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -51,13 +54,15 @@ class PodcastWithEpisodesAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
             ITEM_VIEW_TYPE_PODCAST_HEADER -> PodcastHeaderViewHolder.create(
-                parent,
-                updateSubscription,
-                changeSortOrder
+                parent = parent,
+                updateSubscription = updateSubscription,
+                changeSortOrder = changeSortOrder
             )
             ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(
-                parent,
-                playEpisode
+                parent = parent,
+                playEpisode = playEpisode,
+                play = play,
+                pause = pause
             )
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
@@ -217,7 +222,11 @@ class PodcastHeaderViewHolder private constructor(
         ): PodcastHeaderViewHolder {
             val binding = ItemPodcastHeaderBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return PodcastHeaderViewHolder(binding, updateSubscription, changeSortOrder)
+            return PodcastHeaderViewHolder(
+                binding = binding,
+                updateSubscription = updateSubscription,
+                changeSortOrder = changeSortOrder,
+            )
         }
     }
 }
@@ -226,6 +235,8 @@ class PodcastHeaderViewHolder private constructor(
 class EpisodeViewHolder private constructor(
     private val binding: ItemPodcastEpisodeBinding,
     private val playEpisode: (Episode) -> Unit,
+    private val play: () -> Unit,
+    private val pause: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context = binding.root.context
@@ -236,7 +247,11 @@ class EpisodeViewHolder private constructor(
     init {
         // TODO
         binding.play.setOnClickListener {
-            playEpisode(episode)
+            if (episode.isCurrentlySelected) {
+                if (episode.isPlaying) pause() else play()
+            } else {
+                playEpisode(episode)
+            }
         }
     }
 
@@ -246,10 +261,26 @@ class EpisodeViewHolder private constructor(
         this.episode = episode
 
         binding.title.text = episode.title
-        // Date formatting.
         binding.date.text = pubDateToString(episode.date, context)
-        // Episode length formatting.
-        binding.play.text = audioLengthToString(Duration.seconds(episode.audioLength), context)
+
+        // TODO: Add check for a current position and for isCompleted.
+        binding.play.apply {
+            when {
+                episode.isPlaying -> {
+                    text = context.getString(R.string.podcast_playing)
+                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
+                    icon.animateVectorDrawable()
+                }
+                episode.isCurrentlySelected -> {
+                    text = timeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
+                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
+                }
+                else -> {
+                    text = audioLengthToString(Duration.seconds(episode.audioLength), context)
+                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
+                }
+            }
+        }
     }
 
     companion object {
@@ -257,10 +288,17 @@ class EpisodeViewHolder private constructor(
         fun create(
             parent: ViewGroup,
             playEpisode: (Episode) -> Unit,
+            play: () -> Unit,
+            pause: () -> Unit,
         ): EpisodeViewHolder {
             val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return EpisodeViewHolder(binding, playEpisode)
+            return EpisodeViewHolder(
+                binding = binding,
+                playEpisode = playEpisode,
+                play = play,
+                pause = pause,
+            )
         }
     }
 }

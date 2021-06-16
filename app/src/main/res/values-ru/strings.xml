@@ -83,6 +83,11 @@
 
 
     <!-- PodcastFragment start -->
+    <string name="podcast_completed">Завершено</string>
+    <string name="podcast_playing">Сейчас воспроизводится</string>
+    <string name="podcast_time_left_m">Ещё %d мин.</string>
+    <string name="podcast_time_left_h_m">Ещё %d ч. %d мин.</string>
+    <string name="podcast_time_left_almost_over">Почти всё</string>
     <string name="podcast_description_sort_order">Сортировка эпизодов</string>
     <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
         <item quantity="zero">%d Эпизодов</item>
