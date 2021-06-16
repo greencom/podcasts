@@ -83,7 +83,7 @@ class PlayerServiceConnection @Inject constructor() {
                             if (controller.currentPosition <= duration) {
                                 _currentPosition.value = controller.currentPosition
                             }
-                            delay(500)
+                            delay(1000)
                         }
                     }
                 }

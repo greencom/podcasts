@@ -260,8 +260,15 @@ class MainActivity : AppCompatActivity() {
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.currentPosition.collect { position ->
-                expandedPlayer.slider.value = position.toFloat()
-                collapsedPlayer.progressBar.progress = position.toInt()
+                @SuppressLint("SwitchIntDef")
+                when (playerBehavior.state) {
+                    BottomSheetBehavior.STATE_EXPANDED -> {
+                        expandedPlayer.slider.value = position.toFloat()
+                    }
+                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                        collapsedPlayer.progressBar.progress = position.toInt()
+                    }
+                }
             }
         }
     }
