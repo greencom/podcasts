@@ -11,5 +11,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     // TODO: Test code.
+    fun deleteAll() = viewModelScope.launch { repository.deleteAll() }
+
+    // TODO: Test code.
     fun deleteEpisodes() = viewModelScope.launch { repository.deleteEpisodes() }
 }

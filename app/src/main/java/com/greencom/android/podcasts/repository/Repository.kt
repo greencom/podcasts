@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.Flow
 interface Repository {
 
     // TODO: Test code.
+    suspend fun deleteAll()
+
+    // TODO: Test code.
     suspend fun deleteEpisodes()
 
     /** Update subscription to a Podcast by ID with a given value. */

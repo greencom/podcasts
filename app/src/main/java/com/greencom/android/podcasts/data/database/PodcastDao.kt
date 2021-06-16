@@ -15,6 +15,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Dao
 abstract class PodcastDao {
 
+    // TODO: Test code.
+    @Query("DELETE FROM podcasts")
+    abstract suspend fun clear()
+
     /**
      * Insert a [PodcastEntityPartial] object into the `podcasts` table. This method is
      * completely safe in cases of conflicts because it uses a temporary `podcasts_temp`

@@ -50,6 +50,12 @@ class RepositoryImpl @Inject constructor(
 ) : Repository {
 
     // TODO: Test code.
+    override suspend fun deleteAll() {
+        podcastDao.clear()
+        episodeDao.clear()
+    }
+
+    // TODO: Test code.
     override suspend fun deleteEpisodes() = episodeDao.clear()
 
     /**

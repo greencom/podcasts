@@ -47,6 +47,11 @@ class HomeFragment : Fragment() {
         }
 
         // TODO: Test code.
+        binding.deleteAll.setOnClickListener {
+            viewModel.deleteAll()
+        }
+
+        // TODO: Test code.
         binding.deleteEpisodes.setOnClickListener {
             viewModel.deleteEpisodes()
         }
