@@ -199,7 +199,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             addOnScrollListener(onScrollListener)
         }
 
-        setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
+        initSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
 
     /** Fragment views setup. */

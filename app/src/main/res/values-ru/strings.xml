@@ -14,28 +14,6 @@
     <string name="loading">Загрузка</string>
     <string name="more">Подробнее</string>
 
-    <string name="episode_pub_just_now">Только что</string>
-    <plurals name="episode_pub_hours_ago" tools:ignore="UnusedQuantity">
-        <item quantity="zero">%d часов назад</item>
-        <item quantity="one">%d час назад</item>
-        <item quantity="two">%d часа назад</item>
-        <item quantity="few">%d часа назад</item>
-        <item quantity="many">%d часов назад</item>
-        <item quantity="other">%d часов назад</item>
-    </plurals>
-    <plurals name="episode_pub_days_ago" tools:ignore="UnusedQuantity">
-        <item quantity="zero">%d дней назад</item>
-        <item quantity="one">%d день назад</item>
-        <item quantity="two">%d дня назад</item>
-        <item quantity="few">%d дня назад</item>
-        <item quantity="many">%d дней назад</item>
-        <item quantity="other">%d дней назад</item>
-    </plurals>
-
-    <string name="episode_length_full">%1$d ч. %2$d мин.</string>
-    <string name="episode_length_hours">%1$d ч.</string>
-    <string name="episode_length_minutes">%1$d мин.</string>
-
     <string name="description_back">Назад</string>
     <string name="description_explicit_content">Содержимое 18+</string>
     <string name="description_scroll_to_top">Вернуться наверх</string>
@@ -97,6 +75,28 @@
         <item quantity="many">%d Эпизодов</item>
         <item quantity="other">%d Эпизодов</item>
     </plurals>
+
+    <string name="podcast_episode_pub_just_now">Только что</string>
+    <plurals name="podcast_episode_pub_hours_ago" tools:ignore="UnusedQuantity">
+        <item quantity="zero">%d часов назад</item>
+        <item quantity="one">%d час назад</item>
+        <item quantity="two">%d часа назад</item>
+        <item quantity="few">%d часа назад</item>
+        <item quantity="many">%d часов назад</item>
+        <item quantity="other">%d часов назад</item>
+    </plurals>
+    <plurals name="podcast_episode_pub_days_ago" tools:ignore="UnusedQuantity">
+        <item quantity="zero">%d дней назад</item>
+        <item quantity="one">%d день назад</item>
+        <item quantity="two">%d дня назад</item>
+        <item quantity="few">%d дня назад</item>
+        <item quantity="many">%d дней назад</item>
+        <item quantity="other">%d дней назад</item>
+    </plurals>
+
+    <string name="podcast_episode_length_full">%1$d ч. %2$d мин.</string>
+    <string name="podcast_episode_length_hours">%1$d ч.</string>
+    <string name="podcast_episode_length_minutes">%1$d мин.</string>
     <!-- PodcastFragment end -->
 
 

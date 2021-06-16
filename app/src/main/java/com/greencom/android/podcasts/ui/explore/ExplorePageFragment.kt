@@ -104,7 +104,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
             addItemDecoration(divider)
         }
 
-        setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
+        initSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
 
     /** Fragment views setup. */

@@ -350,8 +350,8 @@ class MainActivity : AppCompatActivity() {
         expandedPlayer.slider.setLabelFormatter { position ->
             Duration.milliseconds(position.toLong()).toComponents { hours, minutes, seconds, _ ->
                 return@setLabelFormatter when (hours) {
-                    0 -> getString(R.string.time_stamp_current_format_m_s, minutes, seconds)
-                    else -> getString(R.string.time_stamp_current_format_h_m_s, hours, minutes, seconds)
+                    0 -> getString(R.string.player_time_stamp_current_format_m_s, minutes, seconds)
+                    else -> getString(R.string.player_time_stamp_current_format_h_m_s, hours, minutes, seconds)
                 }
             }
         }
@@ -433,11 +433,10 @@ class MainActivity : AppCompatActivity() {
         expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
 
         expandedPlayer.slider.addOnChangeListener { slider, value, _ ->
-            expandedPlayer.timeCurrent.text = timestampCurrent(value.toLong(),this)
-            expandedPlayer.timeLeft.text = timestampLeft(
+            expandedPlayer.timeCurrent.text = getCurrentTime(value.toLong())
+            expandedPlayer.timeLeft.text = getRemainingTime(
                 position = value.toLong(),
                 duration = slider.valueTo.toLong(),
-                context = this
             )
         }
 
@@ -644,13 +643,13 @@ class MainActivity : AppCompatActivity() {
         if (value > 0) {
             expandedPlayer.skipHintBackward.hideImmediately()
             expandedPlayer.skipHintBackground.rotation = 0F
-            expandedPlayer.skipHintForward.text = getSkipHintText(value)
+            expandedPlayer.skipHintForward.text = getSkipHint(value)
             expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
             expandedPlayer.skipHintForward.revealCrossfade()
         } else {
             expandedPlayer.skipHintForward.hideImmediately()
             expandedPlayer.skipHintBackground.rotation = 180F
-            expandedPlayer.skipHintBackward.text = getSkipHintText(value)
+            expandedPlayer.skipHintBackward.text = getSkipHint(value)
             expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
             expandedPlayer.skipHintBackward.revealCrossfade()
         }
@@ -677,14 +676,34 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
-    private fun getSkipHintText(value: Long): String {
+    private fun getSkipHint(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
         val seconds = valueInSeconds - minutes * 60
         return if (minutes == 0L) {
-            getString(R.string.skip_hint_format_s, seconds)
+            getString(R.string.player_skip_hint_format_s, seconds)
         } else {
-            getString(R.string.skip_hint_format_m_s, minutes, seconds)
+            getString(R.string.player_skip_hint_format_m_s, minutes, seconds)
+        }
+    }
+
+    /** Converts the current position to a String timestamp that represents the current time. */
+    private fun getCurrentTime(position: Long): String {
+        Duration.milliseconds(position).toComponents { hours, minutes, seconds, _ ->
+            return when (hours) {
+                0 -> getString(R.string.player_time_stamp_current_format_m_s, minutes, seconds)
+                else -> getString(R.string.player_time_stamp_current_format_h_m_s, hours, minutes, seconds)
+            }
+        }
+    }
+
+    /** Converts the current position to a String timestamp that represents the remaining time. */
+    private fun getRemainingTime(position: Long, duration: Long): String {
+        Duration.milliseconds(duration - position).toComponents { hours, minutes, seconds, _ ->
+            return when (hours) {
+                0 -> getString(R.string.player_time_stamp_left_format_m_s, minutes, seconds)
+                else -> getString(R.string.player_time_stamp_left_format_h_m_s, hours, minutes, seconds)
+            }
         }
     }
 

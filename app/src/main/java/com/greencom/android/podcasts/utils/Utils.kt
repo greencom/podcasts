@@ -109,7 +109,7 @@ fun setAppBarLayoutCanDrag(appBarLayout: AppBarLayout, canDrag: Boolean) {
 }
 
 /** Swipe-to-refresh setup. */
-fun setupSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
+fun initSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
     swipeToRefresh.apply {
         val color = TypedValue()
         val backgroundColor = TypedValue()
@@ -153,16 +153,16 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
  * - "1 hr 35 min" in any other case.
  */
 @ExperimentalTime
-fun audioLengthToString(length: Duration, context: Context): String {
-    if (length.inWholeSeconds <= 60) return context.getString(R.string.episode_length_minutes, 1)
+fun episodeDurationToString(duration: Duration, context: Context): String {
+    if (duration.inWholeSeconds <= 60) return context.getString(R.string.podcast_episode_length_minutes, 1)
 
-    val hours = length.inWholeHours.toInt()
-    val minutes = ((length - Duration.hours(hours)) / Duration.minutes(1)).roundToInt()
+    val hours = duration.inWholeHours.toInt()
+    val minutes = ((duration - Duration.hours(hours)) / Duration.minutes(1)).roundToInt()
 
     return when {
-        hours != 0 && minutes != 0 -> context.getString(R.string.episode_length_full, hours, minutes)
-        hours != 0 && minutes == 0 -> context.getString(R.string.episode_length_hours, hours)
-        else -> context.getString(R.string.episode_length_minutes, minutes)
+        hours != 0 && minutes != 0 -> context.getString(R.string.podcast_episode_length_full, hours, minutes)
+        hours != 0 && minutes == 0 -> context.getString(R.string.podcast_episode_length_hours, hours)
+        else -> context.getString(R.string.podcast_episode_length_minutes, minutes)
     }
 }
 
@@ -171,22 +171,22 @@ fun audioLengthToString(length: Duration, context: Context): String {
  * than 7 days ago, return the most appropriate date description, otherwise return the date
  * in the format `day, month, year`.
  */
-fun pubDateToString(pubDate: Long, context: Context): String {
+fun episodePubDateToString(pubDate: Long, context: Context): String {
     return when (val timeFromNow = System.currentTimeMillis() - pubDate) {
 
         // Just now.
-        in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.episode_pub_just_now)
+        in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.podcast_episode_pub_just_now)
 
         // N hours ago.
         in (TimeUnit.HOURS.toMillis(1)..TimeUnit.DAYS.toMillis(1)) -> {
             val hours = timeFromNow / TimeUnit.HOURS.toMillis(1)
-            context.resources.getQuantityString(R.plurals.episode_pub_hours_ago, hours.toInt(), hours)
+            context.resources.getQuantityString(R.plurals.podcast_episode_pub_hours_ago, hours.toInt(), hours)
         }
 
         // N days ago.
         in (TimeUnit.DAYS.toMillis(1))..TimeUnit.DAYS.toMillis(7) -> {
             val days = timeFromNow / TimeUnit.DAYS.toMillis(1)
-            context.resources.getQuantityString(R.plurals.episode_pub_days_ago, days.toInt(), days)
+            context.resources.getQuantityString(R.plurals.podcast_episode_pub_days_ago, days.toInt(), days)
         }
 
         // Date.
@@ -199,7 +199,7 @@ fun pubDateToString(pubDate: Long, context: Context): String {
 
 // TODO
 @ExperimentalTime
-fun timeLeftToString(position: Long, duration: Duration, context: Context): String {
+fun episodeTimeLeftToString(position: Long, duration: Duration, context: Context): String {
     Duration.milliseconds(duration.inWholeMilliseconds - position)
         .toComponents { hours, minutes, _, _ ->
             return when {
@@ -210,30 +210,8 @@ fun timeLeftToString(position: Long, duration: Duration, context: Context): Stri
         }
 }
 
-/** Converts the current position to a String timestamp that represents the current time. */
-@ExperimentalTime
-fun timestampCurrent(position: Long, context: Context): String {
-    Duration.milliseconds(position).toComponents { hours, minutes, seconds, _ ->
-        return when (hours) {
-            0 -> context.getString(R.string.time_stamp_current_format_m_s, minutes, seconds)
-            else -> context.getString(R.string.time_stamp_current_format_h_m_s, hours, minutes, seconds)
-        }
-    }
-}
-
-/** Converts the current position to a String timestamp that represents the remaining time. */
-@ExperimentalTime
-fun timestampLeft(position: Long, duration: Long, context: Context): String {
-    Duration.milliseconds(duration - position).toComponents { hours, minutes, seconds, _ ->
-        return when (hours) {
-            0 -> context.getString(R.string.time_stamp_left_format_m_s, minutes, seconds)
-            else -> context.getString(R.string.time_stamp_left_format_h_m_s, hours, minutes, seconds)
-        }
-    }
-}
-
 /**
- * Default Coil builder for a podcast's cover. Uses [context] to access resource files.
+ * Default Coil builder for a 300x300px podcast's cover. Uses [context] to access resource files.
  * Applies rounded corners transformation, crossfade animation and sets resources for the
  * placeholder and the error.
  */

@@ -3,17 +3,6 @@
 
     <string name="app_name">Podcasts</string>
 
-    <!-- Formatting start -->
-    <string name="skip_hint_format_s" translatable="false">0:%02d</string>
-    <string name="skip_hint_format_m_s" translatable="false">%d:%02d</string>
-
-    <string name="time_stamp_current_format_m_s" translatable="false">%d:%02d</string>
-    <string name="time_stamp_current_format_h_m_s" translatable="false">%d:%02d:%02d</string>
-    <string name="time_stamp_left_format_m_s" translatable="false">-%d:%02d</string>
-    <string name="time_stamp_left_format_h_m_s" translatable="false">-%d:%02d:%02d</string>
-    <!-- Formatting end -->
-
-
     <!-- Common start -->
     <string name="subscribe">Subscribe</string>
     <string name="subscribed">Subscribed</string>
@@ -25,28 +14,6 @@
     <string name="loading">Loading</string>
     <string name="more">More</string>
 
-    <string name="episode_pub_just_now">Just now</string>
-    <plurals name="episode_pub_hours_ago">
-        <item quantity="zero">%d hours ago</item>
-        <item quantity="one">%d hour ago</item>
-        <item quantity="two">%d hours ago</item>
-        <item quantity="few">%d hours ago</item>
-        <item quantity="many">%d hours ago</item>
-        <item quantity="other">%d hours ago</item>
-    </plurals>
-    <plurals name="episode_pub_days_ago">
-        <item quantity="zero">%d days ago</item>
-        <item quantity="one">%d day ago</item>
-        <item quantity="two">%d days ago</item>
-        <item quantity="few">%d days ago</item>
-        <item quantity="many">%d days ago</item>
-        <item quantity="other">%d days ago</item>
-    </plurals>
-
-    <string name="episode_length_full">%1$d hr %2$d min</string>
-    <string name="episode_length_hours">%1$d hr</string>
-    <string name="episode_length_minutes">%1$d min</string>
-
     <string name="description_back">Go back</string>
     <string name="description_explicit_content">Explicit content</string>
     <string name="description_scroll_to_top">Scroll to top</string>
@@ -55,6 +22,13 @@
 
 
     <!-- Player start -->
+    <string name="player_skip_hint_format_s" translatable="false">0:%02d</string>
+    <string name="player_skip_hint_format_m_s" translatable="false">%d:%02d</string>
+    <string name="player_time_stamp_current_format_m_s" translatable="false">%d:%02d</string>
+    <string name="player_time_stamp_current_format_h_m_s" translatable="false">%d:%02d:%02d</string>
+    <string name="player_time_stamp_left_format_m_s" translatable="false">-%d:%02d</string>
+    <string name="player_time_stamp_left_format_h_m_s" translatable="false">-%d:%02d:%02d</string>
+
     <string name="player_description_play_pause">Play and pause</string>
     <string name="player_description_backward">Back 10 seconds</string>
     <string name="player_description_forward">Forward 30 seconds</string>
@@ -108,6 +82,28 @@
         <item quantity="many">%d Episodes</item>
         <item quantity="other">%d Episodes</item>
     </plurals>
+
+    <string name="podcast_episode_pub_just_now">Just now</string>
+    <plurals name="podcast_episode_pub_hours_ago">
+        <item quantity="zero">%d hours ago</item>
+        <item quantity="one">%d hour ago</item>
+        <item quantity="two">%d hours ago</item>
+        <item quantity="few">%d hours ago</item>
+        <item quantity="many">%d hours ago</item>
+        <item quantity="other">%d hours ago</item>
+    </plurals>
+    <plurals name="podcast_episode_pub_days_ago">
+        <item quantity="zero">%d days ago</item>
+        <item quantity="one">%d day ago</item>
+        <item quantity="two">%d days ago</item>
+        <item quantity="few">%d days ago</item>
+        <item quantity="many">%d days ago</item>
+        <item quantity="other">%d days ago</item>
+    </plurals>
+
+    <string name="podcast_episode_length_full">%1$d hr %2$d min</string>
+    <string name="podcast_episode_length_hours">%1$d hr</string>
+    <string name="podcast_episode_length_minutes">%1$d min</string>
     <!-- PodcastFragment end -->
 
 

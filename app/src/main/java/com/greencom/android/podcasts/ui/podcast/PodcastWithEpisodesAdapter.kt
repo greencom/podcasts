@@ -261,7 +261,7 @@ class EpisodeViewHolder private constructor(
         this.episode = episode
 
         binding.title.text = episode.title
-        binding.date.text = pubDateToString(episode.date, context)
+        binding.date.text = episodePubDateToString(episode.date, context)
 
         // TODO: Add check for a current position and for isCompleted.
         binding.play.apply {
@@ -272,11 +272,11 @@ class EpisodeViewHolder private constructor(
                     icon.animateVectorDrawable()
                 }
                 episode.isCurrentlySelected -> {
-                    text = timeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
+                    text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
                 }
                 else -> {
-                    text = audioLengthToString(Duration.seconds(episode.audioLength), context)
+                    text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
                 }
             }
