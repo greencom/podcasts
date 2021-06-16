@@ -48,4 +48,12 @@ data class EpisodeEntity(
     /** Published date in milliseconds. */
     @ColumnInfo(name = "date")
     val date: Long,
+
+    // TODO
+    @ColumnInfo(name = "is_completed")
+    val isCompleted: Boolean,
+
+    // TODO
+    @ColumnInfo(name = "position")
+    val position: Long,
 )
