@@ -128,7 +128,7 @@ class PlayerServiceConnection @Inject constructor(
         )
     }
 
-    fun connect(context: Context, sessionToken: SessionToken) {
+    fun initConnection(context: Context, sessionToken: SessionToken) {
         job = SupervisorJob()
         scope = CoroutineScope(job + defaultDispatcher)
 

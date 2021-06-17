@@ -3,6 +3,7 @@
     package="com.greencom.android.podcasts">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".PodcastsApplication"
@@ -21,7 +22,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".player.PlayerService">
+        <service android:name=".player.PlayerService"
+            android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="androidx.media2.session.MediaSessionService" />
             </intent-filter>

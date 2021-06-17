@@ -69,6 +69,13 @@ class MainActivity : AppCompatActivity() {
     // TODO
     private val viewModel: MainActivityViewModel by viewModels()
 
+    // TODO
+    private val playerServiceIntent: Intent by lazy {
+        Intent(this, PlayerService::class.java).apply {
+            action = MediaSessionService.SERVICE_INTERFACE
+        }
+    }
+
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
@@ -90,14 +97,14 @@ class MainActivity : AppCompatActivity() {
     private val serviceConnection: ServiceConnection by lazy {
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected() called")
+                Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected()")
                 val binder = service as PlayerService.PlayerServiceBinder
-                val mediaSessionToken = binder.sessionToken
-                viewModel.initPlayerServiceConnection(this@MainActivity, mediaSessionToken)
+                val sessionToken = binder.sessionToken
+                initPlayerServiceConnection(sessionToken)
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
-                Log.d(GLOBAL_TAG, "serviceConnection: onServiceDisconnected() called")
+                Log.d(GLOBAL_TAG, "serviceConnection: onServiceDisconnected()")
             }
         }
     }
@@ -110,9 +117,7 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         volumeControlStream = AudioManager.STREAM_MUSIC
-        Intent(this, PlayerService::class.java).apply {
-            action = MediaSessionService.SERVICE_INTERFACE
-        }.also { intent -> bindService(intent, serviceConnection, BIND_AUTO_CREATE) }
+        startService(playerServiceIntent)
 
         initViews()
         initNavigation()
@@ -152,6 +157,18 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // TODO
+        bindService(playerServiceIntent, serviceConnection, BIND_AUTO_CREATE)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // TODO
+        unbindService(serviceConnection)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -594,6 +611,11 @@ class MainActivity : AppCompatActivity() {
                 else -> getString(R.string.player_time_stamp_left_format_h_m_s, hours, minutes, seconds)
             }
         }
+    }
+
+    // TODO
+    private fun initPlayerServiceConnection(sessionToken: SessionToken) {
+        viewModel.initPlayerServiceConnection(this, sessionToken)
     }
 
     /**

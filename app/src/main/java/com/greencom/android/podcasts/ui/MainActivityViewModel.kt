@@ -11,45 +11,45 @@ import javax.inject.Inject
 // TODO
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    private val player: PlayerServiceConnection,
+    private val playerServiceConnection: PlayerServiceConnection,
 ) : ViewModel() {
 
     val currentEpisode: StateFlow<PlayerServiceConnection.CurrentEpisode>
-        get() = player.currentEpisode
+        get() = playerServiceConnection.currentEpisode
 
     val playerState: StateFlow<Int>
-        get() = player.playerState
+        get() = playerServiceConnection.playerState
 
     val currentPosition: StateFlow<Long>
-        get() = player.currentPosition
+        get() = playerServiceConnection.currentPosition
 
     val isPlaying: Boolean
-        get() = player.isPlaying
+        get() = playerServiceConnection.isPlaying
 
     val isPaused: Boolean
-        get() = player.isPaused
+        get() = playerServiceConnection.isPaused
 
     val duration: Long
-        get() = player.duration
+        get() = playerServiceConnection.duration
 
     fun play() {
-        player.play()
+        playerServiceConnection.play()
     }
 
     fun pause() {
-        player.pause()
+        playerServiceConnection.pause()
     }
 
     fun seekTo(position: Long) {
-        player.seekTo(position)
+        playerServiceConnection.seekTo(position)
     }
 
     fun initPlayerServiceConnection(context: Context, sessionToken: SessionToken) {
-        player.connect(context, sessionToken)
+        playerServiceConnection.initConnection(context, sessionToken)
     }
 
     override fun onCleared() {
         super.onCleared()
-        player.close()
+        playerServiceConnection.close()
     }
 }

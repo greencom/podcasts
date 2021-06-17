@@ -42,7 +42,7 @@ class PlayerService : MediaSessionService() {
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo
             ): SessionCommandGroup? {
-                Log.d(GLOBAL_TAG,"sessionCallback: onConnect() called")
+                Log.d(GLOBAL_TAG,"sessionCallback: onConnect()")
                 return super.onConnect(session, controller)
             }
 
@@ -50,7 +50,7 @@ class PlayerService : MediaSessionService() {
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo
             ) {
-                Log.d(GLOBAL_TAG,"sessionCallback: onPostConnect() called")
+                Log.d(GLOBAL_TAG,"sessionCallback: onPostConnect()")
                 super.onPostConnect(session, controller)
             }
 
@@ -58,7 +58,7 @@ class PlayerService : MediaSessionService() {
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo
             ) {
-                Log.d(GLOBAL_TAG,"sessionCallback: onDisconnected() called")
+                Log.d(GLOBAL_TAG,"sessionCallback: onDisconnected()")
                 super.onDisconnected(session, controller)
             }
 
@@ -67,7 +67,7 @@ class PlayerService : MediaSessionService() {
                 controller: MediaSession.ControllerInfo,
                 command: SessionCommand
             ): Int {
-                Log.d(GLOBAL_TAG,"sessionCallback: onCommandRequest() called, command ${command.commandCode}")
+                Log.d(GLOBAL_TAG,"sessionCallback: onCommandRequest(), command ${command.commandCode}")
                 return super.onCommandRequest(session, controller, command)
             }
 
@@ -77,7 +77,7 @@ class PlayerService : MediaSessionService() {
                 uri: Uri,
                 extras: Bundle?
             ): Int {
-                Log.d(GLOBAL_TAG,"sessionCallback: onSetMediaUri() called")
+                Log.d(GLOBAL_TAG,"sessionCallback: onSetMediaUri()")
                 resetPlayer()
 
                 val mediaItemBuilder = UriMediaItem.Builder(uri)
@@ -113,7 +113,7 @@ class PlayerService : MediaSessionService() {
     private val playerCallback: MediaPlayer.PlayerCallback by lazy {
         object : MediaPlayer.PlayerCallback() {
             override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
-                Log.d(GLOBAL_TAG,"playerCallback: onPlayerStateChanged() called, playerState $playerState")
+                Log.d(GLOBAL_TAG,"playerCallback: onPlayerStateChanged(), playerState $playerState")
                 super.onPlayerStateChanged(player, playerState)
             }
 
@@ -122,17 +122,17 @@ class PlayerService : MediaSessionService() {
                 item: MediaItem?,
                 buffState: Int
             ) {
-                Log.d(GLOBAL_TAG,"playerCallback: onBufferingStateChanged() called, buffState $buffState")
+                Log.d(GLOBAL_TAG,"playerCallback: onBufferingStateChanged(), buffState $buffState")
                 super.onBufferingStateChanged(player, item, buffState)
             }
 
             override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
-                Log.d(GLOBAL_TAG,"playerCallback: onError() called, what $what, extra $extra")
+                Log.d(GLOBAL_TAG,"playerCallback: onError(), what $what, extra $extra")
                 super.onError(mp, item, what, extra)
             }
 
             override fun onInfo(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
-                Log.d("onInfo","playerCallback: onInfo() called, what $what, extra $extra")
+                Log.d("onInfo","playerCallback: onInfo(), what $what, extra $extra")
                 super.onInfo(mp, item, what, extra)
             }
         }
@@ -140,7 +140,7 @@ class PlayerService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(GLOBAL_TAG,"PlayerService: onCreate() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onCreate()")
 
         player = MediaPlayer(this).apply {
             registerPlayerCallback(Executors.newSingleThreadExecutor(), playerCallback)
@@ -152,15 +152,26 @@ class PlayerService : MediaSessionService() {
             .build()
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.d(GLOBAL_TAG,"PlayerService: onStartCommand()")
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         super.onBind(intent)
-        Log.d(GLOBAL_TAG,"PlayerService: onBind() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onBind()")
         return PlayerServiceBinder()
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.d(GLOBAL_TAG,"PlayerService: onUnbind()")
+        stopSelf() // TODO: TEMPORARY
+        return super.onUnbind(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(GLOBAL_TAG,"PlayerService: onDestroy() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onDestroy()")
         mediaSession.close()
         player.unregisterPlayerCallback(playerCallback)
         player.close()
@@ -168,7 +179,7 @@ class PlayerService : MediaSessionService() {
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
-        Log.d(GLOBAL_TAG,"PlayerService: onGetSession() called")
+        Log.d(GLOBAL_TAG,"PlayerService: onGetSession()")
         return mediaSession
     }
 
