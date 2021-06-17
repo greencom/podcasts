@@ -201,7 +201,7 @@ class PodcastViewModel @Inject constructor(
         if (flowState is State.Success) {
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.id == currentEpisode.id) {
-                    return@map episode.copy(isCurrentlySelected = true)
+                    return@map episode.copy(isSelected = true)
                 }
                 episode
             }
@@ -217,7 +217,7 @@ class PodcastViewModel @Inject constructor(
     ): State<PodcastWithEpisodes> {
         if (flowState is State.Success) {
             val episodes = flowState.data.episodes.map { episode ->
-                if (episode.isCurrentlySelected) {
+                if (episode.isSelected) {
                     return@map when (playerState) {
                         MediaPlayer.PLAYER_STATE_PLAYING -> episode.copy(isPlaying = true)
                         MediaPlayer.PLAYER_STATE_PAUSED -> {

@@ -56,7 +56,7 @@ data class Episode @JvmOverloads constructor(
 
     // TODO
     @Ignore
-    val isCurrentlySelected: Boolean = false,
+    val isSelected: Boolean = false,
 
     // TODO
     @Ignore

@@ -18,13 +18,11 @@ import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
-import androidx.media2.player.MediaPlayer
 import androidx.media2.session.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -74,27 +72,19 @@ class MainActivity : AppCompatActivity() {
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
-    // App bar colors.
-    private var statusBarColor = 0
-    private var navigationBarColorDefault = TypedValue()
-    private var navigationBarColorChanged = TypedValue()
-
-    // Slider thumb animator.
+    /** Slider thumb animator. */
     private var thumbAnimator: ObjectAnimator? = null
 
     /** Is the player expanded. `false` means collapsed. Used to delay text marquee animations. */
     private val isPlayerExpanded = MutableStateFlow(false)
 
     // TODO
-    private val skipValue = MutableStateFlow(0L)
+    private val rewindValue = MutableStateFlow(0L)
 
-    // TODO
-    private val navHostLayoutParams: CoordinatorLayout.LayoutParams by lazy {
-        CoordinatorLayout.LayoutParams(
-            CoordinatorLayout.LayoutParams.MATCH_PARENT,
-            CoordinatorLayout.LayoutParams.MATCH_PARENT
-        )
-    }
+    // App bar colors.
+    private var statusBarColor = 0
+    private var navigationBarColorDefault = TypedValue()
+    private var navigationBarColorChanged = TypedValue()
 
     // TODO
     private val serviceConnection: ServiceConnection by lazy {
@@ -104,50 +94,6 @@ class MainActivity : AppCompatActivity() {
                 val binder = service as PlayerService.PlayerServiceBinder
                 val mediaSessionToken = binder.sessionToken
                 viewModel.createMediaController(this@MainActivity, mediaSessionToken)
-
-                // TODO: Обновить начальные состояние здесь?
-                Log.d(GLOBAL_TAG, "TEST: currentEpisode is ${viewModel.currentEpisode.value}")
-                val navHostBottomMargin: Int
-                if (viewModel.currentEpisode.value.isEmpty()) {
-                    binding.player.root.hideImmediately()
-                    binding.playerShadowInternal.hideImmediately()
-                    binding.playerShadowExternal.hideImmediately()
-                    navHostBottomMargin = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
-                } else {
-                    binding.player.root.revealCrossfade()
-                    binding.playerShadowInternal.revealCrossfade()
-                    binding.playerShadowExternal.revealCrossfade()
-                    navHostBottomMargin = resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
-                }
-                navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
-
-                if (viewModel.currentEpisode.value.isNotEmpty()) {
-                    val episode = viewModel.currentEpisode.value
-                    collapsedPlayer.apply {
-                        title.text = episode.title
-                        progressBar.max = viewModel.duration.toInt()
-                        progressBar.progress = viewModel.currentPosition.value.toInt()
-                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
-                    }
-                    expandedPlayer.apply {
-                        title.text = episode.title
-                        publisher.text = episode.publisher
-                        slider.valueTo = viewModel.duration.toFloat()
-                        slider.value = viewModel.currentPosition.value.toFloat()
-                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
-                    }
-
-                    when {
-                        viewModel.isPlaying -> {
-                            collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
-                            expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
-                        }
-                        viewModel.isPaused -> {
-                            collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
-                            expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
-                        }
-                    }
-                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -168,107 +114,42 @@ class MainActivity : AppCompatActivity() {
             action = MediaSessionService.SERVICE_INTERFACE
         }.also { intent -> bindService(intent, serviceConnection, BIND_AUTO_CREATE) }
 
-        // TODO
-        val navHostBottomMargin = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
-        navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
-        binding.navHostFragment.layoutParams = navHostLayoutParams
-
-        // TODO
-        expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
-            coverBuilder(this@MainActivity)
-        }
-        hideSkipHint(true)
-
         initViews()
         initNavigation()
         initPlayerListeners()
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
-            isPlayerExpanded.collectLatest {
-                if (it) {
-                    collapsedPlayer.title.isSelected = false
-                    delay(1000) // Delay animation.
-                    expandedPlayer.title.isSelected = true
-                    expandedPlayer.publisher.isSelected = true
-                } else {
-                    expandedPlayer.title.isSelected = false
-                    expandedPlayer.publisher.isSelected = false
-                    delay(1000) // Delay animation.
-                    collapsedPlayer.title.isSelected = true
-                }
+            isPlayerExpanded.collectLatest { isPlayerExpanded ->
+                marqueePlayerText(isPlayerExpanded)
             }
         }
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
-            skipValue.collectLatest { value ->
-                showSkipHint(value)
+            rewindValue.collectLatest { value ->
+                rewind(value)
             }
         }
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.playerState.collect { state ->
-                when (state) {
-                    MediaPlayer.PLAYER_STATE_PLAYING -> {
-                        collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
-                        expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
-                    }
-                    MediaPlayer.PLAYER_STATE_PAUSED -> {
-                        collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
-                        expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
-                    }
-                }
+
             }
         }
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.currentEpisode.collectLatest { episode ->
-                val navHostBottomMargin = if (episode.isEmpty()) {
-                    binding.player.root.hideImmediately()
-                    binding.playerShadowInternal.hideImmediately()
-                    binding.playerShadowExternal.hideImmediately()
-                    resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
-                } else {
-                    binding.player.root.revealCrossfade()
-                    binding.playerShadowInternal.revealCrossfade()
-                    binding.playerShadowExternal.revealCrossfade()
-                    resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
-                }
-                navHostLayoutParams.setMargins(0, 0, 0, navHostBottomMargin)
 
-                if (episode.isNotEmpty()) {
-                    collapsedPlayer.apply {
-                        title.text = episode.title
-                        progressBar.progress = 0
-                        progressBar.max = viewModel.duration.toInt()
-                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
-                    }
-                    expandedPlayer.apply {
-                        title.text = episode.title
-                        publisher.text = episode.publisher
-                        slider.value = 0F
-                        slider.valueTo = viewModel.duration.toFloat()
-                        cover.load(episode.image) { coverBuilder(this@MainActivity) }
-                    }
-                }
             }
         }
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.currentPosition.collect { position ->
-                @SuppressLint("SwitchIntDef")
-                when (playerBehavior.state) {
-                    BottomSheetBehavior.STATE_EXPANDED -> {
-                        expandedPlayer.slider.value = position.toFloat()
-                    }
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
-                        collapsedPlayer.progressBar.progress = position.toInt()
-                    }
-                }
+
             }
         }
     }
@@ -339,12 +220,16 @@ class MainActivity : AppCompatActivity() {
             setupBottomSheetBehavior()
         }
 
-        // Set text selected to run ellipsize animation.
-        collapsedPlayer.title.isSelected = true
         // Hide scrim background at start.
         binding.background.isVisible = false
         // Set expanded content alpha to zero.
         expandedPlayer.root.alpha = 0F
+
+        // TODO
+        expandedPlayer.rewindHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
+            coverBuilder(this@MainActivity)
+        }
+        hideRewindHint(true)
 
         // Slider label formatter.
         expandedPlayer.slider.setLabelFormatter { position ->
@@ -398,36 +283,26 @@ class MainActivity : AppCompatActivity() {
         })
 
         collapsedPlayer.playPause.setOnClickListener {
-            when {
-                viewModel.isPlaying -> viewModel.pause()
-                viewModel.isPaused -> viewModel.play()
-            }
+
         }
 
 
         // EXPANDED.
         expandedPlayer.playPause.setOnClickListener {
-            when {
-                viewModel.isPlaying -> viewModel.pause()
-                viewModel.isPaused -> viewModel.play()
-            }
+
         }
 
         // TODO
-        val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
-        val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
         val onTouchListener = object : Slider.OnSliderTouchListener {
-            var playerWasPlaying = false
+            val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
+            val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
+
             override fun onStartTrackingTouch(slider: Slider) {
                 animateSliderThumb(thumbRadiusIncreased)
-                playerWasPlaying = viewModel.isPlaying
-                viewModel.pause()
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
                 animateSliderThumb(thumbRadiusDefault)
-                viewModel.seekTo(slider.value.toLong())
-                if (playerWasPlaying) viewModel.play()
             }
         }
         expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
@@ -440,12 +315,12 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        expandedPlayer.backward.setOnClickListener {
-            skipValue.value -= PlayerService.SKIP_BACKWARD_VALUE
+        expandedPlayer.rewindBackward.setOnClickListener {
+            rewindValue.value -= PlayerService.REWIND_BACKWARD_VALUE
         }
 
-        expandedPlayer.forward.setOnClickListener {
-            skipValue.value += PlayerService.SKIP_FORWARD_VALUE
+        expandedPlayer.rewindForward.setOnClickListener {
+            rewindValue.value += PlayerService.REWIND_FORWARD_VALUE
         }
 
         // The expanded content of the player is not disabled at application start
@@ -634,49 +509,63 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
-    private suspend fun showSkipHint(value: Long) {
+    private suspend fun marqueePlayerText(isPlayerExpanded: Boolean) {
+        if (isPlayerExpanded) {
+            collapsedPlayer.title.isSelected = false
+            delay(1000) // Delay animation.
+            expandedPlayer.title.isSelected = true
+            expandedPlayer.publisher.isSelected = true
+        } else {
+            expandedPlayer.title.isSelected = false
+            expandedPlayer.publisher.isSelected = false
+            delay(1000) // Delay animation.
+            collapsedPlayer.title.isSelected = true
+        }
+    }
+
+    // TODO
+    private suspend fun rewind(value: Long) {
         if (value == 0L) {
-            hideSkipHint()
+            hideRewindHint()
             return
         }
 
         if (value > 0) {
-            expandedPlayer.skipHintBackward.hideImmediately()
-            expandedPlayer.skipHintBackground.rotation = 0F
-            expandedPlayer.skipHintForward.text = getSkipHint(value)
-            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
-            expandedPlayer.skipHintForward.revealCrossfade()
+            expandedPlayer.rewindHintBackward.hideImmediately()
+            expandedPlayer.rewindHintBackground.rotation = 0F
+            expandedPlayer.rewindHintForward.text = getRewindHint(value)
+            expandedPlayer.rewindHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.rewindHintForward.revealCrossfade()
         } else {
-            expandedPlayer.skipHintForward.hideImmediately()
-            expandedPlayer.skipHintBackground.rotation = 180F
-            expandedPlayer.skipHintBackward.text = getSkipHint(value)
-            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
-            expandedPlayer.skipHintBackward.revealCrossfade()
+            expandedPlayer.rewindHintForward.hideImmediately()
+            expandedPlayer.rewindHintBackground.rotation = 180F
+            expandedPlayer.rewindHintBackward.text = getRewindHint(value)
+            expandedPlayer.rewindHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.rewindHintBackward.revealCrossfade()
         }
 
         delay(1000)
         val newValue = (expandedPlayer.slider.value + value).toLong()
-        viewModel.seekTo(newValue)
 
-        hideSkipHint()
-        skipValue.value = 0L
+        hideRewindHint()
+        rewindValue.value = 0L
     }
 
     // TODO
-    private fun hideSkipHint(immediately: Boolean = false) {
+    private fun hideRewindHint(immediately: Boolean = false) {
         if (immediately) {
-            expandedPlayer.skipHintBackground.hideImmediately()
-            expandedPlayer.skipHintBackward.hideImmediately()
-            expandedPlayer.skipHintForward.hideImmediately()
+            expandedPlayer.rewindHintBackground.hideImmediately()
+            expandedPlayer.rewindHintBackward.hideImmediately()
+            expandedPlayer.rewindHintForward.hideImmediately()
         } else {
-            expandedPlayer.skipHintBackground.hideCrossfade()
-            expandedPlayer.skipHintBackward.hideCrossfade()
-            expandedPlayer.skipHintForward.hideCrossfade()
+            expandedPlayer.rewindHintBackground.hideCrossfade()
+            expandedPlayer.rewindHintBackward.hideCrossfade()
+            expandedPlayer.rewindHintForward.hideCrossfade()
         }
     }
 
     // TODO
-    private fun getSkipHint(value: Long): String {
+    private fun getRewindHint(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
         val seconds = valueInSeconds - minutes * 60

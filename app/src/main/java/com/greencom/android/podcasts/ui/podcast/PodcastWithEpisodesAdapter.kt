@@ -247,7 +247,7 @@ class EpisodeViewHolder private constructor(
     init {
         // TODO
         binding.play.setOnClickListener {
-            if (episode.isCurrentlySelected) {
+            if (episode.isSelected) {
                 if (episode.isPlaying) pause() else play()
             } else {
                 playEpisode(episode)
@@ -271,7 +271,7 @@ class EpisodeViewHolder private constructor(
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
                     icon.animateVectorDrawable()
                 }
-                episode.isCurrentlySelected -> {
+                episode.isSelected -> {
                     text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
                 }

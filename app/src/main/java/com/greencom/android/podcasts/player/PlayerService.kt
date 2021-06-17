@@ -67,7 +67,7 @@ class PlayerService : MediaSessionService() {
                 controller: MediaSession.ControllerInfo
             ): Int {
                 Log.d(GLOBAL_TAG,"sessionCallback: onSkipForward() called")
-                val result = player.seekTo(player.currentPosition + SKIP_FORWARD_VALUE).get()
+                val result = player.seekTo(player.currentPosition + REWIND_FORWARD_VALUE).get()
                 if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipForward ERROR, code ${result.resultCode}")
                 return result.resultCode
             }
@@ -77,7 +77,7 @@ class PlayerService : MediaSessionService() {
                 controller: MediaSession.ControllerInfo
             ): Int {
                 Log.d(GLOBAL_TAG,"sessionCallback: onSkipBackward() called")
-                val result = player.seekTo(player.currentPosition - SKIP_BACKWARD_VALUE).get()
+                val result = player.seekTo(player.currentPosition - REWIND_BACKWARD_VALUE).get()
                 if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipBackward ERROR, code ${result.resultCode}")
                 return result.resultCode
             }
@@ -191,7 +191,7 @@ class PlayerService : MediaSessionService() {
         const val IMAGE_URI = MediaMetadata.METADATA_KEY_ART_URI
         const val DURATION = MediaMetadata.METADATA_KEY_DURATION
 
-        const val SKIP_FORWARD_VALUE = 30_000
-        const val SKIP_BACKWARD_VALUE = 10_000
+        const val REWIND_FORWARD_VALUE = 30_000
+        const val REWIND_BACKWARD_VALUE = 10_000
     }
 }
