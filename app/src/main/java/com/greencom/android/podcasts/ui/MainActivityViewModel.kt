@@ -26,9 +26,6 @@ class MainActivityViewModel @Inject constructor(
     val isPlaying: Boolean
         get() = player.isPlaying
 
-    val isNotPlaying: Boolean
-        get() = player.isNotPlaying
-
     val isPaused: Boolean
         get() = player.isPaused
 
@@ -47,8 +44,8 @@ class MainActivityViewModel @Inject constructor(
         player.seekTo(position)
     }
 
-    fun createMediaController(context: Context, sessionToken: SessionToken) {
-        player.createMediaController(context, sessionToken)
+    fun initPlayerServiceConnection(context: Context, sessionToken: SessionToken) {
+        player.connect(context, sessionToken)
     }
 
     override fun onCleared() {

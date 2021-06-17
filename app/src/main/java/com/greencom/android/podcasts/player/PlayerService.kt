@@ -62,24 +62,13 @@ class PlayerService : MediaSessionService() {
                 super.onDisconnected(session, controller)
             }
 
-            override fun onSkipForward(
+            override fun onCommandRequest(
                 session: MediaSession,
-                controller: MediaSession.ControllerInfo
+                controller: MediaSession.ControllerInfo,
+                command: SessionCommand
             ): Int {
-                Log.d(GLOBAL_TAG,"sessionCallback: onSkipForward() called")
-                val result = player.seekTo(player.currentPosition + REWIND_FORWARD_VALUE).get()
-                if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipForward ERROR, code ${result.resultCode}")
-                return result.resultCode
-            }
-
-            override fun onSkipBackward(
-                session: MediaSession,
-                controller: MediaSession.ControllerInfo
-            ): Int {
-                Log.d(GLOBAL_TAG,"sessionCallback: onSkipBackward() called")
-                val result = player.seekTo(player.currentPosition - REWIND_BACKWARD_VALUE).get()
-                if (result.resultCode != SessionResult.RESULT_SUCCESS) Log.d(GLOBAL_TAG, "onSkipBackward ERROR, code ${result.resultCode}")
-                return result.resultCode
+                Log.d(GLOBAL_TAG,"sessionCallback: onCommandRequest() called, command ${command.commandCode}")
+                return super.onCommandRequest(session, controller, command)
             }
 
             override fun onSetMediaUri(
@@ -116,7 +105,6 @@ class PlayerService : MediaSessionService() {
                     return result.resultCode
                 }
 
-                player.play()
                 return SessionResult.RESULT_SUCCESS
             }
         }
@@ -136,6 +124,16 @@ class PlayerService : MediaSessionService() {
             ) {
                 Log.d(GLOBAL_TAG,"playerCallback: onBufferingStateChanged() called, buffState $buffState")
                 super.onBufferingStateChanged(player, item, buffState)
+            }
+
+            override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
+                Log.d(GLOBAL_TAG,"playerCallback: onError() called, what $what, extra $extra")
+                super.onError(mp, item, what, extra)
+            }
+
+            override fun onInfo(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
+                Log.d("onInfo","playerCallback: onInfo() called, what $what, extra $extra")
+                super.onInfo(mp, item, what, extra)
             }
         }
     }

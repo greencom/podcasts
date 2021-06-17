@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected() called")
                 val binder = service as PlayerService.PlayerServiceBinder
                 val mediaSessionToken = binder.sessionToken
-                viewModel.createMediaController(this@MainActivity, mediaSessionToken)
+                viewModel.initPlayerServiceConnection(this@MainActivity, mediaSessionToken)
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         expandedPlayer.root.alpha = 0F
 
         // TODO
-        expandedPlayer.rewindHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
+        expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
             coverBuilder(this@MainActivity)
         }
         hideRewindHint(true)
@@ -315,11 +315,11 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        expandedPlayer.rewindBackward.setOnClickListener {
+        expandedPlayer.skipBackward.setOnClickListener {
             rewindValue.value -= PlayerService.REWIND_BACKWARD_VALUE
         }
 
-        expandedPlayer.rewindForward.setOnClickListener {
+        expandedPlayer.skipForward.setOnClickListener {
             rewindValue.value += PlayerService.REWIND_FORWARD_VALUE
         }
 
@@ -531,17 +531,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (value > 0) {
-            expandedPlayer.rewindHintBackward.hideImmediately()
-            expandedPlayer.rewindHintBackground.rotation = 0F
-            expandedPlayer.rewindHintForward.text = getRewindHint(value)
-            expandedPlayer.rewindHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
-            expandedPlayer.rewindHintForward.revealCrossfade()
+            expandedPlayer.skipHintBackward.hideImmediately()
+            expandedPlayer.skipHintBackground.rotation = 0F
+            expandedPlayer.skipHintForward.text = getRewindHint(value)
+            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.skipHintForward.revealCrossfade()
         } else {
-            expandedPlayer.rewindHintForward.hideImmediately()
-            expandedPlayer.rewindHintBackground.rotation = 180F
-            expandedPlayer.rewindHintBackward.text = getRewindHint(value)
-            expandedPlayer.rewindHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
-            expandedPlayer.rewindHintBackward.revealCrossfade()
+            expandedPlayer.skipHintForward.hideImmediately()
+            expandedPlayer.skipHintBackground.rotation = 180F
+            expandedPlayer.skipHintBackward.text = getRewindHint(value)
+            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.skipHintBackward.revealCrossfade()
         }
 
         delay(1000)
@@ -554,13 +554,13 @@ class MainActivity : AppCompatActivity() {
     // TODO
     private fun hideRewindHint(immediately: Boolean = false) {
         if (immediately) {
-            expandedPlayer.rewindHintBackground.hideImmediately()
-            expandedPlayer.rewindHintBackward.hideImmediately()
-            expandedPlayer.rewindHintForward.hideImmediately()
+            expandedPlayer.skipHintBackground.hideImmediatelyWithAnimation()
+            expandedPlayer.skipHintBackward.hideImmediatelyWithAnimation()
+            expandedPlayer.skipHintForward.hideImmediatelyWithAnimation()
         } else {
-            expandedPlayer.rewindHintBackground.hideCrossfade()
-            expandedPlayer.rewindHintBackward.hideCrossfade()
-            expandedPlayer.rewindHintForward.hideCrossfade()
+            expandedPlayer.skipHintBackground.hideCrossfade()
+            expandedPlayer.skipHintBackward.hideCrossfade()
+            expandedPlayer.skipHintForward.hideCrossfade()
         }
     }
 
@@ -568,7 +568,7 @@ class MainActivity : AppCompatActivity() {
     private fun getRewindHint(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
-        val seconds = valueInSeconds - minutes * 60
+        val seconds = valueInSeconds % 60
         return if (minutes == 0L) {
             getString(R.string.player_skip_hint_format_s, seconds)
         } else {

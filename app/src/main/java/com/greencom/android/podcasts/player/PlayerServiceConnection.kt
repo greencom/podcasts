@@ -10,6 +10,7 @@ import androidx.media2.session.MediaController
 import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.data.domain.Episode
+import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.utils.GLOBAL_TAG
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,10 +23,12 @@ import kotlin.time.ExperimentalTime
 
 // TODO
 @Singleton
-class PlayerServiceConnection @Inject constructor() {
+class PlayerServiceConnection @Inject constructor(
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
+) {
 
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + Dispatchers.Main)
+    private lateinit var job: Job
+    private lateinit var scope: CoroutineScope
 
     private lateinit var controller: MediaController
 
@@ -39,16 +42,17 @@ class PlayerServiceConnection @Inject constructor() {
     val currentPosition = _currentPosition.asStateFlow()
 
     val isPlaying: Boolean
-        get() = controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
-
-    val isNotPlaying: Boolean
-        get() = !isPlaying
+        get() = if (::controller.isInitialized) {
+            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
+        } else false
 
     val isPaused: Boolean
-        get() = controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
+        get() = if (::controller.isInitialized) {
+            controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
+        } else false
 
     val duration: Long
-        get() = controller.duration
+        get() = if (::controller.isInitialized) controller.duration else MediaPlayer.UNKNOWN_TIME
 
     private var currentPositionJob: Job? = null
 
@@ -70,6 +74,7 @@ class PlayerServiceConnection @Inject constructor() {
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
                 Log.d(GLOBAL_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 _currentEpisode.value = CurrentEpisode.from(item)
+                controller.play()
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
@@ -123,7 +128,10 @@ class PlayerServiceConnection @Inject constructor() {
         )
     }
 
-    fun createMediaController(context: Context, sessionToken: SessionToken) {
+    fun connect(context: Context, sessionToken: SessionToken) {
+        job = SupervisorJob()
+        scope = CoroutineScope(job + defaultDispatcher)
+
         controller = MediaController.Builder(context)
             .setSessionToken(sessionToken)
             .setControllerCallback(Executors.newSingleThreadExecutor(), controllerCallback)
@@ -131,9 +139,7 @@ class PlayerServiceConnection @Inject constructor() {
 
         _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
         _playerState.value = controller.playerState
-        _currentPosition.value = if (controller.currentPosition == MediaPlayer.UNKNOWN_TIME) {
-            0L
-        } else controller.currentPosition
+        _currentPosition.value = controller.currentPosition
     }
 
     fun close() {
@@ -148,9 +154,7 @@ class PlayerServiceConnection @Inject constructor() {
         val image: String,
     ) {
 
-        fun isEmpty(): Boolean {
-            return id.isBlank() && title.isBlank() && publisher.isBlank() && image.isBlank()
-        }
+        fun isEmpty(): Boolean = id.isBlank()
 
         fun isNotEmpty(): Boolean = !isEmpty()
 

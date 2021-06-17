@@ -60,14 +60,14 @@ fun View.show(show: Boolean, animate: Boolean = true, toAlpha: Float = 1F) {
 
 /** Reveal a view immediately. */
 fun View.revealImmediately(toAlpha: Float = 1F) {
-    isVisible = true
     alpha = toAlpha
+    isVisible = true
 }
 
 /** Hide a view immediately. This function also sets the alpha to zero. */
 fun View.hideImmediately() {
-    isVisible = false
     alpha = 0F
+    isVisible = false
 }
 
 /** Reveal a view with crossfade animation. */
@@ -86,6 +86,17 @@ fun View.hideCrossfade() {
     animate()
         .alpha(0F)
         .setDuration(DURATION_CROSSFADE_ANIMATION)
+        .withEndAction { isVisible = false }
+}
+
+/**
+ * Hide a view immediately. This function also sets the alpha to zero.
+ * Note: this function uses [View.animate] with duration set to zero.
+ */
+fun View.hideImmediatelyWithAnimation() {
+    animate()
+        .alpha(0F)
+        .setDuration(0L)
         .withEndAction { isVisible = false }
 }
 

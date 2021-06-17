@@ -221,7 +221,11 @@ class PodcastViewModel @Inject constructor(
                     return@map when (playerState) {
                         MediaPlayer.PLAYER_STATE_PLAYING -> episode.copy(isPlaying = true)
                         MediaPlayer.PLAYER_STATE_PAUSED -> {
-                            episode.copy(position = player.currentPosition.value)
+                            if (player.currentPosition.value > 0) {
+                                episode.copy(position = player.currentPosition.value)
+                            } else {
+                                episode
+                            }
                         }
                         else -> episode
                     }

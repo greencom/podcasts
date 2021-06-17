@@ -31,7 +31,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <ImageView
-        android:id="@+id/rewind_hint_background"
+        android:id="@+id/skip_hint_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:contentDescription="@null"
@@ -41,7 +41,7 @@
         app:layout_constraintTop_toTopOf="@id/cover" />
 
     <TextView
-        android:id="@+id/rewind_hint_backward"
+        android:id="@+id/skip_hint_backward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_arrow_left_24"
@@ -58,7 +58,7 @@
         tools:text="0:20" />
 
     <TextView
-        android:id="@+id/rewind_hint_forward"
+        android:id="@+id/skip_hint_forward"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableEnd="@drawable/ic_arrow_right_24"
@@ -132,7 +132,7 @@
         android:layout_marginBottom="8dp"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/backward"
+        app:layout_constraintBottom_toTopOf="@+id/skip_backward"
         app:layout_constraintStart_toStartOf="@+id/cover"
         tools:text="1:00" />
 
@@ -162,7 +162,7 @@
         app:tint="?attr/colorPlayerPlay" />
 
     <ImageButton
-        android:id="@+id/rewind_backward"
+        android:id="@+id/skip_backward"
         style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -177,7 +177,7 @@
         app:tint="?attr/colorOnSurfaceMedium" />
 
     <ImageButton
-        android:id="@+id/rewind_forward"
+        android:id="@+id/skip_forward"
         style="@style/ImageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
