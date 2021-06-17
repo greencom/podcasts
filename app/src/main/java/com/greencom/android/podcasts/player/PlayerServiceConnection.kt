@@ -52,7 +52,7 @@ class PlayerServiceConnection @Inject constructor(
         } else false
 
     val duration: Long
-        get() = if (::controller.isInitialized) controller.duration else MediaPlayer.UNKNOWN_TIME
+        get() = if (::controller.isInitialized) controller.duration else Long.MAX_VALUE
 
     private var currentPositionJob: Job? = null
 
@@ -74,6 +74,7 @@ class PlayerServiceConnection @Inject constructor(
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
                 Log.d(GLOBAL_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 _currentEpisode.value = CurrentEpisode.from(item)
+                controller.prepare().get()
                 controller.play()
             }
 
@@ -83,7 +84,7 @@ class PlayerServiceConnection @Inject constructor(
 
                 currentPositionJob?.cancel()
                 if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
-                    currentPositionJob = scope.launch {
+                    currentPositionJob = scope.launch(defaultDispatcher) {
                         while (true) {
                             if (controller.currentPosition <= duration) {
                                 _currentPosition.value = controller.currentPosition
@@ -116,6 +117,7 @@ class PlayerServiceConnection @Inject constructor(
 
     @ExperimentalTime
     fun playEpisode(episode: Episode) {
+        _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaUri(
             Uri.parse(episode.audio),
             bundleOf(
@@ -130,7 +132,7 @@ class PlayerServiceConnection @Inject constructor(
 
     fun initConnection(context: Context, sessionToken: SessionToken) {
         job = SupervisorJob()
-        scope = CoroutineScope(job + defaultDispatcher)
+        scope = CoroutineScope(job)
 
         controller = MediaController.Builder(context)
             .setSessionToken(sessionToken)

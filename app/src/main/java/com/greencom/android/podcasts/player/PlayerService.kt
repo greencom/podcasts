@@ -93,18 +93,13 @@ class PlayerService : MediaSessionService() {
                     )
                 }
 
-                var result = player.setMediaItem(mediaItemBuilder.build()).get()
+                val result = player.setMediaItem(mediaItemBuilder.build()).get()
                 if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
                     Log.d(GLOBAL_TAG, "setMediaItem ERROR, code ${result.resultCode}")
                     return result.resultCode
                 }
 
-                result = player.prepare().get()
-                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                    Log.d(GLOBAL_TAG, "prepare ERROR, code ${result.resultCode}")
-                    return result.resultCode
-                }
-
+                Log.d(GLOBAL_TAG,"sessionCallback: onSetMediaUri() RETURN")
                 return SessionResult.RESULT_SUCCESS
             }
         }

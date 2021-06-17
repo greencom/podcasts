@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
     private val isPlayerExpanded = MutableStateFlow(false)
 
     // TODO
-    private val rewindValue = MutableStateFlow(0L)
+    private val skipValue = MutableStateFlow(0L)
 
     // App bar colors.
     private var statusBarColor = 0
@@ -132,8 +132,8 @@ class MainActivity : AppCompatActivity() {
 
         // TODO
         addRepeatingJob(Lifecycle.State.STARTED) {
-            rewindValue.collectLatest { value ->
-                rewind(value)
+            skipValue.collectLatest { value ->
+                skip(value)
             }
         }
 
@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity() {
         expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
             coverBuilder(this@MainActivity)
         }
-        hideRewindHint(true)
+        hideSkipHint(true)
 
         // Slider label formatter.
         expandedPlayer.slider.setLabelFormatter { position ->
@@ -333,11 +333,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         expandedPlayer.skipBackward.setOnClickListener {
-            rewindValue.value -= PlayerService.REWIND_BACKWARD_VALUE
+            skipValue.value -= PlayerService.REWIND_BACKWARD_VALUE
         }
 
         expandedPlayer.skipForward.setOnClickListener {
-            rewindValue.value += PlayerService.REWIND_FORWARD_VALUE
+            skipValue.value += PlayerService.REWIND_FORWARD_VALUE
         }
 
         // The expanded content of the player is not disabled at application start
@@ -541,22 +541,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
-    private suspend fun rewind(value: Long) {
+    private suspend fun skip(value: Long) {
         if (value == 0L) {
-            hideRewindHint()
+            hideSkipHint()
             return
         }
 
         if (value > 0) {
             expandedPlayer.skipHintBackward.hideImmediately()
             expandedPlayer.skipHintBackground.rotation = 0F
-            expandedPlayer.skipHintForward.text = getRewindHint(value)
+            expandedPlayer.skipHintForward.text = getSkipHint(value)
             expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
             expandedPlayer.skipHintForward.revealCrossfade()
         } else {
             expandedPlayer.skipHintForward.hideImmediately()
             expandedPlayer.skipHintBackground.rotation = 180F
-            expandedPlayer.skipHintBackward.text = getRewindHint(value)
+            expandedPlayer.skipHintBackward.text = getSkipHint(value)
             expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
             expandedPlayer.skipHintBackward.revealCrossfade()
         }
@@ -564,12 +564,12 @@ class MainActivity : AppCompatActivity() {
         delay(1000)
         val newValue = (expandedPlayer.slider.value + value).toLong()
 
-        hideRewindHint()
-        rewindValue.value = 0L
+        hideSkipHint()
+        skipValue.value = 0L
     }
 
     // TODO
-    private fun hideRewindHint(immediately: Boolean = false) {
+    private fun hideSkipHint(immediately: Boolean = false) {
         if (immediately) {
             expandedPlayer.skipHintBackground.hideImmediatelyWithAnimation()
             expandedPlayer.skipHintBackward.hideImmediatelyWithAnimation()
@@ -582,7 +582,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
-    private fun getRewindHint(value: Long): String {
+    private fun getSkipHint(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
         val seconds = valueInSeconds % 60
