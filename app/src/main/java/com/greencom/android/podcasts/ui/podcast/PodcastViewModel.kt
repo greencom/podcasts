@@ -76,13 +76,13 @@ class PodcastViewModel @Inject constructor(
         repository.getPodcastWithEpisodes(podcastId)
             .combine(sortOrder) { flowState, sortOrder -> sortEpisodes(flowState, sortOrder) }
             .onEach(::checkBottomEpisodes)
+            .flowOn(defaultDispatcher)
             .combine(player.currentEpisode) { flowState, currentEpisode ->
                 setCurrentEpisode(flowState, currentEpisode)
             }
             .combine(player.playerState) { flowState, playerState ->
                 setCurrentEpisodeState(flowState, playerState)
             }
-            .flowOn(defaultDispatcher)
             .collectLatest { state ->
                 when (state) {
                     is State.Loading -> _uiState.value = PodcastState.Loading

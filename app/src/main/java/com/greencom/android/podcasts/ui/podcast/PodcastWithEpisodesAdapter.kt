@@ -45,8 +45,8 @@ class PodcastWithEpisodesAdapter(
     PodcastWithEpisodesDiffCallback
 ) {
 
-    private val adapterJob = SupervisorJob()
-    private val adapterScope = CoroutineScope(adapterJob + Dispatchers.Default)
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.Default)
 
     /** Whether the podcast description is expanded. False at start. */
     private var isPodcastDescriptionExpanded = false
@@ -92,7 +92,7 @@ class PodcastWithEpisodesAdapter(
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         // Cancel coroutine scope.
-        adapterScope.cancel()
+        scope.cancel()
     }
 
     /**
@@ -100,7 +100,7 @@ class PodcastWithEpisodesAdapter(
      * items to be displayed in RecyclerView. Calculations are performed in the
      * background thread.
      */
-    fun submitHeaderAndList(podcast: Podcast, episodes: List<Episode>) = adapterScope.launch {
+    fun submitHeaderAndList(podcast: Podcast, episodes: List<Episode>) = scope.launch {
         val items = listOf(PodcastWithEpisodesDataItem.PodcastHeader(podcast)) +
                 episodes.map { PodcastWithEpisodesDataItem.EpisodeItem(it) }
         withContext(Dispatchers.Main) { submitList(items) }
