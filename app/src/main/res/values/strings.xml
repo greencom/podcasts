@@ -70,9 +70,6 @@
     <!-- PodcastFragment start -->
     <string name="podcast_completed">Completed</string>
     <string name="podcast_playing">Playing</string>
-    <string name="podcast_time_left_m">%d min left</string>
-    <string name="podcast_time_left_h_m">%d h %d min left</string>
-    <string name="podcast_time_left_almost_over">Almost over</string>
     <string name="podcast_description_sort_order">Episodes sorting</string>
     <plurals name="podcast_episode_count">
         <item quantity="zero">%d Episodes</item>
@@ -101,9 +98,14 @@
         <item quantity="other">%d days ago</item>
     </plurals>
 
-    <string name="podcast_episode_length_full">%1$d hr %2$d min</string>
-    <string name="podcast_episode_length_hours">%1$d hr</string>
-    <string name="podcast_episode_length_minutes">%1$d min</string>
+    <string name="podcast_episode_duration_m">%1$d min</string>
+    <string name="podcast_episode_duration_h">%1$d hr</string>
+    <string name="podcast_episode_duration_h_m">%1$d hr %2$d min</string>
+
+    <string name="podcast_episode_time_left_almost_over">Almost over</string>
+    <string name="podcast_episode_time_left_m">%d min left</string>
+    <string name="podcast_episode_time_left_h">%d h left</string>
+    <string name="podcast_episode_time_left_h_m">%d h %d min left</string>
     <!-- PodcastFragment end -->
 
 

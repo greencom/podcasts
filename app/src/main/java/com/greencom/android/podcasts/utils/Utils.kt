@@ -20,8 +20,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
 import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
-import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
@@ -165,15 +163,20 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
  */
 @ExperimentalTime
 fun episodeDurationToString(duration: Duration, context: Context): String {
-    if (duration.inWholeSeconds <= 60) return context.getString(R.string.podcast_episode_length_minutes, 1)
+    duration.toComponents { hours, minutes, seconds, _ ->
+        if (duration.inWholeSeconds <= 60) return context.getString(R.string.podcast_episode_duration_m, 1)
 
-    val hours = duration.inWholeHours.toInt()
-    val minutes = ((duration - Duration.hours(hours)) / Duration.minutes(1)).roundToInt()
+        var mMinutes = if (seconds >= 30) minutes + 1 else minutes
+        val mHours = if (mMinutes == 60) {
+            mMinutes = 0 // Reset minutes.
+            hours + 1
+        } else hours
 
-    return when {
-        hours != 0 && minutes != 0 -> context.getString(R.string.podcast_episode_length_full, hours, minutes)
-        hours != 0 && minutes == 0 -> context.getString(R.string.podcast_episode_length_hours, hours)
-        else -> context.getString(R.string.podcast_episode_length_minutes, minutes)
+        return when {
+            mHours == 0 && mMinutes != 0 -> context.getString(R.string.podcast_episode_duration_m, mMinutes)
+            mHours != 0 && mMinutes == 0 -> context.getString(R.string.podcast_episode_duration_h, mHours)
+            else -> context.getString(R.string.podcast_episode_duration_h_m, mHours, mMinutes)
+        }
     }
 }
 
@@ -182,28 +185,18 @@ fun episodeDurationToString(duration: Duration, context: Context): String {
  * than 7 days ago, return the most appropriate date description, otherwise return the date
  * in the format `day, month, year`.
  */
+@ExperimentalTime
 fun episodePubDateToString(pubDate: Long, context: Context): String {
-    return when (val timeFromNow = System.currentTimeMillis() - pubDate) {
-
-        // Just now.
-        in (0..TimeUnit.HOURS.toMillis(1)) -> context.getString(R.string.podcast_episode_pub_just_now)
-
-        // N hours ago.
-        in (TimeUnit.HOURS.toMillis(1)..TimeUnit.DAYS.toMillis(1)) -> {
-            val hours = timeFromNow / TimeUnit.HOURS.toMillis(1)
-            context.resources.getQuantityString(R.plurals.podcast_episode_pub_hours_ago, hours.toInt(), hours)
-        }
-
-        // N days ago.
-        in (TimeUnit.DAYS.toMillis(1))..TimeUnit.DAYS.toMillis(7) -> {
-            val days = timeFromNow / TimeUnit.DAYS.toMillis(1)
-            context.resources.getQuantityString(R.plurals.podcast_episode_pub_days_ago, days.toInt(), days)
-        }
-
-        // Date.
-        else -> {
-            val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
-            dateFormatter.format(pubDate)
+    val timeFromNow = System.currentTimeMillis() - pubDate
+    Duration.milliseconds(timeFromNow).toComponents { days, hours, _, _, _ ->
+        return when {
+            days == 0 && hours < 1 -> context.getString(R.string.podcast_episode_pub_just_now)
+            days == 0 && hours >= 1 -> context.resources.getQuantityString(R.plurals.podcast_episode_pub_hours_ago, hours, hours)
+            days in 1..7 -> context.resources.getQuantityString(R.plurals.podcast_episode_pub_days_ago, days, days)
+            else -> {
+                val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
+                dateFormatter.format(pubDate)
+            }
         }
     }
 }
@@ -211,14 +204,22 @@ fun episodePubDateToString(pubDate: Long, context: Context): String {
 // TODO
 @ExperimentalTime
 fun episodeTimeLeftToString(position: Long, duration: Duration, context: Context): String {
-    Duration.milliseconds(duration.inWholeMilliseconds - position)
-        .toComponents { hours, minutes, _, _ ->
-            return when {
-                hours == 0 && minutes < 1 -> context.getString(R.string.podcast_time_left_almost_over)
-                hours == 0 -> context.getString(R.string.podcast_time_left_m, minutes)
-                else -> context.getString(R.string.podcast_time_left_h_m, hours, minutes)
-            }
+    val timeLeft = (duration - Duration.milliseconds(position))
+    if (timeLeft.inWholeSeconds <= 60) return context.getString(R.string.podcast_episode_time_left_almost_over)
+
+    timeLeft.toComponents { hours, minutes, seconds, _ ->
+        var mMinutes = if (seconds >= 30) minutes + 1 else minutes
+        val mHours = if (mMinutes == 60) {
+            mMinutes = 0 // Reset minutes.
+            hours + 1
+        } else hours
+
+        return when {
+            mHours == 0 && mMinutes != 0 -> context.getString(R.string.podcast_episode_time_left_m, mMinutes)
+            mHours != 0 && mMinutes == 0 -> context.getString(R.string.podcast_episode_time_left_h, mHours)
+            else -> context.getString(R.string.podcast_episode_time_left_h_m, mHours, mMinutes)
         }
+    }
 }
 
 /**

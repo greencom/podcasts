@@ -10,8 +10,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
+@ExperimentalTime
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class EpisodePubDateToStringTest {
@@ -27,7 +29,8 @@ class EpisodePubDateToStringTest {
     @Test
     @Throws(Exception::class)
     fun episodePubDateToString_10Minutes() {
-        val date = currentTime - TimeUnit.MINUTES.toMillis(10)
+        val timeFromCurrent = Duration.minutes(10)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
@@ -36,20 +39,9 @@ class EpisodePubDateToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_30Minutes() {
-        val date = currentTime - TimeUnit.MINUTES.toMillis(30)
-
-        val result = episodePubDateToString(date, context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_pub_just_now))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodePubDateToString_59Minutes30Seconds() {
-        val date = currentTime -
-                TimeUnit.MINUTES.toMillis(59) -
-                TimeUnit.SECONDS.toMillis(30)
+    fun episodePubDateToString_50Minutes() {
+        val timeFromCurrent = Duration.minutes(50)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
@@ -59,110 +51,80 @@ class EpisodePubDateToStringTest {
     @Test
     @Throws(Exception::class)
     fun episodePubDateToString_1Hour() {
-        val date = currentTime - TimeUnit.HOURS.toMillis(1)
+        val timeFromCurrent = Duration.hours(1)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
-        assertThat(result).isEqualTo(
-            context.resources.getQuantityString(
-                R.plurals.podcast_episode_pub_hours_ago,
-                1,
-                1
-            )
-        )
+        assertThat(result).isEqualTo(context.resources.getQuantityString(
+            R.plurals.podcast_episode_pub_hours_ago, 1,1))
     }
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_6Hours() {
-        val date = currentTime - TimeUnit.HOURS.toMillis(6)
+    fun episodePubDateToString_10Hours30Minutes() {
+        val timeFromCurrent = Duration.hours(10) + Duration.minutes(30)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
-        assertThat(result).isEqualTo(
-            context.resources.getQuantityString(
-                R.plurals.podcast_episode_pub_hours_ago,
-                6,
-                6
-            )
-        )
+        assertThat(result).isEqualTo(context.resources.getQuantityString(
+            R.plurals.podcast_episode_pub_hours_ago, 10,10))
     }
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_23Hours30Minutes() {
-        val date = currentTime -
-                TimeUnit.HOURS.toMillis(23) -
-                TimeUnit.MINUTES.toMillis(30)
+    fun episodePubDateToString_23Hours() {
+        val timeFromCurrent = Duration.hours(23)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
-        assertThat(result).isEqualTo(
-            context.resources.getQuantityString(
-                R.plurals.podcast_episode_pub_hours_ago,
-                23,
-                23
-            )
-        )
+        assertThat(result).isEqualTo(context.resources.getQuantityString(
+            R.plurals.podcast_episode_pub_hours_ago, 23,23))
     }
 
     @Test
     @Throws(Exception::class)
     fun episodePubDateToString_1Day() {
-        val date = currentTime - TimeUnit.DAYS.toMillis(1)
+        val timeFromCurrent = Duration.days(1)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
-        assertThat(result).isEqualTo(
-            context.resources.getQuantityString(
-                R.plurals.podcast_episode_pub_days_ago,
-                1,
-                1
-            )
-        )
+        assertThat(result).isEqualTo(context.resources.getQuantityString(
+            R.plurals.podcast_episode_pub_days_ago, 1,1))
     }
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_3Days23Hours() {
-        val date = currentTime -
-                TimeUnit.DAYS.toMillis(3) -
-                TimeUnit.HOURS.toMillis(23)
+    fun episodePubDateToString_3Days10Hours() {
+        val timeFromCurrent = Duration.days(3) + Duration.hours(10)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
-        assertThat(result).isEqualTo(
-            context.resources.getQuantityString(
-                R.plurals.podcast_episode_pub_days_ago,
-                3,
-                3
-            )
-        )
+        assertThat(result).isEqualTo(context.resources.getQuantityString(
+            R.plurals.podcast_episode_pub_days_ago, 3,3))
     }
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_6Days23Hours59Minutes() {
-        val date = currentTime -
-                TimeUnit.DAYS.toMillis(6) -
-                TimeUnit.HOURS.toMillis(23) -
-                TimeUnit.MINUTES.toMillis(59)
+    fun episodePubDateToString_7Days10Hours() {
+        val timeFromCurrent = Duration.days(7) + Duration.hours(10)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
-        assertThat(result).isEqualTo(
-            context.resources.getQuantityString(
-                R.plurals.podcast_episode_pub_days_ago,
-                6,
-                6
-            )
-        )
+        assertThat(result).isEqualTo(context.resources.getQuantityString(
+            R.plurals.podcast_episode_pub_days_ago, 7,7))
     }
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_7Days() {
-        val date = currentTime - TimeUnit.DAYS.toMillis(7)
+    fun episodePubDateToString_8Days() {
+        val timeFromCurrent = Duration.days(8)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 
@@ -172,8 +134,9 @@ class EpisodePubDateToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun episodePubDateToString_45Days() {
-        val date = currentTime - TimeUnit.DAYS.toMillis(45)
+    fun episodePubDateToString_30Days() {
+        val timeFromCurrent = Duration.days(30)
+        val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
         val result = episodePubDateToString(date, context)
 

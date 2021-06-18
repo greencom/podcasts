@@ -9,7 +9,6 @@ import com.greencom.android.podcasts.R
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
@@ -20,10 +19,6 @@ class EpisodeDurationToStringTest {
 
     private lateinit var context: Context
 
-    private fun Int.hours() = this * TimeUnit.HOURS.toSeconds(1).toInt()
-    private fun Int.minutes() = this * TimeUnit.MINUTES.toSeconds(1).toInt()
-    private fun Int.seconds() = this
-
     @Before
     fun before() {
         context = InstrumentationRegistry.getInstrumentation().targetContext
@@ -31,144 +26,131 @@ class EpisodeDurationToStringTest {
 
     @Test
     @Throws(Exception::class)
-    fun episodeDurationToString_1Hour23Minutes10Seconds() {
-        val h = 1
-        val m = 23
-        val s = 10
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_full, h, m))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_1Hour23Minutes50Seconds() {
-        val h = 1
-        val m = 23
-        val s = 50
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_full, h, m + 1))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_2Hours() {
-        val h = 2
-        val m = 0
-        val s = 0
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_hours, h))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_2Hours10Seconds() {
-        val h = 2
-        val m = 0
-        val s = 10
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_hours, h))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_2Hours50Seconds() {
-        val h = 2
-        val m = 0
-        val s = 50
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_full, h, 1))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_10Minutes() {
-        val h = 0
-        val m = 10
-        val s = 0
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_minutes, m))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_50Minutes() {
-        val h = 0
-        val m = 50
-        val s = 0
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_minutes, m))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_40Minutes10Seconds() {
-        val h = 0
-        val m = 40
-        val s = 10
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_minutes, m))
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun episodeDurationToString_40Minutes50Seconds() {
-        val h = 0
-        val m = 40
-        val s = 50
-        val length = h.hours() + m.minutes() + s.seconds()
-
-        val result = episodeDurationToString(Duration.seconds(length), context)
-
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_minutes, m + 1))
-    }
-
-    @Test
-    @Throws(Exception::class)
     fun episodeDurationToString_10Seconds() {
-        val h = 0
-        val m = 0
-        val s = 10
-        val length = h.hours() + m.minutes() + s.seconds()
+        val duration = Duration.seconds(10)
 
-        val result = episodeDurationToString(Duration.seconds(length), context)
+        val result = episodeDurationToString(duration, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_minutes, 1))
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_m, 1))
     }
 
     @Test
     @Throws(Exception::class)
     fun episodeDurationToString_50Seconds() {
-        val h = 0
-        val m = 0
-        val s = 50
-        val length = h.hours() + m.minutes() + s.seconds()
+        val duration = Duration.seconds(50)
 
-        val result = episodeDurationToString(Duration.seconds(length), context)
+        val result = episodeDurationToString(duration, context)
 
-        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_length_minutes, 1))
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_m, 1))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_10Minutes10Seconds() {
+        val duration = Duration.minutes(10) + Duration.seconds(10)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_m, 10))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_10Minutes50Seconds() {
+        val duration = Duration.minutes(10) + Duration.seconds(50)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_m, 11))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_50Minutes10Seconds() {
+        val duration = Duration.minutes(50) + Duration.seconds(10)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_m, 50))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_50Minutes50Seconds() {
+        val duration = Duration.minutes(50) + Duration.seconds(50)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_m, 51))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_59Minutes50Seconds() {
+        val duration = Duration.minutes(59) + Duration.seconds(50)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h, 1))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_1Hour() {
+        val duration = Duration.hours(1)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h, 1))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_1Hour10Seconds() {
+        val duration = Duration.hours(1) + Duration.seconds(10)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h, 1))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_1Hour50Seconds() {
+        val duration = Duration.hours(1) + Duration.seconds(50)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h_m, 1, 1))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_1Hour10Minutes() {
+        val duration = Duration.hours(1) + Duration.minutes(10)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h_m, 1, 10))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_1Hour10Minutes10Seconds() {
+        val duration = Duration.hours(1) + Duration.minutes(10) + Duration.seconds(10)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h_m, 1, 10))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun episodeDurationToString_1Hour10Minutes50Seconds() {
+        val duration = Duration.hours(1) + Duration.minutes(10) + Duration.seconds(50)
+
+        val result = episodeDurationToString(duration, context)
+
+        assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_duration_h_m, 1, 11))
     }
 }
