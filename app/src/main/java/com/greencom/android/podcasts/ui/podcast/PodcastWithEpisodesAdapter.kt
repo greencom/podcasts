@@ -245,7 +245,7 @@ class EpisodeViewHolder private constructor(
     private lateinit var episode: Episode
 
     init {
-        // TODO
+        // Resume or pause depending on the current state or play if the episode is not selected.
         binding.play.setOnClickListener {
             if (episode.isSelected) {
                 if (episode.isPlaying) pause() else play()

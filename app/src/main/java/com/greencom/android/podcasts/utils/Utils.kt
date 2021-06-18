@@ -26,10 +26,13 @@ import kotlin.time.ExperimentalTime
 /** Global tag for logging. */
 const val GLOBAL_TAG = "global___"
 
+/** Tag for player-specific logging. */
+const val PLAYER_TAG = "Player"
+
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
 
-// TODO
+/** Start a vector drawable animation in the appropriate way depending on the system version. */
 fun Drawable.animateVectorDrawable() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         (this as AnimatedVectorDrawable).start()
@@ -201,7 +204,7 @@ fun episodePubDateToString(pubDate: Long, context: Context): String {
     }
 }
 
-// TODO
+/** Convert the episode's remaining time to a localized string. */
 @ExperimentalTime
 fun episodeTimeLeftToString(position: Long, duration: Duration, context: Context): String {
     val timeLeft = (duration - Duration.milliseconds(position))

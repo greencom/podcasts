@@ -66,10 +66,10 @@ class MainActivity : AppCompatActivity() {
     private val collapsedPlayer get() = binding.player.collapsed
     private val expandedPlayer get() = binding.player.expanded
 
-    // TODO
+    /** MainActivityViewModel. */
     private val viewModel: MainActivityViewModel by viewModels()
 
-    // TODO
+    /** [PlayerService]'s intent. */
     private val playerServiceIntent: Intent by lazy {
         Intent(this, PlayerService::class.java).apply {
             action = MediaSessionService.SERVICE_INTERFACE
@@ -93,18 +93,18 @@ class MainActivity : AppCompatActivity() {
     private var navigationBarColorDefault = TypedValue()
     private var navigationBarColorChanged = TypedValue()
 
-    // TODO
+    /** ServiceConnection for [PlayerService] binding. */
     private val serviceConnection: ServiceConnection by lazy {
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                Log.d(GLOBAL_TAG, "serviceConnection: onServiceConnected()")
+                Log.d(PLAYER_TAG, "serviceConnection: onServiceConnected()")
                 val binder = service as PlayerService.PlayerServiceBinder
                 val sessionToken = binder.sessionToken
-                initPlayerServiceConnection(sessionToken)
+                viewModel.initPlayerServiceConnection(this@MainActivity, sessionToken)
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
-                Log.d(GLOBAL_TAG, "serviceConnection: onServiceDisconnected()")
+                Log.d(PLAYER_TAG, "serviceConnection: onServiceDisconnected()")
             }
         }
     }
@@ -115,7 +115,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TODO
         volumeControlStream = AudioManager.STREAM_MUSIC
         startService(playerServiceIntent)
 
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         initNavigation()
         initPlayerListeners()
 
-        // TODO
+        // Control player text marquee animations depending on the bottom sheet state.
         addRepeatingJob(Lifecycle.State.STARTED) {
             isPlayerExpanded.collectLatest { isPlayerExpanded ->
                 marqueePlayerText(isPlayerExpanded)
@@ -161,13 +160,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        // TODO
+        // Bind to PlayerService.
         bindService(playerServiceIntent, serviceConnection, BIND_AUTO_CREATE)
     }
 
     override fun onStop() {
         super.onStop()
-        // TODO
+        // Unbind from PlayerService.
         unbindService(serviceConnection)
     }
 
@@ -242,11 +241,11 @@ class MainActivity : AppCompatActivity() {
         // Set expanded content alpha to zero.
         expandedPlayer.root.alpha = 0F
 
-        // TODO
+        // Initialize player skip hint views.
         expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
             coverBuilder(this@MainActivity)
         }
-        hideSkipHint(true)
+        hideSkipHints(true)
 
         // Slider label formatter.
         expandedPlayer.slider.setLabelFormatter { position ->
@@ -280,7 +279,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /** Set listeners for the player's content. */
-    // TODO
+    // TODO: Document after completion
     @SuppressLint("ClickableViewAccessibility")
     private fun initPlayerListeners() {
 
@@ -309,7 +308,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        // TODO
         val onTouchListener = object : Slider.OnSliderTouchListener {
             val thumbRadiusDefault = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_default)
             val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
@@ -525,7 +523,7 @@ class MainActivity : AppCompatActivity() {
         thumbAnimator?.start()
     }
 
-    // TODO
+    /** Control player text marquee animations depending on the bottom sheet state. */
     private suspend fun marqueePlayerText(isPlayerExpanded: Boolean) {
         if (isPlayerExpanded) {
             collapsedPlayer.title.isSelected = false
@@ -543,7 +541,7 @@ class MainActivity : AppCompatActivity() {
     // TODO
     private suspend fun skip(value: Long) {
         if (value == 0L) {
-            hideSkipHint()
+            hideSkipHints()
             return
         }
 
@@ -563,13 +561,14 @@ class MainActivity : AppCompatActivity() {
 
         delay(1000)
         val newValue = (expandedPlayer.slider.value + value).toLong()
+        // TODO: Add seekTo().
 
-        hideSkipHint()
+        hideSkipHints()
         skipValue.value = 0L
     }
 
-    // TODO
-    private fun hideSkipHint(immediately: Boolean = false) {
+    /** Hide all player skip hints. */
+    private fun hideSkipHints(immediately: Boolean = false) {
         if (immediately) {
             expandedPlayer.skipHintBackground.hideImmediatelyWithAnimation()
             expandedPlayer.skipHintBackward.hideImmediatelyWithAnimation()
@@ -581,7 +580,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // TODO
+    /** Get a skip hint text for a given value. */
     private fun getSkipHint(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
@@ -611,11 +610,6 @@ class MainActivity : AppCompatActivity() {
                 else -> getString(R.string.player_time_stamp_left_format_h_m_s, hours, minutes, seconds)
             }
         }
-    }
-
-    // TODO
-    private fun initPlayerServiceConnection(sessionToken: SessionToken) {
-        viewModel.initPlayerServiceConnection(this, sessionToken)
     }
 
     /**

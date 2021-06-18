@@ -46,19 +46,19 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "date")
     val date: Long,
 
-    // TODO
+    /** Whether the episode is completed. */
     @ColumnInfo(name = "is_completed")
     val isCompleted: Boolean,
 
-    // TODO
+    /** The position where the episode was last stopped. */
     @ColumnInfo(name = "position")
     val position: Long,
 
-    // TODO
+    /** Whether the episode is selected by the user to play. */
     @Ignore
     val isSelected: Boolean = false,
 
-    // TODO
+    /** Whether the episode is playing right now. Makes sense only if the episode is selected. */
     @Ignore
     val isPlaying: Boolean = false,
 )

@@ -41,7 +41,7 @@ data class EpisodeEntity(
     @ColumnInfo(name = "podcast_id")
     val podcastId: String,
 
-    /** Whether this podcast contains explicit language. */
+    /** Whether this episode contains explicit language. */
     @ColumnInfo(name = "explicit_content")
     val explicitContent: Boolean,
 
@@ -49,11 +49,11 @@ data class EpisodeEntity(
     @ColumnInfo(name = "date")
     val date: Long,
 
-    // TODO
+    /** Whether the episode is completed. */
     @ColumnInfo(name = "is_completed")
     val isCompleted: Boolean,
 
-    // TODO
+    /** The position where the episode was last stopped. */
     @ColumnInfo(name = "position")
     val position: Long,
 )

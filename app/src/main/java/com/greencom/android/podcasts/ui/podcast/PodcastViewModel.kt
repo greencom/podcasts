@@ -193,7 +193,7 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
-    // TODO
+    /** Check if there is the episode that is currently selected. */
     private fun setCurrentEpisode(
         flowState: State<PodcastWithEpisodes>,
         currentEpisode: PlayerServiceConnection.CurrentEpisode
@@ -210,7 +210,7 @@ class PodcastViewModel @Inject constructor(
         return flowState
     }
 
-    // TODO
+    // TODO: Ввести переменную для указания факта наличия текущего эпизода. Если текущего эпизода нет - не тратить ресурсы
     private fun setCurrentEpisodeState(
         flowState: State<PodcastWithEpisodes>,
         playerState: Int
