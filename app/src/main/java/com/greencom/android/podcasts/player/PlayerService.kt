@@ -14,7 +14,6 @@ import androidx.media2.common.UriMediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaSession
 import androidx.media2.session.MediaSessionService
-import androidx.media2.session.SessionResult
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import kotlinx.coroutines.CoroutineScope
@@ -40,8 +39,8 @@ class PlayerService : MediaSessionService() {
 
     private val audioAttrs: AudioAttributesCompat by lazy {
         AudioAttributesCompat.Builder()
-            .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
             .setUsage(AudioAttributesCompat.USAGE_MEDIA)
+            .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
             .build()
     }
 
@@ -59,25 +58,21 @@ class PlayerService : MediaSessionService() {
                 val mediaItemBuilder = UriMediaItem.Builder(uri)
                 if (extras != null) {
                     mediaItemBuilder
-                        .setMetadata(
-                            MediaMetadata.Builder()
+                        .setMetadata(MediaMetadata.Builder()
                                 .putString(EPISODE_ID, extras.getString(EPISODE_ID))
                                 .putString(EPISODE_TITLE, extras.getString(EPISODE_TITLE))
                                 .putString(EPISODE_PUBLISHER, extras.getString(EPISODE_PUBLISHER))
                                 .putString(EPISODE_IMAGE, extras.getString(EPISODE_IMAGE))
                                 .putLong(EPISODE_DURATION, extras.getLong(EPISODE_DURATION))
-                                .build()
-                        )
+                                .build())
                         .setStartPosition(extras.getLong(EPISODE_START_POSITION))
                 }
 
                 val result = player.setMediaItem(mediaItemBuilder.build()).get()
                 if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
                     Log.d(PLAYER_TAG, "player.setMediaItem() ERROR ${result.resultCode}")
-                    return result.resultCode
                 }
-
-                return SessionResult.RESULT_SUCCESS
+                return result.resultCode
             }
         }
     }
