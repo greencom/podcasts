@@ -166,8 +166,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        // Unbind from PlayerService.
+        // Unbind from PlayerService and close PlayerServiceConnection to save resources.
         unbindService(serviceConnection)
+        viewModel.closePlayerServiceConnection()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

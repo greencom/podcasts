@@ -7,6 +7,7 @@ import androidx.core.os.bundleOf
 import androidx.media2.common.MediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaController
+import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
@@ -28,6 +29,8 @@ class PlayerServiceConnection @Inject constructor(
 
     private lateinit var job: Job
     private lateinit var scope: CoroutineScope
+
+    private var currentPositionJob: Job? = null
 
     private lateinit var controller: MediaController
 
@@ -53,32 +56,33 @@ class PlayerServiceConnection @Inject constructor(
     val duration: Long
         get() = if (::controller.isInitialized) controller.duration else Long.MAX_VALUE
 
-    private var currentPositionJob: Job? = null
-
     private val controllerCallback: MediaController.ControllerCallback by lazy {
         object : MediaController.ControllerCallback() {
+            override fun onConnected(
+                controller: MediaController,
+                allowedCommands: SessionCommandGroup
+            ) {
+                Log.d(PLAYER_TAG, "controllerCallback: onConnected()")
+                _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
+                _playerState.value = controller.playerState
+                postCurrentPosition()
+            }
+
+            override fun onDisconnected(controller: MediaController) {
+                Log.d(PLAYER_TAG, "controllerCallback: onDisconnected()")
+                super.onDisconnected(controller)
+            }
+
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
                 Log.d(PLAYER_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 _currentEpisode.value = CurrentEpisode.from(item)
-                controller.prepare().get()
                 controller.play()
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
                 _playerState.value = state
-
-                currentPositionJob?.cancel()
-                if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
-                    currentPositionJob = scope.launch {
-                        while (true) {
-                            if (controller.currentPosition <= duration) {
-                                _currentPosition.value = controller.currentPosition
-                            }
-                            delay(1000)
-                        }
-                    }
-                }
+                postCurrentPosition()
             }
         }
     }
@@ -115,6 +119,25 @@ class PlayerServiceConnection @Inject constructor(
                 Pair(PlayerService.EPISODE_START_POSITION, episode.position)
             )
         )
+    }
+
+    fun postCurrentPosition() {
+        currentPositionJob?.cancel()
+
+        if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
+            currentPositionJob = scope.launch {
+                while (true) {
+                    if (controller.currentPosition in 0..duration) {
+                        _currentPosition.value = controller.currentPosition
+                    }
+                    delay(1000)
+                }
+            }
+        } else {
+            if (controller.currentPosition in 0..duration) {
+                _currentPosition.value = controller.currentPosition
+            }
+        }
     }
 
     fun initConnection(context: Context, sessionToken: SessionToken) {
