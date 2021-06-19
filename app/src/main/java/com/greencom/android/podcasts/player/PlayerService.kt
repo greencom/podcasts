@@ -27,10 +27,16 @@ import java.util.concurrent.Executors
 class PlayerService : MediaSessionService() {
 
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + Dispatchers.Main)
+    private val scope = CoroutineScope(job + Dispatchers.Default)
 
     private lateinit var mediaSession: MediaSession
     private lateinit var player: MediaPlayer
+
+    private val isPlaying: Boolean
+        get() = player.playerState == MediaPlayer.PLAYER_STATE_PLAYING
+
+    private val isPaused: Boolean
+        get() = player.playerState == MediaPlayer.PLAYER_STATE_PAUSED
 
     private val audioAttrs: AudioAttributesCompat by lazy {
         AudioAttributesCompat.Builder()
@@ -52,15 +58,17 @@ class PlayerService : MediaSessionService() {
 
                 val mediaItemBuilder = UriMediaItem.Builder(uri)
                 if (extras != null) {
-                    mediaItemBuilder.setMetadata(
-                        MediaMetadata.Builder()
-                            .putString(ID, extras.getString(ID))
-                            .putString(TITLE, extras.getString(TITLE))
-                            .putString(PUBLISHER, extras.getString(PUBLISHER))
-                            .putString(IMAGE_URI, extras.getString(IMAGE_URI))
-                            .putLong(DURATION, extras.getLong(DURATION))
-                            .build()
-                    )
+                    mediaItemBuilder
+                        .setMetadata(
+                            MediaMetadata.Builder()
+                                .putString(EPISODE_ID, extras.getString(EPISODE_ID))
+                                .putString(EPISODE_TITLE, extras.getString(EPISODE_TITLE))
+                                .putString(EPISODE_PUBLISHER, extras.getString(EPISODE_PUBLISHER))
+                                .putString(EPISODE_IMAGE, extras.getString(EPISODE_IMAGE))
+                                .putLong(EPISODE_DURATION, extras.getLong(EPISODE_DURATION))
+                                .build()
+                        )
+                        .setStartPosition(extras.getLong(EPISODE_START_POSITION))
                 }
 
                 val result = player.setMediaItem(mediaItemBuilder.build()).get()
@@ -102,7 +110,7 @@ class PlayerService : MediaSessionService() {
         return super.onStartCommand(intent, flags, startId)
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         Log.d(PLAYER_TAG,"PlayerService.onBind()")
         return PlayerServiceBinder()
@@ -123,7 +131,7 @@ class PlayerService : MediaSessionService() {
         scope.cancel()
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession? {
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
         Log.d(PLAYER_TAG,"PlayerService.onGetSession()")
         return mediaSession
     }
@@ -139,13 +147,14 @@ class PlayerService : MediaSessionService() {
     }
 
     companion object {
-        const val ID = MediaMetadata.METADATA_KEY_MEDIA_ID
-        const val TITLE = MediaMetadata.METADATA_KEY_TITLE
-        const val PUBLISHER = MediaMetadata.METADATA_KEY_AUTHOR
-        const val IMAGE_URI = MediaMetadata.METADATA_KEY_ART_URI
-        const val DURATION = MediaMetadata.METADATA_KEY_DURATION
+        const val EPISODE_ID = MediaMetadata.METADATA_KEY_MEDIA_ID
+        const val EPISODE_TITLE = MediaMetadata.METADATA_KEY_TITLE
+        const val EPISODE_PUBLISHER = MediaMetadata.METADATA_KEY_AUTHOR
+        const val EPISODE_IMAGE = MediaMetadata.METADATA_KEY_ART_URI
+        const val EPISODE_DURATION = MediaMetadata.METADATA_KEY_DURATION
+        const val EPISODE_START_POSITION = "EPISODE_START_POSITION"
 
-        const val REWIND_FORWARD_VALUE = 30_000
-        const val REWIND_BACKWARD_VALUE = 10_000
+        const val SKIP_FORWARD_VALUE = 30_000
+        const val SKIP_BACKWARD_VALUE = 10_000
     }
 }

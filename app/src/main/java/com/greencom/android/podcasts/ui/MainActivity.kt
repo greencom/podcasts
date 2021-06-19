@@ -331,11 +331,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         expandedPlayer.skipBackward.setOnClickListener {
-            skipValue.value -= PlayerService.REWIND_BACKWARD_VALUE
+            skipValue.value -= PlayerService.SKIP_BACKWARD_VALUE
         }
 
         expandedPlayer.skipForward.setOnClickListener {
-            skipValue.value += PlayerService.REWIND_FORWARD_VALUE
+            skipValue.value += PlayerService.SKIP_FORWARD_VALUE
         }
 
         // The expanded content of the player is not disabled at application start

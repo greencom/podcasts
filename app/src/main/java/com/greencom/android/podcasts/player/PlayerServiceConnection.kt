@@ -70,7 +70,7 @@ class PlayerServiceConnection @Inject constructor(
 
                 currentPositionJob?.cancel()
                 if (state == MediaPlayer.PLAYER_STATE_PLAYING) {
-                    currentPositionJob = scope.launch(defaultDispatcher) {
+                    currentPositionJob = scope.launch {
                         while (true) {
                             if (controller.currentPosition <= duration) {
                                 _currentPosition.value = controller.currentPosition
@@ -107,30 +107,29 @@ class PlayerServiceConnection @Inject constructor(
         controller.setMediaUri(
             Uri.parse(episode.audio),
             bundleOf(
-                Pair(PlayerService.ID, episode.id),
-                Pair(PlayerService.TITLE, episode.title),
-                Pair(PlayerService.PUBLISHER, episode.publisher),
-                Pair(PlayerService.IMAGE_URI, episode.image),
-                Pair(PlayerService.DURATION, Duration.seconds(episode.audioLength).inWholeMilliseconds)
+                Pair(PlayerService.EPISODE_ID, episode.id),
+                Pair(PlayerService.EPISODE_TITLE, episode.title),
+                Pair(PlayerService.EPISODE_PUBLISHER, episode.publisher),
+                Pair(PlayerService.EPISODE_IMAGE, episode.image),
+                Pair(PlayerService.EPISODE_DURATION, Duration.seconds(episode.audioLength).inWholeMilliseconds),
+                Pair(PlayerService.EPISODE_START_POSITION, episode.position)
             )
         )
     }
 
     fun initConnection(context: Context, sessionToken: SessionToken) {
+        Log.d(PLAYER_TAG, "PlayerServiceConnection.initConnection()")
         job = SupervisorJob()
-        scope = CoroutineScope(job)
+        scope = CoroutineScope(job + defaultDispatcher)
 
         controller = MediaController.Builder(context)
             .setSessionToken(sessionToken)
             .setControllerCallback(Executors.newSingleThreadExecutor(), controllerCallback)
             .build()
-
-        _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
-        _playerState.value = controller.playerState
-        _currentPosition.value = controller.currentPosition
     }
 
     fun close() {
+        Log.d(PLAYER_TAG, "PlayerServiceConnection.close()")
         controller.close()
         scope.cancel()
     }
@@ -153,10 +152,10 @@ class PlayerServiceConnection @Inject constructor(
 
             fun from(mediaItem: MediaItem?): CurrentEpisode {
                 return CurrentEpisode(
-                    id = mediaItem?.metadata?.getString(PlayerService.ID) ?: EMPTY,
-                    title = mediaItem?.metadata?.getString(PlayerService.TITLE) ?: EMPTY,
-                    publisher = mediaItem?.metadata?.getString(PlayerService.PUBLISHER) ?: EMPTY,
-                    image = mediaItem?.metadata?.getString(PlayerService.IMAGE_URI) ?: EMPTY,
+                    id = mediaItem?.metadata?.getString(PlayerService.EPISODE_ID) ?: EMPTY,
+                    title = mediaItem?.metadata?.getString(PlayerService.EPISODE_TITLE) ?: EMPTY,
+                    publisher = mediaItem?.metadata?.getString(PlayerService.EPISODE_PUBLISHER) ?: EMPTY,
+                    image = mediaItem?.metadata?.getString(PlayerService.EPISODE_IMAGE) ?: EMPTY,
                 )
             }
         }
