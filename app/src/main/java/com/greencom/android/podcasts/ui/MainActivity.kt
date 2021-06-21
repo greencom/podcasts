@@ -22,7 +22,8 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.media2.session.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -43,6 +44,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration
@@ -123,37 +125,47 @@ class MainActivity : AppCompatActivity() {
         initPlayerListeners()
 
         // Control player text marquee animations depending on the bottom sheet state.
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            isPlayerExpanded.collectLatest { isPlayerExpanded ->
-                marqueePlayerText(isPlayerExpanded)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                isPlayerExpanded.collectLatest { isPlayerExpanded ->
+                    marqueePlayerText(isPlayerExpanded)
+                }
             }
         }
 
         // TODO
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            skipValue.collectLatest { value ->
-                skip(value)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                skipValue.collectLatest { value ->
+                    skip(value)
+                }
             }
         }
 
         // TODO
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.playerState.collect { state ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.playerState.collect { state ->
 
+                }
             }
         }
 
         // TODO
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.currentEpisode.collectLatest { episode ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentEpisode.collectLatest { episode ->
 
+                }
             }
         }
 
         // TODO
-        addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.currentPosition.collect { position ->
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.currentPosition.collect { position ->
 
+                }
             }
         }
     }

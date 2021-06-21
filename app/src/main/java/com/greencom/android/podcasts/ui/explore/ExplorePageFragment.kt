@@ -10,7 +10,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
@@ -21,6 +22,7 @@ import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 // Initialization parameters.
 private const val GENRE_ID = "GENRE_ID"
@@ -126,16 +128,20 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     /** Set observers for ViewModel observables. */
     private fun initObservers() {
         // Observe UI states.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.RESUMED) {
-            viewModel.uiState.collectLatest { state ->
-                handleUiState(state)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.uiState.collectLatest { uiState ->
+                    updateUi(uiState)
+                }
             }
         }
 
         // Observe events.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.event.collect { event ->
-                handleEvent(event)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.event.collect { event ->
+                    handleEvent(event)
+                }
             }
         }
     }
@@ -149,8 +155,8 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
         ) { _, _ -> binding.podcastList.smoothScrollToPosition(0) }
     }
 
-    /** Handle UI states. */
-    private fun handleUiState(state: ExplorePageState) {
+    /** Update UI. */
+    private fun updateUi(state: ExplorePageState) {
         binding.swipeToRefresh.isVisible = state is ExplorePageState.Success
 
         when (state) {

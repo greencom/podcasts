@@ -9,7 +9,8 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 
@@ -237,34 +239,40 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** Set observers for ViewModel observables. */
     private fun initObservers() {
         // Observe UI states.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.uiState.collectLatest { state ->
-                handleUiState(state)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collectLatest { uiState ->
+                    updateUi(uiState)
+                }
             }
         }
 
         // Observe events.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            viewModel.event.collect { event ->
-                handleEvent(event)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.event.collect { event ->
+                    handleEvent(event)
+                }
             }
         }
 
         // Observe app bar state to run title animation.
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
-            isAppBarExpanded.collectLatest {
-                if (it) {
-                    delay(1000) // Delay animation.
-                    binding.appBarTitle.isSelected = true
-                } else {
-                    binding.appBarTitle.isSelected = false
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                isAppBarExpanded.collectLatest {
+                    if (it) {
+                        delay(1000) // Delay animation.
+                        binding.appBarTitle.isSelected = true
+                    } else {
+                        binding.appBarTitle.isSelected = false
+                    }
                 }
             }
         }
     }
 
-    /** Handle UI states. */
-    private fun handleUiState(state: PodcastState) {
+    /** Update UI. */
+    private fun updateUi(state: PodcastState) {
         binding.swipeToRefresh.isVisible = state is PodcastState.Success
 
         when (state) {
