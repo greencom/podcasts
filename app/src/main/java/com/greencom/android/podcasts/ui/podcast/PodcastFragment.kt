@@ -238,33 +238,32 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** Set observers for ViewModel observables. */
     private fun initObservers() {
-        // Observe UI states.
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.collectLatest { uiState ->
-                    updateUi(uiState)
-                }
-            }
-        }
 
-        // Observe events.
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.event.collect { event ->
-                    handleEvent(event)
+                // Observe UI states.
+                launch {
+                    viewModel.uiState.collectLatest { uiState ->
+                        updateUi(uiState)
+                    }
                 }
-            }
-        }
 
-        // Observe app bar state to run title animation.
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                isAppBarExpanded.collectLatest {
-                    if (it) {
-                        delay(1000) // Delay animation.
-                        binding.appBarTitle.isSelected = true
-                    } else {
-                        binding.appBarTitle.isSelected = false
+                // Observe events.
+                launch {
+                    viewModel.event.collect { event ->
+                        handleEvent(event)
+                    }
+                }
+
+                // Observe app bar state to run title animation.
+                launch {
+                    isAppBarExpanded.collectLatest {
+                        if (it) {
+                            delay(1000) // Delay animation.
+                            binding.appBarTitle.isSelected = true
+                        } else {
+                            binding.appBarTitle.isSelected = false
+                        }
                     }
                 }
             }

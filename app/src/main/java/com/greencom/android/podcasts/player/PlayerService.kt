@@ -204,7 +204,7 @@ class PlayerService : MediaSessionService() {
                         this@PlayerService,
                         0,
                         Intent(ACTION_PAUSE),
-                        0
+                        PendingIntent.FLAG_CANCEL_CURRENT
                     )
                     playPauseIcon = R.drawable.ic_pause_24
                     playPauseTitle = getString(R.string.notification_pause)
@@ -214,7 +214,7 @@ class PlayerService : MediaSessionService() {
                         this@PlayerService,
                         0,
                         Intent(ACTION_PLAY),
-                        0
+                        PendingIntent.FLAG_CANCEL_CURRENT
                     )
                     playPauseIcon = R.drawable.ic_play_24
                     playPauseTitle = getString(R.string.notification_play)
@@ -237,7 +237,7 @@ class PlayerService : MediaSessionService() {
                 this@PlayerService,
                 0,
                 Intent(ACTION_SKIP_BACKWARD),
-                0
+                PendingIntent.FLAG_CANCEL_CURRENT
             )
             val backwardSkipIcon = R.drawable.ic_backward_10_24
             val backwardSkipTitle = getString(R.string.notification_backward)
@@ -246,7 +246,7 @@ class PlayerService : MediaSessionService() {
                 this@PlayerService,
                 0,
                 Intent(ACTION_SKIP_FORWARD),
-                0
+                PendingIntent.FLAG_CANCEL_CURRENT
             )
             val forwardSkipIcon = R.drawable.ic_forward_30_24
             val forwardSkipTitle = getString(R.string.notification_forward)

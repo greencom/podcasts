@@ -124,47 +124,42 @@ class MainActivity : AppCompatActivity() {
         initNavigation()
         initPlayerListeners()
 
-        // Control player text marquee animations depending on the bottom sheet state.
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                isPlayerExpanded.collectLatest { isPlayerExpanded ->
-                    marqueePlayerText(isPlayerExpanded)
+
+                // Control player text marquee animations depending on the bottom sheet state.
+                launch {
+                    isPlayerExpanded.collectLatest { isPlayerExpanded ->
+                        marqueePlayerText(isPlayerExpanded)
+                    }
                 }
-            }
-        }
 
-        // TODO
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                skipValue.collectLatest { value ->
-                    skip(value)
+                // TODO
+                launch {
+                    skipValue.collectLatest { value ->
+                        skip(value)
+                    }
                 }
-            }
-        }
 
-        // TODO
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.playerState.collect { state ->
+                // TODO
+                launch {
+                    viewModel.playerState.collect { state ->
 
+                    }
                 }
-            }
-        }
 
-        // TODO
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.currentEpisode.collectLatest { episode ->
+                // TODO
+                launch {
+                    viewModel.currentEpisode.collectLatest { episode ->
 
+                    }
                 }
-            }
-        }
 
-        // TODO
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.currentPosition.collect { position ->
+                // TODO
+                launch {
+                    viewModel.currentPosition.collect { position ->
 
+                    }
                 }
             }
         }
