@@ -113,4 +113,13 @@
     <string name="unsubscribe_unsubscribe">Unsubscribe</string>
     <!-- UnsubscribeDialog end -->
 
+
+    <!-- Notification start. -->
+    <string name="notification_player_channel_name">Player</string>
+    <string name="notification_play">Play</string>
+    <string name="notification_pause">Pause</string>
+    <string name="notification_backward">Backward</string>
+    <string name="notification_forward">Forward</string>
+    <!-- Notification end. -->
+
 </resources>

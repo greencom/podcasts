@@ -51,12 +51,12 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun closePlayerServiceConnection() {
-        playerServiceConnection.close()
+        playerServiceConnection.closeConnection()
     }
 
     override fun onCleared() {
         Log.d(PLAYER_TAG, "MainActivityViewModel.onCleared()")
         super.onCleared()
-        playerServiceConnection.close()
+        closePlayerServiceConnection()
     }
 }

@@ -96,18 +96,17 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun seekTo(position: Long) {
-        val validPosition = when {
+        val newPosition = when {
             position <= 0L -> 0L
             position >= controller.duration -> controller.duration
             else -> position
         }
-        controller.seekTo(validPosition)
-        _currentPosition.value = validPosition
+        controller.seekTo(newPosition)
+        _currentPosition.value = newPosition
     }
 
     @ExperimentalTime
     fun playEpisode(episode: Episode) {
-        _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaUri(
             Uri.parse(episode.audio),
             bundleOf(
@@ -121,7 +120,7 @@ class PlayerServiceConnection @Inject constructor(
         )
     }
 
-    fun postCurrentPosition() {
+    private fun postCurrentPosition() {
         currentPositionJob?.cancel()
 
         if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
@@ -151,8 +150,8 @@ class PlayerServiceConnection @Inject constructor(
             .build()
     }
 
-    fun close() {
-        Log.d(PLAYER_TAG, "PlayerServiceConnection.close()")
+    fun closeConnection() {
+        Log.d(PLAYER_TAG, "PlayerServiceConnection.closeConnection()")
         controller.close()
         scope.cancel()
     }

@@ -106,4 +106,13 @@
     <string name="unsubscribe_unsubscribe">Отписаться</string>
     <!-- UnsubscribeDialog end -->
 
+
+    <!-- Notification start. -->
+    <string name="notification_player_channel_name">Плеер</string>
+    <string name="notification_play">Продолжить</string>
+    <string name="notification_pause">Пауза</string>
+    <string name="notification_backward">Назад</string>
+    <string name="notification_forward">Вперёд</string>
+    <!-- Notification end. -->
+
 </resources>
