@@ -23,7 +23,7 @@ import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class PodcastViewModel @Inject constructor(
-    private val player: PlayerServiceConnection,
+    private val playerServiceConnection: PlayerServiceConnection,
     private val repository: Repository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
@@ -51,17 +51,17 @@ class PodcastViewModel @Inject constructor(
     // TODO
     @ExperimentalTime
     fun playEpisode(episodes: Episode) {
-        player.playEpisode(episodes)
+        playerServiceConnection.playEpisode(episodes)
     }
 
     // TODO
     fun play() {
-        player.play()
+        playerServiceConnection.play()
     }
 
     // TODO
     fun pause() {
-        player.pause()
+        playerServiceConnection.pause()
     }
 
     /** Reverse the [sortOrder] value and init episodes fetching. */
@@ -77,10 +77,10 @@ class PodcastViewModel @Inject constructor(
             .combine(sortOrder) { flowState, sortOrder -> sortEpisodes(flowState, sortOrder) }
             .onEach(::checkBottomEpisodes)
             .flowOn(defaultDispatcher)
-            .combine(player.currentEpisode) { flowState, currentEpisode ->
+            .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
                 setCurrentEpisode(flowState, currentEpisode)
             }
-            .combine(player.playerState) { flowState, playerState ->
+            .combine(playerServiceConnection.playerState) { flowState, playerState ->
                 setCurrentEpisodeState(flowState, playerState)
             }
             .collectLatest { state ->
@@ -221,8 +221,8 @@ class PodcastViewModel @Inject constructor(
                     return@map when (playerState) {
                         MediaPlayer.PLAYER_STATE_PLAYING -> episode.copy(isPlaying = true)
                         MediaPlayer.PLAYER_STATE_PAUSED -> {
-                            if (player.currentPosition.value > 0) {
-                                episode.copy(position = player.currentPosition.value)
+                            if (playerServiceConnection.currentPosition.value > 0) {
+                                episode.copy(position = playerServiceConnection.currentPosition.value)
                             } else {
                                 episode
                             }

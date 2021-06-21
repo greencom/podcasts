@@ -53,8 +53,16 @@ class PlayerServiceConnection @Inject constructor(
             controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
         } else false
 
+    val isPlayingOrPaused: Boolean
+        get() = if (::controller.isInitialized) {
+            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING ||
+                    controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
+        } else false
+
     val duration: Long
-        get() = if (::controller.isInitialized) controller.duration else Long.MAX_VALUE
+        get() = if (::controller.isInitialized && controller.duration >= 0) {
+            controller.duration
+        } else Long.MAX_VALUE
 
     @ExperimentalTime
     private val controllerCallback: MediaController.ControllerCallback by lazy {
@@ -119,6 +127,8 @@ class PlayerServiceConnection @Inject constructor(
                 Pair(PlayerService.EPISODE_START_POSITION, episode.position)
             )
         )
+        // Reset player state to handle current episode properly in PodcastViewModel.
+        _playerState.value = MediaPlayer.PLAYER_STATE_IDLE
     }
 
     private fun postCurrentPosition() {
