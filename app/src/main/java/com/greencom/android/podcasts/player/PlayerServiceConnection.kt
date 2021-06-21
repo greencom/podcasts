@@ -56,6 +56,7 @@ class PlayerServiceConnection @Inject constructor(
     val duration: Long
         get() = if (::controller.isInitialized) controller.duration else Long.MAX_VALUE
 
+    @ExperimentalTime
     private val controllerCallback: MediaController.ControllerCallback by lazy {
         object : MediaController.ControllerCallback() {
             override fun onConnected(
@@ -139,6 +140,7 @@ class PlayerServiceConnection @Inject constructor(
         }
     }
 
+    @ExperimentalTime
     fun initConnection(context: Context, sessionToken: SessionToken) {
         Log.d(PLAYER_TAG, "PlayerServiceConnection.initConnection()")
         job = SupervisorJob()
@@ -172,6 +174,7 @@ class PlayerServiceConnection @Inject constructor(
 
             fun empty(): CurrentEpisode = CurrentEpisode(EMPTY, EMPTY, EMPTY, EMPTY)
 
+            @ExperimentalTime
             fun from(mediaItem: MediaItem?): CurrentEpisode {
                 return CurrentEpisode(
                     id = mediaItem?.metadata?.getString(PlayerService.EPISODE_ID) ?: EMPTY,

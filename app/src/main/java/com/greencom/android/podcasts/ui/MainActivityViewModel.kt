@@ -9,6 +9,7 @@ import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
 // TODO
 @HiltViewModel
@@ -46,6 +47,7 @@ class MainActivityViewModel @Inject constructor(
         playerServiceConnection.seekTo(position)
     }
 
+    @ExperimentalTime
     fun initPlayerServiceConnection(context: Context, sessionToken: SessionToken) {
         playerServiceConnection.initConnection(context, sessionToken)
     }

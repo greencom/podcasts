@@ -30,9 +30,11 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.ui.MainActivity
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import kotlinx.coroutines.*
 import java.util.concurrent.Executors
+import kotlin.time.ExperimentalTime
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
 // TODO
@@ -100,6 +102,7 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    @ExperimentalTime
     private val playerCallback: MediaPlayer.PlayerCallback by lazy {
         object : MediaPlayer.PlayerCallback() {
             override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
@@ -117,6 +120,7 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    @ExperimentalTime
     override fun onCreate() {
         super.onCreate()
         Log.d(PLAYER_TAG,"PlayerService.onCreate()")
@@ -150,6 +154,7 @@ class PlayerService : MediaSessionService() {
         return super.onUnbind(intent)
     }
 
+    @ExperimentalTime
     override fun onDestroy() {
         super.onDestroy()
         Log.d(PLAYER_TAG,"PlayerService.onDestroy()")
@@ -186,6 +191,7 @@ class PlayerService : MediaSessionService() {
         player.setAudioAttributes(audioAttrs)
     }
 
+    @ExperimentalTime
     private fun updateNotification(mediaItem: MediaItem?, playerState: Int) {
         if (mediaItem == null) {
             removeNotification()
@@ -256,7 +262,20 @@ class PlayerService : MediaSessionService() {
             val forwardSkipIcon = R.drawable.ic_forward_30_24
             val forwardSkipTitle = getString(R.string.notification_forward)
 
+            val activityIntent = Intent(this@PlayerService, MainActivity::class.java).apply {
+                action = Intent.ACTION_MAIN
+                addCategory(Intent.CATEGORY_LAUNCHER)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            val contentIntent = PendingIntent.getActivity(
+                this@PlayerService,
+                0,
+                activityIntent,
+                0
+            )
+
             notificationBuilder
+                .setContentIntent(contentIntent)
                 .setContentTitle(episode.title)
                 .setContentText(episode.publisher)
                 .setLargeIcon(bitmap)
