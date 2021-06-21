@@ -161,6 +161,11 @@ class PlayerService : MediaSessionService() {
         removeNotification()
     }
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopSelf()
+    }
+
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
         Log.d(PLAYER_TAG,"PlayerService.onGetSession()")
         return mediaSession
