@@ -267,17 +267,29 @@ class EpisodeViewHolder private constructor(
         binding.play.apply {
             when {
                 episode.isPlaying -> {
-                    text = context.getString(R.string.podcast_playing)
+                    isChecked = false
+                    text = context.getString(R.string.podcast_episode_playing)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
+                    iconTint = resources.getColorStateList(R.color.episode_button_playing_icon_color, context.theme)
                     icon.animateVectorDrawable()
                 }
                 episode.isSelected -> {
+                    isChecked = false
                     text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
+                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
+                    iconTint = resources.getColorStateList(R.color.episode_button_paused_icon_color, context.theme)
+                }
+                episode.isCompleted -> {
+                    isChecked = false
+                    text = context.getString(R.string.podcast_episode_completed)
+                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_check_24)
+                    iconTint = resources.getColorStateList(R.color.episode_button_completed_icon_color, context.theme)
                 }
                 else -> {
+                    isChecked = false
                     text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
+                    iconTint = resources.getColorStateList(R.color.episode_button_play_icon_color, context.theme)
                 }
             }
         }

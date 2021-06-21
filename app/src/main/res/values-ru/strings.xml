@@ -61,9 +61,9 @@
 
 
     <!-- PodcastFragment start -->
-    <string name="podcast_completed">Завершено</string>
-    <string name="podcast_playing">Сейчас воспроизводится</string>
     <string name="podcast_description_sort_order">Сортировка эпизодов</string>
+    <string name="podcast_episode_completed">Завершено</string>
+    <string name="podcast_episode_playing">Сейчас воспроизводится</string>
     <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
         <item quantity="zero">%d Эпизодов</item>
         <item quantity="one">%d Эпизод</item>
