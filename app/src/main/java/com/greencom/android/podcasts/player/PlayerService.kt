@@ -30,10 +30,13 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.repository.PlayerRepository
 import com.greencom.android.podcasts.ui.MainActivity
 import com.greencom.android.podcasts.utils.PLAYER_TAG
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.concurrent.Executors
+import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
@@ -41,7 +44,10 @@ private const val PLAYER_CHANNEL_ID = "PLAYER_CHANNEL_ID"
 private const val PLAYER_NOTIFICATION_ID = 1
 
 // TODO
+@AndroidEntryPoint
 class PlayerService : MediaSessionService() {
+
+    @Inject lateinit var playerRepository: PlayerRepository
 
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + Dispatchers.Default)
@@ -50,6 +56,8 @@ class PlayerService : MediaSessionService() {
 
     private lateinit var mediaSession: MediaSession
     private lateinit var player: MediaPlayer
+
+    private var currentEpisodeStartPosition = 0L
 
     private lateinit var mediaControlReceiver: BroadcastReceiver
 
@@ -66,12 +74,7 @@ class PlayerService : MediaSessionService() {
             .build()
     }
 
-    private val isPlaying: Boolean
-        get() = player.playerState == MediaPlayer.PLAYER_STATE_PLAYING
-
-    private val isPaused: Boolean
-        get() = player.playerState == MediaPlayer.PLAYER_STATE_PAUSED
-
+    @ExperimentalTime
     private val sessionCallback: MediaSession.SessionCallback by lazy {
         object : MediaSession.SessionCallback() {
             override fun onSetMediaUri(
@@ -81,6 +84,9 @@ class PlayerService : MediaSessionService() {
                 extras: Bundle?
             ): Int {
                 Log.d(PLAYER_TAG,"sessionCallback: onSetMediaUri()")
+
+                updateEpisodeState()
+
                 resetPlayer()
 
                 val mediaItemBuilder = UriMediaItem.Builder(uri)
@@ -93,13 +99,29 @@ class PlayerService : MediaSessionService() {
                                 .putString(EPISODE_IMAGE, extras.getString(EPISODE_IMAGE))
                                 .putLong(EPISODE_DURATION, extras.getLong(EPISODE_DURATION))
                                 .build())
-                        .setStartPosition(extras.getLong(EPISODE_START_POSITION))
                 }
 
-                val result = player.setMediaItem(mediaItemBuilder.build()).get()
+                val startPosition = extras?.getLong(EPISODE_START_POSITION) ?: 0L
+                currentEpisodeStartPosition = startPosition
+                Log.d(PLAYER_TAG, "startPosition is $startPosition")
+
+                var result = player.setMediaItem(mediaItemBuilder.build()).get()
                 if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
                     Log.d(PLAYER_TAG, "player.setMediaItem() ERROR ${result.resultCode}")
                 }
+
+                Log.d(PLAYER_TAG, "player.prepare()")
+                result = player.prepare().get()
+                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
+                    Log.d(PLAYER_TAG, "player.prepare() ERROR ${result.resultCode}")
+                }
+
+                result = player.seekTo(startPosition).get()
+                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
+                    Log.d(PLAYER_TAG, "player.seekTo() ERROR ${result.resultCode}")
+                }
+
+                result = player.play().get()
                 return result.resultCode
             }
         }
@@ -113,7 +135,14 @@ class PlayerService : MediaSessionService() {
             }
 
             override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
+                Log.d(PLAYER_TAG, "playerCallback: onPlayerStateChanged(), state $playerState")
                 updateNotification()
+
+                if ((playerState.isPlayerPaused() || playerState.isPlayerError()) &&
+                    player.currentPosition != currentEpisodeStartPosition
+                ) {
+                    updateEpisodeState()
+                }
             }
 
             override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
@@ -161,6 +190,9 @@ class PlayerService : MediaSessionService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(PLAYER_TAG,"PlayerService.onDestroy()")
+
+        updateEpisodeState()
+
         mediaSession.close()
         player.unregisterPlayerCallback(playerCallback)
         player.close()
@@ -192,6 +224,19 @@ class PlayerService : MediaSessionService() {
     private fun resetPlayer() {
         player.reset()
         player.setAudioAttributes(audioAttrs)
+    }
+
+    @ExperimentalTime
+    private fun updateEpisodeState() {
+        Log.d(PLAYER_TAG, "updateEpisodeState()")
+        val episode = CurrentEpisode.from(player.currentMediaItem)
+        if (episode.isNotEmpty()) {
+            val position = player.currentPosition
+            val duration = player.duration
+            scope.launch {
+                playerRepository.updateEpisodeState(episode.id, position, duration)
+            }
+        }
     }
 
     @ExperimentalTime

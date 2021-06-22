@@ -221,13 +221,6 @@ class PodcastViewModel @Inject constructor(
                 if (episode.isSelected) {
                     return@map when (playerState) {
                         MediaPlayer.PLAYER_STATE_PLAYING -> episode.copy(isPlaying = true)
-                        MediaPlayer.PLAYER_STATE_PAUSED -> {
-                            if (playerServiceConnection.currentPosition.value > 0) {
-                                episode.copy(position = playerServiceConnection.currentPosition.value)
-                            } else {
-                                episode
-                            }
-                        }
                         else -> episode
                     }
                 }

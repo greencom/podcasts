@@ -44,19 +44,14 @@ class PlayerServiceConnection @Inject constructor(
     val currentPosition = _currentPosition.asStateFlow()
 
     val isPlaying: Boolean
-        get() = if (::controller.isInitialized) {
-            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
-        } else false
+        get() = if (::controller.isInitialized) controller.playerState.isPlayerPlaying() else false
 
     val isPaused: Boolean
-        get() = if (::controller.isInitialized) {
-            controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
-        } else false
+        get() = if (::controller.isInitialized) controller.playerState.isPlayerPaused() else false
 
     val isPlayingOrPaused: Boolean
         get() = if (::controller.isInitialized) {
-            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING ||
-                    controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
+            controller.playerState.isPlayerPlaying() || controller.playerState.isPlayerPaused()
         } else false
 
     val duration: Long
@@ -85,7 +80,6 @@ class PlayerServiceConnection @Inject constructor(
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
                 Log.d(PLAYER_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 _currentEpisode.value = CurrentEpisode.from(item)
-                controller.play()
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
@@ -137,16 +131,15 @@ class PlayerServiceConnection @Inject constructor(
         if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
             currentPositionJob = scope.launch {
                 while (true) {
+                    ensureActive()
                     if (controller.currentPosition in 0..duration) {
                         _currentPosition.value = controller.currentPosition
                     }
                     delay(1000)
                 }
             }
-        } else {
-            if (controller.currentPosition in 0..duration) {
-                _currentPosition.value = controller.currentPosition
-            }
+        } else if (controller.currentPosition in 0..duration) {
+            _currentPosition.value = controller.currentPosition
         }
     }
 

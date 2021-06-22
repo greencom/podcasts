@@ -7,6 +7,7 @@ import javax.inject.Singleton
 
 private const val EPISODE_START_THRESHOLD = 60_000
 private const val EPISODE_END_THRESHOLD = 90_000
+private const val EPISODE_SKIP_BACKWARD = 5_000
 
 @Singleton
 class PlayerRepositoryImpl @Inject constructor(
@@ -20,7 +21,10 @@ class PlayerRepositoryImpl @Inject constructor(
                 EpisodeEntityState(episodeId, 0L, false)
             }
             position in EPISODE_START_THRESHOLD..positionEnoughForCompletion -> {
-                EpisodeEntityState(episodeId, position, false)
+                val newPosition = if (position >= EPISODE_START_THRESHOLD + EPISODE_SKIP_BACKWARD) {
+                    position - EPISODE_SKIP_BACKWARD
+                } else position
+                EpisodeEntityState(episodeId, newPosition, false)
             }
             // position > positionEnoughForCompletion.
             else -> {
