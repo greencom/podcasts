@@ -1,9 +1,6 @@
 package com.greencom.android.podcasts.data.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 /** Interface to interact with the `episodes` table. */
 @Dao
@@ -26,6 +23,10 @@ abstract class EpisodeDao {
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insert(episodes: List<EpisodeEntity>)
+
+    // TODO
+    @Update(entity = EpisodeEntity::class)
+    abstract suspend fun update(episodeState: EpisodeEntityState)
 
     /**
      * Get the publication date of the latest podcast episode which was uploaded

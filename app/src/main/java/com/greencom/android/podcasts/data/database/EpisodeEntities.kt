@@ -57,3 +57,19 @@ data class EpisodeEntity(
     @ColumnInfo(name = "position")
     val position: Long,
 )
+
+// TODO
+data class EpisodeEntityState(
+
+    /** Episode ID. */
+    @ColumnInfo(name = "id")
+    val id: String,
+
+    /** The position where the episode was last stopped. */
+    @ColumnInfo(name = "position")
+    val position: Long,
+
+    /** Whether the episode is completed. */
+    @ColumnInfo(name = "is_completed")
+    val isCompleted: Boolean,
+)
