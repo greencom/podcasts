@@ -69,7 +69,7 @@ class PlayerServiceConnection @Inject constructor(
                 Log.d(PLAYER_TAG, "controllerCallback: onConnected()")
                 _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
                 _playerState.value = controller.playerState
-                postCurrentPosition()
+                emitCurrentPosition()
             }
 
             override fun onDisconnected(controller: MediaController) {
@@ -85,7 +85,12 @@ class PlayerServiceConnection @Inject constructor(
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
                 _playerState.value = state
-                postCurrentPosition()
+                emitCurrentPosition()
+
+                // Set empty current episode if the playback has completed.
+                _currentEpisode.value = if (controller.currentPosition >= controller.duration) {
+                    CurrentEpisode.empty()
+                } else CurrentEpisode.from(controller.currentMediaItem)
             }
         }
     }
@@ -125,15 +130,21 @@ class PlayerServiceConnection @Inject constructor(
         _playerState.value = MediaPlayer.PLAYER_STATE_IDLE
     }
 
-    private fun postCurrentPosition() {
+    private fun emitCurrentPosition() {
         currentPositionJob?.cancel()
 
         if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
             currentPositionJob = scope.launch {
                 while (true) {
                     ensureActive()
-                    if (controller.currentPosition in 0..duration) {
-                        _currentPosition.value = controller.currentPosition
+                    when {
+                        controller.currentPosition in 0 until duration -> {
+                            _currentPosition.value = controller.currentPosition
+                        }
+                        // Set empty current episode if the playback has completed.
+                        controller.currentPosition >= duration -> {
+                            _currentEpisode.value = CurrentEpisode.empty()
+                        }
                     }
                     delay(1000)
                 }

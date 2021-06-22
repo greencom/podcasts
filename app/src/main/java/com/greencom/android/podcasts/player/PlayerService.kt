@@ -103,14 +103,12 @@ class PlayerService : MediaSessionService() {
 
                 val startPosition = extras?.getLong(EPISODE_START_POSITION) ?: 0L
                 currentEpisodeStartPosition = startPosition
-                Log.d(PLAYER_TAG, "startPosition is $startPosition")
 
                 var result = player.setMediaItem(mediaItemBuilder.build()).get()
                 if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
                     Log.d(PLAYER_TAG, "player.setMediaItem() ERROR ${result.resultCode}")
                 }
 
-                Log.d(PLAYER_TAG, "player.prepare()")
                 result = player.prepare().get()
                 if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
                     Log.d(PLAYER_TAG, "player.prepare() ERROR ${result.resultCode}")
@@ -209,6 +207,18 @@ class PlayerService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
         Log.d(PLAYER_TAG,"PlayerService.onGetSession()")
         return mediaSession
+    }
+
+    private fun safePlay() {
+        when {
+            player.currentPosition in 0 until player.duration -> {
+                player.play()
+            }
+            player.currentPosition >= player.duration -> {
+                player.seekTo(0L)
+                player.play()
+            }
+        }
     }
 
     private fun skipBackwardOrForward(skipValue: Int) {
@@ -385,7 +395,7 @@ class PlayerService : MediaSessionService() {
     inner class MediaControlReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                ACTION_PLAY -> player.play()
+                ACTION_PLAY -> safePlay()
                 ACTION_PAUSE -> player.pause()
                 ACTION_SKIP_BACKWARD -> skipBackwardOrForward(SKIP_BACKWARD_VALUE)
                 ACTION_SKIP_FORWARD -> skipBackwardOrForward(SKIP_FORWARD_VALUE)
