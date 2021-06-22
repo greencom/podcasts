@@ -37,6 +37,9 @@ import java.util.concurrent.Executors
 import kotlin.time.ExperimentalTime
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
+private const val PLAYER_CHANNEL_ID = "PLAYER_CHANNEL_ID"
+private const val PLAYER_NOTIFICATION_ID = 1
+
 // TODO
 class PlayerService : MediaSessionService() {
 
@@ -106,11 +109,11 @@ class PlayerService : MediaSessionService() {
     private val playerCallback: MediaPlayer.PlayerCallback by lazy {
         object : MediaPlayer.PlayerCallback() {
             override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
-                updateNotification(item, player.playerState)
+                updateNotification()
             }
 
             override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
-                updateNotification(player.currentMediaItem, playerState)
+                updateNotification()
             }
 
             override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
@@ -192,7 +195,8 @@ class PlayerService : MediaSessionService() {
     }
 
     @ExperimentalTime
-    private fun updateNotification(mediaItem: MediaItem?, playerState: Int) {
+    private fun updateNotification() {
+        val mediaItem = player.currentMediaItem
         if (mediaItem == null) {
             removeNotification()
             return
@@ -200,7 +204,7 @@ class PlayerService : MediaSessionService() {
 
         notificationJob?.cancel()
         notificationJob = scope.launch {
-            val notificationBuilder = NotificationCompat.Builder(this@PlayerService, CHANNEL_ID)
+            val notificationBuilder = NotificationCompat.Builder(this@PlayerService, PLAYER_CHANNEL_ID)
                 .setOngoing(true)
                 .setSilent(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -209,7 +213,7 @@ class PlayerService : MediaSessionService() {
             val playPauseAction: PendingIntent
             val playPauseIcon: Int
             val playPauseTitle: String
-            when (playerState) {
+            when (player.playerState) {
                 MediaPlayer.PLAYER_STATE_PLAYING -> {
                     playPauseAction = PendingIntent.getBroadcast(
                         this@PlayerService,
@@ -291,16 +295,16 @@ class PlayerService : MediaSessionService() {
 
     private fun setNotification(notification: Notification) {
         if (isForeground) {
-            notificationManger.notify(NOTIFICATION_ID, notification)
+            notificationManger.notify(PLAYER_NOTIFICATION_ID, notification)
         } else {
-            startForeground(NOTIFICATION_ID, notification)
+            startForeground(PLAYER_NOTIFICATION_ID, notification)
             isForeground = true
         }
     }
 
     private fun removeNotification() {
         notificationJob?.cancel()
-        notificationManger.cancel(NOTIFICATION_ID)
+        notificationManger.cancel(PLAYER_NOTIFICATION_ID)
         stopForeground(true)
         isForeground = false
     }
@@ -309,7 +313,7 @@ class PlayerService : MediaSessionService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.notification_player_channel_name)
             val importance = NotificationManager.IMPORTANCE_NONE
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            val channel = NotificationChannel(PLAYER_CHANNEL_ID, name, importance).apply {
                 enableVibration(false)
             }
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -354,9 +358,6 @@ class PlayerService : MediaSessionService() {
 
         const val SKIP_FORWARD_VALUE = 30_000
         const val SKIP_BACKWARD_VALUE = -10_000
-
-        private const val CHANNEL_ID = "CHANNEL_PLAYER"
-        private const val NOTIFICATION_ID = 1
 
         private const val ACTION_PLAY = "com.greencom.android.podcasts.ACTION_PLAY"
         private const val ACTION_PAUSE = "com.greencom.android.podcasts.ACTION_PAUSE"
