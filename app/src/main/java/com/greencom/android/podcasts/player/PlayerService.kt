@@ -240,7 +240,7 @@ class PlayerService : MediaSessionService() {
                 }
             }
 
-            val episode = PlayerServiceConnection.CurrentEpisode.from(mediaItem)
+            val episode = CurrentEpisode.from(mediaItem)
             val loader = baseContext.imageLoader
             val request = ImageRequest.Builder(this@PlayerService)
                 .data(episode.image)

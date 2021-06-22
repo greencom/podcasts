@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.media2.session.SessionToken
+import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +18,7 @@ class MainActivityViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
 ) : ViewModel() {
 
-    val currentEpisode: StateFlow<PlayerServiceConnection.CurrentEpisode>
+    val currentEpisode: StateFlow<CurrentEpisode>
         get() = playerServiceConnection.currentEpisode
 
     val playerState: StateFlow<Int>

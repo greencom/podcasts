@@ -8,6 +8,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
+import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.SortOrder
@@ -196,7 +197,7 @@ class PodcastViewModel @Inject constructor(
     /** Check if there is the episode that is currently selected. */
     private fun setCurrentEpisode(
         flowState: State<PodcastWithEpisodes>,
-        currentEpisode: PlayerServiceConnection.CurrentEpisode
+        currentEpisode: CurrentEpisode
     ): State<PodcastWithEpisodes> {
         if (flowState is State.Success) {
             val episodes = flowState.data.episodes.map { episode ->
