@@ -50,6 +50,9 @@ class PodcastViewModel @Inject constructor(
     private var moreEpisodesNeededAtBottom = true
 
     // TODO
+    private var isCurrentEpisodeHere = false
+
+    // TODO
     @ExperimentalTime
     fun playEpisode(episodes: Episode) {
         playerServiceConnection.playEpisode(episodes)
@@ -200,23 +203,26 @@ class PodcastViewModel @Inject constructor(
         currentEpisode: CurrentEpisode
     ): State<PodcastWithEpisodes> {
         if (flowState is State.Success) {
+            var mIsCurrentEpisodeHere = false
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.id == currentEpisode.id) {
+                    mIsCurrentEpisodeHere = true
                     return@map episode.copy(isSelected = true)
                 }
                 episode
             }
+            isCurrentEpisodeHere = mIsCurrentEpisodeHere
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState
     }
 
-    // TODO: Ввести переменную для указания факта наличия текущего эпизода. Если текущего эпизода нет - не тратить ресурсы
+    // TODO
     private fun setCurrentEpisodeState(
         flowState: State<PodcastWithEpisodes>,
         playerState: Int
     ): State<PodcastWithEpisodes> {
-        if (flowState is State.Success) {
+        if (flowState is State.Success && isCurrentEpisodeHere) {
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.isSelected) {
                     return@map when (playerState) {
