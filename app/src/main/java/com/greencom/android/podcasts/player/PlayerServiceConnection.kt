@@ -115,6 +115,8 @@ class PlayerServiceConnection @Inject constructor(
 
     @ExperimentalTime
     fun playEpisode(episode: Episode) {
+        // Set player state paused to show episode play buttons properly in PodcastFragment.
+        _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaUri(
             Uri.parse(episode.audio),
             bundleOf(

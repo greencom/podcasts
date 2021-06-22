@@ -267,35 +267,27 @@ class EpisodeViewHolder private constructor(
         binding.play.apply {
             when {
                 episode.isPlaying -> {
-                    isChecked = false
                     text = context.getString(R.string.podcast_episode_playing)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
                     iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
                     icon.animateVectorDrawable()
                 }
                 episode.isSelected -> {
-                    isChecked = false
                     text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
                     iconTint = resources.getColorStateList(R.color.episode_button_paused_icon_color, context.theme)
                 }
                 episode.isCompleted -> {
-                    isCheckable = false
-                    isChecked = false
                     text = context.getString(R.string.podcast_episode_completed)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_check_24)
                     iconTint = resources.getColorStateList(R.color.episode_button_completed_icon_color, context.theme)
                 }
                 episode.position > 0 -> {
-                    isCheckable = false
-                    isChecked = false
                     text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
                     iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
                 }
                 else -> {
-                    isCheckable = false
-                    isChecked = false
                     text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
                     iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
