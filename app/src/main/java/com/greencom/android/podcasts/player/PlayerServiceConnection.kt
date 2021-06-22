@@ -126,8 +126,6 @@ class PlayerServiceConnection @Inject constructor(
                 Pair(PlayerService.EPISODE_START_POSITION, episode.position)
             )
         )
-        // Reset player state to handle current episode properly in PodcastViewModel.
-        _playerState.value = MediaPlayer.PLAYER_STATE_IDLE
     }
 
     private fun emitCurrentPosition() {
