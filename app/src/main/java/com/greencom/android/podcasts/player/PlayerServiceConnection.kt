@@ -37,8 +37,8 @@ class PlayerServiceConnection @Inject constructor(
     private val _currentEpisode = MutableStateFlow(CurrentEpisode.empty())
     val currentEpisode = _currentEpisode.asStateFlow()
 
-    private val _playerState = MutableStateFlow(MediaPlayer.PLAYER_STATE_IDLE)
-    val playerState = _playerState.asStateFlow()
+    private val _currentState = MutableStateFlow(MediaPlayer.PLAYER_STATE_IDLE)
+    val currentState = _currentState.asStateFlow()
 
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition = _currentPosition.asStateFlow()
@@ -68,8 +68,8 @@ class PlayerServiceConnection @Inject constructor(
             ) {
                 Log.d(PLAYER_TAG, "controllerCallback: onConnected()")
                 _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
-                _playerState.value = controller.playerState
-                emitCurrentPosition()
+                _currentState.value = controller.playerState
+                trackCurrentPosition()
             }
 
             override fun onDisconnected(controller: MediaController) {
@@ -84,8 +84,8 @@ class PlayerServiceConnection @Inject constructor(
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
-                _playerState.value = state
-                emitCurrentPosition()
+                _currentState.value = state
+                trackCurrentPosition()
 
                 // Set empty current episode if the playback has completed.
                 _currentEpisode.value = if (controller.currentPosition >= controller.duration) {
@@ -116,7 +116,7 @@ class PlayerServiceConnection @Inject constructor(
     @ExperimentalTime
     fun playEpisode(episode: Episode) {
         // Set player state paused to show episode play buttons properly in PodcastFragment.
-        _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
+        _currentState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaUri(
             Uri.parse(episode.audio),
             bundleOf(
@@ -130,7 +130,7 @@ class PlayerServiceConnection @Inject constructor(
         )
     }
 
-    private fun emitCurrentPosition() {
+    private fun trackCurrentPosition() {
         currentPositionJob?.cancel()
 
         if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {

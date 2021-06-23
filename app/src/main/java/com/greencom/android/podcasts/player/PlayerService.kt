@@ -61,7 +61,6 @@ class PlayerService : MediaSessionService() {
 
     private lateinit var mediaControlReceiver: BroadcastReceiver
 
-    private var isStarted = true
     private var isForeground = false
 
     private val notificationManger: NotificationManagerCompat by lazy {
@@ -142,10 +141,6 @@ class PlayerService : MediaSessionService() {
                 ) {
                     updateEpisodeState()
                 }
-
-                if (playerState.isPlayerPlaying() && !isStarted) {
-                    startService(Intent(this@PlayerService, PlayerService::class.java))
-                }
             }
 
             override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
@@ -199,13 +194,6 @@ class PlayerService : MediaSessionService() {
         unregisterReceiver(mediaControlReceiver)
         scope.cancel()
         removeNotification()
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        if (player.playerState.isPlayerNotPlaying()) {
-            removeNotification()
-        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
@@ -360,19 +348,11 @@ class PlayerService : MediaSessionService() {
     }
 
     private fun setNotification(notification: Notification) {
-        if (player.playerState.isPlayerPlaying()) {
-            if (isForeground) {
-                notificationManger.notify(PLAYER_NOTIFICATION_ID, notification)
-            } else {
-                startForeground(PLAYER_NOTIFICATION_ID, notification)
-                isForeground = true
-            }
-        }
-
-        if (player.playerState.isPlayerNotPlaying()) {
+        if (isForeground) {
             notificationManger.notify(PLAYER_NOTIFICATION_ID, notification)
-            stopForeground(false)
-            isForeground = false
+        } else {
+            startForeground(PLAYER_NOTIFICATION_ID, notification)
+            isForeground = true
         }
     }
 
@@ -390,6 +370,7 @@ class PlayerService : MediaSessionService() {
             val channel = NotificationChannel(PLAYER_CHANNEL_ID, name, importance).apply {
                 enableVibration(false)
             }
+            // TODO: Replace with NotificationManagerCompat
             val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
@@ -417,13 +398,8 @@ class PlayerService : MediaSessionService() {
             when (intent?.action) {
                 ACTION_PLAY -> safePlay()
                 ACTION_PAUSE -> player.pause()
-                ACTION_SKIP_BACKWARD -> skipBackwardOrForward(SKIP_BACKWARD_VALUE)
-                ACTION_SKIP_FORWARD -> skipBackwardOrForward(SKIP_FORWARD_VALUE)
-                ACTION_CLOSE -> {
-                    stopSelf()
-                    isStarted = false
-                    removeNotification()
-                }
+                ACTION_SKIP_BACKWARD -> skipBackwardOrForward(PLAYER_SKIP_BACKWARD_VALUE)
+                ACTION_SKIP_FORWARD -> skipBackwardOrForward(PLAYER_SKIP_FORWARD_VALUE)
             }
         }
     }
@@ -435,9 +411,6 @@ class PlayerService : MediaSessionService() {
         const val EPISODE_IMAGE = MediaMetadata.METADATA_KEY_ART_URI
         const val EPISODE_DURATION = MediaMetadata.METADATA_KEY_DURATION
         const val EPISODE_START_POSITION = "EPISODE_START_POSITION"
-
-        const val SKIP_FORWARD_VALUE = 30_000
-        const val SKIP_BACKWARD_VALUE = -10_000
 
         private const val ACTION_CLOSE = "com.greencom.android.podcasts.ACTION_SKIP_CLOSE"
         private const val ACTION_PLAY = "com.greencom.android.podcasts.ACTION_PLAY"

@@ -84,7 +84,7 @@ class PodcastViewModel @Inject constructor(
             .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
                 setCurrentEpisode(flowState, currentEpisode)
             }
-            .combine(playerServiceConnection.playerState) { flowState, playerState ->
+            .combine(playerServiceConnection.currentState) { flowState, playerState ->
                 setCurrentEpisodeState(flowState, playerState)
             }
             .collectLatest { state ->

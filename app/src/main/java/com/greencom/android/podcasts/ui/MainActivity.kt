@@ -34,6 +34,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
+import com.greencom.android.podcasts.player.PLAYER_SKIP_BACKWARD_VALUE
+import com.greencom.android.podcasts.player.PLAYER_SKIP_FORWARD_VALUE
 import com.greencom.android.podcasts.player.PlayerService
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
@@ -346,11 +348,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         expandedPlayer.skipBackward.setOnClickListener {
-            skipValue.value -= PlayerService.SKIP_BACKWARD_VALUE
+            skipValue.value += PLAYER_SKIP_BACKWARD_VALUE
         }
 
         expandedPlayer.skipForward.setOnClickListener {
-            skipValue.value += PlayerService.SKIP_FORWARD_VALUE
+            skipValue.value += PLAYER_SKIP_FORWARD_VALUE
         }
 
         // The expanded content of the player is not disabled at application start
