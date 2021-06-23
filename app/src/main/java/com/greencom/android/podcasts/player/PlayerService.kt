@@ -260,7 +260,6 @@ class PlayerService : MediaSessionService() {
         notificationJob?.cancel()
         notificationJob = scope.launch {
             val notificationBuilder = NotificationCompat.Builder(this@PlayerService, PLAYER_CHANNEL_ID)
-                .setOngoing(true)
                 .setSilent(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setSmallIcon(R.drawable.media_session_service_notification_ic_music_note)
@@ -276,7 +275,7 @@ class PlayerService : MediaSessionService() {
                         Intent(ACTION_PAUSE),
                         PendingIntent.FLAG_CANCEL_CURRENT
                     )
-                    playPauseIcon = R.drawable.ic_pause_24
+                    playPauseIcon = R.drawable.ic_pause_32
                     playPauseTitle = getString(R.string.notification_pause)
                 }
                 MediaPlayer.PLAYER_STATE_PAUSED -> {
@@ -286,7 +285,7 @@ class PlayerService : MediaSessionService() {
                         Intent(ACTION_PLAY),
                         PendingIntent.FLAG_CANCEL_CURRENT
                     )
-                    playPauseIcon = R.drawable.ic_play_24
+                    playPauseIcon = R.drawable.ic_play_32
                     playPauseTitle = getString(R.string.notification_play)
                 }
                 else -> {
@@ -309,7 +308,7 @@ class PlayerService : MediaSessionService() {
                 Intent(ACTION_SKIP_BACKWARD),
                 PendingIntent.FLAG_CANCEL_CURRENT
             )
-            val backwardSkipIcon = R.drawable.ic_backward_10_24
+            val backwardSkipIcon = R.drawable.ic_backward_10_32
             val backwardSkipTitle = getString(R.string.notification_backward)
 
             val forwardSkipAction = PendingIntent.getBroadcast(
@@ -318,7 +317,7 @@ class PlayerService : MediaSessionService() {
                 Intent(ACTION_SKIP_FORWARD),
                 PendingIntent.FLAG_CANCEL_CURRENT
             )
-            val forwardSkipIcon = R.drawable.ic_forward_30_24
+            val forwardSkipIcon = R.drawable.ic_forward_30_32
             val forwardSkipTitle = getString(R.string.notification_forward)
 
             val activityIntent = Intent(this@PlayerService, MainActivity::class.java).apply {
@@ -367,7 +366,7 @@ class PlayerService : MediaSessionService() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.notification_player_channel_name)
-            val importance = NotificationManager.IMPORTANCE_NONE
+            val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(PLAYER_CHANNEL_ID, name, importance).apply {
                 enableVibration(false)
             }
