@@ -81,11 +81,22 @@ class MainActivity : AppCompatActivity() {
     /** [BottomSheetBehavior] plugin of the player bottom sheet. */
     private lateinit var playerBehavior: BottomSheetBehavior<FrameLayout>
 
+    /** Whether the player bottom sheet is expanded or not. */
+    private val isPlayerExpanded: Boolean
+        get() = playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED
+
+    /** Whether the player bottom sheet is collapsed or not. */
+    private val isPlayerCollapsed: Boolean
+        get() = playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED
+
     /** Slider thumb animator. */
     private var thumbAnimator: ObjectAnimator? = null
 
-    /** Is the player expanded. `false` means collapsed. Used to delay text marquee animations. */
-    private val isPlayerExpanded = MutableStateFlow(false)
+    /**
+     * Whether the player bottom sheet is expanded or not, represented as StateFlow.
+     * `false` means collapsed. Used to control text marquee animations.
+     */
+    private val isPlayerExpandedFlow = MutableStateFlow(false)
 
     // TODO
     private val skipValue = MutableStateFlow(0L)
@@ -129,7 +140,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Control player text marquee animations depending on the bottom sheet state.
                 launch {
-                    isPlayerExpanded.collectLatest { isPlayerExpanded ->
+                    isPlayerExpandedFlow.collectLatest { isPlayerExpanded ->
                         marqueePlayerText(isPlayerExpanded)
                     }
                 }
@@ -137,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                 // TODO
                 launch {
                     skipValue.collectLatest { value ->
-                        skip(value)
+                        skipBackwardOrForward(value)
                     }
                 }
 
@@ -180,19 +191,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
         outState.putInt(STATE_PLAYER_BEHAVIOR, playerBehavior.state)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-
         savedInstanceState.apply {
             playerBehavior.state = getInt(STATE_PLAYER_BEHAVIOR)
         }
 
-        // Setup player content.
-        val slideOffset = if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) 1F else 0F
+        // Restore player bottom sheet behavior state.
+        val slideOffset = if (isPlayerExpanded) 1F else 0F
         val bottomNavBarHeight = resources.getDimension(R.dimen.bottom_nav_bar_height)
         controlPlayerOnBottomSheetStateChanged(playerBehavior.state)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -204,7 +213,7 @@ class MainActivity : AppCompatActivity() {
 
     /** Make player closable on back pressed. */
     override fun onBackPressed() {
-        if (playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
+        if (!isPlayerCollapsed) {
             playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             super.onBackPressed()
@@ -213,9 +222,7 @@ class MainActivity : AppCompatActivity() {
 
     /** Make player closable on outside click. */
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (ev.action == MotionEvent.ACTION_DOWN &&
-            playerBehavior.state != BottomSheetBehavior.STATE_COLLAPSED
-        ) {
+        if (ev.action == MotionEvent.ACTION_DOWN && !isPlayerCollapsed) {
 
             // Create a new empty Rect with [0,0,0,0] values for [left,top,right,bottom].
             val outRect = Rect()
@@ -255,7 +262,7 @@ class MainActivity : AppCompatActivity() {
         }
         hideSkipHints(true)
 
-        // Slider label formatter.
+        // Set slider's label formatter.
         expandedPlayer.slider.setLabelFormatter { position ->
             Duration.milliseconds(position.toLong()).toComponents { hours, minutes, seconds, _ ->
                 return@setLabelFormatter when (hours) {
@@ -350,7 +357,7 @@ class MainActivity : AppCompatActivity() {
         // (because of bug?), so prevent random click on the invisible podcast cover
         // by checking the state of player bottom sheet. If player is collapsed, expand it.
         expandedPlayer.cover.setOnClickListener {
-            if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+            if (isPlayerCollapsed) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
         }
@@ -422,8 +429,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun controlPlayerOnBottomSheetStateChanged(newState: Int) {
         when (newState) {
-            BottomSheetBehavior.STATE_EXPANDED -> isPlayerExpanded.value = true
-            BottomSheetBehavior.STATE_COLLAPSED -> isPlayerExpanded.value = false
+            BottomSheetBehavior.STATE_EXPANDED -> isPlayerExpandedFlow.value = true
+            BottomSheetBehavior.STATE_COLLAPSED -> isPlayerExpandedFlow.value = false
         }
 
         // Hide the scrim background when the player is collapsed.
@@ -509,7 +516,7 @@ class MainActivity : AppCompatActivity() {
 
     /** Expand the player if it is collapsed. */
     private fun expandPlayer() {
-        if (playerBehavior.state == BottomSheetBehavior.STATE_COLLAPSED) {
+        if (isPlayerCollapsed) {
             playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
@@ -547,7 +554,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // TODO
-    private suspend fun skip(value: Long) {
+    private suspend fun skipBackwardOrForward(value: Long) {
         if (value == 0L) {
             hideSkipHints()
             return
