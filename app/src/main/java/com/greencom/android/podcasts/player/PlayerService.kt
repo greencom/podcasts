@@ -50,7 +50,7 @@ class PlayerService : MediaSessionService() {
     @Inject lateinit var playerRepository: PlayerRepository
 
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + Dispatchers.Default)
+    private val scope = CoroutineScope(job + Dispatchers.Main)
 
     private var notificationJob: Job? = null
 
@@ -61,6 +61,7 @@ class PlayerService : MediaSessionService() {
 
     private lateinit var mediaControlReceiver: BroadcastReceiver
 
+    private var isStarted = true
     private var isForeground = false
 
     private val notificationManger: NotificationManagerCompat by lazy {
@@ -141,6 +142,10 @@ class PlayerService : MediaSessionService() {
                 ) {
                     updateEpisodeState()
                 }
+
+                if (playerState.isPlayerPlaying() && !isStarted) {
+                    startService(Intent(this@PlayerService, PlayerService::class.java))
+                }
             }
 
             override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
@@ -188,9 +193,6 @@ class PlayerService : MediaSessionService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(PLAYER_TAG,"PlayerService.onDestroy()")
-
-        updateEpisodeState()
-
         mediaSession.close()
         player.unregisterPlayerCallback(playerCallback)
         player.close()
@@ -201,7 +203,9 @@ class PlayerService : MediaSessionService() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-        stopSelf()
+        if (player.playerState.isPlayerNotPlaying()) {
+            removeNotification()
+        }
     }
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
@@ -332,8 +336,16 @@ class PlayerService : MediaSessionService() {
                 0
             )
 
+            val deleteIntent = PendingIntent.getBroadcast(
+                this@PlayerService,
+                0,
+                Intent(ACTION_CLOSE),
+                0
+            )
+
             notificationBuilder
                 .setContentIntent(contentIntent)
+                .setDeleteIntent(deleteIntent)
                 .setContentTitle(episode.title)
                 .setContentText(episode.publisher)
                 .setLargeIcon(bitmap)
@@ -348,11 +360,19 @@ class PlayerService : MediaSessionService() {
     }
 
     private fun setNotification(notification: Notification) {
-        if (isForeground) {
+        if (player.playerState.isPlayerPlaying()) {
+            if (isForeground) {
+                notificationManger.notify(PLAYER_NOTIFICATION_ID, notification)
+            } else {
+                startForeground(PLAYER_NOTIFICATION_ID, notification)
+                isForeground = true
+            }
+        }
+
+        if (player.playerState.isPlayerNotPlaying()) {
             notificationManger.notify(PLAYER_NOTIFICATION_ID, notification)
-        } else {
-            startForeground(PLAYER_NOTIFICATION_ID, notification)
-            isForeground = true
+            stopForeground(false)
+            isForeground = false
         }
     }
 
@@ -382,6 +402,7 @@ class PlayerService : MediaSessionService() {
             addAction(ACTION_PLAY)
             addAction(ACTION_SKIP_BACKWARD)
             addAction(ACTION_SKIP_FORWARD)
+            addAction(ACTION_CLOSE)
         }
         registerReceiver(mediaControlReceiver, filter)
     }
@@ -398,6 +419,11 @@ class PlayerService : MediaSessionService() {
                 ACTION_PAUSE -> player.pause()
                 ACTION_SKIP_BACKWARD -> skipBackwardOrForward(SKIP_BACKWARD_VALUE)
                 ACTION_SKIP_FORWARD -> skipBackwardOrForward(SKIP_FORWARD_VALUE)
+                ACTION_CLOSE -> {
+                    stopSelf()
+                    isStarted = false
+                    removeNotification()
+                }
             }
         }
     }
@@ -413,6 +439,7 @@ class PlayerService : MediaSessionService() {
         const val SKIP_FORWARD_VALUE = 30_000
         const val SKIP_BACKWARD_VALUE = -10_000
 
+        private const val ACTION_CLOSE = "com.greencom.android.podcasts.ACTION_SKIP_CLOSE"
         private const val ACTION_PLAY = "com.greencom.android.podcasts.ACTION_PLAY"
         private const val ACTION_PAUSE = "com.greencom.android.podcasts.ACTION_PAUSE"
         private const val ACTION_SKIP_BACKWARD = "com.greencom.android.podcasts.ACTION_SKIP_BACKWARD"

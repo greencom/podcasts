@@ -6,6 +6,9 @@ import androidx.media2.player.MediaPlayer
 fun Int.isPlayerPlaying(): Boolean = this == MediaPlayer.PLAYER_STATE_PLAYING
 
 // TODO
+fun Int.isPlayerNotPlaying(): Boolean = this != MediaPlayer.PLAYER_STATE_PLAYING
+
+// TODO
 fun Int.isPlayerPaused(): Boolean = this == MediaPlayer.PLAYER_STATE_PAUSED
 
 // TODO
