@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.player
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -20,10 +21,7 @@ import androidx.media2.common.MediaMetadata
 import androidx.media2.common.SessionPlayer
 import androidx.media2.common.UriMediaItem
 import androidx.media2.player.MediaPlayer
-import androidx.media2.session.MediaSession
-import androidx.media2.session.MediaSessionService
-import androidx.media2.session.SessionCommandGroup
-import androidx.media2.session.SessionToken
+import androidx.media2.session.*
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
@@ -110,6 +108,7 @@ class PlayerService : MediaSessionService() {
                 Log.d(PLAYER_TAG,"sessionCallback: onDisconnected()")
                 isServiceBound = false
                 super.onDisconnected(session, controller)
+                // TODO: stopForeground if paused?
             }
 
             override fun onSetMediaUri(
@@ -157,6 +156,21 @@ class PlayerService : MediaSessionService() {
 
                 result = player.play().get()
                 return result.resultCode
+            }
+
+            override fun onCommandRequest(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo,
+                command: SessionCommand
+            ): Int {
+                @SuppressLint("SwitchIntDef")
+                when (command.commandCode) {
+                    SessionCommand.COMMAND_CODE_PLAYER_PLAY -> {
+                        safePlay()
+                        return SessionResult.RESULT_ERROR_INVALID_STATE
+                    }
+                }
+                return super.onCommandRequest(session, controller, command)
             }
         }
     }

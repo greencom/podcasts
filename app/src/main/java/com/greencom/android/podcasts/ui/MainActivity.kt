@@ -34,9 +34,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
-import com.greencom.android.podcasts.player.PLAYER_SKIP_BACKWARD_VALUE
-import com.greencom.android.podcasts.player.PLAYER_SKIP_FORWARD_VALUE
-import com.greencom.android.podcasts.player.PlayerService
+import com.greencom.android.podcasts.player.*
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
@@ -55,8 +53,10 @@ import kotlin.time.ExperimentalTime
 // Saving instance state.
 private const val STATE_PLAYER_BEHAVIOR = "STATE_PLAYER_BEHAVIOR"
 
-private const val DURATION_SLIDER_THUMB_ANIMATION = 120L
-private const val ALPHA_SKIP_HINT_BACKGROUND = 0.5F
+private const val SLIDER_THUMB_ANIMATION_DURATION = 120L
+private const val SKIP_HINT_BACKGROUND_ALPHA = 0.5F
+
+private const val POSITIONS_SKIPPED_THRESHOLD = 10
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
@@ -94,9 +94,15 @@ class MainActivity : AppCompatActivity() {
     /** Slider thumb animator. */
     private var thumbAnimator: ObjectAnimator? = null
 
+    // TODO
+    private var positionsSkipped = 0
+
+    // TODO
+    private var updatePosition = true
+
     /**
      * Whether the player bottom sheet is expanded or not, represented as StateFlow.
-     * `false` means collapsed. Used to control text marquee animations.
+     * `false` means collapsed.
      */
     private val isPlayerExpandedFlow = MutableStateFlow(false)
 
@@ -143,7 +149,17 @@ class MainActivity : AppCompatActivity() {
                 // Control player text marquee animations depending on the bottom sheet state.
                 launch {
                     isPlayerExpandedFlow.collectLatest { isPlayerExpanded ->
-                        marqueePlayerText(isPlayerExpanded)
+                        // Keep progress bars updated even if the player is not playing.
+                        if (!viewModel.isPlaying) {
+                            if (isPlayerExpanded) {
+                                expandedPlayer.slider.value = viewModel.currentPosition.value.toFloat()
+                            } else {
+                                collapsedPlayer.progressBar.progress = viewModel.currentPosition.value.toInt()
+                            }
+                            positionsSkipped = 0
+                        }
+
+                        marqueePlayerTextViews(isPlayerExpanded)
                     }
                 }
 
@@ -156,22 +172,77 @@ class MainActivity : AppCompatActivity() {
 
                 // TODO
                 launch {
-                    viewModel.playerState.collect { state ->
-
+                    viewModel.currentState.collect { state ->
+                        when {
+                            state.isPlayerPlaying() -> {
+                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
+                                expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+                            }
+                            state.isPlayerPaused() -> {
+                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
+                                expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
+                            }
+                        }
                     }
                 }
 
                 // TODO
                 launch {
-                    viewModel.currentEpisode.collectLatest { episode ->
+                    viewModel.currentEpisode.collect { episode ->
+                        isPlayerExpandedFlow.value = !isPlayerExpandedFlow.value
 
+                        positionsSkipped = POSITIONS_SKIPPED_THRESHOLD
+
+                        collapsedPlayer.progressBar.progress = 0
+                        expandedPlayer.slider.value = 0F
+
+                        collapsedPlayer.title.text = episode.title
+                        collapsedPlayer.cover.load(episode.image) {
+                            coverBuilder(this@MainActivity)
+                        }
+                        collapsedPlayer.progressBar.max = viewModel.duration.toInt()
+
+                        expandedPlayer.title.text = episode.title
+                        expandedPlayer.publisher.text = episode.publisher
+                        expandedPlayer.cover.load(episode.image) {
+                            coverBuilder(this@MainActivity)
+                        }
+                        expandedPlayer.slider.valueTo = viewModel.duration.toFloat()
                     }
                 }
 
                 // TODO
                 launch {
                     viewModel.currentPosition.collect { position ->
+                        if (updatePosition) {
+                            if (positionsSkipped >= POSITIONS_SKIPPED_THRESHOLD) {
+                                collapsedPlayer.progressBar.progress = position.toInt()
+                                expandedPlayer.slider.value = position.toFloat()
+                                positionsSkipped = 0
+                                return@collect
+                            }
 
+                            @SuppressLint("SwitchIntDef")
+                            when (playerBehavior.state) {
+                                BottomSheetBehavior.STATE_COLLAPSED -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                }
+                                BottomSheetBehavior.STATE_EXPANDED -> {
+                                    expandedPlayer.slider.value = position.toFloat()
+                                }
+                                BottomSheetBehavior.STATE_DRAGGING -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                    expandedPlayer.slider.value = position.toFloat()
+                                    positionsSkipped = 0
+                                }
+                                BottomSheetBehavior.STATE_SETTLING -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                    expandedPlayer.slider.value = position.toFloat()
+                                    positionsSkipped = 0
+                                }
+                            }
+                            positionsSkipped++
+                        }
                     }
                 }
             }
@@ -316,13 +387,19 @@ class MainActivity : AppCompatActivity() {
         })
 
         collapsedPlayer.playPause.setOnClickListener {
-
+            when {
+                viewModel.isPlaying -> viewModel.pause()
+                viewModel.isPaused -> viewModel.play()
+            }
         }
 
 
         // EXPANDED.
         expandedPlayer.playPause.setOnClickListener {
-
+            when {
+                viewModel.isPlaying -> viewModel.pause()
+                viewModel.isPaused -> viewModel.play()
+            }
         }
 
         val onTouchListener = object : Slider.OnSliderTouchListener {
@@ -330,11 +407,14 @@ class MainActivity : AppCompatActivity() {
             val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
 
             override fun onStartTrackingTouch(slider: Slider) {
+                updatePosition = false
                 animateSliderThumb(thumbRadiusIncreased)
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
+                updatePosition = true
                 animateSliderThumb(thumbRadiusDefault)
+                viewModel.seekTo(slider.value.toLong())
             }
         }
         expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
@@ -533,15 +613,15 @@ class MainActivity : AppCompatActivity() {
                 "thumbRadius",
                 to
             ).apply {
-                duration = DURATION_SLIDER_THUMB_ANIMATION
+                duration = SLIDER_THUMB_ANIMATION_DURATION
                 setAutoCancel(true)
             }
         }
         thumbAnimator?.start()
     }
 
-    /** Control player text marquee animations depending on the bottom sheet state. */
-    private suspend fun marqueePlayerText(isPlayerExpanded: Boolean) {
+    /** Control player text views marquee animations depending on the bottom sheet state. */
+    private suspend fun marqueePlayerTextViews(isPlayerExpanded: Boolean) {
         if (isPlayerExpanded) {
             collapsedPlayer.title.isSelected = false
             delay(1000) // Delay animation.
@@ -566,19 +646,19 @@ class MainActivity : AppCompatActivity() {
             expandedPlayer.skipHintBackward.hideImmediately()
             expandedPlayer.skipHintBackground.rotation = 0F
             expandedPlayer.skipHintForward.text = getSkipHint(value)
-            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
             expandedPlayer.skipHintForward.revealCrossfade()
         } else {
             expandedPlayer.skipHintForward.hideImmediately()
             expandedPlayer.skipHintBackground.rotation = 180F
             expandedPlayer.skipHintBackward.text = getSkipHint(value)
-            expandedPlayer.skipHintBackground.revealCrossfade(ALPHA_SKIP_HINT_BACKGROUND)
+            expandedPlayer.skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
             expandedPlayer.skipHintBackward.revealCrossfade()
         }
 
         delay(1000)
         val newValue = (expandedPlayer.slider.value + value).toLong()
-        // TODO: Add seekTo().
+        viewModel.seekTo(newValue)
 
         hideSkipHints()
         skipValue.value = 0L

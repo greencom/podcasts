@@ -6,9 +6,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val EPISODE_START_THRESHOLD = 60_000
-private const val EPISODE_END_THRESHOLD = 90_000
+private const val EPISODE_END_THRESHOLD = 60_000
 private const val EPISODE_SKIP_BACKWARD = 5_000
 
+// TODO
 @Singleton
 class PlayerRepositoryImpl @Inject constructor(
     private val episodeDao: EpisodeDao,

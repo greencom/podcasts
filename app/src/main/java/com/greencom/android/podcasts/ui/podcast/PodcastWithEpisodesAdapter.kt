@@ -263,7 +263,6 @@ class EpisodeViewHolder private constructor(
         binding.title.text = episode.title
         binding.date.text = episodePubDateToString(episode.date, context)
 
-        // TODO: Add check for a current position and for isCompleted.
         binding.play.apply {
             when {
                 episode.isPlaying -> {
@@ -272,15 +271,15 @@ class EpisodeViewHolder private constructor(
                     iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
                     icon.animateVectorDrawable()
                 }
-                episode.isSelected -> {
-                    text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
-                    iconTint = resources.getColorStateList(R.color.episode_button_paused_icon_color, context.theme)
-                }
                 episode.isCompleted -> {
                     text = context.getString(R.string.podcast_episode_completed)
                     icon = AppCompatResources.getDrawable(context, R.drawable.ic_check_24)
                     iconTint = resources.getColorStateList(R.color.episode_button_completed_icon_color, context.theme)
+                }
+                episode.isSelected -> {
+                    text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
+                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
+                    iconTint = resources.getColorStateList(R.color.episode_button_paused_icon_color, context.theme)
                 }
                 episode.position > 0 -> {
                     text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)

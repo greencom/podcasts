@@ -87,10 +87,8 @@ class PlayerServiceConnection @Inject constructor(
                 _currentState.value = state
                 trackCurrentPosition()
 
-                _currentEpisode.value = when {
-                    state.isPlayerError() -> CurrentEpisode.empty()
-                    controller.currentPosition >= controller.duration -> CurrentEpisode.empty()
-                    else -> CurrentEpisode.from(controller.currentMediaItem)
+                if (state.isPlayerError()) {
+                    _currentEpisode.value = CurrentEpisode.empty()
                 }
             }
         }
@@ -138,14 +136,8 @@ class PlayerServiceConnection @Inject constructor(
             currentPositionJob = scope.launch {
                 while (true) {
                     ensureActive()
-                    when {
-                        controller.currentPosition in 0 until duration -> {
-                            _currentPosition.value = controller.currentPosition
-                        }
-                        // Set empty current episode if the playback has completed.
-                        controller.currentPosition >= duration -> {
-                            _currentEpisode.value = CurrentEpisode.empty()
-                        }
+                    if (controller.currentPosition in 0 until duration) {
+                        _currentPosition.value = controller.currentPosition
                     }
                     delay(1000)
                 }

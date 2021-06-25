@@ -21,7 +21,7 @@ class MainActivityViewModel @Inject constructor(
     val currentEpisode: StateFlow<CurrentEpisode>
         get() = playerServiceConnection.currentEpisode
 
-    val playerState: StateFlow<Int>
+    val currentState: StateFlow<Int>
         get() = playerServiceConnection.currentState
 
     val currentPosition: StateFlow<Long>
