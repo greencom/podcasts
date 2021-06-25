@@ -176,7 +176,9 @@ class PlayerService : MediaSessionService() {
                     startService(serviceIntent)
                 }
 
-                if (playerState.isPlayerPaused() && player.currentPosition != currentEpisodeStartPosition) {
+                if ((playerState.isPlayerPaused() || playerState.isPlayerError()) &&
+                    player.currentPosition != currentEpisodeStartPosition
+                ) {
                     updateEpisodeState()
                 }
             }
