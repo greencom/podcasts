@@ -51,7 +51,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // Saving instance state.
-private const val STATE_PLAYER_BEHAVIOR = "STATE_PLAYER_BEHAVIOR"
+private const val SAVED_STATE_PLAYER_BEHAVIOR_STATE = "PLAYER_BEHAVIOR_STATE"
 
 private const val SLIDER_THUMB_ANIMATION_DURATION = 120L
 private const val SKIP_HINT_BACKGROUND_ALPHA = 0.5F
@@ -264,13 +264,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putInt(STATE_PLAYER_BEHAVIOR, playerBehavior.state)
+        outState.putInt(SAVED_STATE_PLAYER_BEHAVIOR_STATE, playerBehavior.state)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         savedInstanceState.apply {
-            playerBehavior.state = getInt(STATE_PLAYER_BEHAVIOR)
+            playerBehavior.state = getInt(SAVED_STATE_PLAYER_BEHAVIOR_STATE)
         }
 
         // Restore player bottom sheet behavior state.

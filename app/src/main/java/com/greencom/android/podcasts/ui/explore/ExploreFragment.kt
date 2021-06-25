@@ -15,7 +15,7 @@ import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
 
 // Saving instance state.
-private const val STATE_IS_APP_BAR_EXPANDED = "STATE_IS_APP_BAR_EXPANDED"
+private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 
 /**
  * Contains lists of the best podcasts for different genres implemented as tabs for
@@ -47,7 +47,7 @@ class ExploreFragment : Fragment() {
 
         // Restore instance state.
         savedInstanceState?.apply {
-            binding.appBarLayout.setExpanded(getBoolean(STATE_IS_APP_BAR_EXPANDED), false)
+            binding.appBarLayout.setExpanded(getBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED), false)
         }
 
         initAppBar()
@@ -58,7 +58,7 @@ class ExploreFragment : Fragment() {
         super.onSaveInstanceState(outState)
 
         outState.apply {
-            putBoolean(STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded)
+            putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded)
         }
     }
 

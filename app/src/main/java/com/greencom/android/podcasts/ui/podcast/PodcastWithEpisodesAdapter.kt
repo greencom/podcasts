@@ -28,7 +28,7 @@ private const val ITEM_VIEW_TYPE_EPISODE = 1
 private const val DESCRIPTION_MIN_LINES = 5
 private const val DESCRIPTION_MAX_LINES = 100
 
-private const val DURATION_SORT_ORDER_ANIMATION = 200L
+private const val SORT_ORDER_ANIMATION_DURATION = 200L
 
 /**
  * Adapter used for RecyclerView that represents a list consisting of a podcast header and
@@ -206,7 +206,7 @@ class PodcastHeaderViewHolder private constructor(
                 "rotation",
                 to
             ).apply {
-                duration = DURATION_SORT_ORDER_ANIMATION
+                duration = SORT_ORDER_ANIMATION_DURATION
                 setAutoCancel(true)
             }
         }

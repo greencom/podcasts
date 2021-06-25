@@ -32,10 +32,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.ExperimentalTime
 
 // Saving instance state.
-private const val STATE_IS_APP_BAR_EXPANDED = "STATE_IS_APP_BAR_EXPANDED"
-private const val STATE_IS_SCROLL_TO_TOP_SHOWN = "STATE_IS_SCROLL_TO_TOP_SHOWN"
+private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
+private const val SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN = "IS_SCROLL_TO_TOP_SHOWN"
 
-private const val FAB_DISTANCE_TOP_THRESHOLD = 10
+private const val FAB_DISTANCE_TO_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100
 
 @ExperimentalTime
@@ -84,8 +84,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
         // Restore instance state.
         savedInstanceState?.apply {
-            binding.appBarLayout.setExpanded(getBoolean(STATE_IS_APP_BAR_EXPANDED), false)
-            binding.scrollToTop.apply { if (getBoolean(STATE_IS_SCROLL_TO_TOP_SHOWN)) show() else hide() }
+            binding.appBarLayout.setExpanded(getBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED), false)
+            binding.scrollToTop.apply { if (getBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN)) show() else hide() }
         }
 
         // Get the podcast ID from the navigation arguments.
@@ -106,8 +106,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         super.onSaveInstanceState(outState)
 
         outState.apply {
-            putBoolean(STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded.value)
-            putBoolean(STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
+            putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded.value)
+            putBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
         }
     }
 
@@ -181,7 +181,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 // Show and hide the fab. Skip the initial check to restore instance state.
                 if (scrollToTopInitialCheckSkipped) {
                     binding.scrollToTop.apply {
-                        if (firstVisibleItemPosition >= FAB_DISTANCE_TOP_THRESHOLD && dy < 0) {
+                        if (firstVisibleItemPosition >= FAB_DISTANCE_TO_TOP_THRESHOLD && dy < 0) {
                             show()
                         } else {
                             hide()
