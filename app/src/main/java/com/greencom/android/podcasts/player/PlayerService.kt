@@ -177,6 +177,7 @@ class PlayerService : MediaSessionService() {
                 }
 
                 if ((playerState.isPlayerPaused() || playerState.isPlayerError()) &&
+                    player.currentPosition != 0L &&
                     player.currentPosition != currentEpisodeStartPosition
                 ) {
                     updateEpisodeState()

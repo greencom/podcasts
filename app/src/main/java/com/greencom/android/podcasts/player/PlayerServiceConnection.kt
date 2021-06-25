@@ -87,10 +87,11 @@ class PlayerServiceConnection @Inject constructor(
                 _currentState.value = state
                 trackCurrentPosition()
 
-                // Set empty current episode if the playback has completed.
-                _currentEpisode.value = if (controller.currentPosition >= controller.duration) {
-                    CurrentEpisode.empty()
-                } else CurrentEpisode.from(controller.currentMediaItem)
+                _currentEpisode.value = when {
+                    state.isPlayerError() -> CurrentEpisode.empty()
+                    controller.currentPosition >= controller.duration -> CurrentEpisode.empty()
+                    else -> CurrentEpisode.from(controller.currentMediaItem)
+                }
             }
         }
     }
