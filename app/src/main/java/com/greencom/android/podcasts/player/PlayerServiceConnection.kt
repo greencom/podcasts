@@ -103,6 +103,8 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun seekTo(position: Long) {
+        if (controller.currentMediaItem == null) return
+
         val newPosition = when {
             position <= 0L -> 0L
             position >= controller.duration -> controller.duration

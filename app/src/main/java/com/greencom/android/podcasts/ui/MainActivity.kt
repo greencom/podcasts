@@ -122,6 +122,13 @@ class MainActivity : AppCompatActivity() {
                 val binder = service as PlayerService.PlayerServiceBinder
                 val sessionToken = binder.sessionToken
                 viewModel.initPlayerServiceConnection(this@MainActivity, sessionToken)
+
+                // TODO
+                if (viewModel.currentEpisode.value.isNotEmpty()) {
+                    collapsedPlayer.progressBar.max = binder.duration.toInt()
+                    expandedPlayer.slider.valueTo = binder.duration.toFloat()
+                    expandedPlayer.timeLeft.text = getRemainingTime(viewModel.currentPosition.value, binder.duration)
+                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -189,6 +196,8 @@ class MainActivity : AppCompatActivity() {
                 // TODO
                 launch {
                     viewModel.currentEpisode.collect { episode ->
+                        // TODO: ???
+                        isPlayerExpandedFlow.value = !isPlayerExpandedFlow.value
                         isPlayerExpandedFlow.value = !isPlayerExpandedFlow.value
 
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD

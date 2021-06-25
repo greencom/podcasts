@@ -469,6 +469,9 @@ class PlayerService : MediaSessionService() {
     inner class PlayerServiceBinder : Binder() {
         val sessionToken: SessionToken
             get() = mediaSession.token
+
+        val duration: Long
+            get() = if (player.duration >= 0) player.duration else Long.MAX_VALUE
     }
 
     inner class MediaControlReceiver : BroadcastReceiver() {
