@@ -8,7 +8,9 @@ import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -17,6 +19,12 @@ import kotlin.time.ExperimentalTime
 class MainActivityViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
 ) : ViewModel() {
+
+    private val _isPlayerBottomSheetExpanded = MutableStateFlow(false)
+    val isPlayerBottomSheetExpanded = _isPlayerBottomSheetExpanded.asStateFlow()
+
+    private val _skipBackwardOrForwardValue = MutableStateFlow(0L)
+    val skipBackwardOrForwardValue = _skipBackwardOrForwardValue.asStateFlow()
 
     val currentEpisode: StateFlow<CurrentEpisode>
         get() = playerServiceConnection.currentEpisode
@@ -46,6 +54,23 @@ class MainActivityViewModel @Inject constructor(
 
     fun seekTo(position: Long) {
         playerServiceConnection.seekTo(position)
+    }
+
+    fun setPlayerBottomSheetState(isExpanded: Boolean) {
+        _isPlayerBottomSheetExpanded.value = isExpanded
+    }
+
+    fun resetPlayerBottomSheetState() {
+        _isPlayerBottomSheetExpanded.value = !_isPlayerBottomSheetExpanded.value
+        _isPlayerBottomSheetExpanded.value = !_isPlayerBottomSheetExpanded.value
+    }
+
+    fun updateSkipBackwardOrForwardValue(value: Long) {
+        _skipBackwardOrForwardValue.value += value
+    }
+
+    fun resetSkipBackwardOrForwardValue() {
+        _skipBackwardOrForwardValue.value = 0L
     }
 
     @ExperimentalTime

@@ -41,7 +41,6 @@ import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -100,15 +99,6 @@ class MainActivity : AppCompatActivity() {
     // TODO
     private var updatePosition = true
 
-    /**
-     * Whether the player bottom sheet is expanded or not, represented as StateFlow.
-     * `false` means collapsed.
-     */
-    private val isPlayerExpandedFlow = MutableStateFlow(false)
-
-    // TODO
-    private val skipValue = MutableStateFlow(0L)
-
     // App bar colors.
     private var statusBarColor = 0
     private var navigationBarColorDefault = TypedValue()
@@ -127,7 +117,10 @@ class MainActivity : AppCompatActivity() {
                 if (viewModel.currentEpisode.value.isNotEmpty()) {
                     collapsedPlayer.progressBar.max = binder.duration.toInt()
                     expandedPlayer.slider.valueTo = binder.duration.toFloat()
-                    expandedPlayer.timeLeft.text = getRemainingTime(viewModel.currentPosition.value, binder.duration)
+                    expandedPlayer.timeLeft.text = getRemainingTime(
+                        position = viewModel.currentPosition.value,
+                        duration = binder.duration
+                    )
                 }
             }
 
@@ -155,7 +148,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Control player text marquee animations depending on the bottom sheet state.
                 launch {
-                    isPlayerExpandedFlow.collectLatest { isPlayerExpanded ->
+                    viewModel.isPlayerBottomSheetExpanded.collectLatest { isPlayerExpanded ->
                         // Keep progress bars updated even if the player is not playing.
                         if (!viewModel.isPlaying) {
                             if (isPlayerExpanded) {
@@ -172,7 +165,7 @@ class MainActivity : AppCompatActivity() {
 
                 // TODO
                 launch {
-                    skipValue.collectLatest { value ->
+                    viewModel.skipBackwardOrForwardValue.collectLatest { value ->
                         skipBackwardOrForward(value)
                     }
                 }
@@ -196,9 +189,7 @@ class MainActivity : AppCompatActivity() {
                 // TODO
                 launch {
                     viewModel.currentEpisode.collect { episode ->
-                        // TODO: ???
-                        isPlayerExpandedFlow.value = !isPlayerExpandedFlow.value
-                        isPlayerExpandedFlow.value = !isPlayerExpandedFlow.value
+                        viewModel.resetPlayerBottomSheetState()
 
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD
 
@@ -437,11 +428,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         expandedPlayer.skipBackward.setOnClickListener {
-            skipValue.value += PLAYER_SKIP_BACKWARD_VALUE
+            viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_BACKWARD_VALUE)
         }
 
         expandedPlayer.skipForward.setOnClickListener {
-            skipValue.value += PLAYER_SKIP_FORWARD_VALUE
+            viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_FORWARD_VALUE)
         }
 
         // The expanded content of the player is not disabled at application start
@@ -520,8 +511,12 @@ class MainActivity : AppCompatActivity() {
      */
     private fun controlPlayerOnBottomSheetStateChanged(newState: Int) {
         when (newState) {
-            BottomSheetBehavior.STATE_EXPANDED -> isPlayerExpandedFlow.value = true
-            BottomSheetBehavior.STATE_COLLAPSED -> isPlayerExpandedFlow.value = false
+            BottomSheetBehavior.STATE_EXPANDED -> {
+                viewModel.setPlayerBottomSheetState(isExpanded = true)
+            }
+            BottomSheetBehavior.STATE_COLLAPSED -> {
+                viewModel.setPlayerBottomSheetState(isExpanded = false)
+            }
         }
 
         // Hide the scrim background when the player is collapsed.
@@ -670,7 +665,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.seekTo(newValue)
 
         hideSkipHints()
-        skipValue.value = 0L
+        viewModel.resetSkipBackwardOrForwardValue()
     }
 
     /** Hide all player skip hints. */

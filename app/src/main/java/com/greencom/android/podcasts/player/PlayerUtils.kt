@@ -4,8 +4,8 @@ import androidx.media2.player.MediaPlayer
 
 // TODO
 
-const val PLAYER_SKIP_FORWARD_VALUE = 30_000
-const val PLAYER_SKIP_BACKWARD_VALUE = -10_000
+const val PLAYER_SKIP_FORWARD_VALUE = 30_000L
+const val PLAYER_SKIP_BACKWARD_VALUE = -10_000L
 
 fun Int.isPlayerPlaying(): Boolean = this == MediaPlayer.PLAYER_STATE_PLAYING
 

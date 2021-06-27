@@ -278,8 +278,8 @@ class PlayerService : MediaSessionService() {
         }
     }
 
-    private fun skipBackwardOrForward(skipValue: Int) {
-        val value = player.currentPosition + skipValue
+    private fun skipBackwardOrForward(value: Long) {
+        val value = player.currentPosition + value
         val newPosition = when {
             value <= 0L -> 0L
             value >= player.duration -> player.duration
