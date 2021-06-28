@@ -24,7 +24,6 @@ import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,10 +51,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     // Navigation arguments.
     private val args: PodcastFragmentArgs by navArgs()
 
+    /** ID of the podcast associated with this fragment. */
     private var podcastId = ""
-
-    /** Is the app bar expanded. `false` means collapsed. */
-    private val isAppBarExpanded = MutableStateFlow(true)
 
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
@@ -106,7 +103,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         super.onSaveInstanceState(outState)
 
         outState.apply {
-            putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded.value)
+            putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, viewModel.isAppBarExpanded.value)
             putBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
         }
     }
@@ -133,8 +130,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         binding.appBarLayout.addOnOffsetChangedListener(object : AppBarLayoutStateChangeListener() {
             override fun onStateChanged(appBarLayout: AppBarLayout, newState: Int) {
                 when (newState) {
-                    EXPANDED -> isAppBarExpanded.value = true
-                    COLLAPSED -> isAppBarExpanded.value = false
+                    EXPANDED -> viewModel.setAppBarState(isExpanded = true)
+                    COLLAPSED -> viewModel.setAppBarState(isExpanded = false)
                     else -> {  }
                 }
             }
@@ -257,8 +254,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
                 // Observe app bar state to run title animation.
                 launch {
-                    isAppBarExpanded.collectLatest {
-                        if (it) {
+                    viewModel.isAppBarExpanded.collectLatest { isExpanded ->
+                        if (isExpanded) {
                             delay(1000) // Delay animation.
                             binding.appBarTitle.isSelected = true
                         } else {

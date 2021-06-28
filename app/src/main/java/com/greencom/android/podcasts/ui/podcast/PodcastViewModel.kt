@@ -43,6 +43,10 @@ class PodcastViewModel @Inject constructor(
     /** StateFlow with the current [SortOrder] value. Defaults to [SortOrder.RECENT_FIRST]. */
     val sortOrder = _sortOrder.asStateFlow()
 
+    // TODO
+    private val _isAppBarExpanded = MutableStateFlow(true)
+    val isAppBarExpanded = _isAppBarExpanded.asStateFlow()
+
     /** Job that handles episodes fetching. */
     private var episodesJob: Job? = null
 
@@ -235,6 +239,11 @@ class PodcastViewModel @Inject constructor(
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState
+    }
+
+    // TODO
+    fun setAppBarState(isExpanded: Boolean) {
+        _isAppBarExpanded.value = isExpanded
     }
 
     /** Sealed class that represents the UI state of the [PodcastFragment]. */
