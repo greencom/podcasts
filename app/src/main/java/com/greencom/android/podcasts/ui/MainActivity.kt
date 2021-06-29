@@ -93,10 +93,18 @@ class MainActivity : AppCompatActivity() {
     /** Slider thumb animator. */
     private var thumbAnimator: ObjectAnimator? = null
 
-    // TODO
+    /**
+     * How many new position have been skipped for the hidden player. Used to update the
+     * progress bar of the hidden player only once per [POSITIONS_SKIPPED_THRESHOLD]
+     * updates.
+     */
     private var positionsSkipped = 0
 
-    // TODO
+    /**
+     * Whether the expanded player's slider position should be updated with a new value or not.
+     * Stop updating when the user starts touching the slider and resume when the
+     * user stops.
+     */
     private var updatePosition = true
 
     // App bar colors.
@@ -639,7 +647,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // TODO
+    /**
+     * Skip backward or forward depending on the given value. Show UI hint to the user with the
+     * current skip value and direction at first and then delay for a second before the actual
+     * skip. Delay allows the user to control the skip process properly and gives them time to
+     * adjust skip value.
+     *
+     * Note: use this function only with [collectLatest].
+     */
     private suspend fun skipBackwardOrForward(value: Long) {
         if (value == 0L) {
             hideSkipHints()

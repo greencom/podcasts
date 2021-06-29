@@ -24,7 +24,7 @@ abstract class EpisodeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insert(episodes: List<EpisodeEntity>)
 
-    // TODO
+    /** Update episode state using [EpisodeEntityState] data class. */
     @Update(entity = EpisodeEntity::class)
     abstract suspend fun update(episodeState: EpisodeEntityState)
 

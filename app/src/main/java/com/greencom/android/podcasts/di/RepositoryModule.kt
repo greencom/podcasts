@@ -17,12 +17,15 @@ abstract class RepositoryModule {
 
     /**
      * Tell Hilt which [Repository] implementation to use when it needs to provide
-     * an instance of interface.
+     * an instance of the interface.
      */
     @Binds
     abstract fun bindRepository(repositoryImpl: RepositoryImpl): Repository
 
-    // TODO
+    /**
+     * Tell Hilt which [PlayerRepository] implementation to use when it needs to provide
+     * an instance of the interface.
+     */
     @Binds
     abstract fun bindPlayerRepository(playerRepositoryImpl: PlayerRepositoryImpl): PlayerRepository
 }

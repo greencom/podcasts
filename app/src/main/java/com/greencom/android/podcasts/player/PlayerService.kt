@@ -108,7 +108,6 @@ class PlayerService : MediaSessionService() {
                 Log.d(PLAYER_TAG,"sessionCallback: onDisconnected()")
                 isServiceBound = false
                 super.onDisconnected(session, controller)
-                // TODO: stopForeground if paused?
             }
 
             override fun onSetMediaUri(

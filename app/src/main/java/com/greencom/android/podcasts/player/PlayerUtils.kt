@@ -2,15 +2,28 @@ package com.greencom.android.podcasts.player
 
 import androidx.media2.player.MediaPlayer
 
-// TODO
-
-const val PLAYER_SKIP_FORWARD_VALUE = 30_000L
+/**
+ * Value used to skip backward for.
+ *
+ * Note: sign respects skip direction.
+ */
 const val PLAYER_SKIP_BACKWARD_VALUE = -10_000L
 
+/**
+ * Value used to skip forward for.
+ *
+ * Note: sign respects skip direction.
+ */
+const val PLAYER_SKIP_FORWARD_VALUE = 30_000L
+
+/** Returns `true` if the player state is [MediaPlayer.PLAYER_STATE_PLAYING]. `false` otherwise. */
 fun Int.isPlayerPlaying(): Boolean = this == MediaPlayer.PLAYER_STATE_PLAYING
 
+/** Returns `true` if the player state is [MediaPlayer.PLAYER_STATE_PAUSED]. `false` otherwise. */
 fun Int.isPlayerPaused(): Boolean = this == MediaPlayer.PLAYER_STATE_PAUSED
 
+/** Returns `true` if the player state is [MediaPlayer.PLAYER_STATE_IDLE]. `false` otherwise. */
 fun Int.isPlayerIdle(): Boolean = this == MediaPlayer.PLAYER_STATE_IDLE
 
+/** Returns `true` if the player state is [MediaPlayer.PLAYER_STATE_ERROR]. `false` otherwise. */
 fun Int.isPlayerError(): Boolean = this == MediaPlayer.PLAYER_STATE_ERROR

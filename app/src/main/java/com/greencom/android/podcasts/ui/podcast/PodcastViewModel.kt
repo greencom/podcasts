@@ -3,13 +3,13 @@ package com.greencom.android.podcasts.ui.podcast
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media2.player.MediaPlayer
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
+import com.greencom.android.podcasts.player.isPlayerPlaying
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
@@ -43,8 +43,11 @@ class PodcastViewModel @Inject constructor(
     /** StateFlow with the current [SortOrder] value. Defaults to [SortOrder.RECENT_FIRST]. */
     val sortOrder = _sortOrder.asStateFlow()
 
-    // TODO
     private val _isAppBarExpanded = MutableStateFlow(true)
+    /**
+     * StateFlow with the current [PodcastFragment]'s app bar state. `true` means the app bar
+     * is expanded. Otherwise `false`.
+     */
     val isAppBarExpanded = _isAppBarExpanded.asStateFlow()
 
     /** Job that handles episodes fetching. */
@@ -53,7 +56,10 @@ class PodcastViewModel @Inject constructor(
     /** Are there episodes at the bottom of a list that should be loaded. */
     private var moreEpisodesNeededAtBottom = true
 
-    // TODO
+    /**
+     * Is the currently selected episode one of the episodes of this podcast. If not,
+     * [setCurrentEpisodeState] function will skip its body to save resources.
+     */
     private var isCurrentEpisodeHere = false
 
     // TODO
@@ -201,7 +207,7 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
-    /** Check if there is the episode that is currently selected. */
+    /** Check if there is the episode that is currently selected in the player. */
     private fun setCurrentEpisode(
         flowState: State<PodcastWithEpisodes>,
         currentEpisode: CurrentEpisode
@@ -221,27 +227,33 @@ class PodcastViewModel @Inject constructor(
         return flowState
     }
 
-    // TODO
+    /**
+     * Set the appropriate state for the currently selected episode depending on the
+     * current player state. Do nothing if the currently selected episode is not one of the
+     * episodes of this podcast.
+     */
     private fun setCurrentEpisodeState(
         flowState: State<PodcastWithEpisodes>,
         playerState: Int
     ): State<PodcastWithEpisodes> {
         if (flowState is State.Success && isCurrentEpisodeHere) {
             val episodes = flowState.data.episodes.map { episode ->
-                if (episode.isSelected) {
-                    return@map when (playerState) {
-                        MediaPlayer.PLAYER_STATE_PLAYING -> episode.copy(isPlaying = true)
-                        else -> episode
-                    }
+                if (episode.isSelected && playerState.isPlayerPlaying()) {
+                    episode.copy(isPlaying = true)
+                } else {
+                    episode
                 }
-                episode
             }
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState
     }
 
-    // TODO
+    /**
+     * Set a new value to the [isAppBarExpanded] StateFlow.
+     *
+     * @param isExpanded whether the app bar is expanded or not.
+     */
     fun setAppBarState(isExpanded: Boolean) {
         _isAppBarExpanded.value = isExpanded
     }

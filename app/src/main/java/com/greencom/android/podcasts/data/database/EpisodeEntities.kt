@@ -58,7 +58,7 @@ data class EpisodeEntity(
     val position: Long,
 )
 
-// TODO
+/** Model class that used to update episode state in the database. */
 data class EpisodeEntityState(
 
     /** Episode ID. */
