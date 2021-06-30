@@ -43,7 +43,7 @@ private const val NOTIFICATION_ID = 1
 @AndroidEntryPoint
 class PlayerService : MediaSessionService() {
 
-    @Inject lateinit var playerRepository: PlayerRepository
+    @Inject lateinit var repository: PlayerRepository
 
     private val job = SupervisorJob()
 
@@ -300,7 +300,7 @@ class PlayerService : MediaSessionService() {
             val position = player.currentPosition
             val duration = player.duration
             scope.launch {
-                playerRepository.updateEpisodeState(episode.id, position, duration)
+                repository.updateEpisodeState(episode.id, position, duration)
             }
         }
     }
