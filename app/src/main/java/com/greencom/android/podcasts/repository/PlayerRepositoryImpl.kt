@@ -19,17 +19,32 @@ class PlayerRepositoryImpl @Inject constructor(
         val positionEnoughForCompletion = duration - EPISODE_END_THRESHOLD
         val episodeState = when {
             position < EPISODE_START_THRESHOLD -> {
-                EpisodeEntityState(episodeId, 0L, false)
+                EpisodeEntityState(
+                    id = episodeId,
+                    position = 0L,
+                    isCompleted = false,
+                    completionDate = 0L
+                )
             }
             position in EPISODE_START_THRESHOLD..positionEnoughForCompletion -> {
                 val newPosition = if (position >= EPISODE_START_THRESHOLD + EPISODE_SKIP_BACKWARD) {
                     position - EPISODE_SKIP_BACKWARD
                 } else position
-                EpisodeEntityState(episodeId, newPosition, false)
+                EpisodeEntityState(
+                    id = episodeId,
+                    position = newPosition,
+                    isCompleted = false,
+                    completionDate = 0L
+                )
             }
             // position > positionEnoughForCompletion.
             else -> {
-                EpisodeEntityState(episodeId, 0L, true)
+                EpisodeEntityState(
+                    id = episodeId,
+                    position = 0L,
+                    isCompleted = true,
+                    completionDate = System.currentTimeMillis()
+                )
             }
         }
         episodeDao.update(episodeState)

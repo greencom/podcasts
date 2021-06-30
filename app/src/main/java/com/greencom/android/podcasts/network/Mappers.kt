@@ -33,8 +33,9 @@ fun PodcastWrapper.episodesToDatabase(): List<EpisodeEntity> = episodes.map {
         podcastId = id,
         explicitContent = it.explicitContent,
         date = it.date,
-        isCompleted = false,
         position = 0L,
+        isCompleted = false,
+        completionDate = 0L,
     )
 }
 

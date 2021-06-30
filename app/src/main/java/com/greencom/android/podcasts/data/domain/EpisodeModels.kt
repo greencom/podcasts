@@ -46,13 +46,19 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "date")
     val date: Long,
 
+    /** The position where the episode was last stopped. */
+    @ColumnInfo(name = "position")
+    val position: Long,
+
     /** Whether the episode is completed. */
     @ColumnInfo(name = "is_completed")
     val isCompleted: Boolean,
 
-    /** The position where the episode was last stopped. */
-    @ColumnInfo(name = "position")
-    val position: Long,
+    /**
+     * Date when the episode was completed in milliseconds. `0`, if the episode is not completed.
+     */
+    @ColumnInfo(name = "completion_date")
+    val completionDate: Long,
 
     /** Whether the episode is selected by the user to play. */
     @Ignore
