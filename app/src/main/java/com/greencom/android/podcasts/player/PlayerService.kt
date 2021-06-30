@@ -489,13 +489,6 @@ class PlayerService : MediaSessionService() {
     }
 
     companion object {
-        const val EPISODE_ID = MediaMetadata.METADATA_KEY_MEDIA_ID
-        const val EPISODE_TITLE = MediaMetadata.METADATA_KEY_TITLE
-        const val EPISODE_PUBLISHER = MediaMetadata.METADATA_KEY_AUTHOR
-        const val EPISODE_IMAGE = MediaMetadata.METADATA_KEY_ART_URI
-        const val EPISODE_DURATION = MediaMetadata.METADATA_KEY_DURATION
-        const val EPISODE_START_POSITION = "EPISODE_START_POSITION"
-
         private const val ACTION_PLAY = "com.greencom.android.podcasts.ACTION_PLAY"
         private const val ACTION_PAUSE = "com.greencom.android.podcasts.ACTION_PAUSE"
         private const val ACTION_SKIP_BACKWARD = "com.greencom.android.podcasts.ACTION_SKIP_BACKWARD"
