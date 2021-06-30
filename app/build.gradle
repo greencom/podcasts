@@ -77,7 +77,7 @@ dependencies {
     implementation "com.jakewharton.timber:timber:$timber_version"
 
     // ViewPager2
-    implementation "androidx.viewpager2:viewpager2:$viewpager2_version"
+    implementation "androidx.viewpager2:viewpager2:$viewPager2_version"
 
     // Lifecycle
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
@@ -109,7 +109,7 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayout_version"
     implementation "com.google.android.material:material:$material_version"
-    implementation "androidx.recyclerview:recyclerview:$recyclerview_version"
+    implementation "androidx.recyclerview:recyclerview:$recyclerView_version"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefresh_version"
 
     // Core

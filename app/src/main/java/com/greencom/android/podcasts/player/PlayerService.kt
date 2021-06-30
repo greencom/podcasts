@@ -124,15 +124,15 @@ class PlayerService : MediaSessionService() {
                 if (extras != null) {
                     mediaItemBuilder
                         .setMetadata(MediaMetadata.Builder()
-                                .putString(EPISODE_ID, extras.getString(EPISODE_ID))
-                                .putString(EPISODE_TITLE, extras.getString(EPISODE_TITLE))
-                                .putString(EPISODE_PUBLISHER, extras.getString(EPISODE_PUBLISHER))
-                                .putString(EPISODE_IMAGE, extras.getString(EPISODE_IMAGE))
-                                .putLong(EPISODE_DURATION, extras.getLong(EPISODE_DURATION))
+                                .putString(EpisodeMetadata.ID, extras.getString(EpisodeMetadata.ID))
+                                .putString(EpisodeMetadata.TITLE, extras.getString(EpisodeMetadata.TITLE))
+                                .putString(EpisodeMetadata.PUBLISHER, extras.getString(EpisodeMetadata.PUBLISHER))
+                                .putString(EpisodeMetadata.IMAGE, extras.getString(EpisodeMetadata.IMAGE))
+                                .putLong(EpisodeMetadata.DURATION, extras.getLong(EpisodeMetadata.DURATION))
                                 .build())
                 }
 
-                val startPosition = extras?.getLong(EPISODE_START_POSITION) ?: 0L
+                val startPosition = extras?.getLong(EpisodeMetadata.START_POSITION) ?: 0L
                 currentEpisodeStartPosition = startPosition
 
                 var result = player.setMediaItem(mediaItemBuilder.build()).get()

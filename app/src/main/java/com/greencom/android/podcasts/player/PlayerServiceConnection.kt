@@ -121,12 +121,12 @@ class PlayerServiceConnection @Inject constructor(
         controller.setMediaUri(
             Uri.parse(episode.audio),
             bundleOf(
-                Pair(EPISODE_ID, episode.id),
-                Pair(EPISODE_TITLE, episode.title),
-                Pair(EPISODE_PUBLISHER, episode.publisher),
-                Pair(EPISODE_IMAGE, episode.image),
-                Pair(EPISODE_DURATION, Duration.seconds(episode.audioLength).inWholeMilliseconds),
-                Pair(EPISODE_START_POSITION, episode.position)
+                Pair(EpisodeMetadata.ID, episode.id),
+                Pair(EpisodeMetadata.TITLE, episode.title),
+                Pair(EpisodeMetadata.PUBLISHER, episode.publisher),
+                Pair(EpisodeMetadata.IMAGE, episode.image),
+                Pair(EpisodeMetadata.DURATION, Duration.seconds(episode.audioLength).inWholeMilliseconds),
+                Pair(EpisodeMetadata.START_POSITION, episode.position)
             )
         )
     }

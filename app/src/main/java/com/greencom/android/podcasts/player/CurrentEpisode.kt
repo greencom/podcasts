@@ -23,10 +23,10 @@ data class CurrentEpisode(
         @ExperimentalTime
         fun from(mediaItem: MediaItem?): CurrentEpisode {
             return CurrentEpisode(
-                id = mediaItem?.metadata?.getString(PlayerService.EPISODE_ID) ?: EMPTY,
-                title = mediaItem?.metadata?.getString(PlayerService.EPISODE_TITLE) ?: EMPTY,
-                publisher = mediaItem?.metadata?.getString(PlayerService.EPISODE_PUBLISHER) ?: EMPTY,
-                image = mediaItem?.metadata?.getString(PlayerService.EPISODE_IMAGE) ?: EMPTY,
+                id = mediaItem?.metadata?.getString(EpisodeMetadata.ID) ?: EMPTY,
+                title = mediaItem?.metadata?.getString(EpisodeMetadata.TITLE) ?: EMPTY,
+                publisher = mediaItem?.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: EMPTY,
+                image = mediaItem?.metadata?.getString(EpisodeMetadata.IMAGE) ?: EMPTY,
             )
         }
     }
