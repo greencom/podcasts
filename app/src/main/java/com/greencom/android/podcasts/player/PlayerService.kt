@@ -168,6 +168,7 @@ class PlayerService : MediaSessionService() {
     private val playerCallback: MediaPlayer.PlayerCallback by lazy {
         object : MediaPlayer.PlayerCallback() {
             override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
+                Log.d(PLAYER_TAG, "playerCallback: onCurrentMediaItemChanged()")
                 updateNotification()
             }
 

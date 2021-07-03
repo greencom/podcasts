@@ -32,6 +32,9 @@ const val PLAYER_TAG = "PlayerTag"
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
 
+/** Duration used to delay text views marquee animation. */
+const val DURATION_TEXT_MARQUEE_DELAY = 2000L
+
 /** Start a vector drawable animation in the appropriate way depending on the system version. */
 fun Drawable.animateVectorDrawable() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

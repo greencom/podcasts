@@ -256,7 +256,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
                 launch {
                     viewModel.isAppBarExpanded.collectLatest { isExpanded ->
                         if (isExpanded) {
-                            delay(1000) // Delay animation.
+                            delay(DURATION_TEXT_MARQUEE_DELAY) // Delay animation.
                             binding.appBarTitle.isSelected = true
                         } else {
                             binding.appBarTitle.isSelected = false

@@ -38,6 +38,9 @@ class MainActivityViewModel @Inject constructor(
     val isPlaying: Boolean
         get() = playerServiceConnection.isPlaying
 
+    val isNotPlaying: Boolean
+        get() = !isPlaying
+
     val isPaused: Boolean
         get() = playerServiceConnection.isPaused
 

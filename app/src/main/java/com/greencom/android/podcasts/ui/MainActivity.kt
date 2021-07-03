@@ -158,7 +158,7 @@ class MainActivity : AppCompatActivity() {
                 launch {
                     viewModel.isPlayerBottomSheetExpanded.collectLatest { isPlayerExpanded ->
                         // Keep progress bars updated even if the player is not playing.
-                        if (!viewModel.isPlaying) {
+                        if (viewModel.isNotPlaying) {
                             if (isPlayerExpanded) {
                                 expandedPlayer.slider.value = viewModel.currentPosition.value.toFloat()
                             } else {
@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.currentEpisode.collect { episode ->
                         viewModel.resetPlayerBottomSheetState()
 
-                        positionsSkipped = POSITIONS_SKIPPED_THRESHOLD
+                        positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
 
                         collapsedPlayer.progressBar.progress = 0
                         expandedPlayer.slider.value = 0F
@@ -636,13 +636,13 @@ class MainActivity : AppCompatActivity() {
     private suspend fun marqueePlayerTextViews(isPlayerExpanded: Boolean) {
         if (isPlayerExpanded) {
             collapsedPlayer.title.isSelected = false
-            delay(1000) // Delay animation.
+            delay(DURATION_TEXT_MARQUEE_DELAY) // Delay animation.
             expandedPlayer.title.isSelected = true
             expandedPlayer.publisher.isSelected = true
         } else {
             expandedPlayer.title.isSelected = false
             expandedPlayer.publisher.isSelected = false
-            delay(1000) // Delay animation.
+            delay(DURATION_TEXT_MARQUEE_DELAY) // Delay animation.
             collapsedPlayer.title.isSelected = true
         }
     }
