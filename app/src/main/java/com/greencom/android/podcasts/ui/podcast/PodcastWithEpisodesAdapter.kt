@@ -38,7 +38,7 @@ class PodcastWithEpisodesAdapter(
     val sortOrder: StateFlow<SortOrder>,
     private val updateSubscription: (String, Boolean) -> Unit,
     private val changeSortOrder: () -> Unit,
-    private val playEpisode: (Episode) -> Unit,
+    private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
@@ -234,7 +234,7 @@ class PodcastHeaderViewHolder private constructor(
 /** EpisodeViewHolder represents a single episode item in the list. */
 class EpisodeViewHolder private constructor(
     private val binding: ItemPodcastEpisodeBinding,
-    private val playEpisode: (Episode) -> Unit,
+    private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
@@ -250,7 +250,7 @@ class EpisodeViewHolder private constructor(
             if (episode.isSelected) {
                 if (episode.isPlaying) pause() else play()
             } else {
-                playEpisode(episode)
+                playEpisode(episode.id)
             }
         }
     }
@@ -299,7 +299,7 @@ class EpisodeViewHolder private constructor(
         /** Create an [EpisodeViewHolder]. */
         fun create(
             parent: ViewGroup,
-            playEpisode: (Episode) -> Unit,
+            playEpisode: (String) -> Unit,
             play: () -> Unit,
             pause: () -> Unit,
         ): EpisodeViewHolder {

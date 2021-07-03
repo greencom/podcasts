@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.EpisodeEntityState
+import com.greencom.android.podcasts.data.domain.Episode
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -14,6 +15,14 @@ private const val EPISODE_SKIP_BACKWARD = 5_000
 class PlayerRepositoryImpl @Inject constructor(
     private val episodeDao: EpisodeDao,
 ) : PlayerRepository {
+
+    override suspend fun getEpisode(episodeId: String): Episode? {
+        return episodeDao.getEpisode(episodeId)
+    }
+
+    override suspend fun getEpisodePosition(episodeId: String): Long? {
+        return episodeDao.getEpisodePosition(episodeId)
+    }
 
     override suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long) {
         val positionEnoughForCompletion = duration - EPISODE_END_THRESHOLD

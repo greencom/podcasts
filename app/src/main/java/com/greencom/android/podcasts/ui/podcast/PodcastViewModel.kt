@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.R
-import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.player.CurrentEpisode
@@ -20,7 +19,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.ExperimentalTime
 
 @HiltViewModel
 class PodcastViewModel @Inject constructor(
@@ -63,9 +61,8 @@ class PodcastViewModel @Inject constructor(
     private var isCurrentEpisodeHere = false
 
     // TODO
-    @ExperimentalTime
-    fun playEpisode(episodes: Episode) {
-        playerServiceConnection.playEpisode(episodes)
+    fun playEpisode(episodeId: String) {
+        playerServiceConnection.playEpisode(episodeId)
     }
 
     // TODO

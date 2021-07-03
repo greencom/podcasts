@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
+import com.greencom.android.podcasts.data.domain.Episode
 
 /** Interface to interact with the `episodes` table. */
 @Dao
@@ -27,6 +28,14 @@ abstract class EpisodeDao {
     /** Update episode state using [EpisodeEntityState] data class. */
     @Update(entity = EpisodeEntity::class)
     abstract suspend fun update(episodeState: EpisodeEntityState)
+
+    /** Get the episode by ID. */
+    @Query("SELECT * FROM episodes WHERE id = :id")
+    abstract suspend fun getEpisode(id: String): Episode?
+
+    /** Get the episode's last position by ID. */
+    @Query("SELECT position FROM episodes WHERE id = :id")
+    abstract suspend fun getEpisodePosition(id: String): Long?
 
     /**
      * Get the publication date of the latest podcast episode which was uploaded

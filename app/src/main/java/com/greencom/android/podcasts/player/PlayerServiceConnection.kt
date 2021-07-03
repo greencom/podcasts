@@ -1,16 +1,14 @@
 package com.greencom.android.podcasts.player
 
 import android.content.Context
-import android.net.Uri
 import android.util.Log
-import androidx.core.os.bundleOf
 import androidx.media2.common.MediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaController
 import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
-import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
+import com.greencom.android.podcasts.repository.PlayerRepository
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,12 +16,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // TODO
 @Singleton
 class PlayerServiceConnection @Inject constructor(
+    private val repository: PlayerRepository,
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
 
@@ -79,7 +77,17 @@ class PlayerServiceConnection @Inject constructor(
 
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
                 Log.d(PLAYER_TAG, "controllerCallback: onCurrentMediaItemChanged()")
-                _currentEpisode.value = CurrentEpisode.from(item)
+                val episode = CurrentEpisode.from(item)
+                _currentEpisode.value = episode
+
+                val startPosition: Long
+                runBlocking {
+                    startPosition = repository.getEpisodePosition(episode.id) ?: 0L
+                }
+
+                controller.prepare().get()
+                controller.seekTo(startPosition).get()
+                controller.play()
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
@@ -114,21 +122,9 @@ class PlayerServiceConnection @Inject constructor(
         _currentPosition.value = newPosition
     }
 
-    @ExperimentalTime
-    fun playEpisode(episode: Episode) {
-        // Set player state paused to show episode play buttons properly in PodcastFragment.
+    fun playEpisode(episodeId: String) {
         _currentState.value = MediaPlayer.PLAYER_STATE_PAUSED
-        controller.setMediaUri(
-            Uri.parse(episode.audio),
-            bundleOf(
-                Pair(EpisodeMetadata.ID, episode.id),
-                Pair(EpisodeMetadata.TITLE, episode.title),
-                Pair(EpisodeMetadata.PUBLISHER, episode.publisher),
-                Pair(EpisodeMetadata.IMAGE, episode.image),
-                Pair(EpisodeMetadata.DURATION, Duration.seconds(episode.audioLength).inWholeMilliseconds),
-                Pair(EpisodeMetadata.START_POSITION, episode.position)
-            )
-        )
+        controller.setMediaItem(episodeId)
     }
 
     private fun trackCurrentPosition() {

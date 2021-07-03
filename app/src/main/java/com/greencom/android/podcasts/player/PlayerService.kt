@@ -10,7 +10,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
-import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -33,6 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import androidx.media.app.NotificationCompat as MediaNotificationCompat
 
@@ -110,51 +110,41 @@ class PlayerService : MediaSessionService() {
                 super.onDisconnected(session, controller)
             }
 
-            override fun onSetMediaUri(
+            override fun onCreateMediaItem(
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo,
-                uri: Uri,
-                extras: Bundle?
-            ): Int {
-                Log.d(PLAYER_TAG,"sessionCallback: onSetMediaUri()")
+                mediaId: String
+            ): MediaItem? {
+                Log.d(PLAYER_TAG,"sessionCallback: onCreateMediaItem()")
                 updateEpisodeState()
                 resetPlayer()
 
-                val mediaItemBuilder = UriMediaItem.Builder(uri)
-                if (extras != null) {
-                    mediaItemBuilder
+                var mediaItem: MediaItem? = null
+                val audio: String
+                val duration: Long
+                val title: String
+                val publisher: String
+                val image: String
+
+                runBlocking {
+                    val episode = repository.getEpisode(mediaId) ?: return@runBlocking
+                    audio = episode.audio
+                    duration = Duration.seconds(episode.audioLength).inWholeMilliseconds
+                    title = episode.title
+                    publisher = episode.publisher
+                    image = episode.image
+
+                    mediaItem = UriMediaItem.Builder(Uri.parse(audio))
                         .setMetadata(MediaMetadata.Builder()
-                                .putString(EpisodeMetadata.ID, extras.getString(EpisodeMetadata.ID))
-                                .putString(EpisodeMetadata.TITLE, extras.getString(EpisodeMetadata.TITLE))
-                                .putString(EpisodeMetadata.PUBLISHER, extras.getString(EpisodeMetadata.PUBLISHER))
-                                .putString(EpisodeMetadata.IMAGE, extras.getString(EpisodeMetadata.IMAGE))
-                                .putLong(EpisodeMetadata.DURATION, extras.getLong(EpisodeMetadata.DURATION))
-                                .build())
+                            .putString(EpisodeMetadata.ID, mediaId)
+                            .putString(EpisodeMetadata.TITLE, title)
+                            .putString(EpisodeMetadata.PUBLISHER, publisher)
+                            .putString(EpisodeMetadata.IMAGE, image)
+                            .putLong(EpisodeMetadata.DURATION, duration)
+                            .build())
+                        .build()
                 }
-
-                val startPosition = extras?.getLong(EpisodeMetadata.START_POSITION) ?: 0L
-                currentEpisodeStartPosition = startPosition
-
-                var result = player.setMediaItem(mediaItemBuilder.build()).get()
-                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                    Log.d(PLAYER_TAG, "player.setMediaItem() ERROR ${result.resultCode}")
-                    return result.resultCode
-                }
-
-                result = player.prepare().get()
-                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                    Log.d(PLAYER_TAG, "player.prepare() ERROR ${result.resultCode}")
-                    return result.resultCode
-                }
-
-                result = player.seekTo(startPosition).get()
-                if (result.resultCode != SessionPlayer.PlayerResult.RESULT_SUCCESS) {
-                    Log.d(PLAYER_TAG, "player.seekTo() ERROR ${result.resultCode}")
-                    return result.resultCode
-                }
-
-                result = player.play().get()
-                return result.resultCode
+                return mediaItem
             }
 
             override fun onCommandRequest(
@@ -278,11 +268,11 @@ class PlayerService : MediaSessionService() {
     }
 
     private fun skipBackwardOrForward(value: Long) {
-        val value = player.currentPosition + value
+        val mValue = player.currentPosition + value
         val newPosition = when {
-            value <= 0L -> 0L
-            value >= player.duration -> player.duration
-            else -> value
+            mValue <= 0L -> 0L
+            mValue >= player.duration -> player.duration
+            else -> mValue
         }
         player.seekTo(newPosition)
     }
