@@ -76,20 +76,20 @@ fun View.hideImmediately() {
 
 /** Reveal a view with crossfade animation. */
 @Suppress("UsePropertyAccessSyntax")
-fun View.revealCrossfade(toAlpha: Float = 1F) {
+fun View.revealCrossfade(toAlpha: Float = 1F, duration: Long = DURATION_CROSSFADE_ANIMATION) {
     if (isVisible && alpha == toAlpha) return
     isVisible = true
     animate()
         .alpha(toAlpha)
-        .setDuration(DURATION_CROSSFADE_ANIMATION)
+        .setDuration(duration)
 }
 
 /** Hide a view with a crossfade animation. */
-fun View.hideCrossfade() {
+fun View.hideCrossfade(duration: Long = DURATION_CROSSFADE_ANIMATION) {
     if (isGone && alpha == 0F) return
     animate()
         .alpha(0F)
-        .setDuration(DURATION_CROSSFADE_ANIMATION)
+        .setDuration(duration)
         .withEndAction { isVisible = false }
 }
 

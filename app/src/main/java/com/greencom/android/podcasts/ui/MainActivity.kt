@@ -18,6 +18,7 @@ import android.widget.FrameLayout
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -54,6 +55,7 @@ private const val SAVED_STATE_PLAYER_BEHAVIOR_STATE = "PLAYER_BEHAVIOR_STATE"
 
 private const val SLIDER_THUMB_ANIMATION_DURATION = 120L
 private const val SKIP_HINT_BACKGROUND_ALPHA = 0.5F
+private const val PLAYER_ANIMATION_DURATION = 300L
 
 private const val POSITIONS_SKIPPED_THRESHOLD = 10
 
@@ -197,6 +199,7 @@ class MainActivity : AppCompatActivity() {
                 // TODO
                 launch {
                     viewModel.currentEpisode.collect { episode ->
+                        showPlayer(episode.isNotEmpty())
                         viewModel.resetPlayerBottomSheetState()
 
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
@@ -331,6 +334,15 @@ class MainActivity : AppCompatActivity() {
         playerBehavior = BottomSheetBehavior.from(binding.player.root).apply {
             setupBottomSheetBehavior()
         }
+
+        // Hide player at start.
+        val layoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+        val bottom = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
+        layoutParams.setMargins(0, 0, 0, bottom)
+        binding.navHostFragment.layoutParams = layoutParams
+        binding.player.root.translationY = resources.getDimension(R.dimen.player_bottom_sheet_peek_height)
+        binding.playerShadowInternal.hideImmediately()
+        binding.playerShadowExternal.hideImmediately()
 
         // Hide scrim background at start.
         binding.background.isVisible = false
@@ -608,10 +620,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Expand the player if it is collapsed. */
+    /** Expand the player if it is not expanded. */
     private fun expandPlayer() {
-        if (isPlayerCollapsed) {
+        if (!isPlayerExpanded) {
             playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
+    /** Collapse the player if it is not collapsed. */
+    private fun collapsePlayer() {
+        if (!isPlayerCollapsed) {
+            playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
@@ -725,6 +744,37 @@ class MainActivity : AppCompatActivity() {
                 0 -> getString(R.string.player_time_stamp_left_format_m_s, minutes, seconds)
                 else -> getString(R.string.player_time_stamp_left_format_h_m_s, hours, minutes, seconds)
             }
+        }
+    }
+
+    /** Show or hide the player bottom sheet. */
+    private fun showPlayer(show: Boolean) {
+        val navHostLayoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
+        if (show) {
+            binding.player.root.animate()
+                .translationY(0F)
+                .setDuration(PLAYER_ANIMATION_DURATION)
+                .withStartAction { binding.player.root.isVisible = true }
+                .withEndAction {
+                    val bottom = resources.getDimensionPixelSize(R.dimen.player_bottom_sheet_peek_height)
+                    navHostLayoutParams.setMargins(0, 0, 0, bottom)
+                    binding.navHostFragment.layoutParams = navHostLayoutParams
+                }
+            binding.playerShadowInternal.revealCrossfade(duration = PLAYER_ANIMATION_DURATION)
+            binding.playerShadowExternal.revealCrossfade(duration = PLAYER_ANIMATION_DURATION)
+        } else {
+            collapsePlayer()
+            binding.player.root.animate()
+                .translationY(resources.getDimension(R.dimen.player_bottom_sheet_peek_height))
+                .setDuration(PLAYER_ANIMATION_DURATION)
+                .withStartAction {
+                    val bottom = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
+                    navHostLayoutParams.setMargins(0, 0, 0, bottom)
+                    binding.navHostFragment.layoutParams = navHostLayoutParams
+                }
+                .withEndAction { binding.player.root.isVisible = false }
+            binding.playerShadowInternal.hideCrossfade(PLAYER_ANIMATION_DURATION)
+            binding.playerShadowExternal.hideCrossfade(PLAYER_ANIMATION_DURATION)
         }
     }
 
