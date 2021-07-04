@@ -52,12 +52,18 @@ fun Drawable.animateVectorDrawable() {
  * @param animate perform with a crossfade animation or not. Defaults to `true`.
  * @param toAlpha can be used as a custom alpha value when showing a view. Not used when
  *                the view is being hidden from the screen. Defaults to `1F`.
+ * @param duration animation duration in millis.
  */
-fun View.show(show: Boolean, animate: Boolean = true, toAlpha: Float = 1F) {
+fun View.show(
+    show: Boolean,
+    animate: Boolean = true,
+    toAlpha: Float = 1F,
+    duration: Long = DURATION_CROSSFADE_ANIMATION,
+) {
     when {
-        show && animate -> revealCrossfade(toAlpha)
+        show && animate -> revealCrossfade(toAlpha, duration)
         show && !animate -> revealImmediately(toAlpha)
-        !show && animate -> hideCrossfade()
+        !show && animate -> hideCrossfade(duration)
         !show && !animate -> hideImmediately()
     }
 }
