@@ -2,7 +2,9 @@ package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.EpisodeEntityState
+import com.greencom.android.podcasts.data.datastore.PreferenceStorage
 import com.greencom.android.podcasts.data.domain.Episode
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -13,8 +15,17 @@ private const val EPISODE_SKIP_BACKWARD = 5_000
 // TODO
 @Singleton
 class PlayerRepositoryImpl @Inject constructor(
+    private val preferenceStorage: PreferenceStorage,
     private val episodeDao: EpisodeDao,
 ) : PlayerRepository {
+
+    override fun getLastEpisodeId(): Flow<String?> {
+        return preferenceStorage.getLastEpisodeId()
+    }
+
+    override suspend fun setLastEpisodeId(episodeId: String) {
+        preferenceStorage.setLastEpisodeId(episodeId)
+    }
 
     override suspend fun getEpisode(episodeId: String): Episode? {
         return episodeDao.getEpisode(episodeId)

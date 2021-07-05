@@ -11,8 +11,7 @@ import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.repository.PlayerRepository
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -57,6 +56,8 @@ class PlayerServiceConnection @Inject constructor(
             controller.duration
         } else Long.MAX_VALUE
 
+    private var shouldPlay = true
+
     @ExperimentalTime
     private val controllerCallback: MediaController.ControllerCallback by lazy {
         object : MediaController.ControllerCallback() {
@@ -65,9 +66,14 @@ class PlayerServiceConnection @Inject constructor(
                 allowedCommands: SessionCommandGroup
             ) {
                 Log.d(PLAYER_TAG, "controllerCallback: onConnected()")
-                _currentEpisode.value = CurrentEpisode.from(controller.currentMediaItem)
-                _currentState.value = controller.playerState
-                trackCurrentPosition()
+                val currentEpisode = CurrentEpisode.from(controller.currentMediaItem)
+                if (currentEpisode.isNotEmpty()) {
+                    _currentEpisode.value = currentEpisode
+                    _currentState.value = controller.playerState
+                    trackCurrentPosition()
+                } else {
+                    restoreEpisode()
+                }
             }
 
             override fun onDisconnected(controller: MediaController) {
@@ -87,7 +93,8 @@ class PlayerServiceConnection @Inject constructor(
 
                 controller.prepare().get()
                 controller.seekTo(startPosition).get()
-                controller.play()
+                if (shouldPlay) controller.play()
+                shouldPlay = true
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
@@ -123,8 +130,17 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun playEpisode(episodeId: String) {
+        shouldPlay = true
         _currentState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaItem(episodeId)
+    }
+
+    fun restoreEpisode() {
+        shouldPlay = false
+        scope.launch {
+            val episodeId = repository.getLastEpisodeId().first() ?: return@launch
+            controller.setMediaItem(episodeId)
+        }
     }
 
     private fun trackCurrentPosition() {
@@ -141,7 +157,12 @@ class PlayerServiceConnection @Inject constructor(
                 }
             }
         } else if (controller.currentPosition in 0..duration) {
-            _currentPosition.value = controller.currentPosition
+            val value = if (currentPosition.value == controller.currentPosition) {
+                controller.currentPosition + 1
+            } else {
+                controller.currentPosition
+            }
+            _currentPosition.value = value
         }
     }
 

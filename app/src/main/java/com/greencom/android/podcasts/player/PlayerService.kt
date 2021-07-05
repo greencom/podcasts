@@ -117,6 +117,8 @@ class PlayerService : MediaSessionService() {
             ): MediaItem? {
                 Log.d(PLAYER_TAG,"sessionCallback: onCreateMediaItem()")
                 updateEpisodeState()
+                saveLastEpisode()
+
                 resetPlayer()
 
                 var mediaItem: MediaItem? = null
@@ -185,6 +187,7 @@ class PlayerService : MediaSessionService() {
                     player.currentPosition != currentEpisodeStartPosition
                 ) {
                     updateEpisodeState()
+                    saveLastEpisode()
                 }
             }
 
@@ -292,6 +295,17 @@ class PlayerService : MediaSessionService() {
             val duration = player.duration
             scope.launch {
                 repository.updateEpisodeState(episode.id, position, duration)
+            }
+        }
+    }
+
+    @ExperimentalTime
+    private fun saveLastEpisode() {
+        Log.d(PLAYER_TAG, "saveLastEpisode()")
+        val episode = CurrentEpisode.from(player.currentMediaItem)
+        if (episode.isNotEmpty()) {
+            scope.launch {
+                repository.setLastEpisodeId(episode.id)
             }
         }
     }
