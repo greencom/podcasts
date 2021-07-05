@@ -16,17 +16,15 @@ data class CurrentEpisode(
     fun isNotEmpty(): Boolean = !isEmpty()
 
     companion object {
-        private const val EMPTY = ""
-
-        fun empty(): CurrentEpisode = CurrentEpisode(EMPTY, EMPTY, EMPTY, EMPTY)
+        fun empty(): CurrentEpisode = CurrentEpisode("", "", "", "")
 
         @ExperimentalTime
         fun from(mediaItem: MediaItem?): CurrentEpisode {
             return CurrentEpisode(
-                id = mediaItem?.metadata?.getString(EpisodeMetadata.ID) ?: EMPTY,
-                title = mediaItem?.metadata?.getString(EpisodeMetadata.TITLE) ?: EMPTY,
-                publisher = mediaItem?.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: EMPTY,
-                image = mediaItem?.metadata?.getString(EpisodeMetadata.IMAGE) ?: EMPTY,
+                id = mediaItem?.metadata?.getString(EpisodeMetadata.ID) ?: "",
+                title = mediaItem?.metadata?.getString(EpisodeMetadata.TITLE) ?: "",
+                publisher = mediaItem?.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: "",
+                image = mediaItem?.metadata?.getString(EpisodeMetadata.IMAGE) ?: "",
             )
         }
     }

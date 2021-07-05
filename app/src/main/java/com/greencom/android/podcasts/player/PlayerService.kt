@@ -1,6 +1,5 @@
 package com.greencom.android.podcasts.player
 
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -74,19 +73,17 @@ class PlayerService : MediaSessionService() {
             .build()
     }
 
-    private var isServiceStarted = false
-
-    private var isServiceForeground = false
-
-    private var isServiceBound = false
-
     private val isPlaying: Boolean
         get() = player.playerState.isPlayerPlaying()
 
     private val isNotPlaying: Boolean
         get() = !isPlaying
 
-    private var currentEpisodeStartPosition = 0L
+    private var isServiceStarted = false
+
+    private var isServiceForeground = false
+
+    private var isServiceBound = false
 
     @ExperimentalTime
     private val sessionCallback: MediaSession.SessionCallback by lazy {
@@ -105,9 +102,9 @@ class PlayerService : MediaSessionService() {
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo
             ) {
+                super.onDisconnected(session, controller)
                 Log.d(PLAYER_TAG,"sessionCallback: onDisconnected()")
                 isServiceBound = false
-                super.onDisconnected(session, controller)
             }
 
             override fun onCreateMediaItem(
@@ -154,14 +151,13 @@ class PlayerService : MediaSessionService() {
                 controller: MediaSession.ControllerInfo,
                 command: SessionCommand
             ): Int {
-                @SuppressLint("SwitchIntDef")
-                when (command.commandCode) {
+                return when (command.commandCode) {
                     SessionCommand.COMMAND_CODE_PLAYER_PLAY -> {
                         safePlay()
-                        return SessionResult.RESULT_ERROR_INVALID_STATE
+                        SessionResult.RESULT_ERROR_INVALID_STATE
                     }
+                    else -> super.onCommandRequest(session, controller, command)
                 }
-                return super.onCommandRequest(session, controller, command)
             }
         }
     }
@@ -182,26 +178,10 @@ class PlayerService : MediaSessionService() {
                     startService(serviceIntent)
                 }
 
-                if ((playerState.isPlayerPaused() || playerState.isPlayerError()) &&
-                    player.currentPosition != 0L &&
-                    player.currentPosition != currentEpisodeStartPosition
-                ) {
+                if (playerState.isPlayerPaused() || playerState.isPlayerError()) {
                     updateEpisodeState()
                     saveLastEpisode()
                 }
-            }
-
-            override fun onBufferingStateChanged(
-                player: SessionPlayer,
-                item: MediaItem?,
-                buffState: Int
-            ) {
-                Log.d(PLAYER_TAG, "playerCallback: onBufferingStateChanged(), buffState $buffState")
-            }
-
-            override fun onError(mp: MediaPlayer, item: MediaItem, what: Int, extra: Int) {
-                Log.d(PLAYER_TAG,"playerCallback: onError(), what $what, extra $extra")
-                super.onError(mp, item, what, extra)
             }
         }
     }
@@ -237,11 +217,6 @@ class PlayerService : MediaSessionService() {
         return PlayerServiceBinder()
     }
 
-    override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(PLAYER_TAG,"PlayerService.onUnbind()")
-        return super.onUnbind(intent)
-    }
-
     @ExperimentalTime
     override fun onDestroy() {
         super.onDestroy()
@@ -272,13 +247,13 @@ class PlayerService : MediaSessionService() {
     }
 
     private fun skipBackwardOrForward(value: Long) {
-        val mValue = player.currentPosition + value
-        val newPosition = when {
-            mValue <= 0L -> 0L
-            mValue >= player.duration -> player.duration
-            else -> mValue
+        var position = player.currentPosition + value
+        position = when {
+            position <= 0L -> 0L
+            position >= player.duration -> player.duration
+            else -> position
         }
-        player.seekTo(newPosition)
+        player.seekTo(position)
     }
 
     private fun resetPlayer() {

@@ -78,11 +78,11 @@ class MainActivityViewModel @Inject constructor(
 
     @ExperimentalTime
     fun initPlayerServiceConnection(context: Context, sessionToken: SessionToken) {
-        playerServiceConnection.initConnection(context, sessionToken)
+        playerServiceConnection.connect(context, sessionToken)
     }
 
     fun closePlayerServiceConnection() {
-        playerServiceConnection.closeConnection()
+        playerServiceConnection.disconnect()
     }
 
     override fun onCleared() {

@@ -25,6 +25,7 @@ class PlayerServiceConnection @Inject constructor(
 ) {
 
     private lateinit var job: Job
+
     private lateinit var scope: CoroutineScope
 
     private var currentPositionJob: Job? = null
@@ -46,17 +47,12 @@ class PlayerServiceConnection @Inject constructor(
     val isPaused: Boolean
         get() = if (::controller.isInitialized) controller.playerState.isPlayerPaused() else false
 
-    val isPlayingOrPaused: Boolean
-        get() = if (::controller.isInitialized) {
-            controller.playerState.isPlayerPlaying() || controller.playerState.isPlayerPaused()
-        } else false
-
     val duration: Long
         get() = if (::controller.isInitialized && controller.duration >= 0) {
             controller.duration
         } else Long.MAX_VALUE
 
-    private var shouldPlay = true
+    private var startPlaying = true
 
     @ExperimentalTime
     private val controllerCallback: MediaController.ControllerCallback by lazy {
@@ -70,15 +66,10 @@ class PlayerServiceConnection @Inject constructor(
                 if (currentEpisode.isNotEmpty()) {
                     _currentEpisode.value = currentEpisode
                     _currentState.value = controller.playerState
-                    trackCurrentPosition()
+                    postCurrentPosition()
                 } else {
                     restoreEpisode()
                 }
-            }
-
-            override fun onDisconnected(controller: MediaController) {
-                Log.d(PLAYER_TAG, "controllerCallback: onDisconnected()")
-                super.onDisconnected(controller)
             }
 
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
@@ -93,14 +84,13 @@ class PlayerServiceConnection @Inject constructor(
 
                 controller.prepare().get()
                 controller.seekTo(startPosition).get()
-                if (shouldPlay) controller.play()
-                shouldPlay = true
+                if (startPlaying) controller.play()
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
                 _currentState.value = state
-                trackCurrentPosition()
+                postCurrentPosition()
 
                 if (state.isPlayerError()) {
                     _currentEpisode.value = CurrentEpisode.empty()
@@ -130,27 +120,26 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun playEpisode(episodeId: String) {
-        shouldPlay = true
+        startPlaying = true
         _currentState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaItem(episodeId)
     }
 
     fun restoreEpisode() {
-        shouldPlay = false
+        startPlaying = false
         scope.launch {
             val episodeId = repository.getLastEpisodeId().first() ?: return@launch
             controller.setMediaItem(episodeId)
         }
     }
 
-    private fun trackCurrentPosition() {
+    private fun postCurrentPosition() {
         currentPositionJob?.cancel()
-
-        if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
+        if (isPlaying) {
             currentPositionJob = scope.launch {
                 while (true) {
                     ensureActive()
-                    if (controller.currentPosition in 0 until duration) {
+                    if (controller.currentPosition in 0..duration) {
                         _currentPosition.value = controller.currentPosition
                     }
                     delay(1000)
@@ -167,8 +156,8 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     @ExperimentalTime
-    fun initConnection(context: Context, sessionToken: SessionToken) {
-        Log.d(PLAYER_TAG, "PlayerServiceConnection.initConnection()")
+    fun connect(context: Context, sessionToken: SessionToken) {
+        Log.d(PLAYER_TAG, "PlayerServiceConnection.connect()")
         job = SupervisorJob()
         scope = CoroutineScope(job + defaultDispatcher)
 
@@ -178,8 +167,8 @@ class PlayerServiceConnection @Inject constructor(
             .build()
     }
 
-    fun closeConnection() {
-        Log.d(PLAYER_TAG, "PlayerServiceConnection.closeConnection()")
+    fun disconnect() {
+        Log.d(PLAYER_TAG, "PlayerServiceConnection.disconnect()")
         controller.close()
         scope.cancel()
     }
