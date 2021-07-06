@@ -12,7 +12,7 @@ import com.greencom.android.podcasts.databinding.DialogUnsubscribeBinding
 private const val PODCAST_ID = "PODCAST_ID"
 
 /** Dialog that appears on Unsubscribe click. Use [show] to create and display this dialog. */
-class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
+class UnsubscribeDialog private constructor() : BottomSheetDialogFragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: DialogUnsubscribeBinding? = null
@@ -41,7 +41,7 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
             // Instantiate the UnsubscribeDialogListener.
             listener = parentFragment as UnsubscribeDialogListener
         } catch (e: ClassCastException) {
-            // Throw an exception if the host fragment does not implement the callback interface.
+            // Throw an exception if the host does not implement the callback interface.
             throw ClassCastException(
                 "$parentFragment must implement UnsubscribeDialogListener interface"
             )
@@ -61,11 +61,11 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Get a podcast ID from the fragment arguments.
-        val id = arguments?.getString(PODCAST_ID) ?: ""
+        val podcastId = arguments?.getString(PODCAST_ID) ?: ""
 
         // Unsubscribe confirmation.
         binding.unsubscribe.setOnClickListener {
-            listener.onUnsubscribeClick(id)
+            listener.onUnsubscribeClick(podcastId)
             dismiss()
         }
     }
@@ -86,10 +86,10 @@ class UnsubscribeDialog private constructor(): BottomSheetDialogFragment() {
          * the appropriate [fragmentManager] so that the host fragment implements the
          * [UnsubscribeDialogListener] interface.
          */
-        fun show(fragmentManager: FragmentManager, id: String) {
+        fun show(fragmentManager: FragmentManager, podcastId: String) {
             UnsubscribeDialog().apply {
                 arguments = Bundle().apply {
-                    putString(PODCAST_ID, id)
+                    putString(PODCAST_ID, podcastId)
                 }
             }.show(fragmentManager, TAG)
         }

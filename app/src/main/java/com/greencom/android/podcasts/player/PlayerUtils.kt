@@ -46,7 +46,11 @@ object EpisodeMetadata {
 
     /** Media metadata string key for episode duration. */
     const val DURATION = MediaMetadata.METADATA_KEY_DURATION
+}
 
-    /** Media metadata string key for episode start position. */
-    const val START_POSITION = "EPISODE_START_POSITION"
+// TODO
+object CustomSessionCommand {
+
+    // TODO
+    const val RESET_PLAYER = "CUSTOM_COMMAND_RESET_PLAYER"
 }

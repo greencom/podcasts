@@ -107,6 +107,11 @@
     <!-- UnsubscribeDialog end -->
 
 
+    <!-- PlayerOptionsDialog start -->
+    <string name="player_options_mark_completed">Отметить завершённым</string>
+    <!-- PlayerOptionsDialog end -->
+
+
     <!-- Notification start. -->
     <string name="notification_player_channel_name">Плеер</string>
     <string name="notification_play">Продолжить</string>

@@ -3,14 +3,18 @@ package com.greencom.android.podcasts.ui
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
@@ -19,6 +23,9 @@ import kotlin.time.ExperimentalTime
 class MainActivityViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
 ) : ViewModel() {
+
+    private val _event = Channel<MainActivityEvent>(Channel.BUFFERED)
+    val event = _event.receiveAsFlow()
 
     private val _isPlayerBottomSheetExpanded = MutableStateFlow(false)
     val isPlayerBottomSheetExpanded = _isPlayerBottomSheetExpanded.asStateFlow()
@@ -76,6 +83,14 @@ class MainActivityViewModel @Inject constructor(
         _skipBackwardOrForwardValue.value = 0L
     }
 
+    fun markCompleted(episodeId: String) {
+        playerServiceConnection.markCompleted(episodeId)
+    }
+
+    fun showPlayerOptionsDialog(episodeId: String) = viewModelScope.launch {
+        _event.send(MainActivityEvent.PlayerOptionsDialog(episodeId))
+    }
+
     @ExperimentalTime
     fun connectToPlayer(context: Context, sessionToken: SessionToken) {
         playerServiceConnection.connect(context, sessionToken)
@@ -89,5 +104,9 @@ class MainActivityViewModel @Inject constructor(
         Log.d(PLAYER_TAG, "MainActivityViewModel.onCleared()")
         super.onCleared()
         disconnectFromPlayer()
+    }
+
+    sealed class MainActivityEvent {
+        data class PlayerOptionsDialog(val episodeId: String) : MainActivityEvent()
     }
 }

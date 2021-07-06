@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val EPISODE_START_THRESHOLD = 60_000
+private const val EPISODE_START_THRESHOLD = 30_000
 private const val EPISODE_END_THRESHOLD = 60_000
 private const val EPISODE_SKIP_BACKWARD = 5_000
 
@@ -49,7 +49,9 @@ class PlayerRepositoryImpl @Inject constructor(
             position in EPISODE_START_THRESHOLD..positionEnoughForCompletion -> {
                 val newPosition = if (position >= EPISODE_START_THRESHOLD + EPISODE_SKIP_BACKWARD) {
                     position - EPISODE_SKIP_BACKWARD
-                } else position
+                } else {
+                    position
+                }
                 EpisodeEntityState(
                     id = episodeId,
                     position = newPosition,
@@ -67,6 +69,16 @@ class PlayerRepositoryImpl @Inject constructor(
                 )
             }
         }
+        episodeDao.update(episodeState)
+    }
+
+    override suspend fun markEpisodeCompleted(episodeId: String) {
+        val episodeState = EpisodeEntityState(
+            id = episodeId,
+            position = 0L,
+            isCompleted = true,
+            completionDate = System.currentTimeMillis()
+        )
         episodeDao.update(episodeState)
     }
 }

@@ -114,6 +114,11 @@
     <!-- UnsubscribeDialog end -->
 
 
+    <!-- PlayerOptionsDialog start -->
+    <string name="player_options_mark_completed">Mark completed</string>
+    <!-- PlayerOptionsDialog end -->
+
+
     <!-- Notification start. -->
     <string name="notification_player_channel_name">Player</string>
     <string name="notification_play">Play</string>

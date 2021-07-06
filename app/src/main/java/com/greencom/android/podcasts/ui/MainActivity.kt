@@ -37,6 +37,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.*
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
+import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.utils.*
@@ -65,7 +66,7 @@ private const val POSITIONS_SKIPPED_THRESHOLD = 10
  */
 @ExperimentalTime
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialogListener {
 
     private lateinit var binding: ActivityMainBinding
     private val collapsedPlayer get() = binding.player.collapsed
@@ -114,6 +115,9 @@ class MainActivity : AppCompatActivity() {
     private var navigationBarColorDefault = TypedValue()
     private var navigationBarColorChanged = TypedValue()
 
+    // TODO
+    private var currentEpisode: CurrentEpisode? = null
+
     /** ServiceConnection for [PlayerService] binding. */
     private val serviceConnection: ServiceConnection by lazy {
         object : ServiceConnection {
@@ -146,6 +150,17 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
 
+                // TODO
+                launch {
+                    viewModel.event.collect { event ->
+                        when (event) {
+                            is MainActivityViewModel.MainActivityEvent.PlayerOptionsDialog -> {
+                                PlayerOptionsDialog.show(supportFragmentManager, event.episodeId)
+                            }
+                        }
+                    }
+                }
+
                 // Control player text marquee animations depending on the bottom sheet state.
                 launch {
                     viewModel.isPlayerBottomSheetExpanded.collectLatest { isPlayerExpanded ->
@@ -173,19 +188,20 @@ class MainActivity : AppCompatActivity() {
                 // TODO
                 launch {
                     viewModel.currentEpisode.collect { episode ->
+                        currentEpisode = episode
+
                         showPlayer(episode.isNotEmpty())
                         viewModel.resetPlayerBottomSheetState()
 
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
 
                         collapsedPlayer.progressBar.progress = 0
-                        expandedPlayer.slider.value = 0F
-
                         collapsedPlayer.title.text = episode.title
                         collapsedPlayer.cover.load(episode.image) {
                             coverBuilder(this@MainActivity)
                         }
 
+                        expandedPlayer.slider.value = 0F
                         expandedPlayer.title.text = episode.title
                         expandedPlayer.publisher.text = episode.publisher
                         expandedPlayer.cover.load(episode.image) {
@@ -324,6 +340,11 @@ class MainActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(ev)
     }
 
+    // TODO
+    override fun onMarkCompletedClick(episodeId: String) {
+        viewModel.markCompleted(episodeId)
+    }
+
     /** Initialize views. */
     private fun initViews() {
         // Player bottom sheet behavior setup.
@@ -457,6 +478,12 @@ class MainActivity : AppCompatActivity() {
         expandedPlayer.cover.setOnClickListener {
             if (isPlayerCollapsed) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        expandedPlayer.options.setOnClickListener {
+            currentEpisode?.let { episode ->
+                viewModel.showPlayerOptionsDialog(episode.id)
             }
         }
     }

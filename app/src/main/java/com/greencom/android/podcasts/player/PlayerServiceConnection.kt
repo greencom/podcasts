@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.media2.common.MediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaController
+import androidx.media2.session.SessionCommand
 import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
@@ -128,7 +129,21 @@ class PlayerServiceConnection @Inject constructor(
         startPlaying = false
         scope.launch {
             val episodeId = repository.getLastEpisodeId().first() ?: return@launch
-            controller.setMediaItem(episodeId)
+            val episode = repository.getEpisode(episodeId) ?: return@launch
+            if (!episode.isCompleted) {
+                controller.setMediaItem(episodeId)
+            }
+        }
+    }
+
+    fun markCompleted(episodeId: String) {
+        controller.sendCustomCommand(
+            SessionCommand(CustomSessionCommand.RESET_PLAYER, null),
+            null
+        )
+        _currentEpisode.value = CurrentEpisode.empty()
+        scope.launch {
+            repository.markEpisodeCompleted(episodeId)
         }
     }
 

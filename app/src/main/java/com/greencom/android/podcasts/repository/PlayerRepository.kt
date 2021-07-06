@@ -20,4 +20,7 @@ interface PlayerRepository {
 
     /** Update episode state depending on the last position. */
     suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long)
+
+    // TODO
+    suspend fun markEpisodeCompleted(episodeId: String)
 }

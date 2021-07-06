@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Binder
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -89,11 +90,14 @@ class PlayerService : MediaSessionService() {
             override fun onConnect(
                 session: MediaSession,
                 controller: MediaSession.ControllerInfo
-            ): SessionCommandGroup? {
-                Log.d(PLAYER_TAG,"sessionCallback: onConnect()")
+            ): SessionCommandGroup {
+                Log.d(PLAYER_TAG, "sessionCallback: onConnect()")
                 isServiceBound = true
                 updateNotification(true)
-                return super.onConnect(session, controller)
+                return SessionCommandGroup.Builder()
+                    .addAllPredefinedCommands(SessionCommand.COMMAND_VERSION_2)
+                    .addCommand(SessionCommand(CustomSessionCommand.RESET_PLAYER, null))
+                    .build()
             }
 
             override fun onDisconnected(
@@ -154,7 +158,27 @@ class PlayerService : MediaSessionService() {
                         safePlay()
                         SessionResult.RESULT_ERROR_INVALID_STATE
                     }
+                    SessionCommand.COMMAND_CODE_PLAYER_PAUSE -> {
+                        updateEpisodeState()
+                        SessionResult.RESULT_SUCCESS
+                    }
                     else -> super.onCommandRequest(session, controller, command)
+                }
+            }
+
+            override fun onCustomCommand(
+                session: MediaSession,
+                controller: MediaSession.ControllerInfo,
+                customCommand: SessionCommand,
+                args: Bundle?
+            ): SessionResult {
+                return when (customCommand.customAction) {
+                    CustomSessionCommand.RESET_PLAYER -> {
+                        resetPlayer()
+                        removeNotification()
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
+                    else -> super.onCustomCommand(session, controller, customCommand, args)
                 }
             }
         }
@@ -171,14 +195,14 @@ class PlayerService : MediaSessionService() {
             override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
                 Log.d(PLAYER_TAG, "playerCallback: onPlayerStateChanged(), state $playerState")
                 updateNotification()
+                saveLastEpisode()
 
                 if (playerState.isPlayerPlaying() && !isServiceStarted) {
                     startService(serviceIntent)
                 }
 
-                if (playerState.isPlayerPaused() || playerState.isPlayerError()) {
+                if (playerState.isPlayerError()) {
                     updateEpisodeState()
-                    saveLastEpisode()
                 }
             }
         }
@@ -261,7 +285,6 @@ class PlayerService : MediaSessionService() {
 
     @ExperimentalTime
     private fun updateEpisodeState() {
-        Log.d(PLAYER_TAG, "updateEpisodeState()")
         val episode = CurrentEpisode.from(player.currentMediaItem)
         if (episode.isNotEmpty()) {
             val position = player.currentPosition
