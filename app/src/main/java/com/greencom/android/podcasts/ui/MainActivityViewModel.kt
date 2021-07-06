@@ -29,8 +29,11 @@ class MainActivityViewModel @Inject constructor(
     val currentEpisode: StateFlow<CurrentEpisode>
         get() = playerServiceConnection.currentEpisode
 
-    val currentState: StateFlow<Int>
-        get() = playerServiceConnection.currentState
+    val duration: StateFlow<Long>
+        get() = playerServiceConnection.duration
+
+    val playerState: StateFlow<Int>
+        get() = playerServiceConnection.playerState
 
     val currentPosition: StateFlow<Long>
         get() = playerServiceConnection.currentPosition
@@ -43,9 +46,6 @@ class MainActivityViewModel @Inject constructor(
 
     val isPaused: Boolean
         get() = playerServiceConnection.isPaused
-
-    val duration: Long
-        get() = playerServiceConnection.duration
 
     fun play() {
         playerServiceConnection.play()
@@ -77,17 +77,17 @@ class MainActivityViewModel @Inject constructor(
     }
 
     @ExperimentalTime
-    fun initPlayerServiceConnection(context: Context, sessionToken: SessionToken) {
+    fun connectToPlayer(context: Context, sessionToken: SessionToken) {
         playerServiceConnection.connect(context, sessionToken)
     }
 
-    fun closePlayerServiceConnection() {
+    fun disconnectFromPlayer() {
         playerServiceConnection.disconnect()
     }
 
     override fun onCleared() {
         Log.d(PLAYER_TAG, "MainActivityViewModel.onCleared()")
         super.onCleared()
-        closePlayerServiceConnection()
+        disconnectFromPlayer()
     }
 }

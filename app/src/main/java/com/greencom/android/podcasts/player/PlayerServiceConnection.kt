@@ -35,8 +35,11 @@ class PlayerServiceConnection @Inject constructor(
     private val _currentEpisode = MutableStateFlow(CurrentEpisode.empty())
     val currentEpisode = _currentEpisode.asStateFlow()
 
-    private val _currentState = MutableStateFlow(MediaPlayer.PLAYER_STATE_IDLE)
-    val currentState = _currentState.asStateFlow()
+    private val _duration = MutableStateFlow(Long.MAX_VALUE)
+    val duration = _duration.asStateFlow()
+
+    private val _playerState = MutableStateFlow(MediaPlayer.PLAYER_STATE_IDLE)
+    val playerState = _playerState.asStateFlow()
 
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition = _currentPosition.asStateFlow()
@@ -46,11 +49,6 @@ class PlayerServiceConnection @Inject constructor(
 
     val isPaused: Boolean
         get() = if (::controller.isInitialized) controller.playerState.isPlayerPaused() else false
-
-    val duration: Long
-        get() = if (::controller.isInitialized && controller.duration >= 0) {
-            controller.duration
-        } else Long.MAX_VALUE
 
     private var startPlaying = true
 
@@ -65,7 +63,8 @@ class PlayerServiceConnection @Inject constructor(
                 val currentEpisode = CurrentEpisode.from(controller.currentMediaItem)
                 if (currentEpisode.isNotEmpty()) {
                     _currentEpisode.value = currentEpisode
-                    _currentState.value = controller.playerState
+                    _duration.value = controller.duration
+                    _playerState.value = controller.playerState
                     postCurrentPosition()
                 } else {
                     restoreEpisode()
@@ -76,6 +75,7 @@ class PlayerServiceConnection @Inject constructor(
                 Log.d(PLAYER_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 val episode = CurrentEpisode.from(item)
                 _currentEpisode.value = episode
+                _duration.value = controller.duration
 
                 val startPosition: Long
                 runBlocking {
@@ -89,7 +89,8 @@ class PlayerServiceConnection @Inject constructor(
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
-                _currentState.value = state
+                _playerState.value = state
+                _duration.value = controller.duration
                 postCurrentPosition()
 
                 if (state.isPlayerError()) {
@@ -110,18 +111,18 @@ class PlayerServiceConnection @Inject constructor(
     fun seekTo(position: Long) {
         if (controller.currentMediaItem == null) return
 
-        val newPosition = when {
+        val mPosition = when {
             position <= 0L -> 0L
             position >= controller.duration -> controller.duration
             else -> position
         }
-        controller.seekTo(newPosition)
-        _currentPosition.value = newPosition
+        controller.seekTo(mPosition)
+        _currentPosition.value = mPosition
     }
 
     fun playEpisode(episodeId: String) {
         startPlaying = true
-        _currentState.value = MediaPlayer.PLAYER_STATE_PAUSED
+        _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaItem(episodeId)
     }
 
@@ -139,15 +140,19 @@ class PlayerServiceConnection @Inject constructor(
             currentPositionJob = scope.launch {
                 while (true) {
                     ensureActive()
-                    if (controller.currentPosition in 0..duration) {
+                    if (controller.currentPosition in 0..duration.value) {
                         _currentPosition.value = controller.currentPosition
                     }
                     delay(1000)
                 }
             }
-        } else if (controller.currentPosition in 0..duration) {
+        } else if (controller.currentPosition in 0..duration.value) {
             val value = if (currentPosition.value == controller.currentPosition) {
-                controller.currentPosition + 1
+                if (currentPosition.value < 1) {
+                    controller.currentPosition + 1
+                } else {
+                    controller.currentPosition - 1
+                }
             } else {
                 controller.currentPosition
             }

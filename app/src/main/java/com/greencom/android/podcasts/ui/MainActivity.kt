@@ -121,17 +121,7 @@ class MainActivity : AppCompatActivity() {
                 Log.d(PLAYER_TAG, "serviceConnection: onServiceConnected()")
                 val binder = service as PlayerService.PlayerServiceBinder
                 val sessionToken = binder.sessionToken
-                viewModel.initPlayerServiceConnection(this@MainActivity, sessionToken)
-
-                // TODO
-                if (viewModel.currentEpisode.value.isNotEmpty()) {
-                    collapsedPlayer.progressBar.max = binder.duration.toInt()
-                    expandedPlayer.slider.valueTo = binder.duration.toFloat()
-                    expandedPlayer.timeLeft.text = getRemainingTime(
-                        position = viewModel.currentPosition.value,
-                        duration = binder.duration
-                    )
-                }
+                viewModel.connectToPlayer(this@MainActivity, sessionToken)
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -182,22 +172,6 @@ class MainActivity : AppCompatActivity() {
 
                 // TODO
                 launch {
-                    viewModel.currentState.collect { state ->
-                        when {
-                            state.isPlayerPlaying() -> {
-                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
-                                expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
-                            }
-                            state.isPlayerPaused() -> {
-                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
-                                expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
-                            }
-                        }
-                    }
-                }
-
-                // TODO
-                launch {
                     viewModel.currentEpisode.collect { episode ->
                         showPlayer(episode.isNotEmpty())
                         viewModel.resetPlayerBottomSheetState()
@@ -211,14 +185,36 @@ class MainActivity : AppCompatActivity() {
                         collapsedPlayer.cover.load(episode.image) {
                             coverBuilder(this@MainActivity)
                         }
-                        collapsedPlayer.progressBar.max = viewModel.duration.toInt()
 
                         expandedPlayer.title.text = episode.title
                         expandedPlayer.publisher.text = episode.publisher
                         expandedPlayer.cover.load(episode.image) {
                             coverBuilder(this@MainActivity)
                         }
-                        expandedPlayer.slider.valueTo = viewModel.duration.toFloat()
+                    }
+                }
+
+                // TODO
+                launch {
+                    viewModel.duration.collect { duration ->
+                        collapsedPlayer.progressBar.max = duration.toInt()
+                        expandedPlayer.slider.valueTo = duration.toFloat()
+                    }
+                }
+
+                // TODO
+                launch {
+                    viewModel.playerState.collect { state ->
+                        when {
+                            state.isPlayerPlaying() -> {
+                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
+                                expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+                            }
+                            state.isPlayerPaused() -> {
+                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
+                                expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
+                            }
+                        }
                     }
                 }
 
@@ -270,7 +266,7 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
         // Unbind from PlayerService and close PlayerServiceConnection to save resources.
         unbindService(serviceConnection)
-        viewModel.closePlayerServiceConnection()
+        viewModel.disconnectFromPlayer()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
