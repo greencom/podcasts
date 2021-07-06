@@ -24,8 +24,6 @@ class PlayerServiceConnection @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
 
-    private lateinit var job: Job
-
     private lateinit var scope: CoroutineScope
 
     private var currentPositionJob: Job? = null
@@ -163,8 +161,7 @@ class PlayerServiceConnection @Inject constructor(
     @ExperimentalTime
     fun connect(context: Context, sessionToken: SessionToken) {
         Log.d(PLAYER_TAG, "PlayerServiceConnection.connect()")
-        job = SupervisorJob()
-        scope = CoroutineScope(job + defaultDispatcher)
+        scope = CoroutineScope(SupervisorJob() + defaultDispatcher)
 
         controller = MediaController.Builder(context)
             .setSessionToken(sessionToken)

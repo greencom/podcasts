@@ -44,9 +44,7 @@ class PlayerService : MediaSessionService() {
 
     @Inject lateinit var repository: PlayerRepository
 
-    private val job = SupervisorJob()
-
-    private val scope = CoroutineScope(job + Dispatchers.Main)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     private var notificationJob: Job? = null
 

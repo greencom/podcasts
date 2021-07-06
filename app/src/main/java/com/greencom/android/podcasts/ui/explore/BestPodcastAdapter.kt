@@ -37,7 +37,6 @@ class BestPodcastViewHolder private constructor(
     private val updateSubscription: (String, Boolean) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    // View context.
     private val context = binding.root.context
 
     // Podcast associated with this ViewHolder.

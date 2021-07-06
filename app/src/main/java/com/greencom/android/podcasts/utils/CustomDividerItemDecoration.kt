@@ -31,7 +31,7 @@ class CustomDividerItemDecoration(
 ) : DividerItemDecoration(context, orientation) {
 
     private val bounds = Rect()
-    private lateinit var divider: Drawable
+    private var divider: Drawable? = null
 
     /** Sets the [Drawable] for this divider. */
     override fun setDrawable(drawable: Drawable) {
@@ -39,7 +39,7 @@ class CustomDividerItemDecoration(
     }
 
     override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        if (parent.layoutManager == null) return
+        if (parent.layoutManager == null || divider == null) return
 
         try {
             parent.layoutManager as LinearLayoutManager
@@ -57,6 +57,8 @@ class CustomDividerItemDecoration(
     }
 
     private fun drawVertical(canvas: Canvas, parent: RecyclerView) {
+        val mDivider = divider ?: return
+
         canvas.save()
         val left: Int
         val right: Int
@@ -84,18 +86,18 @@ class CustomDividerItemDecoration(
                 val child = parent.getChildAt(i)
                 parent.getDecoratedBoundsWithMargins(child, bounds)
                 val bottom = bounds.bottom + child.translationY.roundToInt()
-                val top = bottom - divider.intrinsicHeight
-                divider.setBounds(left, top, right, bottom)
-                divider.draw(canvas)
+                val top = bottom - mDivider.intrinsicHeight
+                mDivider.setBounds(left, top, right, bottom)
+                mDivider.draw(canvas)
             }
         } else {
             for (i in 0 until childCount - last) {
                 val child = parent.getChildAt(i)
                 parent.getDecoratedBoundsWithMargins(child, bounds)
                 val bottom = bounds.bottom + child.translationY.roundToInt()
-                val top = bottom - divider.intrinsicHeight
-                divider.setBounds(left, top, right, bottom)
-                divider.draw(canvas)
+                val top = bottom - mDivider.intrinsicHeight
+                mDivider.setBounds(left, top, right, bottom)
+                mDivider.draw(canvas)
             }
         }
 
@@ -103,6 +105,8 @@ class CustomDividerItemDecoration(
     }
 
     private fun drawHorizontal(canvas: Canvas, parent: RecyclerView) {
+        val mDivider = divider ?: return
+
         canvas.save()
         val top: Int
         val bottom: Int
@@ -130,18 +134,18 @@ class CustomDividerItemDecoration(
                 val child = parent.getChildAt(i)
                 parent.getDecoratedBoundsWithMargins(child, bounds)
                 val right = bounds.right + child.translationX.roundToInt()
-                val left = right - divider.intrinsicWidth
-                divider.setBounds(left, top, right, bottom)
-                divider.draw(canvas)
+                val left = right - mDivider.intrinsicWidth
+                mDivider.setBounds(left, top, right, bottom)
+                mDivider.draw(canvas)
             }
         } else {
             for (i in 0 until childCount - last) {
                 val child = parent.getChildAt(i)
                 parent.getDecoratedBoundsWithMargins(child, bounds)
                 val right = bounds.right + child.translationX.roundToInt()
-                val left = right - divider.intrinsicWidth
-                divider.setBounds(left, top, right, bottom)
-                divider.draw(canvas)
+                val left = right - mDivider.intrinsicWidth
+                mDivider.setBounds(left, top, right, bottom)
+                mDivider.draw(canvas)
             }
         }
 
