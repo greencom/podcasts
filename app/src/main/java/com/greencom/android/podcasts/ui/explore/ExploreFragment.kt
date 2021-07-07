@@ -54,18 +54,18 @@ class ExploreFragment : Fragment() {
         initTabLayout()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clear View binding.
+        _binding = null
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         outState.apply {
             putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, isAppBarExpanded)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        // Clear View binding.
-        _binding = null
     }
 
     /** App bar setup. */

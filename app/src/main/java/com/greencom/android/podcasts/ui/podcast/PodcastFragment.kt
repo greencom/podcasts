@@ -99,21 +99,20 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         initObservers()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-
-        outState.apply {
-            putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, viewModel.isAppBarExpanded.value)
-            putBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         // Cancel adapter coroutine scope in onDetachedFromRecyclerView().
         binding.list.adapter = null
         // Clear View binding.
         _binding = null
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.apply {
+            putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, viewModel.isAppBarExpanded.value)
+            putBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
+        }
     }
 
     // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
