@@ -38,14 +38,14 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height"
+        android:layout_height="60dp"
         android:background="@null"
         app:elevation="0dp"
         app:liftOnScroll="false">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="@dimen/app_bar_height"
             android:orientation="horizontal"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 

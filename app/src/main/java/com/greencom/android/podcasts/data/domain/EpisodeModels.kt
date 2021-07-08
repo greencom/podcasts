@@ -18,6 +18,10 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "description")
     val description: String,
 
+    /** Podcast title. */
+    @ColumnInfo(name = "podcast_title")
+    val podcastTitle: String,
+
     /** Podcast publisher. */
     @ColumnInfo(name = "publisher")
     val publisher: String,

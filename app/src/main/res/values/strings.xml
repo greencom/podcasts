@@ -109,6 +109,12 @@
     <!-- PodcastFragment end -->
 
 
+    <!-- EpisodeFragment start -->
+    <string name="episode_no_such_episode">There is no such episode in the database</string>
+    <string name="episode_go_back">Go back</string>
+    <!-- EpisodeFragment end -->
+
+
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Unsubscribe</string>
     <!-- UnsubscribeDialog end -->

@@ -54,10 +54,14 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** ID of the podcast associated with this fragment. */
     private var podcastId = ""
 
+    /** Whether scrollToTop FAB is shown or not. */
+    private var isScrollToTopShown = false
+
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
         PodcastWithEpisodesAdapter(
             sortOrder = viewModel.sortOrder,
+            navigateToEpisode = viewModel::navigateToEpisode,
             updateSubscription = viewModel::updateSubscription,
             changeSortOrder = viewModel::changeSortOrder,
             playEpisode = viewModel::playEpisode,
@@ -103,6 +107,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         super.onDestroyView()
         // Cancel adapter coroutine scope in onDetachedFromRecyclerView().
         binding.list.adapter = null
+        // Save `binding.scrollToTop.isOrWillBeShown` to a variable because onSaveInstanceState()
+        // may be called after ViewBinding destroyed.
+        isScrollToTopShown = binding.scrollToTop.isOrWillBeShown
         // Clear View binding.
         _binding = null
     }
@@ -111,7 +118,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         super.onSaveInstanceState(outState)
         outState.apply {
             putBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED, viewModel.isAppBarExpanded.value)
-            putBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN, binding.scrollToTop.isOrWillBeShown)
+            putBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN, isScrollToTopShown)
         }
     }
 
@@ -302,6 +309,15 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         }
 
         when (event) {
+            // Navigate to EpisodeFragment.
+            is PodcastEvent.NavigateToEpisode -> {
+                findNavController().navigate(
+                    PodcastFragmentDirections.actionPodcastFragmentToEpisodeFragment(
+                        event.episodeId
+                    )
+                )
+            }
+
             // Show a snackbar.
             is PodcastEvent.Snackbar -> showSnackbar(binding.root, event.stringRes)
 

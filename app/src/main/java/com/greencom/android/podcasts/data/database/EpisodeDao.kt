@@ -2,6 +2,8 @@ package com.greencom.android.podcasts.data.database
 
 import androidx.room.*
 import com.greencom.android.podcasts.data.domain.Episode
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 /** Interface to interact with the `episodes` table. */
 @Dao
@@ -33,6 +35,12 @@ abstract class EpisodeDao {
     @Query("SELECT * FROM episodes WHERE id = :id")
     abstract suspend fun getEpisode(id: String): Episode?
 
+    /**
+     * Get a Flow with an [Episode] for a given ID. No need to apply [distinctUntilChanged]
+     * function since it is already done under the hood.
+     */
+    fun getEpisodeFlow(id: String): Flow<Episode?> = getEpisodeFlowRaw(id).distinctUntilChanged()
+
     /** Get the episode's last position by ID. */
     @Query("SELECT position FROM episodes WHERE id = :id")
     abstract suspend fun getEpisodePosition(id: String): Long?
@@ -59,7 +67,17 @@ abstract class EpisodeDao {
 
     // Helper methods start.
 
-
+    /**
+     * Get a Flow with an [Episode] for a given ID. Use [getEpisodeFlow] with applied
+     * [distinctUntilChanged] function instead.
+     */
+    @Query("""
+        SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
+            podcast_id, explicit_content, date, position, is_completed, completion_date
+        FROM episodes
+        WHERE id = :id
+    """)
+    protected abstract fun getEpisodeFlowRaw(id: String): Flow<Episode?>
 
     // Helper methods end.
 }

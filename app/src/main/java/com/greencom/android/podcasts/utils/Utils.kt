@@ -7,6 +7,7 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
@@ -19,6 +20,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Episode
 import java.text.SimpleDateFormat
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -162,6 +164,41 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
                 R.drawable.ic_add_24,
                 context.theme
             )
+        }
+    }
+}
+
+/** Setup given material button as `Play` button. */
+@ExperimentalTime
+fun setupPlayButton(button: MaterialButton, episode: Episode, context: Context) {
+    button.apply {
+        when {
+            episode.isPlaying -> {
+                text = context.getString(R.string.podcast_episode_playing)
+                icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
+                iconTint = context.resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
+                icon.animateVectorDrawable()
+            }
+            episode.isCompleted -> {
+                text = context.getString(R.string.podcast_episode_completed)
+                icon = AppCompatResources.getDrawable(context, R.drawable.ic_check_24)
+                iconTint = context.resources.getColorStateList(R.color.episode_button_completed_icon_color, context.theme)
+            }
+            episode.isSelected -> {
+                text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
+                icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
+                iconTint = context.resources.getColorStateList(R.color.episode_button_paused_icon_color, context.theme)
+            }
+            episode.position > 0 -> {
+                text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
+                icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
+                iconTint = context.resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
+            }
+            else -> {
+                text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
+                icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
+                iconTint = context.resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
+            }
         }
     }
 }

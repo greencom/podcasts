@@ -1,9 +1,9 @@
 package com.greencom.android.podcasts.ui.podcast
 
 import android.animation.ObjectAnimator
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.text.HtmlCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
@@ -19,7 +19,6 @@ import com.greencom.android.podcasts.databinding.ItemPodcastHeaderBinding
 import com.greencom.android.podcasts.utils.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 private const val ITEM_VIEW_TYPE_PODCAST_HEADER = 0
@@ -36,6 +35,7 @@ private const val SORT_ORDER_ANIMATION_DURATION = 200L
  */
 class PodcastWithEpisodesAdapter(
     val sortOrder: StateFlow<SortOrder>,
+    private val navigateToEpisode: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit,
     private val changeSortOrder: () -> Unit,
     private val playEpisode: (String) -> Unit,
@@ -45,8 +45,8 @@ class PodcastWithEpisodesAdapter(
     PodcastWithEpisodesDiffCallback
 ) {
 
-    private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + Dispatchers.Default)
+    /** Adapter's coroutine scope. Defaults to [Dispatchers.Default]. */
+    private var scope: CoroutineScope? = null
 
     /** Whether the podcast description is expanded. False at start. */
     private var isPodcastDescriptionExpanded = false
@@ -60,6 +60,7 @@ class PodcastWithEpisodesAdapter(
             )
             ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(
                 parent = parent,
+                navigateToEpisode = navigateToEpisode,
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause
@@ -89,10 +90,16 @@ class PodcastWithEpisodesAdapter(
         }
     }
 
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        // Init coroutine scope.
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
+
     override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         super.onDetachedFromRecyclerView(recyclerView)
         // Cancel coroutine scope.
-        scope.cancel()
+        scope?.cancel()
     }
 
     /**
@@ -100,7 +107,7 @@ class PodcastWithEpisodesAdapter(
      * items to be displayed in RecyclerView. Calculations are performed in the
      * background thread.
      */
-    fun submitHeaderAndList(podcast: Podcast, episodes: List<Episode>) = scope.launch {
+    fun submitHeaderAndList(podcast: Podcast, episodes: List<Episode>) = scope?.launch {
         val items = listOf(PodcastWithEpisodesDataItem.PodcastHeader(podcast)) +
                 episodes.map { PodcastWithEpisodesDataItem.EpisodeItem(it) }
         withContext(Dispatchers.Main) { submitList(items) }
@@ -175,8 +182,9 @@ class PodcastHeaderViewHolder private constructor(
         binding.publisher.text = podcast.publisher
         binding.description.text = HtmlCompat.fromHtml(
             podcast.description,
-            HtmlCompat.FROM_HTML_MODE_LEGACY
-        ).toString().trim()
+            HtmlCompat.FROM_HTML_MODE_COMPACT
+        ).trim()
+        binding.description.movementMethod = LinkMovementMethod.getInstance()
         binding.explicitContent.isVisible = podcast.explicitContent
         binding.episodeCount.text = context.resources.getQuantityString(
             R.plurals.podcast_episode_count,
@@ -233,6 +241,7 @@ class PodcastHeaderViewHolder private constructor(
 
 /** EpisodeViewHolder represents a single episode item in the list. */
 class EpisodeViewHolder private constructor(
+    private val navigateToEpisode: (String) -> Unit,
     private val binding: ItemPodcastEpisodeBinding,
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
@@ -245,6 +254,11 @@ class EpisodeViewHolder private constructor(
     private lateinit var episode: Episode
 
     init {
+        // Navigate to EpisodeFragment.
+        binding.root.setOnClickListener {
+            navigateToEpisode(episode.id)
+        }
+
         // Resume or pause depending on the current state or play if the episode is not selected.
         binding.play.setOnClickListener {
             if (episode.isSelected) {
@@ -259,46 +273,16 @@ class EpisodeViewHolder private constructor(
     @ExperimentalTime
     fun bind(episode: Episode) {
         this.episode = episode
-
         binding.title.text = episode.title
         binding.date.text = episodePubDateToString(episode.date, context)
-
-        binding.play.apply {
-            when {
-                episode.isPlaying -> {
-                    text = context.getString(R.string.podcast_episode_playing)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
-                    iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
-                    icon.animateVectorDrawable()
-                }
-                episode.isCompleted -> {
-                    text = context.getString(R.string.podcast_episode_completed)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_check_24)
-                    iconTint = resources.getColorStateList(R.color.episode_button_completed_icon_color, context.theme)
-                }
-                episode.isSelected -> {
-                    text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_animated_bar_chart_24)
-                    iconTint = resources.getColorStateList(R.color.episode_button_paused_icon_color, context.theme)
-                }
-                episode.position > 0 -> {
-                    text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
-                    iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
-                }
-                else -> {
-                    text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
-                    icon = AppCompatResources.getDrawable(context, R.drawable.ic_play_circle_outline_24)
-                    iconTint = resources.getColorStateList(R.color.episode_button_default_icon_color, context.theme)
-                }
-            }
-        }
+        setupPlayButton(binding.play, episode, context)
     }
 
     companion object {
         /** Create an [EpisodeViewHolder]. */
         fun create(
             parent: ViewGroup,
+            navigateToEpisode: (String) -> Unit,
             playEpisode: (String) -> Unit,
             play: () -> Unit,
             pause: () -> Unit,
@@ -307,6 +291,7 @@ class EpisodeViewHolder private constructor(
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return EpisodeViewHolder(
                 binding = binding,
+                navigateToEpisode = navigateToEpisode,
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,

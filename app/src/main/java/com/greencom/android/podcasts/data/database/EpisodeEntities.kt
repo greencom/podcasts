@@ -17,6 +17,10 @@ data class EpisodeEntity(
     @ColumnInfo(name = "title")
     val title: String,
 
+    /** Podcast title. */
+    @ColumnInfo(name = "podcast_title")
+    val podcastTitle: String,
+
     /** Episode description. */
     @ColumnInfo(name = "description")
     val description: String,

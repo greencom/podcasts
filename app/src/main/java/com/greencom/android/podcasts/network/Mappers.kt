@@ -26,6 +26,7 @@ fun PodcastWrapper.episodesToDatabase(): List<EpisodeEntity> = episodes.map {
         id = it.id,
         title = it.title.trim(),
         description = it.description.trim(),
+        podcastTitle = title.trim(),
         publisher = publisher,
         image = it.image,
         audio = it.audio,

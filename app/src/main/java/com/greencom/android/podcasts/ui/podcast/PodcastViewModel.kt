@@ -167,6 +167,11 @@ class PodcastViewModel @Inject constructor(
         repository.updateSubscription(id, false)
     }
 
+    /** Navigate to EpisodeFragment with a given episode ID. */
+    fun navigateToEpisode(episodeId: String) = viewModelScope.launch {
+        _event.send(PodcastEvent.NavigateToEpisode(episodeId))
+    }
+
     /** Sort episodes according to a given [sortOrder] value. */
     private fun sortEpisodes(
         flowState: State<PodcastWithEpisodes>,
@@ -270,6 +275,9 @@ class PodcastViewModel @Inject constructor(
 
     /** Sealed class that represents events of the [PodcastFragment]. */
     sealed class PodcastEvent {
+
+        /** Navigate to EpisodeFragment with a given ID. */
+        data class NavigateToEpisode(val episodeId: String) : PodcastEvent()
 
         /** Represents a Snackbar event with a string res ID of the message to show. */
         data class Snackbar(@StringRes val stringRes: Int) : PodcastEvent()

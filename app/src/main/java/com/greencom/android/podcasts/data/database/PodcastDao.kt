@@ -131,7 +131,7 @@ abstract class PodcastDao {
      * Get a Flow with a [PodcastWithEpisodes] object for a given podcast ID. No need to apply
      * [distinctUntilChanged] function since it is already done under the hood.
      */
-    fun getPodcastWithEpisodesFlow(id: String) =
+    fun getPodcastWithEpisodesFlow(id: String): Flow<PodcastWithEpisodes?> =
         getPodcastWithEpisodesFlowRaw(id).distinctUntilChanged()
 
     /**
@@ -139,7 +139,7 @@ abstract class PodcastDao {
      * No need to apply [distinctUntilChanged] function since it is already done under
      * the hood.
      */
-    fun getBestPodcastsFlow(genreId: Int) =
+    fun getBestPodcastsFlow(genreId: Int): Flow<List<PodcastShort>> =
         getBestPodcastsFlowRaw(genreId).distinctUntilChanged()
 
 

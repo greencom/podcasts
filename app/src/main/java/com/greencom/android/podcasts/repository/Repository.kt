@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.repository
 
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.network.PodcastWrapper
@@ -23,6 +24,12 @@ interface Repository {
 
     /** Update subscription to a Podcast by ID with a given value. */
     suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
+
+    /**
+     * Return an episode for a given ID from the database. The result represented by
+     * instances of [State]. If there is no such episode in the database, emits [State.Error].
+     */
+    fun getEpisode(episodeId: String): Flow<State<Episode>>
 
     /**
      * Return a podcast with episodes for a given ID. The result represented by instances of

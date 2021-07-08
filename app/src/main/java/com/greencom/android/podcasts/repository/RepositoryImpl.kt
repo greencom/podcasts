@@ -4,6 +4,7 @@ import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.EpisodeEntity
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.database.PodcastSubscription
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
@@ -67,6 +68,17 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
+    }
+
+    override fun getEpisode(episodeId: String): Flow<State<Episode>> = flow {
+        emit(State.Loading)
+        episodeDao.getEpisodeFlow(episodeId).collect { episode ->
+            if (episode != null) {
+                emit(State.Success(episode))
+            } else {
+                emit(State.Error(Exception()))
+            }
+        }
     }
 
     override fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>> = flow {

@@ -102,6 +102,12 @@
     <!-- PodcastFragment end -->
 
 
+    <!-- EpisodeFragment start -->
+    <string name="episode_no_such_episode">В базе данных нет такого эпизода</string>
+    <string name="episode_go_back">Вернуться назад</string>
+    <!-- EpisodeFragment end -->
+
+
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Отписаться</string>
     <!-- UnsubscribeDialog end -->
