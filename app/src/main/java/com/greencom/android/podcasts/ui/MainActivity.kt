@@ -189,23 +189,22 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 launch {
                     viewModel.currentEpisode.collect { episode ->
                         currentEpisode = episode
-
                         showPlayer(episode.isNotEmpty())
                         viewModel.resetPlayerBottomSheetState()
 
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
 
-                        collapsedPlayer.progressBar.progress = 0
-                        collapsedPlayer.title.text = episode.title
-                        collapsedPlayer.cover.load(episode.image) {
-                            coverBuilder(this@MainActivity)
+                        collapsedPlayer.apply {
+                            progressBar.progress = 0
+                            title.text = episode.title
+                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
                         }
 
-                        expandedPlayer.slider.value = 0F
-                        expandedPlayer.title.text = episode.title
-                        expandedPlayer.publisher.text = episode.publisher
-                        expandedPlayer.cover.load(episode.image) {
-                            coverBuilder(this@MainActivity)
+                        expandedPlayer.apply {
+                            slider.value = 0F
+                            title.text = episode.title
+                            publisher.text = episode.publisher
+                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
                         }
                     }
                 }
@@ -356,10 +355,12 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         val layoutParams = binding.navHostFragment.layoutParams as CoordinatorLayout.LayoutParams
         val bottom = resources.getDimensionPixelSize(R.dimen.bottom_nav_bar_height)
         layoutParams.setMargins(0, 0, 0, bottom)
-        binding.navHostFragment.layoutParams = layoutParams
-        binding.player.root.translationY = resources.getDimension(R.dimen.player_bottom_sheet_peek_height)
-        binding.playerShadowInternal.hideImmediately()
-        binding.playerShadowExternal.hideImmediately()
+        binding.apply {
+            navHostFragment.layoutParams = layoutParams
+            player.root.translationY = resources.getDimension(R.dimen.player_bottom_sheet_peek_height)
+            playerShadowInternal.hideImmediately()
+            playerShadowExternal.hideImmediately()
+        }
 
         // Hide scrim background at start.
         binding.background.isVisible = false
@@ -703,18 +704,20 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             return
         }
 
-        if (value > 0) {
-            expandedPlayer.skipHintBackward.hideImmediately()
-            expandedPlayer.skipHintBackground.rotation = 0F
-            expandedPlayer.skipHintForward.text = getSkipHint(value)
-            expandedPlayer.skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
-            expandedPlayer.skipHintForward.revealCrossfade()
-        } else {
-            expandedPlayer.skipHintForward.hideImmediately()
-            expandedPlayer.skipHintBackground.rotation = 180F
-            expandedPlayer.skipHintBackward.text = getSkipHint(value)
-            expandedPlayer.skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
-            expandedPlayer.skipHintBackward.revealCrossfade()
+        expandedPlayer.apply {
+            if (value > 0) {
+                skipHintBackward.hideImmediately()
+                skipHintBackground.rotation = 0F
+                skipHintForward.text = getSkipHint(value)
+                skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
+                skipHintForward.revealCrossfade()
+            } else {
+                skipHintForward.hideImmediately()
+                skipHintBackground.rotation = 180F
+                skipHintBackward.text = getSkipHint(value)
+                skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
+                skipHintBackward.revealCrossfade()
+            }
         }
 
         delay(1000)
@@ -727,14 +730,16 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     /** Hide all player skip hints. */
     private fun hideSkipHints(immediately: Boolean = false) {
-        if (immediately) {
-            expandedPlayer.skipHintBackground.hideImmediatelyWithAnimation()
-            expandedPlayer.skipHintBackward.hideImmediatelyWithAnimation()
-            expandedPlayer.skipHintForward.hideImmediatelyWithAnimation()
-        } else {
-            expandedPlayer.skipHintBackground.hideCrossfade()
-            expandedPlayer.skipHintBackward.hideCrossfade()
-            expandedPlayer.skipHintForward.hideCrossfade()
+        expandedPlayer.apply {
+            if (immediately) {
+                skipHintBackground.hideImmediatelyWithAnimation()
+                skipHintBackward.hideImmediatelyWithAnimation()
+                skipHintForward.hideImmediatelyWithAnimation()
+            } else {
+                skipHintBackground.hideCrossfade()
+                skipHintBackward.hideCrossfade()
+                skipHintForward.hideCrossfade()
+            }
         }
     }
 

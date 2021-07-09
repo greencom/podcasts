@@ -222,30 +222,38 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** Show success screen and hide all others. */
     private fun showSuccessScreen() {
-        binding.podcastList.revealCrossfade()
-        binding.loading.hideImmediately()
-        binding.error.root.hideImmediately()
+        binding.apply {
+            podcastList.revealCrossfade()
+            loading.hideImmediately()
+            error.root.hideImmediately()
+        }
     }
 
     /** Show loading screen and hide all others. */
     private fun showLoadingScreen() {
-        binding.loading.revealImmediately()
-        binding.podcastList.hideImmediately()
-        binding.error.root.hideImmediately()
+        binding.apply {
+            loading.revealImmediately()
+            podcastList.hideImmediately()
+            error.root.hideImmediately()
+        }
     }
 
     /** Show error screen and hide all others. */
     private fun showErrorScreen() {
-        binding.error.root.revealCrossfade()
-        binding.loading.hideImmediately()
-        binding.podcastList.hideImmediately()
+        binding.apply {
+            error.root.revealCrossfade()
+            loading.hideImmediately()
+            podcastList.hideImmediately()
+        }
     }
 
     /** Hide all screens. */
     private fun hideScreens() {
-        binding.podcastList.hideImmediately()
-        binding.error.root.hideImmediately()
-        binding.loading.hideImmediately()
+        binding.apply {
+            podcastList.hideImmediately()
+            error.root.hideImmediately()
+            loading.hideImmediately()
+        }
     }
 
     companion object {

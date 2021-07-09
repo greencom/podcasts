@@ -61,17 +61,19 @@ class BestPodcastViewHolder private constructor(
         // Update the podcast associated with this ViewHolder.
         this.podcast = podcast
 
-        binding.cover.load(podcast.image) { coverBuilder(context) }
-        binding.title.text = podcast.title
-        binding.publisher.text = podcast.publisher
-        // Remove all HTML tags from description.
-        binding.description.text =
-            HtmlCompat.fromHtml(podcast.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
-                .trim()
-        // Show explicit content icon depending on `explicitContent` value.
-        binding.explicitContent.isVisible = podcast.explicitContent
-        // Setup `Subscribe` button.
-        setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
+        binding.apply {
+            cover.load(podcast.image) { coverBuilder(context) }
+            title.text = podcast.title
+            publisher.text = podcast.publisher
+            explicitContent.isVisible = podcast.explicitContent
+            setupSubscribeToggleButton(subscribe, podcast.subscribed, context)
+
+            // Remove all HTML tags from description.
+            description.text = HtmlCompat.fromHtml(
+                podcast.description,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            ).toString().trim()
+        }
     }
 
     companion object {

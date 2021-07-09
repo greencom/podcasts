@@ -348,29 +348,37 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** Show success screen and hide all others. */
     private fun showSuccessScreen() {
-        binding.list.revealCrossfade()
-        binding.error.root.hideImmediately()
-        binding.loading.hideImmediately()
+        binding.apply {
+            list.revealCrossfade()
+            error.root.hideImmediately()
+            loading.hideImmediately()
+        }
     }
 
     /** Show loading screen and hide all others. */
     private fun showLoadingScreen() {
-        binding.loading.revealImmediately()
-        binding.list.hideImmediately()
-        binding.error.root.hideImmediately()
+        binding.apply {
+            loading.revealImmediately()
+            list.hideImmediately()
+            error.root.hideImmediately()
+        }
     }
 
     /** Show error screen and hide all others. */
     private fun showErrorScreen() {
-        binding.error.root.revealCrossfade()
-        binding.loading.hideImmediately()
-        binding.list.hideImmediately()
+        binding.apply {
+            error.root.revealCrossfade()
+            loading.hideImmediately()
+            list.hideImmediately()
+        }
     }
 
     /** Hide all screens. */
     private fun hideScreens() {
-        binding.list.hideImmediately()
-        binding.error.root.hideImmediately()
-        binding.loading.hideImmediately()
+        binding.apply {
+            list.hideImmediately()
+            error.root.hideImmediately()
+            loading.hideImmediately()
+        }
     }
 }

@@ -177,31 +177,32 @@ class PodcastHeaderViewHolder private constructor(
     fun bind(podcast: Podcast, sortOrder: SortOrder, isDescriptionExpanded: Boolean) {
         this.podcast = podcast
 
-        binding.cover.load(podcast.image) { coverBuilder(context) }
-        binding.title.text = podcast.title
-        binding.publisher.text = podcast.publisher
-        binding.description.text = HtmlCompat.fromHtml(
-            podcast.description,
-            HtmlCompat.FROM_HTML_MODE_COMPACT
-        ).trim()
-        binding.description.movementMethod = LinkMovementMethod.getInstance()
-        binding.explicitContent.isVisible = podcast.explicitContent
-        binding.episodeCount.text = context.resources.getQuantityString(
-            R.plurals.podcast_episode_count,
-            podcast.episodeCount,
-            podcast.episodeCount
-        )
-        binding.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
+        binding.apply {
+            cover.load(podcast.image) { coverBuilder(context) }
+            title.text = podcast.title
+            publisher.text = podcast.publisher
+            explicitContent.isVisible = podcast.explicitContent
+            episodeCount.text = context.resources.getQuantityString(
+                R.plurals.podcast_episode_count,
+                podcast.episodeCount,
+                podcast.episodeCount
+            )
+            binding.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
+            setupSubscribeToggleButton(subscribe, podcast.subscribed, context)
 
-        // "Subscribe" button setup.
-        setupSubscribeToggleButton(binding.subscribe, podcast.subscribed, context)
+            // Handle podcast description.
+            description.text = HtmlCompat.fromHtml(
+                podcast.description,
+                HtmlCompat.FROM_HTML_MODE_COMPACT
+            ).trim()
+            description.movementMethod = LinkMovementMethod.getInstance()
 
-        // Handle description state.
-        binding.descriptionTrailingGradient.isVisible = !isDescriptionExpanded && isDescriptionExpandable
-        binding.descriptionMore.isVisible = !isDescriptionExpanded && isDescriptionExpandable
-        binding.descriptionArrowDown.isVisible = !isDescriptionExpanded && isDescriptionExpandable
-        binding.description.maxLines =
-            if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
+            // Handle description state.
+            descriptionTrailingGradient.isVisible = !isDescriptionExpanded && isDescriptionExpandable
+            descriptionMore.isVisible = !isDescriptionExpanded && isDescriptionExpandable
+            descriptionArrowDown.isVisible = !isDescriptionExpanded && isDescriptionExpandable
+            description.maxLines = if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
+        }
     }
 
     /** Rotate the 'Sort order' button to a given value. */
@@ -273,9 +274,11 @@ class EpisodeViewHolder private constructor(
     @ExperimentalTime
     fun bind(episode: Episode) {
         this.episode = episode
-        binding.title.text = episode.title
-        binding.date.text = episodePubDateToString(episode.date, context)
-        setupPlayButton(binding.play, episode, context)
+        binding.apply {
+            title.text = episode.title
+            date.text = episodePubDateToString(episode.date, context)
+            setupPlayButton(play, episode, context)
+        }
     }
 
     companion object {
