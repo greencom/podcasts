@@ -76,6 +76,11 @@ class EpisodeViewModel @Inject constructor(
         playerServiceConnection.playEpisode(episodeId)
     }
 
+    // TODO
+    fun playFromTimecode(episodeId: String, timecode: Long) {
+        playerServiceConnection.playFromTimecode(episodeId, timecode)
+    }
+
     /**
      * Set a new value to the [isAppBarExpanded] StateFlow.
      *

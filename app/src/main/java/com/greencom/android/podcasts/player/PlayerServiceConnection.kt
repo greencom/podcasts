@@ -51,6 +51,10 @@ class PlayerServiceConnection @Inject constructor(
 
     private var startPlaying = true
 
+    private var startFromTimecode = false
+
+    private var timecode = 0L
+
     @ExperimentalTime
     private val controllerCallback: MediaController.ControllerCallback by lazy {
         object : MediaController.ControllerCallback() {
@@ -77,8 +81,14 @@ class PlayerServiceConnection @Inject constructor(
                 _duration.value = controller.duration
 
                 val startPosition: Long
-                runBlocking {
-                    startPosition = repository.getEpisodePosition(episode.id) ?: 0L
+                if (startFromTimecode) {
+                    startPosition = timecode
+                    startFromTimecode = false
+                    timecode = 0L
+                } else {
+                    runBlocking {
+                        startPosition = repository.getEpisodePosition(episode.id) ?: 0L
+                    }
                 }
 
                 controller.prepare().get()
@@ -94,6 +104,15 @@ class PlayerServiceConnection @Inject constructor(
 
                 if (state.isPlayerError()) {
                     _currentEpisode.value = CurrentEpisode.empty()
+                }
+            }
+
+            override fun onSeekCompleted(controller: MediaController, position: Long) {
+                Log.d(PLAYER_TAG, "controllerCallback: onSeekCompleted()")
+                _currentPosition.value = position
+                if (startFromTimecode) {
+                    controller.play()
+                    startFromTimecode = false
                 }
             }
         }
@@ -123,6 +142,18 @@ class PlayerServiceConnection @Inject constructor(
         startPlaying = true
         _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
         controller.setMediaItem(episodeId)
+    }
+
+    fun playFromTimecode(episodeId: String, timecode: Long) {
+        startFromTimecode = true
+        if (currentEpisode.value.id == episodeId) {
+            controller.seekTo(timecode)
+        } else {
+            startPlaying = true
+            this.timecode = timecode
+            _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
+            controller.setMediaItem(episodeId)
+        }
     }
 
     fun restoreEpisode() {

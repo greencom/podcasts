@@ -1,7 +1,12 @@
 package com.greencom.android.podcasts.ui.episode
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.TextPaint
 import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,10 +29,14 @@ import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // Saving instance state.
 private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
+
+// TODO
+private const val TIMECODE_PATTERN = "(\\d{1,2})(:\\d{1,2}){1,2}"
 
 // TODO
 @AndroidEntryPoint
@@ -171,16 +180,21 @@ class EpisodeFragment : Fragment() {
                 showSuccessScreen()
                 episode = state.episode
                 val mEpisode = state.episode
-                binding.cover.load(mEpisode.image) { coverBuilder(requireContext()) }
-                binding.podcastTitle.text = mEpisode.podcastTitle
-                binding.date.text = episodePubDateToString(mEpisode.date, requireContext())
-                binding.episodeTitle.text = mEpisode.title
-                binding.description.text = HtmlCompat.fromHtml(
+                val description = HtmlCompat.fromHtml(
                     mEpisode.description,
                     HtmlCompat.FROM_HTML_MODE_COMPACT
-                ).trim()
-                binding.description.movementMethod = LinkMovementMethod.getInstance()
-                setupPlayButton(binding.play, mEpisode, requireContext())
+                )
+
+                binding.apply {
+                    cover.load(mEpisode.image) { coverBuilder(requireContext()) }
+                    podcastTitle.text = mEpisode.podcastTitle
+                    date.text = episodePubDateToString(mEpisode.date, requireContext())
+                    episodeTitle.text = mEpisode.title
+                    setupPlayButton(play, mEpisode, requireContext())
+                    // Handle episode description.
+                    binding.description.text = description.handleTimecodes().trim()
+                    binding.description.movementMethod = LinkMovementMethod.getInstance()
+                }
             }
 
             // Show error screen.
@@ -191,31 +205,91 @@ class EpisodeFragment : Fragment() {
         }
     }
 
+    // TODO
+    @ExperimentalTime
+    private fun Spanned.handleTimecodes(): SpannableStringBuilder {
+        val spannableStringBuilder = SpannableStringBuilder(this)
+        Regex(TIMECODE_PATTERN).findAll(this).forEach { timecode ->
+            val startIndex = spannableStringBuilder.indexOf(timecode.value)
+            val endIndex = startIndex + timecode.value.length
+            val millis = obtainMillisFromTimecode(timecode.value)
+            val spannableString = SpannableString(timecode.value)
+            val clickableSpan = object : ClickableSpan() {
+                override fun onClick(widget: View) {
+                    viewModel.playFromTimecode(episodeId, millis)
+                }
+
+                override fun updateDrawState(ds: TextPaint) {
+                    super.updateDrawState(ds)
+                    ds.isUnderlineText = false
+                }
+            }
+            spannableString.setSpan(
+                clickableSpan,
+                0,
+                timecode.value.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            spannableStringBuilder.replace(startIndex, endIndex, spannableString)
+        }
+        return spannableStringBuilder
+    }
+
+    // TODO
+    @ExperimentalTime
+    private fun obtainMillisFromTimecode(timecode: String): Long {
+        val timecodeParts = timecode.split(":")
+        var hours = 0
+        var minutes = 0
+        var seconds = 0
+        when (timecodeParts.size) {
+            2 -> {
+                minutes = timecodeParts[0].toInt()
+                seconds = timecodeParts[1].toInt()
+            }
+            3 -> {
+                hours = timecodeParts[0].toInt()
+                minutes = timecodeParts[1].toInt()
+                seconds = timecodeParts[2].toInt()
+            }
+        }
+        val total = Duration.hours(hours) + Duration.minutes(minutes) + Duration.seconds(seconds)
+        return total.inWholeMilliseconds
+    }
+
     /** Show success screen and hide all others. */
     private fun showSuccessScreen() {
-        binding.nestedScrollView.revealCrossfade()
-        binding.error.root.hideImmediately()
-        binding.loading.hideImmediately()
+        binding.apply {
+            nestedScrollView.revealCrossfade()
+            error.root.hideImmediately()
+            loading.hideImmediately()
+        }
     }
 
     /** Show loading screen and hide all others. */
     private fun showLoadingScreen() {
-        binding.loading.revealImmediately()
-        binding.nestedScrollView.hideImmediately()
-        binding.error.root.hideImmediately()
+        binding.apply {
+            loading.revealImmediately()
+            nestedScrollView.hideImmediately()
+            error.root.hideImmediately()
+        }
     }
 
     /** Show error screen and hide all others. */
     private fun showErrorScreen() {
-        binding.error.root.revealCrossfade()
-        binding.nestedScrollView.hideImmediately()
-        binding.loading.hideImmediately()
+        binding.apply {
+            error.root.revealCrossfade()
+            nestedScrollView.hideImmediately()
+            loading.hideImmediately()
+        }
     }
 
     /** Hide all screens. */
     private fun hideScreens() {
-        binding.nestedScrollView.hideImmediately()
-        binding.error.root.hideImmediately()
-        binding.loading.hideImmediately()
+        binding.apply {
+            nestedScrollView.hideImmediately()
+            error.root.hideImmediately()
+            loading.hideImmediately()
+        }
     }
 }
