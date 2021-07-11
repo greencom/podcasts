@@ -212,6 +212,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Hide all screens to then reveal them with crossfade animations.
         hideScreens()
 
+        // Hide app bar divider at start.
+        binding.appBarDivider.hideImmediately()
+
         // Handle toolbar back button clicks.
         binding.appBarBack.setOnClickListener { findNavController().navigateUp() }
 

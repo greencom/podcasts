@@ -24,9 +24,11 @@ import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.FragmentEpisodeBinding
+import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeEvent
 import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeState
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -144,6 +146,17 @@ class EpisodeFragment : Fragment() {
             }
         }
 
+        // Navigate to episode's parent podcast.
+        binding.cover.setOnClickListener {
+            navigateToPodcast()
+        }
+        binding.podcastTitle.setOnClickListener {
+            navigateToPodcast()
+        }
+        binding.date.setOnClickListener {
+            navigateToPodcast()
+        }
+
         // Show and hide app bar divider depending on the scroll state.
         binding.appBarDivider.hideImmediately()
         binding.nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
@@ -165,6 +178,13 @@ class EpisodeFragment : Fragment() {
                 launch {
                     viewModel.uiState.collectLatest { state ->
                         updateUi(state)
+                    }
+                }
+
+                // Observe events.
+                launch {
+                    viewModel.event.collect { event ->
+                        handleEvent(event)
                     }
                 }
             }
@@ -202,6 +222,31 @@ class EpisodeFragment : Fragment() {
 
             // Show loading screen.
             is EpisodeState.Loading -> showLoadingScreen()
+        }
+    }
+
+    /** Handle events. */
+    private fun handleEvent(event: EpisodeEvent) {
+        when (event) {
+            // Navigate to PodcastFragment.
+            is EpisodeEvent.NavigateToPodcast -> {
+                val previousDestinationId =
+                    findNavController().previousBackStackEntry?.destination?.id ?: return
+                if (previousDestinationId == R.id.podcastFragment) {
+                    findNavController().navigateUp()
+                } else {
+                    findNavController().navigate(
+                        EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(event.podcastId)
+                    )
+                }
+            }
+        }
+    }
+
+    /** Send event to navigate to a PodcastFragment. */
+    private fun navigateToPodcast() {
+        episode?.let { episode ->
+            viewModel.navigateToPodcast(episode.podcastId)
         }
     }
 
