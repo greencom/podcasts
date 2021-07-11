@@ -27,12 +27,14 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.media2.session.*
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import coil.load
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
+import com.greencom.android.podcasts.NavGraphDirections
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.*
@@ -400,7 +402,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             // Associate the bottom nav bar items with navigation graph actions.
             setupWithNavController(navController)
             // Handle Navigation behavior when the bottom navigation item is reselected.
-            setupOnBottomItemReselectedBehavior(navHostFragment, navController)
+//            setupOnBottomItemReselectedBehavior(navHostFragment, navController)
         }
     }
 
@@ -473,13 +475,19 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_FORWARD_VALUE)
         }
 
-        // The expanded content of the player is not disabled at application start
-        // (because of bug?), so prevent random click on the invisible podcast cover
-        // by checking the state of player bottom sheet. If player is collapsed, expand it.
         expandedPlayer.cover.setOnClickListener {
+            // The expanded content of the player is not disabled at application start
+            // (because of bug?), so prevent random click on the invisible podcast cover
+            // by checking the state of player bottom sheet. If player is collapsed, expand it.
             if (isPlayerCollapsed) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            } else {
+                navigateToEpisode()
             }
+        }
+
+        expandedPlayer.title.setOnClickListener {
+            navigateToEpisode()
         }
 
         expandedPlayer.options.setOnClickListener {
@@ -498,6 +506,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
      * The starting fragments are fragments associated with bottom navigation
      * items (tabs).
      */
+    @Deprecated("Deprecated due to use of the multiple backstacks navigation.")
     private fun BottomNavigationView.setupOnBottomItemReselectedBehavior(
         navHostFragment: NavHostFragment,
         navController: NavController,
@@ -658,6 +667,19 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         }
     }
 
+    /** Navigate to EpisodeFragment from the player by ID. */
+    private fun navigateToEpisode() {
+        currentEpisode?.let { episode ->
+            lifecycleScope.launch {
+                binding.navHostFragment.findNavController().navigate(
+                    NavGraphDirections.actionGlobalEpisodeFragment(episode.id)
+                )
+                delay(250) // Wait for the transition.
+                collapsePlayer()
+            }
+        }
+    }
+
     /** Animate slider thumb radius to a given value. */
     private fun animateSliderThumb(to: Int) {
         if (thumbAnimator != null) {
@@ -812,6 +834,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
      * The starting fragments are fragments associated with bottom navigation
      * items (tabs).
      */
+    @Deprecated("Deprecated due to use of the multiple backstacks navigation.")
     private fun Fragment.isStarting(): Boolean {
         return when (this) {
             is HomeFragment -> true
@@ -827,6 +850,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
      *
      * @param title title of the reselected bottom navigation item (tab).
      */
+    @Deprecated("Deprecated due to use of the multiple backstacks navigation.")
     private fun NavController.navigateToStartingFragment(title: CharSequence) {
         when (title) {
             resources.getString(R.string.bottom_nav_home) -> navigate(R.id.action_global_homeFragment)
