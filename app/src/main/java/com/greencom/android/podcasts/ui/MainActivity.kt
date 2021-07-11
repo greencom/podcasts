@@ -38,6 +38,7 @@ import com.greencom.android.podcasts.NavGraphDirections
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.*
+import com.greencom.android.podcasts.ui.MainActivityViewModel.MainActivityEvent
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
@@ -156,8 +157,20 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 launch {
                     viewModel.event.collect { event ->
                         when (event) {
-                            is MainActivityViewModel.MainActivityEvent.PlayerOptionsDialog -> {
+                            // Show PlayerOptionsDialog.
+                            is MainActivityEvent.PlayerOptionsDialog -> {
                                 PlayerOptionsDialog.show(supportFragmentManager, event.episodeId)
+                            }
+
+                            // Navigate to EpisodeFragment.
+                            is MainActivityEvent.NavigateToEpisode -> {
+                                currentEpisode?.let { episode ->
+                                    binding.navHostFragment.findNavController().navigate(
+                                        NavGraphDirections.actionGlobalEpisodeFragment(episode.id)
+                                    )
+                                    delay(250) // Wait for the transition.
+                                    collapsePlayer()
+                                }
                             }
                         }
                     }
@@ -667,16 +680,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         }
     }
 
-    /** Navigate to EpisodeFragment from the player by ID. */
+    /** Send event to navigate to a EpisodeFragment. */
     private fun navigateToEpisode() {
         currentEpisode?.let { episode ->
-            lifecycleScope.launch {
-                binding.navHostFragment.findNavController().navigate(
-                    NavGraphDirections.actionGlobalEpisodeFragment(episode.id)
-                )
-                delay(250) // Wait for the transition.
-                collapsePlayer()
-            }
+            viewModel.navigateToEpisode(episode.id)
         }
     }
 

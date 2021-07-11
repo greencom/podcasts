@@ -91,6 +91,12 @@ class MainActivityViewModel @Inject constructor(
         _event.send(MainActivityEvent.PlayerOptionsDialog(episodeId))
     }
 
+    fun navigateToEpisode(episodeId: String) {
+        viewModelScope.launch {
+            _event.send(MainActivityEvent.NavigateToEpisode(episodeId))
+        }
+    }
+
     @ExperimentalTime
     fun connectToPlayer(context: Context, sessionToken: SessionToken) {
         playerServiceConnection.connect(context, sessionToken)
@@ -108,5 +114,6 @@ class MainActivityViewModel @Inject constructor(
 
     sealed class MainActivityEvent {
         data class PlayerOptionsDialog(val episodeId: String) : MainActivityEvent()
+        data class NavigateToEpisode(val episodeId: String) : MainActivityEvent()
     }
 }
