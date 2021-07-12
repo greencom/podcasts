@@ -40,7 +40,7 @@ private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 /** Regex pattern for detecting timecodes. */
 private const val TIMECODE_PATTERN = "([0-9]{1,2})(:[0-9]{1,2}){1,2}"
 
-// TODO
+/** Fragment that contains specific information about single episode. */
 @AndroidEntryPoint
 class EpisodeFragment : Fragment() {
 
@@ -249,7 +249,10 @@ class EpisodeFragment : Fragment() {
         }
     }
 
-    // TODO
+    /**
+     * Makes timecodes interactive. Works only for timecodes that follow [TIMECODE_PATTERN]
+     * regex pattern.
+     */
     @ExperimentalTime
     private fun Spanned.handleTimecodes(): SpannableStringBuilder {
         val spannableStringBuilder = SpannableStringBuilder(this)
@@ -279,7 +282,7 @@ class EpisodeFragment : Fragment() {
         return spannableStringBuilder
     }
 
-    // TODO
+    /** Obtains timestamp in milliseconds from the String timecode. */
     @ExperimentalTime
     private fun obtainMillisFromTimecode(timecode: String): Long {
         val timecodeParts = timecode.split(":")

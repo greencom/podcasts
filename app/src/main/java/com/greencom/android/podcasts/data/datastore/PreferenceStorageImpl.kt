@@ -3,7 +3,6 @@ package com.greencom.android.podcasts.data.datastore
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -13,12 +12,14 @@ import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// TODO
-
 private const val DATA_STORE_NAME = "preference_storage"
 
 private val Context.dataStore by preferencesDataStore(DATA_STORE_NAME)
 
+/**
+ * Implements [PreferenceStorage] interface and provides access to the storage that uses
+ * DataStore APIs.
+ */
 @Singleton
 class PreferenceStorageImpl @Inject constructor(
     @ApplicationContext appContext: Context
@@ -45,8 +46,4 @@ class PreferenceStorageImpl @Inject constructor(
             preferences[PreferenceKeys.LAST_EPISODE_ID] = episodeId
         }
     }
-}
-
-private object PreferenceKeys {
-    val LAST_EPISODE_ID = stringPreferencesKey("LAST_EPISODE_ID")
 }

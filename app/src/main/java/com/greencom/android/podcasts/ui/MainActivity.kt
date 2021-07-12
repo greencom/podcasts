@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private var navigationBarColorDefault = TypedValue()
     private var navigationBarColorChanged = TypedValue()
 
-    // TODO
+    /** Current player episode. */
     private var currentEpisode: CurrentEpisode? = null
 
     /** ServiceConnection for [PlayerService] binding. */
@@ -192,14 +192,14 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // TODO
+                // Collect skip value and control skip process.
                 launch {
                     viewModel.skipBackwardOrForwardValue.collectLatest { value ->
                         skipBackwardOrForward(value)
                     }
                 }
 
-                // TODO
+                // Observe episodes from the player.
                 launch {
                     viewModel.currentEpisode.collect { episode ->
                         currentEpisode = episode
@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // TODO
+                // Observe current duration from the player.
                 launch {
                     viewModel.duration.collect { duration ->
                         collapsedPlayer.progressBar.max = duration.toInt()
@@ -230,7 +230,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // TODO
+                // Observe player states.
                 launch {
                     viewModel.playerState.collect { state ->
                         when {
@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // TODO
+                // Observe current position from the player.
                 launch {
                     viewModel.currentPosition.collect { position ->
                         if (updatePosition) {
@@ -352,7 +352,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         return super.dispatchTouchEvent(ev)
     }
 
-    // TODO
+    // Mark episode completed on the appropriate PlayerOptionsDialog click.
     override fun onMarkCompletedClick(episodeId: String) {
         viewModel.markCompleted(episodeId)
     }

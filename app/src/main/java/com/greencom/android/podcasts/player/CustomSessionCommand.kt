@@ -1,8 +1,8 @@
 package com.greencom.android.podcasts.player
 
-// TODO
+/** Object that contains custom MediaSession's commands. */
 object CustomSessionCommand {
 
-    // TODO
+    /** Action for `RESET_PLAYER` custom command. */
     const val RESET_PLAYER = "CUSTOM_COMMAND_RESET_PLAYER"
 }

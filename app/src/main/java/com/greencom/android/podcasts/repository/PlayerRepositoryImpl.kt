@@ -12,7 +12,7 @@ private const val EPISODE_START_THRESHOLD = 30_000
 private const val EPISODE_END_THRESHOLD = 60_000
 private const val EPISODE_SKIP_BACKWARD = 5_000
 
-// TODO
+/** Implements [PlayerRepository] interface. */
 @Singleton
 class PlayerRepositoryImpl @Inject constructor(
     private val preferenceStorage: PreferenceStorage,

@@ -2,7 +2,7 @@ package com.greencom.android.podcasts.data.datastore
 
 import kotlinx.coroutines.flow.Flow
 
-// TODO
+/** Provides access to the storage that uses DataStore APIs. */
 interface PreferenceStorage {
 
     fun getLastEpisodeId(): Flow<String?>
