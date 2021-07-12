@@ -230,7 +230,8 @@ class EpisodeFragment : Fragment() {
             // Navigate to PodcastFragment.
             is EpisodeEvent.NavigateToPodcast -> {
                 val previousDestinationId =
-                    findNavController().previousBackStackEntry?.destination?.id ?: return
+                    findNavController().previousBackStackEntry?.destination?.id
+
                 if (previousDestinationId == R.id.podcastFragment) {
                     findNavController().navigateUp()
                 } else {

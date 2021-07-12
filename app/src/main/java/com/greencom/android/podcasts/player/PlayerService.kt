@@ -125,6 +125,7 @@ class PlayerService : MediaSessionService() {
                 val duration: Long
                 val title: String
                 val publisher: String
+                val podcastId: String
                 val image: String
 
                 runBlocking {
@@ -133,6 +134,7 @@ class PlayerService : MediaSessionService() {
                     duration = Duration.seconds(episode.audioLength).inWholeMilliseconds
                     title = episode.title
                     publisher = episode.publisher
+                    podcastId = episode.podcastId
                     image = episode.image
 
                     mediaItem = UriMediaItem.Builder(Uri.parse(audio))
@@ -140,6 +142,7 @@ class PlayerService : MediaSessionService() {
                             .putString(EpisodeMetadata.ID, mediaId)
                             .putString(EpisodeMetadata.TITLE, title)
                             .putString(EpisodeMetadata.PUBLISHER, publisher)
+                            .putString(EpisodeMetadata.PODCAST_ID, podcastId)
                             .putString(EpisodeMetadata.IMAGE, image)
                             .putLong(EpisodeMetadata.DURATION, duration)
                             .build())

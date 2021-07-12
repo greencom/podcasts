@@ -75,6 +75,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private val collapsedPlayer get() = binding.player.collapsed
     private val expandedPlayer get() = binding.player.expanded
 
+    /** Shortcut for navController. */
+    private val navController: NavController
+        get() = binding.navHostFragment.findNavController()
+
     /** MainActivityViewModel. */
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -163,9 +167,25 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
                             // Navigate to EpisodeFragment.
                             is MainActivityEvent.NavigateToEpisode -> {
-                                currentEpisode?.let { episode ->
-                                    binding.navHostFragment.findNavController().navigate(
-                                        NavGraphDirections.actionGlobalEpisodeFragment(episode.id)
+                                navController.navigate(
+                                    NavGraphDirections.actionGlobalEpisodeFragment(event.episodeId)
+                                )
+                                delay(250) // Wait for the transition.
+                                collapsePlayer()
+                            }
+
+                            // Navigate to PodcastFragment.
+                            is MainActivityEvent.NavigateToPodcast -> {
+                                val previousDestinationId =
+                                    navController.previousBackStackEntry?.destination?.id
+
+                                if (previousDestinationId == R.id.podcastFragment) {
+                                    navController.navigateUp()
+                                    delay(250) // Wait for the transition.
+                                    collapsePlayer()
+                                } else {
+                                    navController.navigate(
+                                        NavGraphDirections.actionGlobalPodcastFragment(event.podcastId)
                                     )
                                     delay(250) // Wait for the transition.
                                     collapsePlayer()
@@ -499,6 +519,12 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
         expandedPlayer.title.setOnClickListener {
             navigateToEpisode()
+        }
+
+        expandedPlayer.publisher.setOnClickListener {
+            currentEpisode?.let { episode ->
+                viewModel.navigateToPodcast(episode.podcastId)
+            }
         }
 
         expandedPlayer.options.setOnClickListener {

@@ -14,6 +14,9 @@ object EpisodeMetadata {
     /** Media metadata string key for episode publisher. */
     const val PUBLISHER = MediaMetadata.METADATA_KEY_AUTHOR
 
+    /** Media metadata string key for episode's parent podcast. */
+    const val PODCAST_ID = MediaMetadata.METADATA_KEY_ARTIST
+
     /** Media metadata string key for episode image URI. */
     const val IMAGE = MediaMetadata.METADATA_KEY_ART_URI
 

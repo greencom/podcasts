@@ -8,6 +8,7 @@ data class CurrentEpisode(
     val id: String,
     val title: String,
     val publisher: String,
+    val podcastId: String,
     val image: String,
 ) {
 
@@ -20,7 +21,7 @@ data class CurrentEpisode(
     companion object {
 
         /** Create an empty [CurrentEpisode]. */
-        fun empty(): CurrentEpisode = CurrentEpisode("", "", "", "")
+        fun empty(): CurrentEpisode = CurrentEpisode("", "", "", "", "")
 
         /**
          * Obtain [CurrentEpisode] from the player media item. If the media item is `null`,
@@ -35,6 +36,7 @@ data class CurrentEpisode(
                     id = mediaItem.metadata?.getString(EpisodeMetadata.ID) ?: "",
                     title = mediaItem.metadata?.getString(EpisodeMetadata.TITLE) ?: "",
                     publisher = mediaItem.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: "",
+                    podcastId = mediaItem.metadata?.getString(EpisodeMetadata.PODCAST_ID) ?: "",
                     image = mediaItem.metadata?.getString(EpisodeMetadata.IMAGE) ?: "",
                 )
             }
