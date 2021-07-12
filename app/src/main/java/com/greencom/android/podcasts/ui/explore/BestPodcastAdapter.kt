@@ -39,7 +39,7 @@ class BestPodcastViewHolder private constructor(
 
     private val context = binding.root.context
 
-    // Podcast associated with this ViewHolder.
+    /** Podcast associated with this ViewHolder. */
     private lateinit var podcast: PodcastShort
 
     init {
@@ -47,7 +47,9 @@ class BestPodcastViewHolder private constructor(
         binding.subscribe.setOnClickListener {
             updateSubscription(podcast.id, (it as MaterialButton).isChecked)
             // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
-            if (podcast.subscribed) binding.subscribe.isChecked = true
+            if (podcast.subscribed) {
+                binding.subscribe.isChecked = true
+            }
         }
 
         // Navigate to PodcastFragment.

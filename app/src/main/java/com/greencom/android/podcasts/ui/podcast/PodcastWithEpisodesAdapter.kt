@@ -144,7 +144,9 @@ class PodcastHeaderViewHolder private constructor(
         binding.subscribe.setOnClickListener {
             updateSubscription(podcast.id, (it as MaterialButton).isChecked)
             // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
-            if (podcast.subscribed) binding.subscribe.isChecked = true
+            if (podcast.subscribed) {
+                binding.subscribe.isChecked = true
+            }
         }
 
         // Check line count when the description is laid out.
@@ -198,9 +200,10 @@ class PodcastHeaderViewHolder private constructor(
             description.movementMethod = LinkMovementMethod.getInstance()
 
             // Handle description state.
-            descriptionTrailingGradient.isVisible = !isDescriptionExpanded && isDescriptionExpandable
-            descriptionMore.isVisible = !isDescriptionExpanded && isDescriptionExpandable
-            descriptionArrowDown.isVisible = !isDescriptionExpanded && isDescriptionExpandable
+            val isDescriptionCollapsed = !isDescriptionExpanded && isDescriptionExpandable
+            descriptionTrailingGradient.isVisible = isDescriptionCollapsed
+            descriptionMore.isVisible = isDescriptionCollapsed
+            descriptionArrowDown.isVisible = isDescriptionCollapsed
             description.maxLines = if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
         }
     }
@@ -262,10 +265,10 @@ class EpisodeViewHolder private constructor(
 
         // Resume or pause depending on the current state or play if the episode is not selected.
         binding.play.setOnClickListener {
-            if (episode.isSelected) {
-                if (episode.isPlaying) pause() else play()
-            } else {
-                playEpisode(episode.id)
+            when {
+                episode.isSelected && episode.isPlaying -> pause()
+                episode.isSelected && !episode.isPlaying -> play()
+                else -> playEpisode(episode.id)
             }
         }
     }

@@ -20,12 +20,16 @@ data class CurrentEpisode(
 
         @ExperimentalTime
         fun from(mediaItem: MediaItem?): CurrentEpisode {
-            return CurrentEpisode(
-                id = mediaItem?.metadata?.getString(EpisodeMetadata.ID) ?: "",
-                title = mediaItem?.metadata?.getString(EpisodeMetadata.TITLE) ?: "",
-                publisher = mediaItem?.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: "",
-                image = mediaItem?.metadata?.getString(EpisodeMetadata.IMAGE) ?: "",
-            )
+            return if (mediaItem == null) {
+                CurrentEpisode.empty()
+            } else {
+                CurrentEpisode(
+                    id = mediaItem.metadata?.getString(EpisodeMetadata.ID) ?: "",
+                    title = mediaItem.metadata?.getString(EpisodeMetadata.TITLE) ?: "",
+                    publisher = mediaItem.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: "",
+                    image = mediaItem.metadata?.getString(EpisodeMetadata.IMAGE) ?: "",
+                )
+            }
         }
     }
 }

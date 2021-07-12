@@ -37,8 +37,8 @@ import kotlin.time.ExperimentalTime
 // Saving instance state.
 private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 
-// TODO
-private const val TIMECODE_PATTERN = "(\\d{1,2})(:\\d{1,2}){1,2}"
+/** Regex pattern for detecting timecodes. */
+private const val TIMECODE_PATTERN = "([0-9]{1,2})(:[0-9]{1,2}){1,2}"
 
 // TODO
 @AndroidEntryPoint
@@ -138,10 +138,10 @@ class EpisodeFragment : Fragment() {
         // Resume or pause depending on the current state or play if the episode is not selected.
         binding.play.setOnClickListener {
             episode?.let { episode ->
-                if (episode.isSelected) {
-                    if (episode.isPlaying) viewModel.pause() else viewModel.play()
-                } else {
-                    viewModel.playEpisode(episode.id)
+                when {
+                    episode.isSelected && episode.isPlaying -> viewModel.pause()
+                    episode.isSelected && !episode.isPlaying -> viewModel.play()
+                    else -> viewModel.playEpisode(episode.id)
                 }
             }
         }
@@ -173,7 +173,6 @@ class EpisodeFragment : Fragment() {
     private fun initObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-
                 // Observe UI states.
                 launch {
                     viewModel.uiState.collectLatest { state ->
@@ -287,6 +286,7 @@ class EpisodeFragment : Fragment() {
         var hours = 0
         var minutes = 0
         var seconds = 0
+
         when (timecodeParts.size) {
             2 -> {
                 minutes = timecodeParts[0].toInt()

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// TODO
+/** ViewModel used by [EpisodeFragment]. */
 @HiltViewModel
 class EpisodeViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** ViewModel used by [PodcastFragment]. */
 @HiltViewModel
 class PodcastViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
@@ -27,6 +28,7 @@ class PodcastViewModel @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
+    /** ID of the podcast associated with the fragment and ViewModel. */
     var podcastId = ""
 
     private val _uiState = MutableStateFlow<PodcastState>(PodcastState.Loading)
@@ -51,7 +53,7 @@ class PodcastViewModel @Inject constructor(
     /** Job that handles episodes fetching. */
     private var episodesJob: Job? = null
 
-    /** Are there episodes at the bottom of a list that should be loaded. */
+    /** Are there episodes at the bottom of the list that should be loaded. */
     private var moreEpisodesNeededAtBottom = true
 
     /**
@@ -107,7 +109,9 @@ class PodcastViewModel @Inject constructor(
     fun fetchPodcast() = viewModelScope.launch {
         _event.send(PodcastEvent.Fetching)
         val result = repository.fetchPodcast(podcastId)
-        if (result is State.Error) _event.send(PodcastEvent.Snackbar(R.string.loading_error))
+        if (result is State.Error) {
+            _event.send(PodcastEvent.Snackbar(R.string.loading_error))
+        }
     }
 
     /**
@@ -119,7 +123,9 @@ class PodcastViewModel @Inject constructor(
         episodesJob = viewModelScope.launch {
             try {
                 val result = repository.fetchEpisodes(podcastId, sortOrder.value, isForced, _event)
-                if (result is State.Error) _event.send(PodcastEvent.Snackbar(R.string.loading_error))
+                if (result is State.Error) {
+                    _event.send(PodcastEvent.Snackbar(R.string.loading_error))
+                }
             } finally {
                 // Stop the appropriate loading indicator.
                 if (isForced) {

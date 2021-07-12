@@ -36,7 +36,7 @@ import javax.inject.Singleton
 private const val EPISODES_LIMIT_DEFAULT = 30
 private const val EPISODES_LIMIT_NONE = 0
 
-private const val MAX_HOURS_FROM_UPDATE = 6L
+private const val PODCAST_MAX_HOURS_FROM_UPDATE = 6L
 
 /**
  * App [Repository] implementation. Provides access to the ListenAPI network service
@@ -115,8 +115,6 @@ class RepositoryImpl @Inject constructor(
         isForced: Boolean,
         event: Channel<PodcastViewModel.PodcastEvent>
     ): State<Unit> {
-        val limit = EPISODES_LIMIT_DEFAULT
-
         // Get episode count that has been loaded for this podcast.
         var episodesLoaded = episodeDao.getEpisodeCount(podcastId)
 
@@ -125,11 +123,10 @@ class RepositoryImpl @Inject constructor(
         val earliestPubDate: Long?
         var topEpisodes = listOf<EpisodeEntity>()
 
-        // Check if the update was forced by the user.
+        // Check if update was forced by the user.
         if (isForced) {
             // isForced == true
             // Update the podcast data regardless of the last update time.
-
             startEpisodesLoadingIndicator(isForced, event)
             when (val result = fetchPodcast(podcastId, sortOrder)) {
                 is State.Success -> {
@@ -150,15 +147,14 @@ class RepositoryImpl @Inject constructor(
                 // There is the podcast in the database. Calculate time since the last update.
                 val timeFromLastUpdate = System.currentTimeMillis() - updateDate
 
-                if (timeFromLastUpdate <= TimeUnit.HOURS.toMillis(MAX_HOURS_FROM_UPDATE)) {
+                if (timeFromLastUpdate <= TimeUnit.HOURS.toMillis(PODCAST_MAX_HOURS_FROM_UPDATE)) {
                     // If the podcast data was recently updated, get latestPubDate and
                     // earliestPubDate from the database.
+                    // !! operators are safe here since we are sure there is the podcast in the db.
                     latestPubDate = podcastDao.getLatestPubDate(podcastId)!!
                     earliestPubDate = podcastDao.getEarliestPubDate(podcastId)!!
                 } else {
-                    // If the podcast data was updated more than 3 hours ago, update the podcast
-                    // data.
-
+                    // If the podcast data was updated more than 3 hours ago, update the podcast.
                     startEpisodesLoadingIndicator(isForced, event)
                     when (val result = fetchPodcast(podcastId, sortOrder)) {
                         is State.Success -> {
@@ -173,7 +169,6 @@ class RepositoryImpl @Inject constructor(
             } else {
                 // updateDate == null
                 // There is no podcast in the database, fetch it.
-
                 startEpisodesLoadingIndicator(isForced, event)
                 when (val result = fetchPodcast(podcastId, sortOrder)) {
                     is State.Success -> {
@@ -223,13 +218,17 @@ class RepositoryImpl @Inject constructor(
             episodesLoaded = topEpisodes.size
 
             // Fetch next episodes sequentially.
-            val nextEpisodePubDate = if (topEpisodes.isNotEmpty()) topEpisodes.last().date else null
+            val nextEpisodePubDate = if (topEpisodes.isNotEmpty()) {
+                topEpisodes.last().date
+            } else {
+                null
+            }
             val result = fetchEpisodesSequentially(
                 podcastId = podcastId,
                 startPubDate = nextEpisodePubDate,
                 endPubDate = bottomPubDate,
                 sortOrder = sortOrder,
-                limit = limit,
+                limit = EPISODES_LIMIT_DEFAULT,
                 episodesLoaded = episodesLoaded
             )
             return when (result) {
@@ -247,18 +246,19 @@ class RepositoryImpl @Inject constructor(
                 // Top episodes are loaded already.
 
                 // Return if the number of loaded episodes is greater than limit.
-                if (episodesLoaded >= limit) return State.Success(Unit)
+                if (episodesLoaded >= EPISODES_LIMIT_DEFAULT) {
+                    return State.Success(Unit)
+                }
 
                 // Check if there are episodes at the bottom that should be loaded.
                 if (bottomLoadedPubDate != bottomPubDate) {
-
                     startEpisodesLoadingIndicator(isForced, event)
                     val result = fetchEpisodesSequentially(
                         podcastId = podcastId,
                         startPubDate = bottomLoadedPubDate!!,
                         endPubDate = bottomPubDate,
                         sortOrder = sortOrder,
-                        limit = limit,
+                        limit = EPISODES_LIMIT_DEFAULT,
                         episodesLoaded = episodesLoaded
                     )
                     return when (result) {
@@ -273,14 +273,13 @@ class RepositoryImpl @Inject constructor(
                 // to ensure that there are no spaces between loaded episodes in the database.
                 // Fetch without the limit to ensure that the user will see the appropriate
                 // episodes at the top of the list according to the sort order.
-
                 startEpisodesLoadingIndicator(isForced, event)
                 var result = fetchEpisodesSequentially(
                     podcastId = podcastId,
                     startPubDate = topLoadedPubDate,
                     endPubDate = topPubDate,
                     sortOrder = sortOrder.reverse(),
-                    limit = EPISODES_LIMIT_NONE
+                    limit = EPISODES_LIMIT_NONE // No limit!
                 )
                 when (result) {
                     is State.Success -> episodesLoaded += result.data
@@ -289,18 +288,19 @@ class RepositoryImpl @Inject constructor(
                 }
 
                 // Return if the number of loaded episodes is greater than limit.
-                if (episodesLoaded >= limit) return State.Success(Unit)
+                if (episodesLoaded >= EPISODES_LIMIT_DEFAULT) {
+                    return State.Success(Unit)
+                }
 
                 // Check if there are episodes at the bottom that should be loaded.
                 if (bottomLoadedPubDate != bottomPubDate) {
-
                     startEpisodesLoadingIndicator(isForced, event)
                     result = fetchEpisodesSequentially(
                         podcastId = podcastId,
                         startPubDate = bottomLoadedPubDate!!,
                         endPubDate = bottomPubDate,
                         sortOrder = sortOrder,
-                        limit = limit,
+                        limit = EPISODES_LIMIT_DEFAULT,
                         episodesLoaded = episodesLoaded
                     )
                     return when (result) {
@@ -324,7 +324,7 @@ class RepositoryImpl @Inject constructor(
         val bottomLoadedPubDate: Long // Date of the earliest/latest loaded episode pub date.
 
         // !! operators are safe here since the function can be called only if the episode
-        // count is greater than 10.
+        // count is greater than 10 -> episodes exist.
         when (sortOrder) {
             SortOrder.RECENT_FIRST -> {
                 bottomPubDate = podcastDao.getEarliestPubDate(podcastId)!!
@@ -336,7 +336,10 @@ class RepositoryImpl @Inject constructor(
             }
         }
 
-        if (bottomLoadedPubDate == bottomPubDate) return State.Success(0)
+        // Return if all episodes have been loaded already.
+        if (bottomLoadedPubDate == bottomPubDate) {
+            return State.Success(0)
+        }
 
         event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
         val result = fetchEpisodesSequentially(
@@ -385,7 +388,9 @@ class RepositoryImpl @Inject constructor(
     ): State<Unit> {
         return try {
             // Fetch a new list from ListenAPI.
-            val newList = safeRetrofitCall { listenApi.getBestPodcasts(genreId).toDatabase() }
+            val newList = safeRetrofitCall {
+                listenApi.getBestPodcasts(genreId).toDatabase()
+            }
             // Filter old podcasts.
             val newIds = newList.map { it.id }
             val oldList = currentList
@@ -441,19 +446,21 @@ class RepositoryImpl @Inject constructor(
     }
 
     /**
-     * If the fetching was forced by the user, do nothing, since the swipe-to-refreshed
-     * loading indicator has already started by the gesture. Otherwise, push
-     * `EpisodesFetchingStarted` event to [event] channel.
+     * Used in [fetchEpisodes]. If the fetching was forced by the user, do nothing,
+     * since the swipe-to-refreshed loading indicator has already started by the gesture.
+     * Otherwise, push `EpisodesFetchingStarted` event to [event] channel.
      */
     private suspend fun startEpisodesLoadingIndicator(
         isForced: Boolean,
         event: Channel<PodcastViewModel.PodcastEvent>
     ) {
-        if (!isForced) event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
+        if (!isForced) {
+            event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
+        }
     }
 
     /**
-     * Makes a safe Retrofit call and returns the result. The first overall call will be wrapped
+     * Make a safe Retrofit call and return the result. The first overall call will be wrapped
      * in [withContext] function and any other will be done without it.
      *
      * Note: this function is needed due to some strange Retrofit bug, which produces UI freeze

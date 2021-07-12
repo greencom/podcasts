@@ -45,7 +45,7 @@ class PlayerService : MediaSessionService() {
 
     @Inject lateinit var repository: PlayerRepository
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private var scope: CoroutineScope? = null
 
     private var notificationJob: Job? = null
 
@@ -212,6 +212,7 @@ class PlayerService : MediaSessionService() {
     override fun onCreate() {
         super.onCreate()
         Log.d(PLAYER_TAG,"PlayerService.onCreate()")
+        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
         player = MediaPlayer(this).apply {
             registerPlayerCallback(Executors.newSingleThreadExecutor(), playerCallback)
@@ -247,7 +248,7 @@ class PlayerService : MediaSessionService() {
         player.unregisterPlayerCallback(playerCallback)
         player.close()
         unregisterReceiver(mediaControlReceiver)
-        scope.cancel()
+        scope?.cancel()
         removeNotification()
     }
 
@@ -289,7 +290,7 @@ class PlayerService : MediaSessionService() {
         if (episode.isNotEmpty()) {
             val position = player.currentPosition
             val duration = player.duration
-            scope.launch {
+            scope?.launch {
                 repository.updateEpisodeState(episode.id, position, duration)
             }
         }
@@ -300,7 +301,7 @@ class PlayerService : MediaSessionService() {
         Log.d(PLAYER_TAG, "saveLastEpisode()")
         val episode = CurrentEpisode.from(player.currentMediaItem)
         if (episode.isNotEmpty()) {
-            scope.launch {
+            scope?.launch {
                 repository.setLastEpisodeId(episode.id)
             }
         }
@@ -321,7 +322,7 @@ class PlayerService : MediaSessionService() {
         }
 
         notificationJob?.cancel()
-        notificationJob = scope.launch {
+        notificationJob = scope?.launch {
             val notificationBuilder = NotificationCompat.Builder(this@PlayerService, CHANNEL_ID)
                 .setSilent(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

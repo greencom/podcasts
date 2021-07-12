@@ -152,8 +152,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-
-                // TODO
+                // Observe events.
                 launch {
                     viewModel.event.collect { event ->
                         when (event) {
@@ -206,7 +205,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         currentEpisode = episode
                         showPlayer(episode.isNotEmpty())
                         viewModel.resetPlayerBottomSheetState()
-
+                        // Update current position with delay to make sure there was no skip.
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
 
                         collapsedPlayer.apply {
@@ -214,7 +213,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                             title.text = episode.title
                             cover.load(episode.image) { coverBuilder(this@MainActivity) }
                         }
-
                         expandedPlayer.apply {
                             slider.value = 0F
                             title.text = episode.title
@@ -447,7 +445,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         }
 
 
-        // EXPANDED.
+        // EXPANDED
         expandedPlayer.playPause.setOnClickListener {
             when {
                 viewModel.isPlaying -> viewModel.pause()

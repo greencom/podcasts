@@ -19,7 +19,7 @@ private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 
 /**
  * Contains lists of the best podcasts for different genres implemented as tabs for
- * the TabLayout.
+ * the TabLayout and ViewPager2.
  */
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
@@ -87,10 +87,9 @@ class ExploreFragment : Fragment() {
 
     /** TabLayout and ViewPager2 setup. */
     private fun initTabLayout() {
-        val pagerAdapter = ExploreViewPagerAdapter(this)
-        binding.pager.adapter = pagerAdapter
+        binding.pager.adapter = ExploreViewPagerAdapter(this)
 
-        // Set up the tabs.
+        // Tabs setup.
         val tabs = resources.getStringArray(R.array.explore_tabs)
         TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             tab.text = tabs[position]
@@ -108,7 +107,7 @@ class ExploreFragment : Fragment() {
                 val tabIndex = binding.tabLayout.selectedTabPosition
                 val genreId = ExploreTabGenre.values()[tabIndex].id
                 childFragmentManager.setFragmentResult(
-                    "${ExplorePageFragment.ON_TAB_RESELECTED}$genreId",
+                    ExplorePageFragment.createOnTabReselectedKey(genreId),
                     Bundle()
                 )
                 // Expand the app bar.

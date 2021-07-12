@@ -35,7 +35,9 @@ class PreferenceStorageImpl @Inject constructor(
                     throw exception
                 }
             }
-            .map { preferences -> preferences[PreferenceKeys.LAST_EPISODE_ID] }
+            .map { preferences ->
+                preferences[PreferenceKeys.LAST_EPISODE_ID]
+            }
     }
 
     override suspend fun setLastEpisodeId(episodeId: String) {

@@ -64,7 +64,8 @@ interface Repository {
 
     /**
      * Fetch more episodes on scroll for a given podcast ID for certain sort order and insert
-     * them into the database. Returns the result represented by [State].
+     * them into the database. Returns the result represented by [State] with the number of
+     * loaded episodes.
      */
     suspend fun fetchMoreEpisodes(
         podcastId: String,

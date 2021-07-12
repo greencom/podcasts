@@ -37,6 +37,7 @@ private const val SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN = "IS_SCROLL_TO_TOP_SHOWN"
 private const val FAB_DISTANCE_TO_TOP_THRESHOLD = 10
 private const val SMOOTH_SCROLL_THRESHOLD = 100
 
+// TODO
 @ExperimentalTime
 @AndroidEntryPoint
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
@@ -86,7 +87,9 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
         // Restore instance state.
         savedInstanceState?.apply {
             binding.appBarLayout.setExpanded(getBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED), false)
-            binding.scrollToTop.apply { if (getBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN)) show() else hide() }
+            binding.scrollToTop.apply {
+                if (getBoolean(SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN)) show() else hide()
+            }
         }
 
         // Get the podcast ID from the navigation arguments.
@@ -246,7 +249,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     private fun initObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-
                 // Observe UI states.
                 launch {
                     viewModel.uiState.collectLatest { uiState ->

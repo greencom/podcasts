@@ -39,7 +39,6 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExplorePageBinding? = null
-    /** Non-null View binding. */
     private val binding get() = _binding!!
 
     /** ExploreViewModel. */
@@ -150,7 +149,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     private fun initFragmentResultListeners() {
         // Scroll the list of the best podcasts on tab reselection.
         parentFragmentManager.setFragmentResultListener(
-            "$ON_TAB_RESELECTED$genreId",
+            createOnTabReselectedKey(genreId),
             viewLifecycleOwner
         ) { _, _ -> binding.podcastList.smoothScrollToPosition(0) }
     }
@@ -262,7 +261,16 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
          * Key prefix used to pass and retrieve data about reselected tab
          * in [ExploreFragment] between fragments.
          */
-        const val ON_TAB_RESELECTED = "EXPLORE_PAGE_ON_TAB_RESELECTED"
+        private const val ON_TAB_RESELECTED = "EXPLORE_PAGE_ON_TAB_RESELECTED"
+
+        /**
+         * Create a request key with a given genre ID to pass data between [ExploreFragment] and
+         * [ExplorePageFragment] about reselected tabs in [ExploreFragment] with
+         * FragmentResult API.
+         */
+        fun createOnTabReselectedKey(genreId: Int): String {
+            return "$ON_TAB_RESELECTED/$genreId"
+        }
 
         /**
          * Use this factory method to create a new instance of
