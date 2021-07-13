@@ -26,6 +26,7 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.FragmentEpisodeBinding
 import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeEvent
 import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeState
+import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -225,17 +226,35 @@ class EpisodeFragment : Fragment() {
     }
 
     /** Handle events. */
+    @ExperimentalTime
     private fun handleEvent(event: EpisodeEvent) {
         when (event) {
             // Navigate to PodcastFragment.
             is EpisodeEvent.NavigateToPodcast -> {
-                // TODO: REWORK.
+                // Get the previous destination ID.
                 val previousDestinationId =
                     findNavController().previousBackStackEntry?.destination?.id
 
                 if (previousDestinationId == R.id.podcastFragment) {
-                    findNavController().navigateUp()
+                    // Previous destination is PodcastFragment, check destination args.
+                    val previousPodcastId =
+                        findNavController().previousBackStackEntry?.arguments?.getString(
+                            PodcastFragment.SAFE_ARGS_PODCAST_ID
+                        )
+                    if (previousPodcastId == episode?.podcastId) {
+                        // Previous PodcastFragment already contains the desired
+                        // podcast, navigate up.
+                        findNavController().navigateUp()
+                    } else {
+                        // Previous PodcastFragment DOES NOT contain the desired
+                        // podcast, navigate to the appropriate PodcastFragment.
+                        findNavController().navigate(
+                            EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(event.podcastId)
+                        )
+                    }
                 } else {
+                    // Previous destination IS NOT PodcastFragment, navigate to
+                    // PodcastFragment.
                     findNavController().navigate(
                         EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(event.podcastId)
                     )
