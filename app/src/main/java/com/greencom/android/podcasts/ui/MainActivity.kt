@@ -558,24 +558,20 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             if (isPlayerCollapsed) {
                 playerBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
-                navigateToEpisode()
+                viewModel.navigateToEpisode(currentEpisode?.id)
             }
         }
 
         expandedPlayer.title.setOnClickListener {
-            navigateToEpisode()
+            viewModel.navigateToEpisode(currentEpisode?.id)
         }
 
         expandedPlayer.podcastTitle.setOnClickListener {
-            currentEpisode?.let { episode ->
-                viewModel.navigateToPodcast(episode.podcastId)
-            }
+            viewModel.navigateToPodcast(currentEpisode?.podcastId)
         }
 
         expandedPlayer.options.setOnClickListener {
-            currentEpisode?.let { episode ->
-                viewModel.showPlayerOptionsDialog(episode.id)
-            }
+            viewModel.showPlayerOptionsDialog(currentEpisode?.id)
         }
     }
 
@@ -746,13 +742,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private fun collapsePlayer() {
         if (!isPlayerCollapsed) {
             playerBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        }
-    }
-
-    /** Send event to navigate to a EpisodeFragment. */
-    private fun navigateToEpisode() {
-        currentEpisode?.let { episode ->
-            viewModel.navigateToEpisode(episode.id)
         }
     }
 

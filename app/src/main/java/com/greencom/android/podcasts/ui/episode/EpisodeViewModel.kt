@@ -93,7 +93,8 @@ class EpisodeViewModel @Inject constructor(
     }
 
     /** Navigate to a PodcastFragment with a given ID. */
-    fun navigateToPodcast(podcastId: String) {
+    fun navigateToPodcast(podcastId: String?) {
+        podcastId ?: return
         viewModelScope.launch {
             _event.send(EpisodeEvent.NavigateToPodcast(podcastId))
         }

@@ -149,13 +149,13 @@ class EpisodeFragment : Fragment() {
 
         // Navigate to episode's parent podcast.
         binding.cover.setOnClickListener {
-            navigateToPodcast()
+            viewModel.navigateToPodcast(episode?.podcastId)
         }
         binding.podcastTitle.setOnClickListener {
-            navigateToPodcast()
+            viewModel.navigateToPodcast(episode?.podcastId)
         }
         binding.date.setOnClickListener {
-            navigateToPodcast()
+            viewModel.navigateToPodcast(episode?.podcastId)
         }
 
         // Show and hide app bar divider depending on the scroll state.
@@ -260,13 +260,6 @@ class EpisodeFragment : Fragment() {
                     )
                 }
             }
-        }
-    }
-
-    /** Send event to navigate to a PodcastFragment. */
-    private fun navigateToPodcast() {
-        episode?.let { episode ->
-            viewModel.navigateToPodcast(episode.podcastId)
         }
     }
 

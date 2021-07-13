@@ -87,16 +87,25 @@ class MainActivityViewModel @Inject constructor(
         playerServiceConnection.markCompleted(episodeId)
     }
 
-    fun showPlayerOptionsDialog(episodeId: String) = viewModelScope.launch {
-        _event.send(MainActivityEvent.PlayerOptionsDialog(episodeId))
+    fun showPlayerOptionsDialog(episodeId: String?) {
+        episodeId ?: return
+        viewModelScope.launch {
+            _event.send(MainActivityEvent.PlayerOptionsDialog(episodeId))
+        }
     }
 
-    fun navigateToEpisode(episodeId: String) = viewModelScope.launch {
-        _event.send(MainActivityEvent.NavigateToEpisode(episodeId))
+    fun navigateToEpisode(episodeId: String?) {
+        episodeId ?: return
+        viewModelScope.launch {
+            _event.send(MainActivityEvent.NavigateToEpisode(episodeId))
+        }
     }
 
-    fun navigateToPodcast(podcastId: String) = viewModelScope.launch {
-        _event.send(MainActivityEvent.NavigateToPodcast(podcastId))
+    fun navigateToPodcast(podcastId: String?) {
+        podcastId ?: return
+        viewModelScope.launch {
+            _event.send(MainActivityEvent.NavigateToPodcast(podcastId))
+        }
     }
 
     @ExperimentalTime
