@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.AudioAttributesCompat
@@ -206,6 +207,14 @@ class PlayerService : MediaSessionService() {
 
                 if (playerState.isPlayerError()) {
                     updateEpisodeState()
+                    // Show a toast.
+                    scope?.launch {
+                        Toast.makeText(
+                            this@PlayerService,
+                            R.string.player_error,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
