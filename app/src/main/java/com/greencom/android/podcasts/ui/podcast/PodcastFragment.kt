@@ -386,4 +386,10 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             loading.hideImmediately()
         }
     }
+
+    companion object {
+
+        /** Key to retrieve `podcastId` SafeArg from outside. */
+        const val SAFE_ARGS_PODCAST_ID = "podcastId"
+    }
 }

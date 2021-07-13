@@ -41,8 +41,10 @@ import com.greencom.android.podcasts.player.*
 import com.greencom.android.podcasts.ui.MainActivityViewModel.MainActivityEvent
 import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
+import com.greencom.android.podcasts.ui.episode.EpisodeFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
+import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -167,28 +169,71 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
                             // Navigate to EpisodeFragment.
                             is MainActivityEvent.NavigateToEpisode -> {
-                                navController.navigate(
-                                    NavGraphDirections.actionGlobalEpisodeFragment(event.episodeId)
-                                )
-                                delay(250) // Wait for the transition.
-                                collapsePlayer()
+                                // Navigating shortcut.
+                                val navigate = suspend {
+                                    navController.navigate(
+                                        NavGraphDirections.actionGlobalEpisodeFragment(event.episodeId)
+                                    )
+                                    delay(250) // Wait for the transition.
+                                    collapsePlayer()
+                                }
+
+                                // Get the current destination ID.
+                                val currentDestinationId = navController.currentDestination?.id
+                                if (currentDestinationId == R.id.episodeFragment) {
+                                    // Current destination is EpisodeFragment, check destination args.
+                                    val currentEpisodeId =
+                                        navController.currentBackStackEntry?.arguments?.getString(
+                                            EpisodeFragment.SAFE_ARGS_EPISODE_ID
+                                        )
+                                    if (currentEpisodeId == event.episodeId) {
+                                        // Current EpisodeFragment already contains the desired
+                                        // episode, just collapse the player.
+                                        collapsePlayer()
+                                    } else {
+                                        // Current EpisodeFragment DOES NOT contain the desired
+                                        // episode, navigate to the appropriate EpisodeFragment.
+                                        navigate()
+                                    }
+                                } else {
+                                    // Current destination IS NOT EpisodeFragment, navigate to
+                                    // EpisodeFragment.
+                                    navigate()
+                                }
                             }
 
                             // Navigate to PodcastFragment.
                             is MainActivityEvent.NavigateToPodcast -> {
-                                val previousDestinationId =
-                                    navController.previousBackStackEntry?.destination?.id
-
-                                if (previousDestinationId == R.id.podcastFragment) {
-                                    navController.navigateUp()
-                                    delay(250) // Wait for the transition.
-                                    collapsePlayer()
-                                } else {
+                                // Navigating shortcut.
+                                val navigate = suspend {
                                     navController.navigate(
                                         NavGraphDirections.actionGlobalPodcastFragment(event.podcastId)
                                     )
                                     delay(250) // Wait for the transition.
                                     collapsePlayer()
+                                }
+
+                                // Get the current destination ID.
+                                val currentDestinationId = navController.currentDestination?.id
+                                if (currentDestinationId == R.id.podcastFragment) {
+                                    // Current destination is PodcastFragment, check destination args.
+                                    val currentPodcastId =
+                                        navController.currentBackStackEntry?.arguments?.getString(
+                                            PodcastFragment.SAFE_ARGS_PODCAST_ID
+                                        )
+                                    if (currentPodcastId == event.podcastId) {
+                                        // Current PodcastFragment already contains the desired
+                                        // podcast, just collapse the player.
+                                        collapsePlayer()
+                                    } else {
+                                        // Current PodcastFragment DOES NOT contain the desired
+                                        // podcast, navigate to the appropriate PodcastFragment.
+                                        navigate()
+                                    }
+                                } else {
+                                    // Current destination IS NOT PodcastFragment, navigate to
+                                    // PodcastFragment.
+                                    navigate()
                                 }
                             }
                         }

@@ -229,6 +229,7 @@ class EpisodeFragment : Fragment() {
         when (event) {
             // Navigate to PodcastFragment.
             is EpisodeEvent.NavigateToPodcast -> {
+                // TODO: REWORK.
                 val previousDestinationId =
                     findNavController().previousBackStackEntry?.destination?.id
 
@@ -340,5 +341,11 @@ class EpisodeFragment : Fragment() {
             error.root.hideImmediately()
             loading.hideImmediately()
         }
+    }
+
+    companion object {
+
+        /** Key to retrieve `episodeId` SafeArg from outside. */
+        const val SAFE_ARGS_EPISODE_ID = "episodeId"
     }
 }
