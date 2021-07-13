@@ -7,7 +7,7 @@ import kotlin.time.ExperimentalTime
 data class CurrentEpisode(
     val id: String,
     val title: String,
-    val publisher: String,
+    val podcastTitle: String,
     val podcastId: String,
     val image: String,
 ) {
@@ -35,7 +35,7 @@ data class CurrentEpisode(
                 CurrentEpisode(
                     id = mediaItem.metadata?.getString(EpisodeMetadata.ID) ?: "",
                     title = mediaItem.metadata?.getString(EpisodeMetadata.TITLE) ?: "",
-                    publisher = mediaItem.metadata?.getString(EpisodeMetadata.PUBLISHER) ?: "",
+                    podcastTitle = mediaItem.metadata?.getString(EpisodeMetadata.PODCAST_TITLE) ?: "",
                     podcastId = mediaItem.metadata?.getString(EpisodeMetadata.PODCAST_ID) ?: "",
                     image = mediaItem.metadata?.getString(EpisodeMetadata.IMAGE) ?: "",
                 )

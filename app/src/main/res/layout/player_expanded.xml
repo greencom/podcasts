@@ -93,7 +93,7 @@
         tools:text="Герта Мюллер — Чёрный парк" />
 
     <TextView
-        android:id="@+id/publisher"
+        android:id="@+id/podcast_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
@@ -120,7 +120,7 @@
         app:haloRadius="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/publisher"
+        app:layout_constraintTop_toBottomOf="@+id/podcast_title"
         app:thumbRadius="@dimen/player_slider_thumb_default"
         app:trackColorInactive="?attr/colorOnSurfaceUtil"
         app:trackHeight="2dp" />

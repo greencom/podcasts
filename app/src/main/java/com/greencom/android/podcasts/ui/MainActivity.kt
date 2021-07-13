@@ -281,7 +281,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         expandedPlayer.apply {
                             slider.value = 0F
                             title.text = episode.title
-                            publisher.text = episode.publisher
+                            podcastTitle.text = episode.podcastTitle
                             cover.load(episode.image) { coverBuilder(this@MainActivity) }
                         }
                     }
@@ -566,7 +566,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             navigateToEpisode()
         }
 
-        expandedPlayer.publisher.setOnClickListener {
+        expandedPlayer.podcastTitle.setOnClickListener {
             currentEpisode?.let { episode ->
                 viewModel.navigateToPodcast(episode.podcastId)
             }
@@ -779,10 +779,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             collapsedPlayer.title.isSelected = false
             delay(DURATION_TEXT_MARQUEE_DELAY) // Delay animation.
             expandedPlayer.title.isSelected = true
-            expandedPlayer.publisher.isSelected = true
+            expandedPlayer.podcastTitle.isSelected = true
         } else {
             expandedPlayer.title.isSelected = false
-            expandedPlayer.publisher.isSelected = false
+            expandedPlayer.podcastTitle.isSelected = false
             delay(DURATION_TEXT_MARQUEE_DELAY) // Delay animation.
             collapsedPlayer.title.isSelected = true
         }

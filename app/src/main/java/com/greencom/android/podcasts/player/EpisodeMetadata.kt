@@ -11,11 +11,11 @@ object EpisodeMetadata {
     /** Media metadata string key for episode title. */
     const val TITLE = MediaMetadata.METADATA_KEY_TITLE
 
-    /** Media metadata string key for episode publisher. */
-    const val PUBLISHER = MediaMetadata.METADATA_KEY_AUTHOR
+    /** Media metadata string key for episode's parent podcast title. */
+    const val PODCAST_TITLE = MediaMetadata.METADATA_KEY_ARTIST
 
-    /** Media metadata string key for episode's parent podcast. */
-    const val PODCAST_ID = MediaMetadata.METADATA_KEY_ARTIST
+    /** Media metadata string key for episode's parent podcast ID. */
+    const val PODCAST_ID = MediaMetadata.METADATA_KEY_AUTHOR
 
     /** Media metadata string key for episode image URI. */
     const val IMAGE = MediaMetadata.METADATA_KEY_ART_URI

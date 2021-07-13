@@ -124,7 +124,7 @@ class PlayerService : MediaSessionService() {
                 val audio: String
                 val duration: Long
                 val title: String
-                val publisher: String
+                val podcastTitle: String
                 val podcastId: String
                 val image: String
 
@@ -133,7 +133,7 @@ class PlayerService : MediaSessionService() {
                     audio = episode.audio
                     duration = Duration.seconds(episode.audioLength).inWholeMilliseconds
                     title = episode.title
-                    publisher = episode.publisher
+                    podcastTitle = episode.podcastTitle
                     podcastId = episode.podcastId
                     image = episode.image
 
@@ -141,7 +141,7 @@ class PlayerService : MediaSessionService() {
                         .setMetadata(MediaMetadata.Builder()
                             .putString(EpisodeMetadata.ID, mediaId)
                             .putString(EpisodeMetadata.TITLE, title)
-                            .putString(EpisodeMetadata.PUBLISHER, publisher)
+                            .putString(EpisodeMetadata.PODCAST_TITLE, podcastTitle)
                             .putString(EpisodeMetadata.PODCAST_ID, podcastId)
                             .putString(EpisodeMetadata.IMAGE, image)
                             .putLong(EpisodeMetadata.DURATION, duration)
@@ -410,7 +410,7 @@ class PlayerService : MediaSessionService() {
                 .setContentIntent(contentIntent)
                 .setDeleteIntent(deleteIntent)
                 .setContentTitle(episode.title)
-                .setContentText(episode.publisher)
+                .setContentText(episode.podcastTitle)
                 .setLargeIcon(bitmap)
                 .addAction(backwardSkipIcon, backwardSkipTitle, backwardSkipAction)
                 .addAction(playPauseIcon, playPauseTitle, playPauseAction)
