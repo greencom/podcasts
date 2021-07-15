@@ -45,6 +45,11 @@
         <item name="colorBottomSheetPill">@color/dark_bottom_sheet_pill</item>
         <!-- Bottom Sheet end -->
 
+        <!-- ExploreFragment start -->
+        <item name="colorSearchButtonTint">@color/dark_search_button_tint</item>
+        <item name="colorSearchButtonStroke">@color/dark_search_button_stroke</item>
+        <!-- ExploreFragment end -->
+
         <!-- Player start -->
         <item name="colorPlayerCollapsedBackground">@color/dark_bottom_sheet_background</item>
         <item name="colorPlayerPlay">@color/dark_primary</item>

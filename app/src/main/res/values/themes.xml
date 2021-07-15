@@ -45,6 +45,11 @@
         <item name="colorBottomSheetPill">@color/light_on_surface_util</item>
         <!-- Bottom Sheet end -->
 
+        <!-- ExploreFragment start -->
+        <item name="colorSearchButtonTint">@color/light_search_button_tint</item>
+        <item name="colorSearchButtonStroke">@color/light_on_surface_util</item>
+        <!-- ExploreFragment end -->
+
         <!-- Player start -->
         <item name="colorPlayerCollapsedBackground">@color/light_player_collapsed_background</item>
         <item name="colorPlayerPlay">@color/light_on_surface_medium</item>

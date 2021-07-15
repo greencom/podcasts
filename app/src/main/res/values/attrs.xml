@@ -9,6 +9,7 @@
     <attr name="colorOnSurfaceUtil" format="color" />
     <!-- Main attrs end -->
 
+
     <!-- Other start -->
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
@@ -16,15 +17,24 @@
     <attr name="colorImageButtonBackgroundRipple" format="color" />
     <!-- Other end -->
 
+
     <!-- Bottom Sheet start -->
     <attr name="colorBottomSheetBackground" format="color" />
     <attr name="colorBottomSheetPill" format="color" />
     <!-- Bottom Sheet end -->
 
+
+    <!-- ExploreFragment start -->
+    <attr name="colorSearchButtonTint" format="color" />
+    <attr name="colorSearchButtonStroke" format="color" />
+    <!-- ExploreFragment end -->
+
+
     <!-- Player start -->
     <attr name="colorPlayerCollapsedBackground" format="color" />
     <attr name="colorPlayerPlay" format="color" />
     <!-- Player end -->
+
 
     <!-- Error screen start -->
     <attr name="colorErrorRobotWire" format="color" />

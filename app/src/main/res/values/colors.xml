@@ -49,6 +49,14 @@
     <!-- Bottom Sheet end -->
 
 
+    <!-- ExploreFragment start -->
+    <color name="light_search_button_tint">#FFFFFF</color>
+
+    <color name="dark_search_button_tint">#2E2E2E</color>
+    <color name="dark_search_button_stroke">#2E2E2E</color>
+    <!-- ExploreFragment end -->
+
+
     <!-- Player start -->
     <color name="player_shadows">#0D000000</color>
 

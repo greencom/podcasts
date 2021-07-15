@@ -170,8 +170,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 showErrorScreen()
                 // Position the progress bar depending on ExplorePodcast app bar state.
                 if ((parentFragment as ExploreFragment).isAppBarExpanded) {
-                    // TODO: Use the appropriate value after app bar rework.
-                    binding.error.progressBar.translationY = -(resources.getDimension(R.dimen.bottom_nav_bar_height))
+                    binding.error.progressBar.translationY = -(resources.getDimension(R.dimen.app_bar_height))
                 } else {
                     binding.error.progressBar.translationY = 0F
                 }
