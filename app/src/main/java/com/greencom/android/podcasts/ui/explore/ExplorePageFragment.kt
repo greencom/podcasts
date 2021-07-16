@@ -49,8 +49,8 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     /** RecyclerView adapter. */
     private val adapter: BestPodcastAdapter by lazy {
         BestPodcastAdapter(
-            viewModel::navigateToPodcast,
-            viewModel::updateSubscription
+            navigateToPodcast = viewModel::navigateToPodcast,
+            updateSubscription = viewModel::updateSubscription
         )
     }
 

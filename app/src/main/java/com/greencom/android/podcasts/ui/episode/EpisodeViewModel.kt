@@ -8,7 +8,6 @@ import com.greencom.android.podcasts.player.isPlayerPlaying
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,10 +22,6 @@ class EpisodeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<EpisodeState>(EpisodeState.Loading)
     /** StateFlow of UI state. States are presented by [EpisodeState]. */
     val uiState = _uiState.asStateFlow()
-
-    private val _event = Channel<EpisodeEvent>(Channel.BUFFERED)
-    /** Flow of events represented by [EpisodeEvent]. */
-    val event = _event.receiveAsFlow()
 
     private val _isAppBarExpanded = MutableStateFlow(true)
     /**
@@ -92,14 +87,6 @@ class EpisodeViewModel @Inject constructor(
         _isAppBarExpanded.value = isExpanded
     }
 
-    /** Navigate to a PodcastFragment with a given ID. */
-    fun navigateToPodcast(podcastId: String?) {
-        podcastId ?: return
-        viewModelScope.launch {
-            _event.send(EpisodeEvent.NavigateToPodcast(podcastId))
-        }
-    }
-
     /** Sealed class that represents the UI state of the [EpisodeFragment]. */
     sealed class EpisodeState {
 
@@ -111,12 +98,5 @@ class EpisodeViewModel @Inject constructor(
 
         /** Represents an `Error` state with a [Throwable] error. */
         data class Error(val error: Throwable) : EpisodeState()
-    }
-
-    /** Sealed class that represents events of the [EpisodeFragment]. */
-    sealed class EpisodeEvent {
-
-        /** Navigate to PodcastFragment with a given ID. */
-        data class NavigateToPodcast(val podcastId: String) : EpisodeEvent()
     }
 }

@@ -24,12 +24,10 @@ import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.FragmentEpisodeBinding
-import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeEvent
 import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeState
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.time.Duration
@@ -134,6 +132,7 @@ class EpisodeFragment : Fragment() {
     }
 
     /** Fragment views setup. */
+    @ExperimentalTime
     private fun initViews() {
         // Hide all screens to then reveal them with crossfade animations.
         hideScreens()
@@ -159,13 +158,13 @@ class EpisodeFragment : Fragment() {
 
         // Navigate to episode's parent podcast.
         binding.cover.setOnClickListener {
-            viewModel.navigateToPodcast(episode?.podcastId)
+            navigateToPodcast()
         }
         binding.podcastTitle.setOnClickListener {
-            viewModel.navigateToPodcast(episode?.podcastId)
+            navigateToPodcast()
         }
         binding.date.setOnClickListener {
-            viewModel.navigateToPodcast(episode?.podcastId)
+            navigateToPodcast()
         }
 
         // Show and hide app bar divider depending on the scroll state.
@@ -188,13 +187,6 @@ class EpisodeFragment : Fragment() {
                 launch {
                     viewModel.uiState.collectLatest { state ->
                         updateUi(state)
-                    }
-                }
-
-                // Observe events.
-                launch {
-                    viewModel.event.collect { event ->
-                        handleEvent(event)
                     }
                 }
             }
@@ -232,44 +224,6 @@ class EpisodeFragment : Fragment() {
 
             // Show loading screen.
             is EpisodeState.Loading -> showLoadingScreen()
-        }
-    }
-
-    /** Handle events. */
-    @ExperimentalTime
-    private fun handleEvent(event: EpisodeEvent) {
-        when (event) {
-            // Navigate to PodcastFragment.
-            is EpisodeEvent.NavigateToPodcast -> {
-                // Get the previous destination ID.
-                val previousDestinationId =
-                    findNavController().previousBackStackEntry?.destination?.id
-
-                if (previousDestinationId == R.id.podcastFragment) {
-                    // Previous destination is PodcastFragment, check destination args.
-                    val previousPodcastId =
-                        findNavController().previousBackStackEntry?.arguments?.getString(
-                            PodcastFragment.SAFE_ARGS_PODCAST_ID
-                        )
-                    if (previousPodcastId == episode?.podcastId) {
-                        // Previous PodcastFragment already contains the desired
-                        // podcast, navigate up.
-                        findNavController().navigateUp()
-                    } else {
-                        // Previous PodcastFragment DOES NOT contain the desired
-                        // podcast, navigate to the appropriate PodcastFragment.
-                        findNavController().navigate(
-                            EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(event.podcastId)
-                        )
-                    }
-                } else {
-                    // Previous destination IS NOT PodcastFragment, navigate to
-                    // PodcastFragment.
-                    findNavController().navigate(
-                        EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(event.podcastId)
-                    )
-                }
-            }
         }
     }
 
@@ -327,6 +281,41 @@ class EpisodeFragment : Fragment() {
         }
         val total = Duration.hours(hours) + Duration.minutes(minutes) + Duration.seconds(seconds)
         return total.inWholeMilliseconds
+    }
+
+    /** Navigate to PodcastFragment. */
+    @ExperimentalTime
+    private fun navigateToPodcast() {
+        episode?.let { episode ->
+            // Get the previous destination ID.
+            val previousDestinationId =
+                findNavController().previousBackStackEntry?.destination?.id
+
+            if (previousDestinationId == R.id.podcastFragment) {
+                // Previous destination is PodcastFragment, check destination args.
+                val previousPodcastId =
+                    findNavController().previousBackStackEntry?.arguments?.getString(
+                        PodcastFragment.SAFE_ARGS_PODCAST_ID
+                    )
+                if (previousPodcastId == episode.podcastId) {
+                    // Previous PodcastFragment already contains the desired
+                    // podcast, navigate up.
+                    findNavController().navigateUp()
+                } else {
+                    // Previous PodcastFragment DOES NOT contain the desired
+                    // podcast, navigate to the appropriate PodcastFragment.
+                    findNavController().navigate(
+                        EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(episode.podcastId)
+                    )
+                }
+            } else {
+                // Previous destination IS NOT PodcastFragment, navigate to
+                // PodcastFragment.
+                findNavController().navigate(
+                    EpisodeFragmentDirections.actionEpisodeFragmentToPodcastFragment(episode.podcastId)
+                )
+            }
+        }
     }
 
     /** Show success screen and hide all others. */
