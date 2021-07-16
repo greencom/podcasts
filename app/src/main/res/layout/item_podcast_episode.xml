@@ -5,15 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/ripple_list_item_background"
-    android:orientation="vertical"
-    android:paddingHorizontal="16dp"
-    android:paddingTop="16dp"
-    android:paddingBottom="10dp">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
         android:textColor="?attr/colorOnSurfaceLow"
         android:textSize="12sp"
         tools:text="1 day ago" />
@@ -22,6 +21,7 @@
         android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:ellipsize="end"
         android:fontFamily="@font/roboto_medium"
         android:maxLines="2"
@@ -31,6 +31,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
@@ -46,5 +48,11 @@
             tools:text="1 hr 45 min" />
 
     </LinearLayout>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/shape_divider" />
 
 </LinearLayout>

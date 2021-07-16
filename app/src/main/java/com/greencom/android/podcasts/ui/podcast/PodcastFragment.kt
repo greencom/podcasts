@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -155,11 +154,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     /** RecyclerView setup. */
     private fun initRecyclerView() {
-        val divider = CustomDividerItemDecoration(requireContext(), true)
-        divider.setDrawable(
-            ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
-        )
-
         val onScrollListener = object : RecyclerView.OnScrollListener() {
             val layoutManager = binding.list.layoutManager as LinearLayoutManager
             var totalItemCount = 0
@@ -209,7 +203,6 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             adapter = this@PodcastFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-            addItemDecoration(divider)
             addOnScrollListener(onScrollListener)
         }
 

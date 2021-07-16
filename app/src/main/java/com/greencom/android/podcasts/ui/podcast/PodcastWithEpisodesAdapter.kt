@@ -78,7 +78,8 @@ class PodcastWithEpisodesAdapter(
             }
             is EpisodeViewHolder -> {
                 val episode = getItem(position) as PodcastWithEpisodesDataItem.EpisodeItem
-                holder.bind(episode.episode)
+                val isLast = position == itemCount - 1
+                holder.bind(episode.episode, isLast)
             }
         }
     }
@@ -275,12 +276,13 @@ class EpisodeViewHolder private constructor(
 
     /** Bind EpisodeViewHolder with a given [Episode]. */
     @ExperimentalTime
-    fun bind(episode: Episode) {
+    fun bind(episode: Episode, isLast: Boolean) {
         this.episode = episode
         binding.apply {
             title.text = episode.title
             date.text = episodePubDateToString(episode.date, context)
             setupPlayButton(play, episode, context)
+            divider.isVisible = !isLast
         }
     }
 

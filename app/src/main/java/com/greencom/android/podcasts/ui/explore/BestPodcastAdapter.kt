@@ -26,7 +26,8 @@ class BestPodcastAdapter(
 
     override fun onBindViewHolder(holder: BestPodcastViewHolder, position: Int) {
         val podcast = getItem(position)
-        holder.bind(podcast)
+        val isLast = position == itemCount - 1
+        holder.bind(podcast, isLast)
     }
 }
 
@@ -59,7 +60,7 @@ class BestPodcastViewHolder private constructor(
     }
 
     /** Bind ViewHolder with a given [PodcastShort]. */
-    fun bind(podcast: PodcastShort) {
+    fun bind(podcast: PodcastShort, isLast: Boolean) {
         // Update the podcast associated with this ViewHolder.
         this.podcast = podcast
 
@@ -75,6 +76,8 @@ class BestPodcastViewHolder private constructor(
                 podcast.description,
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             ).toString().trim()
+
+            divider.isVisible = !isLast
         }
     }
 

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -94,15 +93,10 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
     /** RecyclerView setup. */
     private fun initRecyclerView() {
-        val divider = CustomDividerItemDecoration(requireContext())
-        divider.setDrawable(
-            ResourcesCompat.getDrawable(resources, R.drawable.shape_divider, context?.theme)!!
-        )
         binding.podcastList.apply {
             adapter = this@ExplorePageFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-            addItemDecoration(divider)
         }
 
         initSwipeToRefresh(binding.swipeToRefresh, requireContext())
