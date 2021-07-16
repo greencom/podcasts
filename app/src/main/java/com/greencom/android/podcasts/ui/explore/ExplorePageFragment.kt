@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
-import com.greencom.android.podcasts.ui.explore.ExploreViewModel.*
+import com.greencom.android.podcasts.ui.explore.ExplorePageViewModel.*
 import com.greencom.android.podcasts.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -40,8 +40,8 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     private var _binding: FragmentExplorePageBinding? = null
     private val binding get() = _binding!!
 
-    /** ExploreViewModel. */
-    private val viewModel: ExploreViewModel by viewModels()
+    /** ExplorePageViewModel. */
+    private val viewModel: ExplorePageViewModel by viewModels()
 
     /** Genre ID associated with this fragment. */
     var genreId = 0
@@ -199,6 +199,11 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
 
             // Navigate to PodcastFragment.
             is ExplorePageEvent.NavigateToPodcast -> {
+                // Set the appropriate transition animations for ExploreFragment.
+                parentFragment?.setupMaterialSharedAxisTransitions(
+                    exit = true,
+                    popEnter = true,
+                )
                 findNavController().navigate(
                     ExploreFragmentDirections.actionExploreFragmentToPodcastFragment(event.podcastId)
                 )

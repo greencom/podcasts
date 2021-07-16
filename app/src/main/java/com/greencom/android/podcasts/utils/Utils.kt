@@ -20,6 +20,7 @@ import coil.transform.RoundedCornersTransformation
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialFadeThrough
 import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
@@ -289,15 +290,17 @@ fun ImageRequest.Builder.coverBuilder(context: Context) {
 
 /**
  * Set up [MaterialSharedAxis] transitions along a given axis for this fragment.
+ * Axis defaults to [MaterialSharedAxis.Z].
+ *
  * Use [enter], [exit], [popEnter], [popExit] parameters to specify which transitions should be
- * set up.
+ * set up. These parameters default to `false`.
  */
 fun Fragment.setupMaterialSharedAxisTransitions(
-    axis: Int,
-    enter: Boolean = true,
-    exit: Boolean = true,
-    popEnter: Boolean = true,
-    popExit: Boolean = true,
+    axis: Int = MaterialSharedAxis.Z,
+    enter: Boolean = false,
+    exit: Boolean = false,
+    popEnter: Boolean = false,
+    popExit: Boolean = false,
 ) {
     val transition: (Boolean) -> MaterialSharedAxis = { forward ->
         MaterialSharedAxis(axis, forward).apply {
@@ -309,4 +312,28 @@ fun Fragment.setupMaterialSharedAxisTransitions(
     if (exit) exitTransition = transition(true)
     if (popEnter) reenterTransition = transition(false)
     if (popExit) returnTransition = transition(false)
+}
+
+/**
+ * Set up [MaterialFadeThrough] transitions for this fragment.
+ *
+ * Use [enter], [exit], [popEnter], [popExit] parameters to specify which transitions should be
+ * set up. These parameters default to `false`.
+ */
+fun Fragment.setupMaterialFadeThroughTransitions(
+    enter: Boolean = false,
+    exit: Boolean = false,
+    popEnter: Boolean = false,
+    popExit: Boolean = false,
+) {
+    val transition: () -> MaterialFadeThrough = {
+        MaterialFadeThrough().apply {
+            duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
+        }
+    }
+
+    if (enter) enterTransition = transition()
+    if (exit) exitTransition = transition()
+    if (popEnter) reenterTransition = transition()
+    if (popExit) returnTransition = transition()
 }

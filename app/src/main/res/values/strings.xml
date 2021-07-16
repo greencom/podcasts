@@ -117,6 +117,13 @@
     <!-- EpisodeFragment end -->
 
 
+    <!-- SearchFragment start -->
+    <string name="search_transition_name" translatable="false">searchButton</string>
+    <string name="search_podcasts">Search for podcasts</string>
+    <string name="search_episodes">Search for episodes</string>
+    <!-- SearchFragment end -->
+
+
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Unsubscribe</string>
     <!-- UnsubscribeDialog end -->

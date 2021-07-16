@@ -5,14 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
+import com.greencom.android.podcasts.utils.setupMaterialFadeThroughTransitions
 import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,7 +38,12 @@ class ExploreFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupMaterialSharedAxisTransitions(MaterialSharedAxis.Z)
+        setupMaterialSharedAxisTransitions(
+            enter = true,
+            exit = true,
+            popEnter = true,
+            popExit = true
+        )
     }
 
     override fun onCreateView(
@@ -59,6 +66,19 @@ class ExploreFragment : Fragment() {
 
         initAppBar()
         initTabLayout()
+
+        // Navigate to SearchFragment.
+        binding.searchButton.setOnClickListener {
+            val direction = ExploreFragmentDirections.actionExploreFragmentToSearchFragment()
+            val transitionName = getString(R.string.search_transition_name)
+            val extras = FragmentNavigatorExtras(binding.searchButton to transitionName)
+            // Set the appropriate transition animations.
+            setupMaterialFadeThroughTransitions(
+                exit = true,
+                popEnter = true,
+            )
+            findNavController().navigate(direction, extras)
+        }
     }
 
     override fun onDestroyView() {

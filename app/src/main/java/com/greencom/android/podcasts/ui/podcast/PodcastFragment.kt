@@ -15,7 +15,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
@@ -73,7 +72,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupMaterialSharedAxisTransitions(MaterialSharedAxis.Z)
+        setupMaterialSharedAxisTransitions(
+            enter = true,
+            exit = true,
+            popEnter = true,
+            popExit = true
+        )
     }
 
     override fun onCreateView(

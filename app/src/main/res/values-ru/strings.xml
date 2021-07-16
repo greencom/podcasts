@@ -110,6 +110,12 @@
     <!-- EpisodeFragment end -->
 
 
+    <!-- SearchFragment start -->
+    <string name="search_podcasts">Искать подкасты</string>
+    <string name="search_episodes">Искать эпизоды</string>
+    <!-- SearchFragment end -->
+
+
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Отписаться</string>
     <!-- UnsubscribeDialog end -->

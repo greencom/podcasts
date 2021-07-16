@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 /** ViewModel used by instances of [ExplorePageFragment]. */
 @HiltViewModel
-class ExploreViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class ExplorePageViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ExplorePageState>(ExplorePageState.Loading)
     /** StateFlow of UI states. States are presented by [ExplorePageState]. */

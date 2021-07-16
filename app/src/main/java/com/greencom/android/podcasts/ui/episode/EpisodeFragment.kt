@@ -21,7 +21,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.FragmentEpisodeBinding
@@ -64,7 +63,12 @@ class EpisodeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupMaterialSharedAxisTransitions(MaterialSharedAxis.Z)
+        setupMaterialSharedAxisTransitions(
+            enter = true,
+            exit = true,
+            popEnter = true,
+            popExit = true,
+        )
     }
 
     override fun onCreateView(
