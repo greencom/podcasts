@@ -13,7 +13,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
-import com.greencom.android.podcasts.utils.setupSharedAxisTransitions
+import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 // Saving instance state.
@@ -36,7 +36,7 @@ class ExploreFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupSharedAxisTransitions(MaterialSharedAxis.Z)
+        setupMaterialSharedAxisTransitions(MaterialSharedAxis.Z)
     }
 
     override fun onCreateView(

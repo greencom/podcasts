@@ -292,7 +292,7 @@ fun ImageRequest.Builder.coverBuilder(context: Context) {
  * Use [enter], [exit], [popEnter], [popExit] parameters to specify which transitions should be
  * set up.
  */
-fun Fragment.setupSharedAxisTransitions(
+fun Fragment.setupMaterialSharedAxisTransitions(
     axis: Int,
     enter: Boolean = true,
     exit: Boolean = true,

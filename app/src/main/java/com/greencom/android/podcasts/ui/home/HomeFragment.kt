@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
-import com.greencom.android.podcasts.utils.setupSharedAxisTransitions
+import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 // TODO
@@ -26,7 +26,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupSharedAxisTransitions(MaterialSharedAxis.Z)
+        setupMaterialSharedAxisTransitions(MaterialSharedAxis.Z)
     }
 
     override fun onCreateView(

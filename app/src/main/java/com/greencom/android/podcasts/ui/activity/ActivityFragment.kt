@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
-import com.greencom.android.podcasts.utils.setupSharedAxisTransitions
+import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
 
 class ActivityFragment : Fragment() {
 
@@ -17,7 +17,7 @@ class ActivityFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupSharedAxisTransitions(MaterialSharedAxis.Z)
+        setupMaterialSharedAxisTransitions(MaterialSharedAxis.Z)
     }
 
     override fun onCreateView(
