@@ -60,7 +60,7 @@
 
     <!-- ImageButton. -->
     <style name="ImageButton" parent="Widget.AppCompat.ImageButton">
-        <item name="android:background">@drawable/ripple_image_button_background_24</item>
+        <item name="android:background">@drawable/ripple_image_button_background_32</item>
     </style>
     <!-- Buttons end -->
 
