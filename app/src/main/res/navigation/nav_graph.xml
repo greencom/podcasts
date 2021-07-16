@@ -14,14 +14,10 @@
         android:id="@+id/exploreFragment"
         android:name="com.greencom.android.podcasts.ui.explore.ExploreFragment"
         android:label="fragment_explore"
-        tools:layout="@layout/fragment_explore" >
+        tools:layout="@layout/fragment_explore">
         <action
             android:id="@+id/action_exploreFragment_to_podcastFragment"
-            app:destination="@id/podcastFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:destination="@id/podcastFragment" />
     </fragment>
     <fragment
         android:id="@+id/activityFragment"
@@ -30,45 +26,30 @@
         tools:layout="@layout/fragment_activity" />
     <action
         android:id="@+id/action_global_homeFragment"
-        app:destination="@id/homeFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        app:destination="@id/homeFragment" />
     <action
         android:id="@+id/action_global_exploreFragment"
-        app:destination="@id/exploreFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        app:destination="@id/exploreFragment" />
     <action
         android:id="@+id/action_global_activityFragment"
-        app:destination="@id/activityFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        app:destination="@id/activityFragment" />
     <fragment
         android:id="@+id/podcastFragment"
         android:name="com.greencom.android.podcasts.ui.podcast.PodcastFragment"
         android:label="fragment_podcast"
-        tools:layout="@layout/fragment_podcast" >
+        tools:layout="@layout/fragment_podcast">
         <argument
             android:name="podcastId"
             app:argType="string" />
         <action
             android:id="@+id/action_podcastFragment_to_episodeFragment"
-            app:destination="@id/episodeFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:destination="@id/episodeFragment" />
     </fragment>
     <fragment
         android:id="@+id/episodeFragment"
         android:name="com.greencom.android.podcasts.ui.episode.EpisodeFragment"
-        android:label="EpisodeFragment" >
+        android:label="EpisodeFragment"
+        tools:layout="@layout/fragment_episode">
         <argument
             android:name="episodeId"
             app:argType="string" />
@@ -78,16 +59,8 @@
     </fragment>
     <action
         android:id="@+id/action_global_episodeFragment"
-        app:destination="@id/episodeFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        app:destination="@id/episodeFragment" />
     <action
         android:id="@+id/action_global_podcastFragment"
-        app:destination="@id/podcastFragment"
-        app:enterAnim="@anim/nav_default_enter_anim"
-        app:exitAnim="@anim/nav_default_exit_anim"
-        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-        app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        app:destination="@id/podcastFragment" />
 </navigation>

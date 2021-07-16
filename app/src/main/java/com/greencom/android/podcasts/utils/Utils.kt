@@ -12,6 +12,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import coil.request.ImageRequest
@@ -19,6 +20,7 @@ import coil.transform.RoundedCornersTransformation
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import java.text.SimpleDateFormat
@@ -283,4 +285,28 @@ fun ImageRequest.Builder.coverBuilder(context: Context) {
     crossfade(true)
     placeholder(R.drawable.shape_placeholder)
     error(R.drawable.shape_placeholder)
+}
+
+/**
+ * Set up [MaterialSharedAxis] transitions along a given axis for this fragment.
+ * Use [enter], [exit], [popEnter], [popExit] parameters to specify which transitions should be
+ * set up.
+ */
+fun Fragment.setupSharedAxisTransitions(
+    axis: Int,
+    enter: Boolean = true,
+    exit: Boolean = true,
+    popEnter: Boolean = true,
+    popExit: Boolean = true,
+) {
+    val transition: (Boolean) -> MaterialSharedAxis = { forward ->
+        MaterialSharedAxis(axis, forward).apply {
+            duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
+        }
+    }
+
+    if (enter) enterTransition = transition(true)
+    if (exit) exitTransition = transition(true)
+    if (popEnter) reenterTransition = transition(false)
+    if (popExit) returnTransition = transition(false)
 }

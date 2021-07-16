@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
+import com.greencom.android.podcasts.utils.setupSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 // TODO
@@ -21,6 +23,11 @@ class HomeFragment : Fragment() {
 
     /** HomeViewModel. */
     private val viewModel: HomeViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupSharedAxisTransitions(MaterialSharedAxis.Z)
+    }
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,

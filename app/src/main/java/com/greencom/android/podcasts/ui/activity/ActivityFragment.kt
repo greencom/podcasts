@@ -5,13 +5,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
+import com.greencom.android.podcasts.utils.setupSharedAxisTransitions
 
 class ActivityFragment : Fragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentActivityBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupSharedAxisTransitions(MaterialSharedAxis.Z)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- MaterialSharedAxis duration -->
+    <integer name="shared_axis_transition_duration">300</integer>
+
+</resources>

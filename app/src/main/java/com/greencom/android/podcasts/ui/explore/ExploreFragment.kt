@@ -8,10 +8,12 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialSharedAxis
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
+import com.greencom.android.podcasts.utils.setupSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 // Saving instance state.
@@ -31,6 +33,11 @@ class ExploreFragment : Fragment() {
     /** Whether the app bar is collapsed or not. */
     var isAppBarExpanded = true
         private set
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setupSharedAxisTransitions(MaterialSharedAxis.Z)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
