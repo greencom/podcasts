@@ -184,23 +184,22 @@ class PlayerServiceConnection @Inject constructor(
             currentPositionJob = scope.launch {
                 while (true) {
                     ensureActive()
-                    if (controller.currentPosition in 0..duration.value) {
-                        _currentPosition.value = controller.currentPosition
-                    }
+                    _currentPosition.value = controller.currentPosition.coerceIn(0..duration.value)
                     delay(1000)
                 }
             }
-        } else if (controller.currentPosition in 0..duration.value) {
-            val value = if (currentPosition.value == controller.currentPosition) {
-                if (currentPosition.value < 1) {
-                    controller.currentPosition + 1
-                } else {
-                    controller.currentPosition - 1
+        } else {
+            controller.currentPosition.coerceIn(0..duration.value).let { value ->
+                // Make sure _currentPosition gets a new value that will pass the equality check
+                // against the previous one due to the distinctUntilChanged() function applied
+                // under the hood.
+                val position = when {
+                    value != currentPosition.value -> value
+                    value < 1 -> value + 1 // Do not get below 0.
+                    else -> value - 1
                 }
-            } else {
-                controller.currentPosition
+                _currentPosition.value = position
             }
-            _currentPosition.value = value
         }
     }
 

@@ -6,7 +6,6 @@
     <!-- Common start -->
     <string name="subscribe">Subscribe</string>
     <string name="subscribed">Subscribed</string>
-    <string name="search">Search</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="check_connection">Check your internet connection and try again</string>
     <string name="loading_error">An error occurred while loading</string>
@@ -65,6 +64,7 @@
         <item>Sports</item>
         <item>Health &amp; Fitness</item>
     </string-array>
+    <string name="explore_search">Search for podcasts</string>
     <string name="explore_podcasts_updated">Podcasts have been updated</string>
     <!-- ExploreFragment end -->
 
@@ -120,7 +120,6 @@
     <!-- SearchFragment start -->
     <string name="search_transition_name" translatable="false">searchButton</string>
     <string name="search_podcasts">Search for podcasts</string>
-    <string name="search_episodes">Search for episodes</string>
     <!-- SearchFragment end -->
 
 

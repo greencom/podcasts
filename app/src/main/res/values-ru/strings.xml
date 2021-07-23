@@ -6,7 +6,6 @@
     <!-- Common start -->
     <string name="subscribe">Подписаться</string>
     <string name="subscribed">Подписка оформлена</string>
-    <string name="search">Поиск</string>
     <string name="something_went_wrong">Что-то пошло не так</string>
     <string name="check_connection">Проверьте соединение с интернетом и повторите попытку</string>
     <string name="loading_error">При загрузке возникла ошибка</string>
@@ -58,6 +57,7 @@
         <item>Спорт</item>
         <item>Здоровье и Фитнес</item>
     </string-array>
+    <string name="explore_search">Искать подкасты</string>
     <string name="explore_podcasts_updated">Подкасты обновлены</string>
     <!-- ExploreFragment end -->
 
@@ -112,7 +112,6 @@
 
     <!-- SearchFragment start -->
     <string name="search_podcasts">Искать подкасты</string>
-    <string name="search_episodes">Искать эпизоды</string>
     <!-- SearchFragment end -->
 
 
