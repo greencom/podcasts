@@ -667,6 +667,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         slideOffset: Float,
         bottomNavBarHeight: Float
     ) {
+        // Zoom background content out and in.
+        binding.navHostFragment.scaleX = 1 - slideOffset * 0.05F
+        binding.navHostFragment.scaleY = 1 - slideOffset * 0.05F
+
         // Animate alpha of the player collapsed content.
         collapsedPlayer.root.alpha = 1F - slideOffset * 10
         collapsedPlayer.progressBar.alpha = 1F - slideOffset * 100
@@ -699,6 +703,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         slideOffset: Float,
         bottomNavBarHeight: Float
     ) {
+        // Zoom background content out and in.
+        binding.navHostFragment.scaleY = 1 - slideOffset * 0.05F
+        binding.navHostFragment.scaleX = 1 - slideOffset * 0.05F
+
         // Animate alpha of the player collapsed content.
         collapsedPlayer.root.alpha = 1F - slideOffset * 10
         collapsedPlayer.progressBar.alpha = 1F - slideOffset * 100
