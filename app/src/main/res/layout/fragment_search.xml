@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,6 +28,7 @@
             app:tint="?attr/colorOnSurfaceLow" />
 
         <EditText
+            android:id="@+id/search"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
@@ -35,7 +37,10 @@
             android:hint="@string/search_podcasts"
             android:importantForAutofill="no"
             android:inputType="text"
+            android:textColor="?attr/colorOnSurfaceMedium"
+            android:textColorHighlight="?attr/colorOnSurfaceUtil"
             android:textColorHint="?attr/colorOnSurfaceHint"
+            android:textCursorDrawable="@drawable/shape_cursor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/app_bar_back"
@@ -48,5 +53,37 @@
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/podcast_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar"
+        tools:itemCount="4"
+        tools:listitem="@layout/item_best_podcast" />
+
+    <include
+        android:id="@+id/error"
+        layout="@layout/screen_error"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="?attr/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
