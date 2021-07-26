@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:transitionGroup="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/search_bar"
@@ -35,6 +36,7 @@
             android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
             android:hint="@string/search_podcasts"
+            android:imeOptions="actionSearch"
             android:importantForAutofill="no"
             android:inputType="text"
             android:textColor="?attr/colorOnSurfaceMedium"
@@ -55,7 +57,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/podcast_list"
+        android:id="@+id/results"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -63,7 +65,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar"
         tools:itemCount="4"
-        tools:listitem="@layout/item_best_podcast" />
+        tools:listitem="@layout/item_search_podcast" />
 
     <include
         android:id="@+id/error"
@@ -80,6 +82,30 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminateTint="?attr/colorPrimary"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
+
+    <TextView
+        android:id="@+id/query_is_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter your request"
+        android:textSize="30sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
+
+    <TextView
+        android:id="@+id/no_results_found"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No results found"
+        android:textSize="30sp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

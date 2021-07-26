@@ -3,8 +3,49 @@ package com.greencom.android.podcasts.network
 import com.greencom.android.podcasts.data.database.EpisodeEntity
 import com.greencom.android.podcasts.data.database.PodcastEntityPartial
 import com.greencom.android.podcasts.data.database.PodcastEntityPartialWithGenre
+import com.greencom.android.podcasts.data.domain.Podcast
+import com.greencom.android.podcasts.data.domain.PodcastSearchResult
 
-/** This file contains methods that convert data transfer objects to the database entities. */
+/**
+ * This file contains methods that convert data transfer objects to database or domain entities.
+ */
+
+/** Convert a [SearchPodcastWrapper] object to a [PodcastSearchResult] domain model object. */
+fun SearchPodcastWrapper.toDomain(): PodcastSearchResult = PodcastSearchResult(
+    count = count,
+    total = total,
+    nextOffset = nextOffset,
+    podcasts = podcasts.map { podcast ->
+        Podcast(
+            id = podcast.id,
+            title = podcast.title,
+            description = podcast.description,
+            image = podcast.image,
+            publisher = podcast.publisher,
+            explicitContent = podcast.explicitContent,
+            episodeCount = podcast.episodeCount,
+            latestPubDate = podcast.latestPubDate,
+            earliestPubDate = podcast.earliestPubDate,
+            subscribed = false
+        )
+    }
+)
+
+/** Convert a [SearchPodcastWrapper] object to a list of [PodcastEntityPartial]. */
+fun SearchPodcastWrapper.podcastsToDatabase(): List<PodcastEntityPartial> = podcasts.map { podcast ->
+    PodcastEntityPartial(
+        id = podcast.id,
+        title = podcast.title,
+        description = podcast.description,
+        image = podcast.image,
+        publisher = podcast.publisher,
+        explicitContent = podcast.explicitContent,
+        episodeCount = podcast.episodeCount,
+        latestPubDate = podcast.latestPubDate,
+        earliestPubDate = podcast.earliestPubDate,
+        updateDate = System.currentTimeMillis()
+    )
+}
 
 /** Convert a [PodcastWrapper] object to a [PodcastEntityPartial]. */
 fun PodcastWrapper.podcastToDatabase(): PodcastEntityPartial = PodcastEntityPartial(

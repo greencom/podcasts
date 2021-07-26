@@ -4,10 +4,7 @@ import com.greencom.android.podcasts.data.database.EpisodeDao
 import com.greencom.android.podcasts.data.database.EpisodeEntity
 import com.greencom.android.podcasts.data.database.PodcastDao
 import com.greencom.android.podcasts.data.database.PodcastSubscription
-import com.greencom.android.podcasts.data.domain.Episode
-import com.greencom.android.podcasts.data.domain.Podcast
-import com.greencom.android.podcasts.data.domain.PodcastShort
-import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
+import com.greencom.android.podcasts.data.domain.*
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.*
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel
@@ -65,6 +62,38 @@ class RepositoryImpl @Inject constructor(
      * [safeRetrofitCall] documentation.
      */
     private var isRetrofitSafe = false
+
+    /** The query and the result of the last successful search. */
+    private var lastSearch: LastSearch? = null
+
+    override suspend fun searchPodcast(
+        query: String,
+        sortByDate: Boolean,
+        offset: Int,
+    ): State<PodcastSearchResult> {
+        lastSearch?.let { lastSearch ->
+            if (query == lastSearch.query) {
+                return State.Success(lastSearch.result)
+            }
+        }
+
+        val mSortByDate = if (sortByDate) 1 else 0
+        return try {
+            val response = safeRetrofitCall {
+                listenApi.searchPodcast(query, mSortByDate, offset = offset)
+            }
+            podcastDao.insert(response.podcastsToDatabase())
+            val result = response.toDomain()
+            lastSearch = LastSearch(query, result)
+            State.Success(result)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
+        }
+    }
+
+    override fun getLastSearch(): LastSearch? = lastSearch
 
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))

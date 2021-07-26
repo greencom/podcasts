@@ -111,3 +111,22 @@ data class PodcastShort(
     @ColumnInfo(name = "genre_id")
     val genreId: Int
 )
+
+/** Domain model class that represents podcast search results. */
+data class PodcastSearchResult(
+
+    /** The number of search results in this page. */
+    val count: Int,
+
+    /** The total number of search results. */
+    val total: Int,
+
+    /**
+     * Pass this value to the `offset` parameter of `searchPodcast()` to do
+     * pagination of search results.
+     */
+    val nextOffset: Int,
+
+    /** A list of search results. */
+    val podcasts: List<Podcast>,
+)

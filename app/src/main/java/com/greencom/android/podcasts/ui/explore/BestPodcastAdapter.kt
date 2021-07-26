@@ -10,7 +10,7 @@ import coil.load
 import com.google.android.material.button.MaterialButton
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.databinding.ItemBestPodcastBinding
-import com.greencom.android.podcasts.utils.PodcastDiffCallback
+import com.greencom.android.podcasts.utils.PodcastShortDiffCallback
 import com.greencom.android.podcasts.utils.coverBuilder
 import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 
@@ -18,7 +18,7 @@ import com.greencom.android.podcasts.utils.setupSubscribeToggleButton
 class BestPodcastAdapter(
     private val navigateToPodcast: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit
-) : ListAdapter<PodcastShort, BestPodcastViewHolder>(PodcastDiffCallback) {
+) : ListAdapter<PodcastShort, BestPodcastViewHolder>(PodcastShortDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BestPodcastViewHolder {
         return BestPodcastViewHolder.create(parent, navigateToPodcast, updateSubscription)
