@@ -11,9 +11,11 @@ import com.greencom.android.podcasts.data.domain.PodcastSearchResult
  */
 
 /** Convert a [SearchPodcastWrapper] object to a [PodcastSearchResult] domain model object. */
-fun SearchPodcastWrapper.toDomain(): PodcastSearchResult = PodcastSearchResult(
+fun SearchPodcastWrapper.toDomain(query: String, offset: Int): PodcastSearchResult = PodcastSearchResult(
+    query = query,
     count = count,
     total = total,
+    offset = offset,
     nextOffset = nextOffset,
     podcasts = podcasts.map { podcast ->
         Podcast(

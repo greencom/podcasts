@@ -63,29 +63,32 @@ class RepositoryImpl @Inject constructor(
      */
     private var isRetrofitSafe = false
 
-    /** The query and the result of the last successful search. */
-    private var lastSearch: LastSearch? = null
+    // TODO
+    private var searchResult: PodcastSearchResult? = null
 
-    override suspend fun searchPodcast(
-        query: String,
-        sortByDate: Boolean,
-        offset: Int,
-    ): State<PodcastSearchResult> {
-        lastSearch?.let { lastSearch ->
-            if (query == lastSearch.query) {
-                return State.Success(lastSearch.result)
+    override suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult> {
+        searchResult?.let { searchResult ->
+            if (query == searchResult.query && offset == searchResult.offset) {
+                return State.Success(searchResult)
             }
         }
 
-        val mSortByDate = if (sortByDate) 1 else 0
         return try {
             val response = safeRetrofitCall {
-                listenApi.searchPodcast(query, mSortByDate, offset = offset)
+                listenApi.searchPodcast(query = query, offset = offset)
             }
             podcastDao.insert(response.podcastsToDatabase())
-            val result = response.toDomain()
-            lastSearch = LastSearch(query, result)
-            State.Success(result)
+            val result = response.toDomain(query, offset)
+            val list = searchResult?.let { searchResult ->
+                if (query == searchResult.query) {
+                    searchResult.podcasts + result.podcasts
+                } else {
+                    result.podcasts
+                }
+            } ?: result.podcasts
+            val mSearchResult = result.copy(podcasts = list)
+            searchResult = mSearchResult
+            State.Success(mSearchResult)
         } catch (e: IOException) {
             State.Error(e)
         } catch (e: HttpException) {
@@ -93,7 +96,7 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getLastSearch(): LastSearch? = lastSearch
+    override fun getLastSearch(): PodcastSearchResult? = searchResult
 
     override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))

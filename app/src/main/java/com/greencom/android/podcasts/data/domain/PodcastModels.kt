@@ -115,11 +115,17 @@ data class PodcastShort(
 /** Domain model class that represents podcast search results. */
 data class PodcastSearchResult(
 
+    /** Search query. */
+    val query: String,
+
     /** The number of search results in this page. */
     val count: Int,
 
     /** The total number of search results. */
     val total: Int,
+
+    /** Offset used to get this result. */
+    val offset: Int,
 
     /**
      * Pass this value to the `offset` parameter of `searchPodcast()` to do

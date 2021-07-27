@@ -27,8 +27,7 @@ class SearchResultAdapter(
 
     override fun onBindViewHolder(holder: SearchResultViewHolder, position: Int) {
         val podcast = getItem(position)
-        val isLast = position == itemCount - 1 && itemCount >= 3
-        holder.bind(podcast, isLast)
+        holder.bind(podcast)
     }
 }
 
@@ -47,7 +46,7 @@ class SearchResultViewHolder private constructor(
         }
     }
 
-    fun bind(podcast: Podcast, isLast: Boolean) {
+    fun bind(podcast: Podcast) {
         this.podcast = podcast
 
         binding.apply {
@@ -58,7 +57,6 @@ class SearchResultViewHolder private constructor(
                 podcast.description,
                 HtmlCompat.FROM_HTML_MODE_LEGACY
             ).toString().trim()
-            divider.isVisible = !isLast
         }
     }
 

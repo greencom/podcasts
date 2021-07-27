@@ -20,7 +20,7 @@ class SearchViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<SearchState>(SearchState.QueryIsEmpty)
+    private val _uiState = MutableStateFlow<SearchState>(SearchState.EmptyQuery)
     val uiState = _uiState.asStateFlow()
 
     private val _event = Channel<SearchEvent>(Channel.BUFFERED)
@@ -32,46 +32,65 @@ class SearchViewModel @Inject constructor(
 
     var selectAll = false
 
-    fun checkLastSearch() {
-        val lastSearch = repository.getLastSearch()
-        if (lastSearch != null) {
-            _uiState.value = SearchState.LastSearch(
-                query = lastSearch.query,
-                count = lastSearch.result.count,
-                total = lastSearch.result.total,
-                nextOffset = lastSearch.result.nextOffset,
-                podcasts = lastSearch.result.podcasts
-            )
-        }
-    }
+    var lastQuery = ""
 
-    fun search(query: String, sortByDate: Boolean, offset: Int) {
+    fun search(query: String, offset: Int) {
+        if (offset != 0 && searchJob?.isActive == true) return
+
         searchJob?.cancel()
         if (query.isBlank()) {
-            _uiState.value = SearchState.QueryIsEmpty
+            _uiState.value = SearchState.EmptyQuery
             return
         }
 
         searchJob = viewModelScope.launch {
-            _uiState.value = SearchState.Loading
-            when (val result = repository.searchPodcast(query, sortByDate, offset)) {
+            lastQuery = query
+            if (uiState.value is SearchState.EmptyQuery) {
+                _uiState.value = SearchState.Loading
+            } else {
+                _event.send(SearchEvent.StartProgressBar)
+            }
+
+            when (val result = repository.searchPodcast(query, offset)) {
                 is State.Success -> {
                     if (result.data.total == 0) {
-                        _uiState.value = SearchState.NoResultsFound
+                        _uiState.value = SearchState.NothingFound
                         return@launch
                     }
 
                     _uiState.value = SearchState.Success(
+                        query = result.data.query,
                         count = result.data.count,
                         total = result.data.total,
                         nextOffset = result.data.nextOffset,
                         podcasts = result.data.podcasts
                     )
                 }
-                is State.Error -> _uiState.value = SearchState.Error(result.exception)
-                is State.Loading -> {  }
+
+                is State.Error -> {
+                    _event.send(SearchEvent.CancelProgressBar)
+                    if (offset == 0) {
+                        _uiState.value = SearchState.Error(result.exception)
+                    }
+                }
+
+                State.Loading -> {  }
             }
         }
+    }
+
+    fun restoreLastSearch() {
+        val lastSearch = repository.getLastSearch() ?: return
+        if (lastSearch.total == 0) return
+        _uiState.value = SearchState.Success(
+            query = lastSearch.query,
+            count = lastSearch.count,
+            total = lastSearch.total,
+            nextOffset = lastSearch.nextOffset,
+            podcasts = lastSearch.podcasts
+        )
+        lastQuery = lastSearch.query
+        selectAll = true
     }
 
     fun navigateToPodcast(podcastId: String) = viewModelScope.launch {
@@ -80,31 +99,14 @@ class SearchViewModel @Inject constructor(
 
     sealed class SearchState {
 
-        object QueryIsEmpty : SearchState()
-
-        data class LastSearch(
-            /** Last search query. */
-            val query: String,
-
-            /** The number of search results in this page. */
-            val count: Int,
-
-            /** The total number of search results. */
-            val total: Int,
-
-            /**
-             * Pass this value to the `offset` parameter of `searchPodcast()` to do
-             * pagination of search results.
-             */
-            val nextOffset: Int,
-
-            /** Last search result. */
-            val podcasts: List<Podcast>
-        ) : SearchState()
+        object EmptyQuery : SearchState()
 
         object Loading : SearchState()
 
         data class Success(
+            /** Search query. */
+            val query: String,
+
             /** The number of search results in this page. */
             val count: Int,
 
@@ -121,13 +123,17 @@ class SearchViewModel @Inject constructor(
             val podcasts: List<Podcast>,
         ) : SearchState()
 
-        data class Error(val error: Throwable) : SearchState()
+        object NothingFound : SearchState()
 
-        object NoResultsFound : SearchState()
+        data class Error(val error: Throwable) : SearchState()
     }
 
     sealed class SearchEvent {
 
         data class NavigateToPodcast(val podcastId: String) : SearchEvent()
+
+        object StartProgressBar : SearchEvent()
+
+        object CancelProgressBar : SearchEvent()
     }
 }

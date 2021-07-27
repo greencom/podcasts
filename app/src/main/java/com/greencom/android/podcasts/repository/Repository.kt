@@ -1,6 +1,9 @@
 package com.greencom.android.podcasts.repository
 
-import com.greencom.android.podcasts.data.domain.*
+import com.greencom.android.podcasts.data.domain.Episode
+import com.greencom.android.podcasts.data.domain.PodcastSearchResult
+import com.greencom.android.podcasts.data.domain.PodcastShort
+import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.network.PodcastWrapper
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel
 import com.greencom.android.podcasts.utils.SortOrder
@@ -20,17 +23,11 @@ interface Repository {
     // TODO: Test code.
     suspend fun deleteEpisodes()
 
-    /**
-     * Search for a podcast by given arguments and return the result represented by [State].
-     */
-    suspend fun searchPodcast(
-        query: String,
-        sortByDate: Boolean = false,
-        offset: Int = 0
-    ): State<PodcastSearchResult>
+    // TODO
+    suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult>
 
-    /** Get the query and the result of the last search. */
-    fun getLastSearch(): LastSearch?
+    // TODO
+    fun getLastSearch(): PodcastSearchResult?
 
     /** Update subscription to a Podcast by ID with a given value. */
     suspend fun updateSubscription(podcastId: String, subscribed: Boolean)

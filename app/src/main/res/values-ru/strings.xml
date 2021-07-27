@@ -8,7 +8,7 @@
     <string name="subscribed">Подписка оформлена</string>
     <string name="something_went_wrong">Что-то пошло не так</string>
     <string name="check_connection">Проверьте соединение с интернетом и повторите попытку</string>
-    <string name="loading_error">При загрузке возникла ошибка</string>
+    <string name="loading_error">Во время загрузки возникла ошибка</string>
     <string name="try_again">Повторить</string>
     <string name="loading">Загрузка</string>
     <string name="more">Подробнее</string>
@@ -112,6 +112,10 @@
 
     <!-- SearchFragment start -->
     <string name="search_podcasts">Искать подкасты</string>
+    <string name="search_no_results_found">Ничего не найдено &#128533;</string>
+
+    <string name="search_image_description">Ничего не найдено</string>
+    <string name="search_clear_search_field_description">Очистить поле поиска</string>
     <!-- SearchFragment end -->
 
 

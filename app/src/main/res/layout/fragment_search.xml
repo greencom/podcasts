@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:background="@android:color/transparent"
             android:hint="@string/search_podcasts"
             android:imeOptions="actionSearch"
@@ -44,9 +44,23 @@
             android:textColorHint="?attr/colorOnSurfaceHint"
             android:textCursorDrawable="@drawable/shape_cursor"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/search_clear"
             app:layout_constraintStart_toEndOf="@+id/app_bar_back"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/search_clear"
+            style="@style/ImageButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/search_clear_search_field_description"
+            android:padding="16dp"
+            android:scaleType="fitStart"
+            android:src="@drawable/ic_clear_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="?attr/colorOnSurfaceHint" />
 
         <View
             android:layout_width="match_parent"
@@ -64,8 +78,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar"
-        tools:itemCount="4"
+        tools:itemCount="5"
         tools:listitem="@layout/item_search_podcast" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/search_bar"
+        app:trackColor="?attr/colorSurface" />
 
     <include
         android:id="@+id/error"
@@ -88,28 +111,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar" />
 
-    <TextView
-        android:id="@+id/query_is_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enter your request"
-        android:textSize="30sp"
+    <include
+        android:id="@+id/nothing_found"
+        layout="@layout/screen_nothing_found"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar" />
-
-    <TextView
-        android:id="@+id/no_results_found"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="No results found"
-        android:textSize="30sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
