@@ -63,10 +63,11 @@ class RepositoryImpl @Inject constructor(
      */
     private var isRetrofitSafe = false
 
-    // TODO
+    /** Cached last search result. */
     private var searchResult: PodcastSearchResult? = null
 
     override suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult> {
+        // If search arguments are the same as they were for the previous one, return last result.
         searchResult?.let { searchResult ->
             if (query == searchResult.query && offset == searchResult.offset) {
                 return State.Success(searchResult)
@@ -77,8 +78,9 @@ class RepositoryImpl @Inject constructor(
             val response = safeRetrofitCall {
                 listenApi.searchPodcast(query = query, offset = offset)
             }
-            podcastDao.insert(response.podcastsToDatabase())
+            podcastDao.insert(response.podcastsToDatabase()) // Insert podcasts to the database.
             val result = response.toDomain(query, offset)
+            // If the current search is a continuation of the previous one, combine lists.
             val list = searchResult?.let { searchResult ->
                 if (query == searchResult.query) {
                     searchResult.podcasts + result.podcasts
@@ -87,7 +89,7 @@ class RepositoryImpl @Inject constructor(
                 }
             } ?: result.podcasts
             val mSearchResult = result.copy(podcasts = list)
-            searchResult = mSearchResult
+            searchResult = mSearchResult // Cache the result.
             State.Success(mSearchResult)
         } catch (e: IOException) {
             State.Error(e)

@@ -3,7 +3,7 @@ package com.greencom.android.podcasts.data.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-/** App database that provides DAO objects to get access to the database tables. */
+/** App database that provides data access objects for the database tables. */
 @Database(
     entities = [
         PodcastEntity::class,

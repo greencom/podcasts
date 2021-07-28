@@ -483,7 +483,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     }
 
     /** Set listeners for the player's content. */
-    // TODO: Document after completion
     @SuppressLint("ClickableViewAccessibility")
     private fun initPlayerListeners() {
 
@@ -523,18 +522,19 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             val thumbRadiusIncreased = resources.getDimensionPixelSize(R.dimen.player_slider_thumb_increased)
 
             override fun onStartTrackingTouch(slider: Slider) {
-                updatePosition = false
+                updatePosition = false // Prevent slider from updating.
                 animateSliderThumb(thumbRadiusIncreased)
             }
 
             override fun onStopTrackingTouch(slider: Slider) {
-                updatePosition = true
+                updatePosition = true // Allow slider to get updated.
                 animateSliderThumb(thumbRadiusDefault)
                 viewModel.seekTo(slider.value.toLong())
             }
         }
         expandedPlayer.slider.addOnSliderTouchListener(onTouchListener)
 
+        // Update time stamps.
         expandedPlayer.slider.addOnChangeListener { slider, value, _ ->
             expandedPlayer.timeCurrent.text = getCurrentTime(value.toLong())
             expandedPlayer.timeLeft.text = getRemainingTime(
@@ -543,10 +543,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             )
         }
 
+        // Skip backward of forward through the track.
         expandedPlayer.skipBackward.setOnClickListener {
             viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_BACKWARD_VALUE)
         }
-
         expandedPlayer.skipForward.setOnClickListener {
             viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_FORWARD_VALUE)
         }

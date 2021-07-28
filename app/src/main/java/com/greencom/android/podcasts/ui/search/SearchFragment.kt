@@ -29,25 +29,27 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-// TODO
+/** Fragment with podcast search. */
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
+    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
+    /** SearchViewModel. */
     private val viewModel: SearchViewModel by viewModels()
 
+    /** RecyclerView adapter. */
     private val adapter: SearchResultAdapter by lazy {
         SearchResultAdapter(
             navigateToPodcast = viewModel::navigateToPodcast
         )
     }
 
+    /** String query that is currently set in the search field. */
     private val currentQuery: String
         get() = binding.search.text.toString().trim()
-
-    private var nextOffset = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +73,7 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // View binding setup.
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -80,30 +83,60 @@ class SearchFragment : Fragment() {
         postponeEnterTransition()
         binding.root.doOnPreDraw { startPostponedEnterTransition() }
 
+        // Hide all screens at start and check for the last search.
         hideScreens()
         viewModel.restoreLastSearch()
 
+        // Show keyboard if the fragment was just opened.
         if (viewModel.showKeyboard) {
             binding.search.requestFocus()
             showKeyboard(true)
             viewModel.showKeyboard = false
         }
 
+        initViews()
+        initRecyclerView()
+        initObservers()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Clear View binding.
+        _binding = null
+    }
+
+    /** Fragment views setup. */
+    private fun initViews() {
+        // Handle toolbar back button clicks.
+        binding.appBarBack.setOnClickListener {
+            showKeyboard(false)
+            findNavController().navigateUp()
+        }
+
+        // Repeat search from the error screen.
         binding.error.tryAgain.setOnClickListener {
             search(currentQuery, 0)
         }
 
+        // Clear search query.
         binding.searchClear.setOnClickListener {
             binding.search.text.clear()
             binding.search.requestFocus()
             showKeyboard(true)
         }
 
-        binding.appBarBack.setOnClickListener {
-            showKeyboard(false)
-            findNavController().navigateUp()
+        // Set up IME action to search.
+        binding.search.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                search(currentQuery, 0)
+                return@setOnEditorActionListener true
+            }
+            false
         }
+    }
 
+    /** RecyclerView setup. */
+    private fun initRecyclerView() {
         val onScrollListener = object : RecyclerView.OnScrollListener() {
             val layoutManager = binding.results.layoutManager as LinearLayoutManager
             var totalItemCount = 0
@@ -114,12 +147,13 @@ class SearchFragment : Fragment() {
                 totalItemCount = layoutManager.itemCount
                 lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
+                // Load more search results on scroll.
                 if (totalItemCount >= 10 &&
                     lastVisibleItemPosition >= totalItemCount - 1 &&
                     dy > 0 &&
-                    nextOffset <= 20 // ListenAPI restrictions.
+                    viewModel.nextOffset <= 20 // ListenAPI restrictions.
                 ) {
-                    search(viewModel.lastQuery, nextOffset)
+                    search(viewModel.lastQuery, viewModel.nextOffset)
                 }
             }
         }
@@ -129,54 +163,67 @@ class SearchFragment : Fragment() {
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             addOnScrollListener(onScrollListener)
+            // Hide keyboard on touch.
             setOnTouchListener { _, _ ->
                 showKeyboard(false)
                 false
             }
         }
+    }
 
+    /** Set observers for ViewModel observables. */
+    private fun initObservers() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
+                // Observe UI states.
                 launch {
                     viewModel.uiState.collectLatest { state ->
                         binding.progressBar.hideCrossfade()
 
                         when (state) {
+                            // Hide all screens when search() was called for an empty query.
                             SearchState.EmptyQuery -> hideScreens()
 
+                            // Show loading screen.
                             SearchState.Loading -> showLoadingScreen()
 
+                            // Show success screen.
                             is SearchState.Success -> {
                                 showSuccessScreen()
                                 adapter.submitList(state.podcasts)
-                                nextOffset = state.nextOffset
+                                // Set the restored result query to the search field.
                                 if (state.query != binding.search.text.toString()) {
                                     binding.search.setText(state.query)
                                 }
+                                // Select whole query if the result is restored one.
                                 if (viewModel.selectAll) {
                                     binding.search.selectAll()
                                 }
                             }
 
+                            // Show "Nothing found" screen.
                             SearchState.NothingFound -> {
                                 adapter.submitList(emptyList())
-                                delay(100)
+                                delay(100) // Give adapter some time to set an empty list.
                                 showNothingFoundScreen()
                             }
 
+                            // Show Error screen.
                             is SearchState.Error -> {
                                 adapter.submitList(emptyList())
-                                delay(100)
+                                delay(100) // Give adapter some time to set an empty list.
                                 showErrorScreen()
                             }
                         }
                     }
                 }
 
+                // Observe events.
                 launch {
                     viewModel.event.collect { event ->
                         when (event) {
+                            // Navigate to a podcast page.
                             is SearchEvent.NavigateToPodcast -> {
                                 showKeyboard(false)
                                 findNavController().navigate(
@@ -186,34 +233,25 @@ class SearchFragment : Fragment() {
                                 )
                             }
 
+                            // Start LinearProgressBar animation.
                             SearchEvent.StartProgressBar -> binding.progressBar.revealImmediately()
 
+                            // Cancel LinearProgressBar animation.
                             SearchEvent.CancelProgressBar -> binding.progressBar.hideCrossfade()
                         }
                     }
                 }
             }
         }
-
-        binding.search.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                search(currentQuery, 0)
-                return@setOnEditorActionListener true
-            }
-            false
-        }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
+    /** Start search for given query and offset. */
     private fun search(query: String, offset: Int) {
         showKeyboard(false)
         viewModel.search(query, offset)
     }
 
+    /** Show or hide keyboard. */
     private fun showKeyboard(show: Boolean) {
         val inputManager =
             activity?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -225,6 +263,7 @@ class SearchFragment : Fragment() {
         }
     }
 
+    /** Show Success screen. */
     private fun showSuccessScreen() {
         binding.apply {
             results.revealCrossfade()
@@ -234,6 +273,7 @@ class SearchFragment : Fragment() {
         }
     }
 
+    /** Show Loading screen. */
     private fun showLoadingScreen() {
         binding.apply {
             results.hideImmediately()
@@ -243,6 +283,7 @@ class SearchFragment : Fragment() {
         }
     }
 
+    /** Show Error screen. */
     private fun showErrorScreen() {
         binding.apply {
             results.hideImmediately()
@@ -252,6 +293,7 @@ class SearchFragment : Fragment() {
         }
     }
 
+    /** Show "Nothing found" screen. */
     private fun showNothingFoundScreen() {
         binding.apply {
             results.hideImmediately()
@@ -261,6 +303,7 @@ class SearchFragment : Fragment() {
         }
     }
 
+    /** Hide all screens. */
     private fun hideScreens() {
         binding.apply {
             results.hideImmediately()

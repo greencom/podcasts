@@ -34,7 +34,7 @@ private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 private const val SAVED_STATE_IS_SCROLL_TO_TOP_SHOWN = "IS_SCROLL_TO_TOP_SHOWN"
 
 private const val FAB_DISTANCE_TO_TOP_THRESHOLD = 10
-private const val SMOOTH_SCROLL_THRESHOLD = 100
+private const val SMOOTH_SCROLL_THRESHOLD = 50
 
 /** Fragment that contains information about podcast and a list of podcast episodes. */
 @ExperimentalTime

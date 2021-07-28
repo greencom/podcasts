@@ -23,10 +23,10 @@ interface Repository {
     // TODO: Test code.
     suspend fun deleteEpisodes()
 
-    // TODO
+    /** Search for a podcast by given arguments, cache the result and return it as [State]. */
     suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult>
 
-    // TODO
+    /** Returns the last search that was cached in the Repository. */
     fun getLastSearch(): PodcastSearchResult?
 
     /** Update subscription to a Podcast by ID with a given value. */

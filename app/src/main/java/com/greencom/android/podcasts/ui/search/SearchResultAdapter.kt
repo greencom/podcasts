@@ -3,7 +3,6 @@ package com.greencom.android.podcasts.ui.search
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -12,8 +11,7 @@ import com.greencom.android.podcasts.databinding.ItemSearchPodcastBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
 import com.greencom.android.podcasts.utils.coverBuilder
 
-// TODO
-
+/** Adapter used for RecyclerView that represents a list of podcast search results. */
 class SearchResultAdapter(
     private val navigateToPodcast: (String) -> Unit,
 ) : ListAdapter<Podcast, SearchResultViewHolder>(PodcastDiffCallback) {
@@ -31,6 +29,7 @@ class SearchResultAdapter(
     }
 }
 
+/** Represents a single podcast item in the list. */
 class SearchResultViewHolder private constructor(
     private val binding: ItemSearchPodcastBinding,
     private val navigateToPodcast: (String) -> Unit,
@@ -38,14 +37,17 @@ class SearchResultViewHolder private constructor(
 
     private val context = binding.root.context
 
+    /** Podcast associated with this ViewHolder. */
     private lateinit var podcast: Podcast
 
     init {
+        // Navigate to a podcast page.
         binding.root.setOnClickListener {
             navigateToPodcast(podcast.id)
         }
     }
 
+    /** Bind ViewHolder with a given podcast. */
     fun bind(podcast: Podcast) {
         this.podcast = podcast
 
@@ -61,6 +63,7 @@ class SearchResultViewHolder private constructor(
     }
 
     companion object {
+        /** Create a [SearchResultViewHolder]. */
         fun create(
             parent: ViewGroup,
             navigateToPodcast: (String) -> Unit,
