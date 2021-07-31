@@ -183,7 +183,10 @@ class SearchFragment : Fragment() {
 
                         when (state) {
                             // Hide all screens when search() was called for an empty query.
-                            SearchState.EmptyQuery -> hideScreens()
+                            SearchState.EmptyQuery -> {
+                                clearList()
+                                hideScreens()
+                            }
 
                             // Show loading screen.
                             SearchState.Loading -> showLoadingScreen()
@@ -204,15 +207,13 @@ class SearchFragment : Fragment() {
 
                             // Show "Nothing found" screen.
                             SearchState.NothingFound -> {
-                                adapter.submitList(emptyList())
-                                delay(100) // Give adapter some time to set an empty list.
+                                clearList()
                                 showNothingFoundScreen()
                             }
 
                             // Show Error screen.
                             is SearchState.Error -> {
-                                adapter.submitList(emptyList())
-                                delay(100) // Give adapter some time to set an empty list.
+                                clearList()
                                 showErrorScreen()
                             }
                         }
@@ -261,6 +262,12 @@ class SearchFragment : Fragment() {
             binding.search.clearFocus()
             inputManager.hideSoftInputFromWindow(binding.search.windowToken, 0)
         }
+    }
+
+    /** Clear result list. */
+    private suspend fun clearList() {
+        adapter.submitList(emptyList())
+        delay(100) // Give adapter some time to set an empty list.
     }
 
     /** Show Success screen. */
