@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.ui.podcast
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.text.method.LinkMovementMethod
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
@@ -284,6 +285,25 @@ class PodcastEpisodeViewHolder private constructor(
             title.text = episode.title
             date.text = episodePubDateToString(episode.date, context)
             setupPlayButton(play, episode, context)
+
+            // Change title color depending on whether the episode is completed.
+            if (episode.isCompleted) {
+                val completedColor = TypedValue()
+                context.theme.resolveAttribute(
+                    R.attr.colorOnSurfaceLow,
+                    completedColor,
+                    true
+                )
+                title.setTextColor(completedColor.data)
+            } else {
+                val defaultColor = TypedValue()
+                context.theme.resolveAttribute(
+                    R.attr.colorOnSurfaceHigh,
+                    defaultColor,
+                    true
+                )
+                title.setTextColor(defaultColor.data)
+            }
         }
     }
 
