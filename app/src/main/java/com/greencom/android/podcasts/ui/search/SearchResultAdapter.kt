@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.ui.search
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
@@ -35,7 +36,8 @@ class SearchResultViewHolder private constructor(
     private val navigateToPodcast: (String) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context = binding.root.context
+    private val context: Context
+        get() = binding.root.context
 
     /** Podcast associated with this ViewHolder. */
     private lateinit var podcast: Podcast

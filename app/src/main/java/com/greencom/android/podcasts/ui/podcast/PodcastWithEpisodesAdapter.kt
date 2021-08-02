@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.ui.podcast
 
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -129,7 +130,8 @@ class PodcastHeaderViewHolder private constructor(
     private val changeSortOrder: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context = binding.root.context
+    private val context: Context
+        get() = binding.root.context
 
     /** Podcast associated with this ViewHolder. */
     private lateinit var podcast: Podcast
@@ -252,7 +254,8 @@ class PodcastEpisodeViewHolder private constructor(
     private val pause: () -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context = binding.root.context
+    private val context: Context
+        get() = binding.root.context
 
     /** Episode associated with this ViewHolder. */
     private lateinit var episode: Episode
