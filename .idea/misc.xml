@@ -3,8 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/drawable/ic_dog_newspaper.xml" value="0.3" />
+        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/drawable/ic_error_robot.xml" value="0.3" />
+        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/drawable/ic_focus_on_positive_activities.xml" value="0.5" />
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/fragment_activity.xml" value="0.28289473684210525" />
-        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/fragment_activity_history.xml" value="0.33" />
+        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/fragment_activity_history.xml" value="0.25" />
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/fragment_activity_playlist.xml" value="0.28289473684210525" />
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/fragment_episode.xml" value="0.28289473684210525" />
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/fragment_explore.xml" value="0.28289473684210525" />
@@ -12,7 +15,8 @@
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/item_history_episode.xml" value="0.5" />
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/item_podcast_episode.xml" value="0.28289473684210525" />
         <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/item_search_podcast.xml" value="0.28289473684210525" />
-        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/screen_nothing_found.xml" value="0.67" />
+        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/screen_error.xml" value="0.28289473684210525" />
+        <entry key="..\:/Projects/AndroidStudio/podcasts/app/src/main/res/layout/screen_nothing_found.xml" value="0.28289473684210525" />
       </map>
     </option>
   </component>

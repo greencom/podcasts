@@ -15,6 +15,8 @@ import com.greencom.android.podcasts.databinding.FragmentActivityHistoryBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryEvent
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryState
+import com.greencom.android.podcasts.utils.hideImmediately
+import com.greencom.android.podcasts.utils.revealCrossfade
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -53,6 +55,9 @@ class ActivityHistoryFragment : Fragment() {
         // Load history.
         viewModel.getEpisodeHistory()
 
+        // Hide all screens at start.
+        hideScreens()
+
         initRecyclerView()
         initObservers()
     }
@@ -81,10 +86,13 @@ class ActivityHistoryFragment : Fragment() {
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
                             // Show Success screen.
-                            is ActivityHistoryState.Success -> adapter.submitList(state.episodes)
+                            is ActivityHistoryState.Success -> {
+                                showSuccessScreen()
+                                adapter.submitList(state.episodes)
+                            }
 
                             // Show Empty screen.
-                            ActivityHistoryState.Empty -> {  }
+                            ActivityHistoryState.Empty -> showEmptyScreen()
                         }
                     }
                 }
@@ -105,6 +113,30 @@ class ActivityHistoryFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    /** Show Success screen and hide all others. */
+    private fun showSuccessScreen() {
+        binding.apply {
+            historyList.revealCrossfade()
+            emptyScreen.hideImmediately()
+        }
+    }
+
+    /** Show Empty screen and hide all others. */
+    private fun showEmptyScreen() {
+        binding.apply {
+            historyList.hideImmediately()
+            emptyScreen.revealCrossfade()
+        }
+    }
+
+    /** Hide all screens. */
+    private fun hideScreens() {
+        binding.apply {
+            historyList.hideImmediately()
+            emptyScreen.hideImmediately()
         }
     }
 }
