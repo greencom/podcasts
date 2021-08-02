@@ -1,9 +1,21 @@
 package com.greencom.android.podcasts.utils
 
 import androidx.recyclerview.widget.DiffUtil
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.data.domain.PodcastShort
 import com.greencom.android.podcasts.ui.podcast.PodcastWithEpisodesDataItem
+
+/** Callback for calculating the diff between two non-null [Episode] items in a list. */
+object EpisodeDiffCallback : DiffUtil.ItemCallback<Episode>() {
+    override fun areItemsTheSame(oldItem: Episode, newItem: Episode): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    override fun areContentsTheSame(oldItem: Episode, newItem: Episode): Boolean {
+        return oldItem == newItem
+    }
+}
 
 /** Callback for calculating the diff between two non-null [Podcast] items in a list. */
 object PodcastDiffCallback : DiffUtil.ItemCallback<Podcast>() {

@@ -66,6 +66,8 @@ class RepositoryImpl @Inject constructor(
     /** Cached last search result. */
     private var searchResult: PodcastSearchResult? = null
 
+    override fun getEpisodeHistory(): Flow<List<Episode>> = episodeDao.getEpisodeHistoryFlow()
+
     override suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult> {
         // If search arguments are the same as they were for the previous one, return last result.
         searchResult?.let { searchResult ->

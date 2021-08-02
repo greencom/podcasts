@@ -17,6 +17,7 @@
     <string name="description_explicit_content">Explicit content</string>
     <string name="description_scroll_to_top">Scroll to top</string>
     <string name="description_cover">Podcast cover</string>
+    <string name="description_episode_cover">Episode cover</string>
     <!-- Common end -->
 
 
@@ -67,6 +68,19 @@
     <string name="explore_search">Search for podcasts</string>
     <string name="explore_podcasts_updated">Podcasts have been updated</string>
     <!-- ExploreFragment end -->
+
+
+    <!-- ActivityFragment start -->
+    <string-array name="activity_tabs">
+        <item>Playlist</item>
+        <item>History</item>
+    </string-array>
+    <!-- ActivityFragment end -->
+
+
+    <!-- ActivityHistoryFragment start -->
+    <string name="activity_history_completed">Completed</string>
+    <!-- ActivityHistoryFragment end -->
 
 
     <!-- PodcastFragment start -->

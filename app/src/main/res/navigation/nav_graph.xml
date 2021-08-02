@@ -26,7 +26,11 @@
         android:id="@+id/activityFragment"
         android:name="com.greencom.android.podcasts.ui.activity.ActivityFragment"
         android:label="fragment_activity"
-        tools:layout="@layout/fragment_activity" />
+        tools:layout="@layout/fragment_activity" >
+        <action
+            android:id="@+id/action_activityFragment_to_episodeFragment"
+            app:destination="@id/episodeFragment" />
+    </fragment>
     <action
         android:id="@+id/action_global_homeFragment"
         app:destination="@id/homeFragment" />

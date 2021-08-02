@@ -63,6 +63,13 @@ abstract class EpisodeDao {
     @Query("SELECT COUNT(id) FROM episodes WHERE podcast_id = :podcastId")
     abstract suspend fun getEpisodeCount(podcastId: String): Int
 
+    /**
+     * Get a Flow with a list of completed [Episode]s in descending order of end date. No need to
+     * apply [distinctUntilChanged] function since it is already done under the hood.
+     */
+    fun getEpisodeHistoryFlow(): Flow<List<Episode>> = getEpisodeHistoryFlowRaw()
+        .distinctUntilChanged()
+
 
 
     // Helper methods start.
@@ -78,6 +85,19 @@ abstract class EpisodeDao {
         WHERE id = :id
     """)
     protected abstract fun getEpisodeFlowRaw(id: String): Flow<Episode?>
+
+    /**
+     * Get a Flow with a list of completed [Episode]s in descending order of end date. Use
+     * [getEpisodeHistoryFlow] with applied [distinctUntilChanged] function instead.
+     */
+    @Query("""
+        SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
+            podcast_id, explicit_content, date, position, is_completed, completion_date
+        FROM episodes
+        WHERE completion_date > 0
+        ORDER BY completion_date DESC
+    """)
+    protected abstract fun getEpisodeHistoryFlowRaw(): Flow<List<Episode>>
 
     // Helper methods end.
 }

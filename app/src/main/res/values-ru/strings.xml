@@ -17,6 +17,7 @@
     <string name="description_explicit_content">Содержимое 18+</string>
     <string name="description_scroll_to_top">Вернуться наверх</string>
     <string name="description_cover">Обложка подкаста</string>
+    <string name="description_episode_cover">Обложка эпизода</string>
     <!-- Common end -->
 
 
@@ -60,6 +61,19 @@
     <string name="explore_search">Искать подкасты</string>
     <string name="explore_podcasts_updated">Подкасты обновлены</string>
     <!-- ExploreFragment end -->
+
+
+    <!-- ActivityFragment start -->
+    <string-array name="activity_tabs">
+        <item>Плейлист</item>
+        <item>История</item>
+    </string-array>
+    <!-- ActivityFragment end -->
+
+
+    <!-- ActivityHistoryFragment start -->
+    <string name="activity_history_completed">Завершено</string>
+    <!-- ActivityHistoryFragment end -->
 
 
     <!-- PodcastFragment start -->

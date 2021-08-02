@@ -23,6 +23,9 @@ interface Repository {
     // TODO: Test code.
     suspend fun deleteEpisodes()
 
+    /** Get a Flow with a list of completed [Episode]s in descending order of end date. */
+    fun getEpisodeHistory(): Flow<List<Episode>>
+
     /** Search for a podcast by given arguments, cache the result and return it as [State]. */
     suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult>
 
