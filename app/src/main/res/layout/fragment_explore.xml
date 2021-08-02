@@ -61,7 +61,7 @@
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="@dimen/tab_layout_height"
                 app:tabGravity="center"
                 app:tabIndicator="@drawable/shape_tab_indicator"
                 app:tabIndicatorAnimationMode="elastic"

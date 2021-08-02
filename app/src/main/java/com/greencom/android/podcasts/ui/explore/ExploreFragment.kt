@@ -38,12 +38,7 @@ class ExploreFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupMaterialSharedAxisTransitions(
-            enter = true,
-            exit = true,
-            popEnter = true,
-            popExit = true
-        )
+        setupMaterialSharedAxisTransitions()
     }
 
     override fun onCreateView(
@@ -66,19 +61,6 @@ class ExploreFragment : Fragment() {
 
         initAppBar()
         initTabLayout()
-
-        // Navigate to SearchFragment.
-        binding.searchButton.setOnClickListener {
-            val direction = ExploreFragmentDirections.actionExploreFragmentToSearchFragment()
-            val transitionName = getString(R.string.search_transition_name)
-            val extras = FragmentNavigatorExtras(binding.searchButton to transitionName)
-            // Set the appropriate transition animations.
-            setupMaterialFadeThroughTransitions(
-                exit = true,
-                popEnter = true,
-            )
-            findNavController().navigate(direction, extras)
-        }
     }
 
     override fun onDestroyView() {
@@ -97,6 +79,19 @@ class ExploreFragment : Fragment() {
 
     /** App bar setup. */
     private fun initAppBar() {
+        // Navigate to SearchFragment.
+        binding.searchButton.setOnClickListener {
+            val direction = ExploreFragmentDirections.actionExploreFragmentToSearchFragment()
+            val transitionName = getString(R.string.search_transition_name)
+            val extras = FragmentNavigatorExtras(binding.searchButton to transitionName)
+            // Set the appropriate transition animations.
+            setupMaterialFadeThroughTransitions(
+                exit = true,
+                popEnter = true,
+            )
+            findNavController().navigate(direction, extras)
+        }
+
         // Disable AppBarLayout dragging behavior.
         setAppBarLayoutCanDrag(binding.appBarLayout, false)
 

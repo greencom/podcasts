@@ -61,12 +61,7 @@ class EpisodeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupMaterialSharedAxisTransitions(
-            enter = true,
-            exit = true,
-            popEnter = true,
-            popExit = true,
-        )
+        setupMaterialSharedAxisTransitions()
     }
 
     override fun onCreateView(

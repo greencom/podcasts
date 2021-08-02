@@ -58,7 +58,7 @@ class PodcastWithEpisodesAdapter(
                 updateSubscription = updateSubscription,
                 changeSortOrder = changeSortOrder
             )
-            ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(
+            ITEM_VIEW_TYPE_EPISODE -> PodcastEpisodeViewHolder.create(
                 parent = parent,
                 navigateToEpisode = navigateToEpisode,
                 playEpisode = playEpisode,
@@ -76,7 +76,7 @@ class PodcastWithEpisodesAdapter(
                 val podcast = getItem(position) as PodcastWithEpisodesDataItem.PodcastHeader
                 holder.bind(podcast.podcast, sortOrder.value, isPodcastDescriptionExpanded)
             }
-            is EpisodeViewHolder -> {
+            is PodcastEpisodeViewHolder -> {
                 val episode = getItem(position) as PodcastWithEpisodesDataItem.EpisodeItem
                 holder.bind(episode.episode)
             }
@@ -243,8 +243,8 @@ class PodcastHeaderViewHolder private constructor(
     }
 }
 
-/** EpisodeViewHolder represents a single episode item in the list. */
-class EpisodeViewHolder private constructor(
+/** PodcastEpisodeViewHolder represents a single episode item in the list. */
+class PodcastEpisodeViewHolder private constructor(
     private val navigateToEpisode: (String) -> Unit,
     private val binding: ItemPodcastEpisodeBinding,
     private val playEpisode: (String) -> Unit,
@@ -285,17 +285,17 @@ class EpisodeViewHolder private constructor(
     }
 
     companion object {
-        /** Create an [EpisodeViewHolder]. */
+        /** Create an [PodcastEpisodeViewHolder]. */
         fun create(
             parent: ViewGroup,
             navigateToEpisode: (String) -> Unit,
             playEpisode: (String) -> Unit,
             play: () -> Unit,
             pause: () -> Unit,
-        ): EpisodeViewHolder {
+        ): PodcastEpisodeViewHolder {
             val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
-            return EpisodeViewHolder(
+            return PodcastEpisodeViewHolder(
                 binding = binding,
                 navigateToEpisode = navigateToEpisode,
                 playEpisode = playEpisode,

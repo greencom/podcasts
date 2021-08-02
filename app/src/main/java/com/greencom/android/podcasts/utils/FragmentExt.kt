@@ -32,6 +32,25 @@ fun Fragment.setupMaterialSharedAxisTransitions(
 }
 
 /**
+ * Set up [MaterialSharedAxis] transitions along a given axis for this fragment.
+ * Axis defaults to [MaterialSharedAxis.Z]. This method sets transitions for all directions,
+ * use overloaded version of [setupMaterialSharedAxisTransitions] to be able to specify
+ * certain directions only.
+ */
+fun Fragment.setupMaterialSharedAxisTransitions(axis: Int = MaterialSharedAxis.Z) {
+    val transition: (Boolean) -> MaterialSharedAxis = { forward ->
+        MaterialSharedAxis(axis, forward).apply {
+            duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
+        }
+    }
+
+    enterTransition = transition(true)
+    exitTransition = transition(true)
+    reenterTransition = transition(false)
+    returnTransition = transition(false)
+}
+
+/**
  * Set up [MaterialFadeThrough] transitions for this fragment.
  *
  * Use [enter], [exit], [popEnter], [popExit] parameters to specify which transitions should be
@@ -53,4 +72,22 @@ fun Fragment.setupMaterialFadeThroughTransitions(
     if (exit) exitTransition = transition()
     if (popEnter) reenterTransition = transition()
     if (popExit) returnTransition = transition()
+}
+
+/**
+ * Set up [MaterialFadeThrough] transitions for this fragment.
+ * This method sets transitions for all directions, use overloaded version of
+ * [setupMaterialFadeThroughTransitions] to be able to specify certain directions only.
+ */
+fun Fragment.setupMaterialFadeThroughTransitions() {
+    val transition: () -> MaterialFadeThrough = {
+        MaterialFadeThrough().apply {
+            duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
+        }
+    }
+
+    enterTransition = transition()
+    exitTransition = transition()
+    reenterTransition = transition()
+    returnTransition = transition()
 }
