@@ -36,10 +36,12 @@ private const val SORT_ORDER_ANIMATION_DURATION = 200L
  * a list of podcast episodes.
  */
 class PodcastWithEpisodesAdapter(
-    val sortOrder: StateFlow<SortOrder>,
     private val navigateToEpisode: (String) -> Unit,
     private val updateSubscription: (String, Boolean) -> Unit,
+    private val sortOrder: StateFlow<SortOrder>,
     private val changeSortOrder: () -> Unit,
+    private val showCompleted: StateFlow<Boolean>,
+    private val changeShowCompleted: (Boolean) -> Unit,
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
@@ -58,7 +60,9 @@ class PodcastWithEpisodesAdapter(
             ITEM_VIEW_TYPE_PODCAST_HEADER -> PodcastHeaderViewHolder.create(
                 parent = parent,
                 updateSubscription = updateSubscription,
-                changeSortOrder = changeSortOrder
+                sortOrder = sortOrder,
+                changeSortOrder = changeSortOrder,
+                changeShowCompleted = changeShowCompleted,
             )
             ITEM_VIEW_TYPE_EPISODE -> PodcastEpisodeViewHolder.create(
                 parent = parent,
@@ -76,7 +80,12 @@ class PodcastWithEpisodesAdapter(
         when (holder) {
             is PodcastHeaderViewHolder -> {
                 val podcast = getItem(position) as PodcastWithEpisodesDataItem.PodcastHeader
-                holder.bind(podcast.podcast, sortOrder.value, isPodcastDescriptionExpanded)
+                holder.bind(
+                    podcast = podcast.podcast,
+                    sortOrder = sortOrder.value,
+                    showCompeted = showCompleted.value,
+                    isDescriptionExpanded = isPodcastDescriptionExpanded
+                )
             }
             is PodcastEpisodeViewHolder -> {
                 val episode = getItem(position) as PodcastWithEpisodesDataItem.EpisodeItem
@@ -128,7 +137,9 @@ class PodcastWithEpisodesAdapter(
 class PodcastHeaderViewHolder private constructor(
     private val binding: ItemPodcastHeaderBinding,
     private val updateSubscription: (String, Boolean) -> Unit,
+    private val sortOrder: StateFlow<SortOrder>,
     private val changeSortOrder: () -> Unit,
+    private val changeShowCompleted: (Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context
@@ -168,10 +179,15 @@ class PodcastHeaderViewHolder private constructor(
             }
         }
 
+        // Filter completed.
+        binding.showCompleted.setOnCheckedChangeListener { _, isChecked ->
+            changeShowCompleted(isChecked)
+        }
+
         // Change sort order.
         binding.sortOrder.setOnClickListener {
             changeSortOrder()
-            when ((bindingAdapter as PodcastWithEpisodesAdapter).sortOrder.value) {
+            when (sortOrder.value) {
                 SortOrder.RECENT_FIRST -> rotateSortOrder(0F)
                 SortOrder.OLDEST_FIRST -> rotateSortOrder(180F)
             }
@@ -179,7 +195,12 @@ class PodcastHeaderViewHolder private constructor(
     }
 
     /** Bind PodcastViewHolder with a given [Podcast]. */
-    fun bind(podcast: Podcast, sortOrder: SortOrder, isDescriptionExpanded: Boolean) {
+    fun bind(
+        podcast: Podcast,
+        sortOrder: SortOrder,
+        showCompeted: Boolean,
+        isDescriptionExpanded: Boolean
+    ) {
         this.podcast = podcast
 
         binding.apply {
@@ -192,7 +213,8 @@ class PodcastHeaderViewHolder private constructor(
                 podcast.episodeCount,
                 podcast.episodeCount
             )
-            binding.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
+            this.showCompleted.isChecked = showCompeted
+            this.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
             setupSubscribeToggleButton(subscribe, podcast.subscribed, context)
 
             // Handle podcast description.
@@ -233,14 +255,18 @@ class PodcastHeaderViewHolder private constructor(
         fun create(
             parent: ViewGroup,
             updateSubscription: (String, Boolean) -> Unit,
+            sortOrder: StateFlow<SortOrder>,
             changeSortOrder: () -> Unit,
+            changeShowCompleted: (Boolean) -> Unit,
         ): PodcastHeaderViewHolder {
             val binding = ItemPodcastHeaderBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return PodcastHeaderViewHolder(
                 binding = binding,
                 updateSubscription = updateSubscription,
+                sortOrder = sortOrder,
                 changeSortOrder = changeSortOrder,
+                changeShowCompleted = changeShowCompleted,
             )
         }
     }

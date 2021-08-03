@@ -60,10 +60,12 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     /** RecyclerView adapter. */
     private val adapter: PodcastWithEpisodesAdapter by lazy {
         PodcastWithEpisodesAdapter(
-            sortOrder = viewModel.sortOrder,
             navigateToEpisode = viewModel::navigateToEpisode,
             updateSubscription = viewModel::updateSubscription,
+            sortOrder = viewModel.sortOrder,
             changeSortOrder = viewModel::changeSortOrder,
+            showCompleted = viewModel.showCompleted,
+            changeShowCompleted = viewModel::changeShowCompleted,
             playEpisode = viewModel::playEpisode,
             play = viewModel::play,
             pause = viewModel::pause,

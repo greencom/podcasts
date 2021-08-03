@@ -43,6 +43,10 @@ class PodcastViewModel @Inject constructor(
     /** StateFlow with the current [SortOrder] value. Defaults to [SortOrder.RECENT_FIRST]. */
     val sortOrder = _sortOrder.asStateFlow()
 
+    private val _showCompleted = MutableStateFlow(true)
+    /** StateFlow that indicates whether or not completed episodes should be filtered. */
+    val showCompleted = _showCompleted.asStateFlow()
+
     private val _isAppBarExpanded = MutableStateFlow(true)
     /**
      * StateFlow with the current [PodcastFragment]'s app bar state. `true` means the app bar
@@ -84,10 +88,18 @@ class PodcastViewModel @Inject constructor(
         fetchEpisodes()
     }
 
+    /** Change [showCompleted] value. */
+    fun changeShowCompleted(showCompleted: Boolean) {
+        _showCompleted.value = showCompleted
+    }
+
     /** Load a podcast with episodes. The result will be posted to [uiState]. */
     fun getPodcastWithEpisodes() = viewModelScope.launch {
         repository.getPodcastWithEpisodes(podcastId)
             .combine(sortOrder) { flowState, sortOrder -> sortEpisodes(flowState, sortOrder) }
+            .combine(showCompleted) { flowState, showCompleted ->
+                filterCompleted(flowState, showCompleted)
+            }
             .onEach(::checkBottomEpisodes)
             .flowOn(defaultDispatcher)
             .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
@@ -188,6 +200,18 @@ class PodcastViewModel @Inject constructor(
                 SortOrder.RECENT_FIRST -> flowState.data.episodes.sortedByDescending { it.date }
                 SortOrder.OLDEST_FIRST -> flowState.data.episodes.sortedBy { it.date }
             }
+            return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
+        }
+        return flowState
+    }
+
+    /** Filter completed episodes depending on the [showCompleted] value. */
+    private fun filterCompleted(
+        flowState: State<PodcastWithEpisodes>,
+        showCompleted: Boolean
+    ): State<PodcastWithEpisodes> {
+        if (flowState is State.Success && !showCompleted) {
+            val episodes = flowState.data.episodes.filterNot { it.isCompleted }
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState

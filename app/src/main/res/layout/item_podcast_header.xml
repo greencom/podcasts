@@ -121,14 +121,34 @@
 
     <TextView
         android:id="@+id/episode_count"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textColor="?attr/colorOnSurfaceMedium"
         android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/sort_order"
+        app:layout_constraintEnd_toStartOf="@+id/show_completed"
         app:layout_constraintStart_toStartOf="@+id/title"
-        app:layout_constraintTop_toBottomOf="@+id/divider"
+        app:layout_constraintTop_toTopOf="@+id/sort_order"
         tools:text="394 Episodes" />
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/show_completed"
+        style="@style/Widget.MaterialComponents.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:checked="true"
+        android:text="@string/podcast_show_completed"
+        android:textColor="?attr/colorOnSurfaceMedium"
+        app:checkedIconTint="?attr/colorOnSurfaceMedium"
+        app:chipBackgroundColor="?attr/colorOnSurfaceUtil"
+        app:ensureMinTouchTargetSize="false"
+        app:layout_constraintBottom_toBottomOf="@id/sort_order"
+        app:layout_constraintEnd_toStartOf="@id/sort_order"
+        app:layout_constraintTop_toTopOf="@id/sort_order" />
 
     <ImageButton
         android:id="@+id/sort_order"

@@ -84,6 +84,7 @@
 
 
     <!-- PodcastFragment start -->
+    <string name="podcast_show_completed">Completed</string>
     <string name="podcast_description_sort_order">Episodes sorting</string>
     <string name="podcast_episode_completed">Completed</string>
     <string name="podcast_episode_playing">Playing</string>
