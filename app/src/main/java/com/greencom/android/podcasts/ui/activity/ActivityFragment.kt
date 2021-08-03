@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
+import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryFragment
 import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,5 +60,22 @@ class ActivityFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = tabs[position]
         }.attach()
+
+        // Scroll the appropriate list to the top on tab reselected.
+        val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {  }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {  }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                val key = when (binding.tabLayout.selectedTabPosition) {
+                    0 -> ""
+                    1 -> ActivityHistoryFragment.createOnTabReselectedKey()
+                    else -> ""
+                }
+                childFragmentManager.setFragmentResult(key, Bundle())
+            }
+        }
+        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
     }
 }

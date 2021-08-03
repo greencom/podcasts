@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.greencom.android.podcasts.databinding.FragmentActivityHistoryBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
@@ -21,6 +22,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
+private const val SMOOTH_SCROLL_THRESHOLD = 50
 
 /** Contains a history of completed episodes. */
 @AndroidEntryPoint
@@ -60,6 +63,7 @@ class ActivityHistoryFragment : Fragment() {
 
         initRecyclerView()
         initObservers()
+        initFragmentResultListeners()
     }
 
     override fun onDestroyView() {
@@ -73,6 +77,23 @@ class ActivityHistoryFragment : Fragment() {
             adapter = this@ActivityHistoryFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
+    }
+
+    /** Init fragment result listeners. */
+    private fun initFragmentResultListeners() {
+        // Scroll the list to the top on tab reselected.
+        parentFragmentManager.setFragmentResultListener(
+            createOnTabReselectedKey(),
+            viewLifecycleOwner
+        ) { _, _ ->
+            val listLayoutManager = binding.historyList.layoutManager as LinearLayoutManager
+            // Smooth scroll or instant scroll depending on the first visible position.
+            if (listLayoutManager.findFirstVisibleItemPosition() <= SMOOTH_SCROLL_THRESHOLD) {
+                binding.historyList.smoothScrollToPosition(0)
+            } else {
+                binding.historyList.scrollToPosition(0)
+            }
         }
     }
 
@@ -138,5 +159,20 @@ class ActivityHistoryFragment : Fragment() {
             historyList.hideImmediately()
             emptyScreen.hideImmediately()
         }
+    }
+
+    companion object {
+
+        /**
+         * Key used to pass data between [ActivityFragment] and [ActivityHistoryFragment]
+         * about tab reselection.
+         */
+        private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_HISTORY_ON_TAB_RESELECTED"
+
+        /**
+         * Return key used to pass data between [ActivityFragment] and [ActivityHistoryFragment]
+         * about tab reselection.
+         */
+        fun createOnTabReselectedKey(): String = KEY_ON_TAB_RESELECTED
     }
 }
