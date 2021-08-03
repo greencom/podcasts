@@ -72,7 +72,6 @@
 
 
     <!-- ActivityHistoryFragment start -->
-    <string name="activity_history_completed">Завершено</string>
     <string name="activity_history_empty">Здесь появятся завершённые эпизоды &#128035;</string>
     <!-- ActivityHistoryFragment end -->
 

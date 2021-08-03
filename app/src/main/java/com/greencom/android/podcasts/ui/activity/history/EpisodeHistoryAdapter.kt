@@ -58,11 +58,9 @@ class HistoryEpisodeViewHolder private constructor(
         this.episode = episode
         binding.apply {
             cover.load(episode.image) { coverBuilder(context) }
-            date.text = buildString {
-                append(context.getString(R.string.activity_history_completed))
-                append(" ")
-                val stamp = episodePubDateToString(episode.completionDate, context)
-                append(stamp.lowercase())
+            dateAndPodcastTitle.text = buildString {
+                append("${episodePubDateToString(episode.completionDate, context)} \u2E31 ")
+                append(episode.podcastTitle)
             }
             title.text = episode.title
         }

@@ -79,7 +79,6 @@
 
 
     <!-- ActivityHistoryFragment start -->
-    <string name="activity_history_completed">Completed</string>
     <string name="activity_history_empty">Completed episodes will appear here &#128035;</string>
     <!-- ActivityHistoryFragment end -->
 
