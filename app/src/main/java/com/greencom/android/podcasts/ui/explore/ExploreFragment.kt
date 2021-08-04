@@ -14,8 +14,8 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentExploreBinding
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
-import com.greencom.android.podcasts.utils.setupMaterialFadeThroughTransitions
-import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
+import com.greencom.android.podcasts.utils.extensions.setupMaterialFadeThroughTransitions
+import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 // Saving instance state.

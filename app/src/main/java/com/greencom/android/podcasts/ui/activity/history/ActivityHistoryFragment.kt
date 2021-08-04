@@ -16,8 +16,8 @@ import com.greencom.android.podcasts.databinding.FragmentActivityHistoryBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryEvent
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryState
-import com.greencom.android.podcasts.utils.hideImmediately
-import com.greencom.android.podcasts.utils.revealCrossfade
+import com.greencom.android.podcasts.utils.extensions.hideImmediately
+import com.greencom.android.podcasts.utils.extensions.revealCrossfade
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

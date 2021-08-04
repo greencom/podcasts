@@ -11,7 +11,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryFragment
-import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
+import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 /** Contains a playlist and a listening history made with TabLayout and ViewPager2. */

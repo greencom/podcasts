@@ -27,6 +27,7 @@ import com.greencom.android.podcasts.databinding.FragmentEpisodeBinding
 import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeState
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
+import com.greencom.android.podcasts.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

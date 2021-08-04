@@ -18,6 +18,10 @@ import com.greencom.android.podcasts.databinding.FragmentExplorePageBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.explore.ExplorePageViewModel.*
 import com.greencom.android.podcasts.utils.*
+import com.greencom.android.podcasts.utils.extensions.hideImmediately
+import com.greencom.android.podcasts.utils.extensions.revealCrossfade
+import com.greencom.android.podcasts.utils.extensions.revealImmediately
+import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest

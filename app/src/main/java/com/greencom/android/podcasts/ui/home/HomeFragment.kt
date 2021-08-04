@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
-import com.greencom.android.podcasts.utils.setupMaterialSharedAxisTransitions
+import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
 // TODO

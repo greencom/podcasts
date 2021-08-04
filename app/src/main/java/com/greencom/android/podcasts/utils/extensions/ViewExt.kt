@@ -1,8 +1,9 @@
-package com.greencom.android.podcasts.utils
+package com.greencom.android.podcasts.utils.extensions
 
 import android.view.View
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import com.greencom.android.podcasts.utils.DURATION_CROSSFADE_ANIMATION
 
 /**
  * Reveal or hide a view depending on the [show] parameter. This function also sets the

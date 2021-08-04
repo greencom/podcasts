@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.utils
+package com.greencom.android.podcasts.utils.extensions
 
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialFadeThrough

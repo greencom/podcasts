@@ -23,6 +23,7 @@ import com.greencom.android.podcasts.databinding.FragmentSearchBinding
 import com.greencom.android.podcasts.ui.search.SearchViewModel.SearchEvent
 import com.greencom.android.podcasts.ui.search.SearchViewModel.SearchState
 import com.greencom.android.podcasts.utils.*
+import com.greencom.android.podcasts.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect

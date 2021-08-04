@@ -46,6 +46,10 @@ import com.greencom.android.podcasts.ui.explore.ExploreFragment
 import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
+import com.greencom.android.podcasts.utils.extensions.hideCrossfade
+import com.greencom.android.podcasts.utils.extensions.hideImmediately
+import com.greencom.android.podcasts.utils.extensions.hideImmediatelyWithAnimation
+import com.greencom.android.podcasts.utils.extensions.revealCrossfade
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
