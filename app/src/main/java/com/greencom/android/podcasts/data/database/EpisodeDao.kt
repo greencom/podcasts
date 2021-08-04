@@ -31,6 +31,10 @@ abstract class EpisodeDao {
     @Update(entity = EpisodeEntity::class)
     abstract suspend fun update(episodeState: EpisodeEntityState)
 
+    /** Update episode-in-playlist state with [EpisodeEntityPlaylist] data class. */
+    @Update(entity = EpisodeEntity::class)
+    abstract suspend fun update(episodePlaylist: EpisodeEntityPlaylist)
+
     /** Get the episode by ID. */
     @Query("SELECT * FROM episodes WHERE id = :id")
     abstract suspend fun getEpisode(id: String): Episode?
@@ -80,7 +84,8 @@ abstract class EpisodeDao {
      */
     @Query("""
         SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
-            podcast_id, explicit_content, date, position, is_completed, completion_date
+            podcast_id, explicit_content, date, position, is_completed, completion_date,
+            in_playlist, added_to_playlist_date
         FROM episodes
         WHERE id = :id
     """)
@@ -92,7 +97,8 @@ abstract class EpisodeDao {
      */
     @Query("""
         SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
-            podcast_id, explicit_content, date, position, is_completed, completion_date
+            podcast_id, explicit_content, date, position, is_completed, completion_date,
+            in_playlist, added_to_playlist_date
         FROM episodes
         WHERE completion_date > 0
         ORDER BY completion_date DESC

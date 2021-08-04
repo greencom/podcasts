@@ -1,9 +1,6 @@
 package com.greencom.android.podcasts.repository
 
-import com.greencom.android.podcasts.data.database.EpisodeDao
-import com.greencom.android.podcasts.data.database.EpisodeEntity
-import com.greencom.android.podcasts.data.database.PodcastDao
-import com.greencom.android.podcasts.data.database.PodcastSubscription
+import com.greencom.android.podcasts.data.database.*
 import com.greencom.android.podcasts.data.domain.*
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.*
@@ -65,6 +62,15 @@ class RepositoryImpl @Inject constructor(
 
     /** Cached last search result. */
     private var searchResult: PodcastSearchResult? = null
+
+    override suspend fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean) {
+        val date = if (inPlaylist) System.currentTimeMillis() else 0L
+        episodeDao.update(EpisodeEntityPlaylist(
+            id = episodeId,
+            inPlaylist = inPlaylist,
+            addedToPlaylistDate = date
+        ))
+    }
 
     override fun getEpisodeHistory(): Flow<List<Episode>> = episodeDao.getEpisodeHistoryFlow()
 

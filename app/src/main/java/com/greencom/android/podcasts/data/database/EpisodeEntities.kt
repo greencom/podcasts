@@ -66,6 +66,17 @@ data class EpisodeEntity(
      */
     @ColumnInfo(name = "completion_date")
     val completionDate: Long,
+
+    /** Is this episode in the playlist. */
+    @ColumnInfo(name = "in_playlist")
+    val inPlaylist: Boolean,
+
+    /**
+     * Date in ms when this episode was added to the playlist. `0` if the episode is not
+     * in the playlist.
+     */
+    @ColumnInfo(name = "added_to_playlist_date")
+    val addedToPlaylistDate: Long,
 )
 
 /** Model class that used to update episode state in the database. */
@@ -88,4 +99,23 @@ data class EpisodeEntityState(
      */
     @ColumnInfo(name = "completion_date")
     val completionDate: Long,
+)
+
+/** Model class used to add the episode to the playlist or remove from it. */
+data class EpisodeEntityPlaylist(
+
+    /** Episode ID. */
+    @ColumnInfo(name = "id")
+    val id: String,
+
+    /** Is this episode in the playlist. */
+    @ColumnInfo(name = "in_playlist")
+    val inPlaylist: Boolean,
+
+    /**
+     * Date in ms when this episode was added to the playlist. `0` if the episode is not
+     * in the playlist.
+     */
+    @ColumnInfo(name = "added_to_playlist_date")
+    val addedToPlaylistDate: Long,
 )

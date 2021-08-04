@@ -70,6 +70,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             playEpisode = viewModel::playEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
+            updateEpisodeInPlaylist = viewModel::updateEpisodeInPlaylist
         )
     }
 

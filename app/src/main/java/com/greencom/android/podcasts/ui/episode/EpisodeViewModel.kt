@@ -78,6 +78,11 @@ class EpisodeViewModel @Inject constructor(
         playerServiceConnection.playFromTimecode(episodeId, timecode)
     }
 
+    /** Add the episode to the playlist or remove from it. */
+    fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean) = viewModelScope.launch {
+        repository.updateEpisodeInPlaylist(episodeId, inPlaylist)
+    }
+
     /**
      * Set a new value to the [isAppBarExpanded] StateFlow.
      *

@@ -23,6 +23,9 @@ interface Repository {
     // TODO: Test code.
     suspend fun deleteEpisodes()
 
+    /** Add the episode to the playlist or remove from it. */
+    suspend fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean)
+
     /** Get a Flow with a list of completed [Episode]s in descending order of end date. */
     fun getEpisodeHistory(): Flow<List<Episode>>
 

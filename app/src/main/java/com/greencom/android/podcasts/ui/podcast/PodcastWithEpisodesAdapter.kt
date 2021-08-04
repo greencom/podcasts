@@ -45,6 +45,7 @@ class PodcastWithEpisodesAdapter(
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
+    private val updateEpisodeInPlaylist: (String, Boolean) -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -69,7 +70,8 @@ class PodcastWithEpisodesAdapter(
                 navigateToEpisode = navigateToEpisode,
                 playEpisode = playEpisode,
                 play = play,
-                pause = pause
+                pause = pause,
+                onAddToPlaylistClick = updateEpisodeInPlaylist
             )
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
@@ -279,6 +281,7 @@ class PodcastEpisodeViewHolder private constructor(
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
+    private val onAddToPlaylistClick: (String, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context
@@ -301,6 +304,11 @@ class PodcastEpisodeViewHolder private constructor(
                 else -> playEpisode(episode.id)
             }
         }
+
+        // Add the episode to the playlist or remove from it.
+        binding.addToPlaylist.setOnClickListener {
+            onAddToPlaylistClick(episode.id, !episode.inPlaylist)
+        }
     }
 
     /** Bind EpisodeViewHolder with a given [Episode]. */
@@ -311,6 +319,19 @@ class PodcastEpisodeViewHolder private constructor(
             title.text = episode.title
             date.text = episodePubDateToString(episode.date, context)
             setupPlayButton(play, episode, context)
+
+            // Set up "Add to playlist" button.
+            if (episode.inPlaylist) {
+                addToPlaylist.setImageResource(R.drawable.ic_playlist_check_24)
+                addToPlaylist.imageTintList = context.getColorStateList(R.color.green)
+                addToPlaylist.contentDescription =
+                    context.getString(R.string.podcast_remove_from_playlist_description)
+            } else {
+                addToPlaylist.setImageResource(R.drawable.ic_playlist_add_24)
+                addToPlaylist.imageTintList = context.getColorStateList(R.color.primary_color_state_list)
+                addToPlaylist.contentDescription =
+                    context.getString(R.string.podcast_add_to_playlist_description)
+            }
 
             // Change title color depending on whether the episode is completed.
             if (episode.isCompleted) {
@@ -341,6 +362,7 @@ class PodcastEpisodeViewHolder private constructor(
             playEpisode: (String) -> Unit,
             play: () -> Unit,
             pause: () -> Unit,
+            onAddToPlaylistClick: (String, Boolean) -> Unit,
         ): PodcastEpisodeViewHolder {
             val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
@@ -350,6 +372,7 @@ class PodcastEpisodeViewHolder private constructor(
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,
+                onAddToPlaylistClick = onAddToPlaylistClick
             )
         }
     }

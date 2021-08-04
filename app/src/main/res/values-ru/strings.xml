@@ -77,6 +77,8 @@
 
 
     <!-- PodcastFragment start -->
+    <string name="podcast_add_to_playlist_description">Добавить эпизод в плейлист</string>
+    <string name="podcast_remove_from_playlist_description">Удалить эпизод из плейлиста</string>
     <string name="podcast_show_completed">Завершённые</string>
     <string name="podcast_description_sort_order">Сортировка эпизодов</string>
     <string name="podcast_episode_completed">Завершено</string>

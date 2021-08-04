@@ -152,6 +152,13 @@ class EpisodeFragment : Fragment() {
             }
         }
 
+        // Add the episode to the playlist or remove from it.
+        binding.addToPlaylist.setOnClickListener {
+            episode?.let { episode ->
+                viewModel.updateEpisodeInPlaylist(episodeId, !episode.inPlaylist)
+            }
+        }
+
         // Navigate to episode's parent podcast.
         binding.cover.setOnClickListener {
             navigateToPodcast()
@@ -213,6 +220,22 @@ class EpisodeFragment : Fragment() {
                     date.text = episodePubDateToString(mEpisode.date, requireContext())
                     episodeTitle.text = mEpisode.title
                     setupPlayButton(play, mEpisode, requireContext())
+
+                    // Set up "Add to playlist" button.
+                    if (mEpisode.inPlaylist) {
+                        addToPlaylist.setImageResource(R.drawable.ic_playlist_check_24)
+                        addToPlaylist.imageTintList = requireContext()
+                            .getColorStateList(R.color.green)
+                        addToPlaylist.contentDescription =
+                            requireContext().getString(R.string.podcast_remove_from_playlist_description)
+                    } else {
+                        addToPlaylist.setImageResource(R.drawable.ic_playlist_add_24)
+                        addToPlaylist.imageTintList = requireContext()
+                            .getColorStateList(R.color.primary_color_state_list)
+                        addToPlaylist.contentDescription =
+                            requireContext().getString(R.string.podcast_add_to_playlist_description)
+                    }
+
                     // Handle episode description.
                     description.text = descriptionFromHtml
                     description.movementMethod = LinkMovementMethod.getInstance()

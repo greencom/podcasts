@@ -177,6 +177,11 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
+    /** Add the episode to the playlist or remove from it. */
+    fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean) = viewModelScope.launch {
+        repository.updateEpisodeInPlaylist(episodeId, inPlaylist)
+    }
+
     /**
      * Unsubscribe from a podcast by given podcast ID. Used only after UnsubscribeDialog
      * confirmation.
