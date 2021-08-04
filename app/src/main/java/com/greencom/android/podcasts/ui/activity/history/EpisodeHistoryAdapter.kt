@@ -6,10 +6,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.ItemHistoryEpisodeBinding
 import com.greencom.android.podcasts.utils.EpisodeDiffCallback
+import com.greencom.android.podcasts.utils.Symbol
 import com.greencom.android.podcasts.utils.coverBuilder
 import com.greencom.android.podcasts.utils.episodePubDateToString
 import kotlin.time.ExperimentalTime
@@ -59,7 +59,7 @@ class HistoryEpisodeViewHolder private constructor(
         binding.apply {
             cover.load(episode.image) { coverBuilder(context) }
             dateAndPodcastTitle.text = buildString {
-                append("${episodePubDateToString(episode.completionDate, context)} \u2E31 ")
+                append("${episodePubDateToString(episode.completionDate, context)} ${Symbol.dot} ")
                 append(episode.podcastTitle)
             }
             title.text = episode.title
