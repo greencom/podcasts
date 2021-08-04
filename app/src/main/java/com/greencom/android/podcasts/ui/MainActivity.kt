@@ -159,198 +159,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         initViews()
         initNavigation()
         initPlayerListeners()
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // Observe events.
-                launch {
-                    viewModel.event.collect { event ->
-                        when (event) {
-                            // Show PlayerOptionsDialog.
-                            is MainActivityEvent.PlayerOptionsDialog -> {
-                                PlayerOptionsDialog.show(supportFragmentManager, event.episodeId)
-                            }
-
-                            // Navigate to EpisodeFragment.
-                            is MainActivityEvent.NavigateToEpisode -> {
-                                // Navigating shortcut.
-                                val navigate = suspend {
-                                    navController.navigate(
-                                        NavGraphDirections.actionGlobalEpisodeFragment(event.episodeId)
-                                    )
-                                    delay(250) // Wait for the transition.
-                                    collapsePlayer()
-                                }
-
-                                // Get the current destination ID.
-                                val currentDestinationId = navController.currentDestination?.id
-                                if (currentDestinationId == R.id.episodeFragment) {
-                                    // Current destination is EpisodeFragment, check destination args.
-                                    val currentEpisodeId =
-                                        navController.currentBackStackEntry?.arguments?.getString(
-                                            EpisodeFragment.SAFE_ARGS_EPISODE_ID
-                                        )
-                                    if (currentEpisodeId == event.episodeId) {
-                                        // Current EpisodeFragment already contains the desired
-                                        // episode, just collapse the player.
-                                        collapsePlayer()
-                                    } else {
-                                        // Current EpisodeFragment DOES NOT contain the desired
-                                        // episode, navigate to the appropriate EpisodeFragment.
-                                        navigate()
-                                    }
-                                } else {
-                                    // Current destination IS NOT EpisodeFragment, navigate to
-                                    // EpisodeFragment.
-                                    navigate()
-                                }
-                            }
-
-                            // Navigate to PodcastFragment.
-                            is MainActivityEvent.NavigateToPodcast -> {
-                                // Navigating shortcut.
-                                val navigate = suspend {
-                                    navController.navigate(
-                                        NavGraphDirections.actionGlobalPodcastFragment(event.podcastId)
-                                    )
-                                    delay(250) // Wait for the transition.
-                                    collapsePlayer()
-                                }
-
-                                // Get the current destination ID.
-                                val currentDestinationId = navController.currentDestination?.id
-                                if (currentDestinationId == R.id.podcastFragment) {
-                                    // Current destination is PodcastFragment, check destination args.
-                                    val currentPodcastId =
-                                        navController.currentBackStackEntry?.arguments?.getString(
-                                            PodcastFragment.SAFE_ARGS_PODCAST_ID
-                                        )
-                                    if (currentPodcastId == event.podcastId) {
-                                        // Current PodcastFragment already contains the desired
-                                        // podcast, just collapse the player.
-                                        collapsePlayer()
-                                    } else {
-                                        // Current PodcastFragment DOES NOT contain the desired
-                                        // podcast, navigate to the appropriate PodcastFragment.
-                                        navigate()
-                                    }
-                                } else {
-                                    // Current destination IS NOT PodcastFragment, navigate to
-                                    // PodcastFragment.
-                                    navigate()
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Control player text marquee animations depending on the bottom sheet state.
-                launch {
-                    viewModel.isPlayerBottomSheetExpanded.collectLatest { isPlayerExpanded ->
-                        // Keep progress bars updated even if the player is not playing.
-                        if (viewModel.isNotPlaying) {
-                            if (isPlayerExpanded) {
-                                expandedPlayer.slider.value = viewModel.currentPosition.value.toFloat()
-                            } else {
-                                collapsedPlayer.progressBar.progress = viewModel.currentPosition.value.toInt()
-                            }
-                            positionsSkipped = 0
-                        }
-
-                        marqueePlayerTextViews(isPlayerExpanded)
-                    }
-                }
-
-                // Collect skip value and control skip process.
-                launch {
-                    viewModel.skipBackwardOrForwardValue.collectLatest { value ->
-                        skipBackwardOrForward(value)
-                    }
-                }
-
-                // Observe episodes from the player.
-                launch {
-                    viewModel.currentEpisode.collect { episode ->
-                        currentEpisode = episode
-                        showPlayer(episode.isNotEmpty())
-                        viewModel.resetPlayerBottomSheetState()
-                        // Update current position with delay to make sure there was no skip.
-                        positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
-
-                        collapsedPlayer.apply {
-                            progressBar.progress = 0
-                            title.text = episode.title
-                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
-                        }
-                        expandedPlayer.apply {
-                            slider.value = 0F
-                            title.text = episode.title
-                            podcastTitle.text = episode.podcastTitle
-                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
-                        }
-                    }
-                }
-
-                // Observe current duration from the player.
-                launch {
-                    viewModel.duration.collect { duration ->
-                        collapsedPlayer.progressBar.max = duration.toInt()
-                        expandedPlayer.slider.valueTo = duration.toFloat()
-                    }
-                }
-
-                // Observe player states.
-                launch {
-                    viewModel.playerState.collect { state ->
-                        when {
-                            state.isPlayerPlaying() -> {
-                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
-                                expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
-                            }
-                            state.isPlayerPaused() -> {
-                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
-                                expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
-                            }
-                        }
-                    }
-                }
-
-                // Observe current position from the player.
-                launch {
-                    viewModel.currentPosition.collect { position ->
-                        if (updatePosition) {
-                            if (positionsSkipped >= POSITIONS_SKIPPED_THRESHOLD) {
-                                collapsedPlayer.progressBar.progress = position.toInt()
-                                expandedPlayer.slider.value = position.toFloat()
-                                positionsSkipped = 0
-                                return@collect
-                            }
-
-                            @SuppressLint("SwitchIntDef")
-                            when (playerBehavior.state) {
-                                BottomSheetBehavior.STATE_COLLAPSED -> {
-                                    collapsedPlayer.progressBar.progress = position.toInt()
-                                }
-                                BottomSheetBehavior.STATE_EXPANDED -> {
-                                    expandedPlayer.slider.value = position.toFloat()
-                                }
-                                BottomSheetBehavior.STATE_DRAGGING -> {
-                                    collapsedPlayer.progressBar.progress = position.toInt()
-                                    expandedPlayer.slider.value = position.toFloat()
-                                    positionsSkipped = 0
-                                }
-                                BottomSheetBehavior.STATE_SETTLING -> {
-                                    collapsedPlayer.progressBar.progress = position.toInt()
-                                    expandedPlayer.slider.value = position.toFloat()
-                                    positionsSkipped = 0
-                                }
-                            }
-                            positionsSkipped++
-                        }
-                    }
-                }
-            }
-        }
+        initObservers()
     }
 
     override fun onStart() {
@@ -576,6 +385,201 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
         expandedPlayer.options.setOnClickListener {
             viewModel.showPlayerOptionsDialog(currentEpisode?.id)
+        }
+    }
+
+    /** Set observers for ViewModel observables. */
+    private fun initObservers() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // Observe events.
+                launch {
+                    viewModel.event.collect { event ->
+                        when (event) {
+                            // Show PlayerOptionsDialog.
+                            is MainActivityEvent.PlayerOptionsDialog -> {
+                                PlayerOptionsDialog.show(supportFragmentManager, event.episodeId)
+                            }
+
+                            // Navigate to EpisodeFragment.
+                            is MainActivityEvent.NavigateToEpisode -> {
+                                // Navigating shortcut.
+                                val navigate = suspend {
+                                    navController.navigate(
+                                        NavGraphDirections.actionGlobalEpisodeFragment(event.episodeId)
+                                    )
+                                    delay(250) // Wait for the transition.
+                                    collapsePlayer()
+                                }
+
+                                // Get the current destination ID.
+                                val currentDestinationId = navController.currentDestination?.id
+                                if (currentDestinationId == R.id.episodeFragment) {
+                                    // Current destination is EpisodeFragment, check destination args.
+                                    val currentEpisodeId =
+                                        navController.currentBackStackEntry?.arguments?.getString(
+                                            EpisodeFragment.SAFE_ARGS_EPISODE_ID
+                                        )
+                                    if (currentEpisodeId == event.episodeId) {
+                                        // Current EpisodeFragment already contains the desired
+                                        // episode, just collapse the player.
+                                        collapsePlayer()
+                                    } else {
+                                        // Current EpisodeFragment DOES NOT contain the desired
+                                        // episode, navigate to the appropriate EpisodeFragment.
+                                        navigate()
+                                    }
+                                } else {
+                                    // Current destination IS NOT EpisodeFragment, navigate to
+                                    // EpisodeFragment.
+                                    navigate()
+                                }
+                            }
+
+                            // Navigate to PodcastFragment.
+                            is MainActivityEvent.NavigateToPodcast -> {
+                                // Navigating shortcut.
+                                val navigate = suspend {
+                                    navController.navigate(
+                                        NavGraphDirections.actionGlobalPodcastFragment(event.podcastId)
+                                    )
+                                    delay(250) // Wait for the transition.
+                                    collapsePlayer()
+                                }
+
+                                // Get the current destination ID.
+                                val currentDestinationId = navController.currentDestination?.id
+                                if (currentDestinationId == R.id.podcastFragment) {
+                                    // Current destination is PodcastFragment, check destination args.
+                                    val currentPodcastId =
+                                        navController.currentBackStackEntry?.arguments?.getString(
+                                            PodcastFragment.SAFE_ARGS_PODCAST_ID
+                                        )
+                                    if (currentPodcastId == event.podcastId) {
+                                        // Current PodcastFragment already contains the desired
+                                        // podcast, just collapse the player.
+                                        collapsePlayer()
+                                    } else {
+                                        // Current PodcastFragment DOES NOT contain the desired
+                                        // podcast, navigate to the appropriate PodcastFragment.
+                                        navigate()
+                                    }
+                                } else {
+                                    // Current destination IS NOT PodcastFragment, navigate to
+                                    // PodcastFragment.
+                                    navigate()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Control player text marquee animations depending on the bottom sheet state.
+                launch {
+                    viewModel.isPlayerBottomSheetExpanded.collectLatest { isPlayerExpanded ->
+                        // Keep progress bars updated even if the player is not playing.
+                        if (viewModel.isNotPlaying) {
+                            if (isPlayerExpanded) {
+                                expandedPlayer.slider.value = viewModel.currentPosition.value.toFloat()
+                            } else {
+                                collapsedPlayer.progressBar.progress = viewModel.currentPosition.value.toInt()
+                            }
+                            positionsSkipped = 0
+                        }
+
+                        marqueePlayerTextViews(isPlayerExpanded)
+                    }
+                }
+
+                // Collect skip value and control skip process.
+                launch {
+                    viewModel.skipBackwardOrForwardValue.collectLatest { value ->
+                        skipBackwardOrForward(value)
+                    }
+                }
+
+                // Observe episodes from the player.
+                launch {
+                    viewModel.currentEpisode.collect { episode ->
+                        currentEpisode = episode
+                        showPlayer(episode.isNotEmpty())
+                        viewModel.resetPlayerBottomSheetState()
+                        // Update current position with delay to make sure there was no skip.
+                        positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
+
+                        collapsedPlayer.apply {
+                            progressBar.progress = 0
+                            title.text = episode.title
+                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
+                        }
+                        expandedPlayer.apply {
+                            slider.value = 0F
+                            title.text = episode.title
+                            podcastTitle.text = episode.podcastTitle
+                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
+                        }
+                    }
+                }
+
+                // Observe current duration from the player.
+                launch {
+                    viewModel.duration.collect { duration ->
+                        collapsedPlayer.progressBar.max = duration.toInt()
+                        expandedPlayer.slider.valueTo = duration.toFloat()
+                    }
+                }
+
+                // Observe player states.
+                launch {
+                    viewModel.playerState.collect { state ->
+                        when {
+                            state.isPlayerPlaying() -> {
+                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
+                                expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+                            }
+                            state.isPlayerPaused() -> {
+                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
+                                expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
+                            }
+                        }
+                    }
+                }
+
+                // Observe current position from the player.
+                launch {
+                    viewModel.currentPosition.collect { position ->
+                        if (updatePosition) {
+                            if (positionsSkipped >= POSITIONS_SKIPPED_THRESHOLD) {
+                                collapsedPlayer.progressBar.progress = position.toInt()
+                                expandedPlayer.slider.value = position.toFloat()
+                                positionsSkipped = 0
+                                return@collect
+                            }
+
+                            @SuppressLint("SwitchIntDef")
+                            when (playerBehavior.state) {
+                                BottomSheetBehavior.STATE_COLLAPSED -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                }
+                                BottomSheetBehavior.STATE_EXPANDED -> {
+                                    expandedPlayer.slider.value = position.toFloat()
+                                }
+                                BottomSheetBehavior.STATE_DRAGGING -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                    expandedPlayer.slider.value = position.toFloat()
+                                    positionsSkipped = 0
+                                }
+                                BottomSheetBehavior.STATE_SETTLING -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                    expandedPlayer.slider.value = position.toFloat()
+                                    positionsSkipped = 0
+                                }
+                            }
+                            positionsSkipped++
+                        }
+                    }
+                }
+            }
         }
     }
 

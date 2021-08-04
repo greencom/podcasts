@@ -231,7 +231,7 @@ class EpisodeFragment : Fragment() {
                     } else {
                         addToPlaylist.setImageResource(R.drawable.ic_playlist_add_24)
                         addToPlaylist.imageTintList = requireContext()
-                            .getColorStateList(R.color.primary_color_state_list)
+                            .getColorStateList(R.color.primary_color)
                         addToPlaylist.contentDescription =
                             requireContext().getString(R.string.podcast_add_to_playlist_description)
                     }

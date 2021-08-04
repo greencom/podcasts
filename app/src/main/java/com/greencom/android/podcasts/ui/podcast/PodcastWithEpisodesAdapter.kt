@@ -328,7 +328,7 @@ class PodcastEpisodeViewHolder private constructor(
                     context.getString(R.string.podcast_remove_from_playlist_description)
             } else {
                 addToPlaylist.setImageResource(R.drawable.ic_playlist_add_24)
-                addToPlaylist.imageTintList = context.getColorStateList(R.color.primary_color_state_list)
+                addToPlaylist.imageTintList = context.getColorStateList(R.color.primary_color)
                 addToPlaylist.contentDescription =
                     context.getString(R.string.podcast_add_to_playlist_description)
             }

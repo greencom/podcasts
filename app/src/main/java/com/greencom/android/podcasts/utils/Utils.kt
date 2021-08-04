@@ -100,28 +100,28 @@ fun setupPlayButton(button: MaterialButton, episode: Episode, context: Context) 
             episode.isPlaying -> {
                 text = context.getString(R.string.podcast_episode_playing)
                 icon = context.getDrawableCompat(R.drawable.ic_animated_bar_chart_24)
-                iconTint = context.getColorStateListCompat(R.color.episode_button_default_icon_color)
+                iconTint = context.getColorStateListCompat(R.color.primary_color)
                 icon.animateVectorDrawable()
             }
             episode.isCompleted -> {
                 text = context.getString(R.string.podcast_episode_completed)
                 icon = context.getDrawableCompat(R.drawable.ic_check_24)
-                iconTint = context.getColorStateListCompat(R.color.episode_button_completed_icon_color)
+                iconTint = context.getColorStateListCompat(R.color.green)
             }
             episode.isSelected -> {
                 text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
                 icon = context.getDrawableCompat(R.drawable.ic_animated_bar_chart_24)
-                iconTint = context.getColorStateListCompat(R.color.episode_button_paused_icon_color)
+                iconTint = context.getColorStateListCompat(R.color.on_surface_hint_color)
             }
             episode.position > 0 -> {
                 text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
                 icon = context.getDrawableCompat(R.drawable.ic_play_circle_outline_24)
-                iconTint = context.getColorStateListCompat(R.color.episode_button_default_icon_color)
+                iconTint = context.getColorStateListCompat(R.color.primary_color)
             }
             else -> {
                 text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
                 icon = context.getDrawableCompat(R.drawable.ic_play_circle_outline_24)
-                iconTint = context.getColorStateListCompat(R.color.episode_button_default_icon_color)
+                iconTint = context.getColorStateListCompat(R.color.primary_color)
             }
         }
     }

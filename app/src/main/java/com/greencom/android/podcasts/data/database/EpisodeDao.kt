@@ -100,7 +100,7 @@ abstract class EpisodeDao {
             podcast_id, explicit_content, date, position, is_completed, completion_date,
             in_playlist, added_to_playlist_date
         FROM episodes
-        WHERE completion_date > 0
+        WHERE is_completed = 1
         ORDER BY completion_date DESC
     """)
     protected abstract fun getEpisodeHistoryFlowRaw(): Flow<List<Episode>>
