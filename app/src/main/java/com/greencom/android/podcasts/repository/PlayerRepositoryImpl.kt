@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
+import com.greencom.android.podcasts.data.database.EpisodeEntityPlaylist
 import com.greencom.android.podcasts.data.database.EpisodeEntityState
 import com.greencom.android.podcasts.data.datastore.PreferenceStorage
 import com.greencom.android.podcasts.data.domain.Episode
@@ -70,6 +71,15 @@ class PlayerRepositoryImpl @Inject constructor(
             }
         }
         episodeDao.update(episodeState)
+
+        // Remove from the playlist if the episode is completed.
+        // Return if the episode is not in the playlist.
+        if (episodeDao.isEpisodeInPlaylist(episodeId) != true) return
+        episodeDao.update(EpisodeEntityPlaylist(
+            id = episodeId,
+            inPlaylist = !episodeState.isCompleted,
+            addedToPlaylistDate = episodeState.completionDate
+        ))
     }
 
     override suspend fun markEpisodeCompleted(episodeId: String) {
@@ -80,5 +90,12 @@ class PlayerRepositoryImpl @Inject constructor(
             completionDate = System.currentTimeMillis()
         )
         episodeDao.update(episodeState)
+
+        // Remove the episode from the playlist.
+        episodeDao.update(EpisodeEntityPlaylist(
+            id = episodeId,
+            inPlaylist = false,
+            addedToPlaylistDate = episodeState.completionDate
+        ))
     }
 }

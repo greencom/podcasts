@@ -74,6 +74,10 @@ abstract class EpisodeDao {
     fun getEpisodeHistoryFlow(): Flow<List<Episode>> = getEpisodeHistoryFlowRaw()
         .distinctUntilChanged()
 
+    /** Returns `true` if the episode is in the playlist. */
+    @Query("SELECT in_playlist FROM episodes where id = :episodeId")
+    abstract suspend fun isEpisodeInPlaylist(episodeId: String): Boolean?
+
 
 
     // Helper methods start.
