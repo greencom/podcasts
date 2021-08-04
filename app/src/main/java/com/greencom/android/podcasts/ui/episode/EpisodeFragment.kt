@@ -198,10 +198,14 @@ class EpisodeFragment : Fragment() {
                 showSuccessScreen()
                 episode = state.episode
                 val mEpisode = state.episode
-                val description = HtmlCompat.fromHtml(
-                    mEpisode.description,
-                    HtmlCompat.FROM_HTML_MODE_COMPACT
-                )
+                val descriptionFromHtml = (if (mEpisode.description.containsHtmlTags()) {
+                    HtmlCompat.fromHtml(
+                        mEpisode.description,
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    ).trim()
+                } else {
+                    mEpisode.description
+                }).handleTimecodes()
 
                 binding.apply {
                     cover.load(mEpisode.image) { coverBuilder(requireContext()) }
@@ -210,8 +214,8 @@ class EpisodeFragment : Fragment() {
                     episodeTitle.text = mEpisode.title
                     setupPlayButton(play, mEpisode, requireContext())
                     // Handle episode description.
-                    binding.description.text = description.handleTimecodes().trim()
-                    binding.description.movementMethod = LinkMovementMethod.getInstance()
+                    description.text = descriptionFromHtml
+                    description.movementMethod = LinkMovementMethod.getInstance()
                 }
             }
 
@@ -228,7 +232,7 @@ class EpisodeFragment : Fragment() {
      * regex pattern.
      */
     @ExperimentalTime
-    private fun Spanned.handleTimecodes(): SpannableStringBuilder {
+    private fun CharSequence.handleTimecodes(): SpannableStringBuilder {
         val spannableStringBuilder = SpannableStringBuilder(this)
         Regex(TIMECODE_PATTERN).findAll(this).forEach { timecode ->
             val startIndex = spannableStringBuilder.indexOf(timecode.value)
