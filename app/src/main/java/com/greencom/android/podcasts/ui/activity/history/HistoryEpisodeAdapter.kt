@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.ItemHistoryEpisodeBinding
 import com.greencom.android.podcasts.utils.EpisodeDiffCallback
@@ -59,7 +60,9 @@ class HistoryEpisodeViewHolder private constructor(
         binding.apply {
             cover.load(episode.image) { coverBuilder(context) }
             dateAndPodcastTitle.text = buildString {
-                append(episodePubDateToString(episode.completionDate, context))
+                append(context.getString(R.string.activity_history_completed))
+                append(" ")
+                append(episodePubDateToString(episode.completionDate, context).lowercase())
                 append(" ${Symbol.bullet} ")
                 append(episode.podcastTitle)
             }
