@@ -152,10 +152,10 @@ class EpisodeFragment : Fragment() {
             }
         }
 
-        // Add the episode to the playlist or remove from it.
-        binding.addToPlaylist.setOnClickListener {
+        // Add the episode to the bookmarks or remove from there.
+        binding.addToBookmarks.setOnClickListener {
             episode?.let { episode ->
-                viewModel.updateEpisodeInPlaylist(episodeId, !episode.inPlaylist)
+                viewModel.updateEpisodeInBookmarks(episodeId, !episode.inBookmarks)
             }
         }
 
@@ -221,19 +221,19 @@ class EpisodeFragment : Fragment() {
                     episodeTitle.text = mEpisode.title
                     setupPlayButton(play, mEpisode, requireContext())
 
-                    // Set up "Add to playlist" button.
-                    if (mEpisode.inPlaylist) {
-                        addToPlaylist.setImageResource(R.drawable.ic_playlist_check_24)
-                        addToPlaylist.imageTintList = requireContext()
+                    // Set up "Add to bookmarks" button.
+                    if (mEpisode.inBookmarks) {
+                        addToBookmarks.setImageResource(R.drawable.ic_playlist_check_24)
+                        addToBookmarks.imageTintList = requireContext()
                             .getColorStateList(R.color.green)
-                        addToPlaylist.contentDescription =
-                            requireContext().getString(R.string.podcast_remove_from_playlist_description)
+                        addToBookmarks.contentDescription =
+                            requireContext().getString(R.string.episode_remove_from_bookmarks_description)
                     } else {
-                        addToPlaylist.setImageResource(R.drawable.ic_playlist_add_24)
-                        addToPlaylist.imageTintList = requireContext()
+                        addToBookmarks.setImageResource(R.drawable.ic_playlist_add_24)
+                        addToBookmarks.imageTintList = requireContext()
                             .getColorStateList(R.color.primary_color)
-                        addToPlaylist.contentDescription =
-                            requireContext().getString(R.string.podcast_add_to_playlist_description)
+                        addToBookmarks.contentDescription =
+                            requireContext().getString(R.string.episode_add_to_bookmarks_description)
                     }
 
                     // Handle episode description.

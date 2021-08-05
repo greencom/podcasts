@@ -45,7 +45,7 @@ class PodcastWithEpisodesAdapter(
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
-    private val updateEpisodeInPlaylist: (String, Boolean) -> Unit,
+    private val onAddToBookmarksClick: (String, Boolean) -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -71,7 +71,7 @@ class PodcastWithEpisodesAdapter(
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,
-                onAddToPlaylistClick = updateEpisodeInPlaylist
+                onAddToBookmarksClick = onAddToBookmarksClick
             )
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
@@ -281,7 +281,7 @@ class PodcastEpisodeViewHolder private constructor(
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
-    private val onAddToPlaylistClick: (String, Boolean) -> Unit,
+    private val onAddToBookmarksClick: (String, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context
@@ -305,9 +305,9 @@ class PodcastEpisodeViewHolder private constructor(
             }
         }
 
-        // Add the episode to the playlist or remove from it.
-        binding.addToPlaylist.setOnClickListener {
-            onAddToPlaylistClick(episode.id, !episode.inPlaylist)
+        // Add the episode to the bookmarks or remove from there.
+        binding.addToBookmarks.setOnClickListener {
+            onAddToBookmarksClick(episode.id, !episode.inBookmarks)
         }
     }
 
@@ -320,17 +320,17 @@ class PodcastEpisodeViewHolder private constructor(
             date.text = episodePubDateToString(episode.date, context)
             setupPlayButton(play, episode, context)
 
-            // Set up "Add to playlist" button.
-            if (episode.inPlaylist) {
-                addToPlaylist.setImageResource(R.drawable.ic_playlist_check_24)
-                addToPlaylist.imageTintList = context.getColorStateList(R.color.green)
-                addToPlaylist.contentDescription =
-                    context.getString(R.string.podcast_remove_from_playlist_description)
+            // Set up "Add to bookmarks" button.
+            if (episode.inBookmarks) {
+                addToBookmarks.setImageResource(R.drawable.ic_playlist_check_24)
+                addToBookmarks.imageTintList = context.getColorStateList(R.color.green)
+                addToBookmarks.contentDescription =
+                    context.getString(R.string.podcast_remove_from_bookmarks_description)
             } else {
-                addToPlaylist.setImageResource(R.drawable.ic_playlist_add_24)
-                addToPlaylist.imageTintList = context.getColorStateList(R.color.primary_color)
-                addToPlaylist.contentDescription =
-                    context.getString(R.string.podcast_add_to_playlist_description)
+                addToBookmarks.setImageResource(R.drawable.ic_playlist_add_24)
+                addToBookmarks.imageTintList = context.getColorStateList(R.color.primary_color)
+                addToBookmarks.contentDescription =
+                    context.getString(R.string.podcast_add_to_bookmarks_description)
             }
 
             // Change title color depending on whether the episode is completed.
@@ -362,7 +362,7 @@ class PodcastEpisodeViewHolder private constructor(
             playEpisode: (String) -> Unit,
             play: () -> Unit,
             pause: () -> Unit,
-            onAddToPlaylistClick: (String, Boolean) -> Unit,
+            onAddToBookmarksClick: (String, Boolean) -> Unit,
         ): PodcastEpisodeViewHolder {
             val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
@@ -372,7 +372,7 @@ class PodcastEpisodeViewHolder private constructor(
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,
-                onAddToPlaylistClick = onAddToPlaylistClick
+                onAddToBookmarksClick = onAddToBookmarksClick
             )
         }
     }

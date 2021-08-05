@@ -1,6 +1,6 @@
 package com.greencom.android.podcasts.utils
 
-/** Object that contains common char symbols and emoji. */
+/** Object that contains common char symbols and emojis. */
 object Symbol {
-    const val dot = '\u2022'
+    const val bullet = '\u2022'
 }

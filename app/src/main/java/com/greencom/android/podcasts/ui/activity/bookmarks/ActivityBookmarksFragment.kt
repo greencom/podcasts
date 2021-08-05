@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.activity.history
+package com.greencom.android.podcasts.ui.activity.bookmarks
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +12,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.greencom.android.podcasts.databinding.FragmentActivityHistoryBinding
+import com.greencom.android.podcasts.databinding.FragmentActivityBookmarksBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
-import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryEvent
-import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryState
+import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksViewModel.ActivityBookmarksEvent
+import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksViewModel.ActivityBookmarksState
 import com.greencom.android.podcasts.utils.extensions.hideImmediately
 import com.greencom.android.podcasts.utils.extensions.revealCrossfade
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,21 +25,23 @@ import kotlinx.coroutines.launch
 
 private const val SMOOTH_SCROLL_THRESHOLD = 50
 
-/** Contains a history of completed episodes. */
+/** Contains a list of episodes that have been added to the bookmarks. */
 @AndroidEntryPoint
-class ActivityHistoryFragment : Fragment() {
+class ActivityBookmarksFragment : Fragment() {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
-    private var _binding: FragmentActivityHistoryBinding? = null
+    private var _binding: FragmentActivityBookmarksBinding? = null
     private val binding get() = _binding!!
 
-    /** ActivityHistoryViewModel. */
-    private val viewModel: ActivityHistoryViewModel by viewModels()
+    private val viewModel: ActivityBookmarksViewModel by viewModels()
 
-    /** RecyclerView history adapter. */
+    /** RecyclerView bookmarks adapter. */
     private val adapter by lazy {
-        HistoryEpisodeAdapter(
-            navigateToEpisode = viewModel::navigateToEpisode
+        BookmarksEpisodeAdapter(
+            navigateToEpisode = viewModel::navigateToEpisode,
+            removeFromBookmarks = viewModel::removeFromBookmarks,
+            playEpisode = viewModel::playEpisode,
+            play = viewModel::play,
+            pause = viewModel::pause,
         )
     }
 
@@ -48,15 +50,15 @@ class ActivityHistoryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentActivityHistoryBinding.inflate(inflater, container, false)
+        _binding = FragmentActivityBookmarksBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Load history.
-        viewModel.getEpisodeHistory()
+        // Load bookmarks.
+        viewModel.getBookmarks()
 
         // Hide all screens at start.
         hideScreens()
@@ -73,8 +75,8 @@ class ActivityHistoryFragment : Fragment() {
 
     /** RecyclerView setup. */
     private fun initRecyclerView() {
-        binding.historyList.apply {
-            adapter = this@ActivityHistoryFragment.adapter
+        binding.bookmarks.apply {
+            adapter = this@ActivityBookmarksFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
@@ -90,13 +92,13 @@ class ActivityHistoryFragment : Fragment() {
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
                             // Show Success screen.
-                            is ActivityHistoryState.Success -> {
+                            is ActivityBookmarksState.Success -> {
                                 showSuccessScreen()
                                 adapter.submitList(state.episodes)
                             }
 
                             // Show Empty screen.
-                            ActivityHistoryState.Empty -> showEmptyScreen()
+                            ActivityBookmarksState.Empty -> showEmptyScreen()
                         }
                     }
                 }
@@ -106,7 +108,7 @@ class ActivityHistoryFragment : Fragment() {
                     viewModel.event.collect { event ->
                         when (event) {
                             // Navigate to episode page.
-                            is ActivityHistoryEvent.NavigateToEpisode -> {
+                            is ActivityBookmarksEvent.NavigateToEpisode -> {
                                 findNavController().navigate(
                                     ActivityFragmentDirections.actionActivityFragmentToEpisodeFragment(
                                         event.episodeId
@@ -127,12 +129,12 @@ class ActivityHistoryFragment : Fragment() {
             createOnTabReselectedKey(),
             viewLifecycleOwner
         ) { _, _ ->
-            val listLayoutManager = binding.historyList.layoutManager as LinearLayoutManager
+            val listLayoutManager = binding.bookmarks.layoutManager as LinearLayoutManager
             // Smooth scroll or instant scroll depending on the first visible position.
             if (listLayoutManager.findFirstVisibleItemPosition() <= SMOOTH_SCROLL_THRESHOLD) {
-                binding.historyList.smoothScrollToPosition(0)
+                binding.bookmarks.smoothScrollToPosition(0)
             } else {
-                binding.historyList.scrollToPosition(0)
+                binding.bookmarks.scrollToPosition(0)
             }
         }
     }
@@ -142,14 +144,14 @@ class ActivityHistoryFragment : Fragment() {
         binding.apply {
             emptyImage.hideImmediately()
             emptyMessage.hideImmediately()
-            historyList.revealCrossfade()
+            bookmarks.revealCrossfade()
         }
     }
 
     /** Show Empty screen and hide all others. */
     private fun showEmptyScreen() {
         binding.apply {
-            historyList.hideImmediately()
+            bookmarks.hideImmediately()
             emptyImage.revealCrossfade()
             emptyMessage.revealCrossfade()
         }
@@ -158,7 +160,7 @@ class ActivityHistoryFragment : Fragment() {
     /** Hide all screens. */
     private fun hideScreens() {
         binding.apply {
-            historyList.hideImmediately()
+            bookmarks.hideImmediately()
             emptyImage.hideImmediately()
             emptyMessage.hideImmediately()
         }
@@ -168,13 +170,13 @@ class ActivityHistoryFragment : Fragment() {
 
         /**
          * Key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
-         * and [ActivityHistoryFragment] about tab reselection.
+         * and [ActivityBookmarksFragment] about tab reselection.
          */
-        private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_HISTORY_ON_TAB_RESELECTED"
+        private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_BOOKMARKS_ON_TAB_RESELECTED"
 
         /**
          * Return key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
-         * and [ActivityHistoryFragment] about tab reselection.
+         * and [ActivityBookmarksFragment] about tab reselection.
          */
         fun createOnTabReselectedKey(): String = KEY_ON_TAB_RESELECTED
     }

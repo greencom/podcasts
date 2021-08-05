@@ -23,34 +23,6 @@ interface Repository {
     // TODO: Test code.
     suspend fun deleteEpisodes()
 
-    /** Add the episode to the playlist or remove from it. */
-    suspend fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean)
-
-    /** Get a Flow with a list of completed [Episode]s in descending order of end date. */
-    fun getEpisodeHistory(): Flow<List<Episode>>
-
-    /** Search for a podcast by given arguments, cache the result and return it as [State]. */
-    suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult>
-
-    /** Returns the last search that was cached in the Repository. */
-    fun getLastSearch(): PodcastSearchResult?
-
-    /** Update subscription to a Podcast by ID with a given value. */
-    suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
-
-    /**
-     * Return an episode for a given ID from the database. The result represented by
-     * instances of [State]. If there is no such episode in the database, emits [State.Error].
-     */
-    fun getEpisode(episodeId: String): Flow<State<Episode>>
-
-    /**
-     * Return a podcast with episodes for a given ID. The result represented by instances of
-     * [State]. If the database already contains the appropriate podcast, return it. Otherwise,
-     * fetch the podcast from ListenAPI and insert it into the database.
-     */
-    fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>>
-
     /**
      * Fetch the podcast for a given ID from ListenAPI and insert it into the database.
      * Returns the result represented by [State].
@@ -87,13 +59,6 @@ interface Repository {
     ): State<Int>
 
     /**
-     * Return the best podcasts for a given genre ID. The result presented by instances of
-     * [State]. If the database already contains the appropriate podcasts, return them.
-     * Otherwise, fetch the podcasts from ListenAPI and insert them into the database.
-     */
-    fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>>
-
-    /**
      * Fetch the best podcasts for a given genre ID from ListenAPI and insert them
      * into the database. Returns result represented by [State].
      */
@@ -106,4 +71,45 @@ interface Repository {
      * [State].
      */
     suspend fun refreshBestPodcasts(genreId: Int, currentList: List<PodcastShort>): State<Unit>
+
+    /**
+     * Return a podcast with episodes for a given ID. The result represented by instances of
+     * [State]. If the database already contains the appropriate podcast, return it. Otherwise,
+     * fetch the podcast from ListenAPI and insert it into the database.
+     */
+    fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>>
+
+    /**
+     * Return an episode for a given ID from the database. The result represented by
+     * instances of [State]. If there is no such episode in the database, emits [State.Error].
+     */
+    fun getEpisode(episodeId: String): Flow<State<Episode>>
+
+    /**
+     * Return the best podcasts for a given genre ID. The result presented by instances of
+     * [State]. If the database already contains the appropriate podcasts, return them.
+     * Otherwise, fetch the podcasts from ListenAPI and insert them into the database.
+     */
+    fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>>
+
+    /** Get a Flow with a list of completed [Episode]s in the descending order of the end date. */
+    fun getEpisodeHistory(): Flow<List<Episode>>
+
+    /**
+     * Get a Flow with a list of episodes that have beed added to the bookmarks in the
+     * descending order of the add date.
+     */
+    fun getBookmarks(): Flow<List<Episode>>
+
+    /** Search for a podcast by given arguments, cache the result and return it as [State]. */
+    suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult>
+
+    /** Returns the last search that was cached in the Repository. */
+    fun getLastSearch(): PodcastSearchResult?
+
+    /** Update subscription to a Podcast by ID with a given value. */
+    suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
+
+    /** Add the episode to the bookmarks or remove from there. */
+    suspend fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean)
 }

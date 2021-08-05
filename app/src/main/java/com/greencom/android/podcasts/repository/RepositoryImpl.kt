@@ -63,80 +63,6 @@ class RepositoryImpl @Inject constructor(
     /** Cached last search result. */
     private var searchResult: PodcastSearchResult? = null
 
-    override suspend fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean) {
-        val date = if (inPlaylist) System.currentTimeMillis() else 0L
-        episodeDao.update(EpisodeEntityPlaylist(
-            id = episodeId,
-            inPlaylist = inPlaylist,
-            addedToPlaylistDate = date
-        ))
-    }
-
-    override fun getEpisodeHistory(): Flow<List<Episode>> = episodeDao.getEpisodeHistoryFlow()
-
-    override suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult> {
-        // If search arguments are the same as they were for the previous one, return last result.
-        searchResult?.let { searchResult ->
-            if (query == searchResult.query && offset == searchResult.offset) {
-                return State.Success(searchResult)
-            }
-        }
-
-        return try {
-            val response = safeRetrofitCall {
-                listenApi.searchPodcast(query = query, offset = offset)
-            }
-            podcastDao.insert(response.podcastsToDatabase()) // Insert podcasts to the database.
-            val result = response.toDomain(query, offset)
-            // If the current search is a continuation of the previous one, combine lists.
-            val list = searchResult?.let { searchResult ->
-                if (query == searchResult.query) {
-                    searchResult.podcasts + result.podcasts
-                } else {
-                    result.podcasts
-                }
-            } ?: result.podcasts
-            val mSearchResult = result.copy(podcasts = list)
-            searchResult = mSearchResult // Cache the result.
-            State.Success(mSearchResult)
-        } catch (e: IOException) {
-            State.Error(e)
-        } catch (e: HttpException) {
-            State.Error(e)
-        }
-    }
-
-    override fun getLastSearch(): PodcastSearchResult? = searchResult
-
-    override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
-        podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
-    }
-
-    override fun getEpisode(episodeId: String): Flow<State<Episode>> = flow {
-        emit(State.Loading)
-        episodeDao.getEpisodeFlow(episodeId).collect { episode ->
-            if (episode != null) {
-                emit(State.Success(episode))
-            } else {
-                emit(State.Error(Exception()))
-            }
-        }
-    }
-
-    override fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>> = flow {
-        emit(State.Loading)
-        podcastDao.getPodcastWithEpisodesFlow(podcastId).collect { podcastWithEpisodes ->
-            // If the database already contains the appropriate podcast, return it.
-            if (podcastWithEpisodes != null) {
-                emit(State.Success(podcastWithEpisodes))
-            } else {
-                // Otherwise, fetch the podcast from ListenAPI and insert into the database.
-                val result = fetchPodcast(podcastId)
-                if (result is State.Error) emit(result)
-            }
-        }
-    }
-
     override suspend fun fetchPodcast(podcastId: String, sortOrder: SortOrder): State<PodcastWrapper> {
         return try {
             val response = safeRetrofitCall {
@@ -398,20 +324,6 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = flow {
-        emit(State.Loading)
-        podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
-            // Return from the database, if it contains the appropriate podcasts.
-            if (podcasts.isNotEmpty()) {
-                emit(State.Success(podcasts))
-            } else {
-                // Otherwise, fetch the best podcasts from ListenAPI and insert them into the db.
-                val result = fetchBestPodcasts(genreId)
-                if (result is State.Error) emit(result)
-            }
-        }
-    }
-
     override suspend fun fetchBestPodcasts(genreId: Int): State<Unit> {
         return try {
             val response = safeRetrofitCall { listenApi.getBestPodcasts(genreId) }
@@ -446,6 +358,115 @@ class RepositoryImpl @Inject constructor(
             State.Error(e)
         } catch (e: HttpException) {
             State.Error(e)
+        }
+    }
+
+    override fun getPodcastWithEpisodes(podcastId: String): Flow<State<PodcastWithEpisodes>> = flow {
+        emit(State.Loading)
+        podcastDao.getPodcastWithEpisodesFlow(podcastId).collect { podcastWithEpisodes ->
+            // If the database already contains the appropriate podcast, return it.
+            if (podcastWithEpisodes != null) {
+                emit(State.Success(podcastWithEpisodes))
+            } else {
+                // Otherwise, fetch the podcast from ListenAPI and insert into the database.
+                val result = fetchPodcast(podcastId)
+                if (result is State.Error) emit(result)
+            }
+        }
+    }
+
+    override fun getEpisode(episodeId: String): Flow<State<Episode>> = flow {
+        emit(State.Loading)
+        episodeDao.getEpisodeFlow(episodeId).collect { episode ->
+            if (episode != null) {
+                emit(State.Success(episode))
+            } else {
+                emit(State.Error(Exception()))
+            }
+        }
+    }
+
+    override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = flow {
+        emit(State.Loading)
+        podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
+            // Return from the database, if it contains the appropriate podcasts.
+            if (podcasts.isNotEmpty()) {
+                emit(State.Success(podcasts))
+            } else {
+                // Otherwise, fetch the best podcasts from ListenAPI and insert them into the db.
+                val result = fetchBestPodcasts(genreId)
+                if (result is State.Error) emit(result)
+            }
+        }
+    }
+
+    override fun getEpisodeHistory(): Flow<List<Episode>> = episodeDao.getEpisodeHistoryFlow()
+
+    override fun getBookmarks(): Flow<List<Episode>> = episodeDao.getBookmarksFlow()
+
+    override suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult> {
+        // If search arguments are the same as they were for the previous one, return last result.
+        searchResult?.let { searchResult ->
+            if (query == searchResult.query && offset == searchResult.offset) {
+                return State.Success(searchResult)
+            }
+        }
+
+        return try {
+            val response = safeRetrofitCall {
+                listenApi.searchPodcast(query = query, offset = offset)
+            }
+            podcastDao.insert(response.podcastsToDatabase()) // Insert podcasts to the database.
+            val result = response.toDomain(query, offset)
+            // If the current search is a continuation of the previous one, combine lists.
+            val list = searchResult?.let { searchResult ->
+                if (query == searchResult.query) {
+                    searchResult.podcasts + result.podcasts
+                } else {
+                    result.podcasts
+                }
+            } ?: result.podcasts
+            val mSearchResult = result.copy(podcasts = list)
+            searchResult = mSearchResult // Cache the result.
+            State.Success(mSearchResult)
+        } catch (e: IOException) {
+            State.Error(e)
+        } catch (e: HttpException) {
+            State.Error(e)
+        }
+    }
+
+    override fun getLastSearch(): PodcastSearchResult? = searchResult
+
+    override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
+        podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
+    }
+
+    override suspend fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) {
+        val date = if (inBookmarks) System.currentTimeMillis() else 0L
+        episodeDao.update(
+            EpisodeEntityBookmark(
+                id = episodeId,
+                inBookmarks = inBookmarks,
+                addedToBookmarksDate = date
+            )
+        )
+    }
+
+    /**
+     * Make a safe Retrofit call and return the result. The first overall call will be wrapped
+     * in [withContext] function and any other will be done without it.
+     *
+     * Note: this function is needed due to some strange Retrofit bug, which produces UI freeze
+     * on the first Retrofit call.
+     */
+    private suspend fun <T> safeRetrofitCall(block: suspend () -> T): T {
+        return if (isRetrofitSafe) {
+            block()
+        } else {
+            val result = withContext(ioDispatcher) { block() }
+            isRetrofitSafe = true
+            result
         }
     }
 
@@ -498,23 +519,6 @@ class RepositoryImpl @Inject constructor(
     ) {
         if (!isForced) {
             event.send(PodcastViewModel.PodcastEvent.EpisodesFetchingStarted)
-        }
-    }
-
-    /**
-     * Make a safe Retrofit call and return the result. The first overall call will be wrapped
-     * in [withContext] function and any other will be done without it.
-     *
-     * Note: this function is needed due to some strange Retrofit bug, which produces UI freeze
-     * on the first Retrofit call.
-     */
-    private suspend fun <T> safeRetrofitCall(block: suspend () -> T): T {
-        return if (isRetrofitSafe) {
-            block()
-        } else {
-            val result = withContext(ioDispatcher) { block() }
-            isRetrofitSafe = true
-            result
         }
     }
 }

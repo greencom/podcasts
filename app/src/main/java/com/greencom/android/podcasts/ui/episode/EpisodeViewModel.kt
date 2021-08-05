@@ -73,14 +73,14 @@ class EpisodeViewModel @Inject constructor(
         playerServiceConnection.playEpisode(episodeId)
     }
 
-    // TODO
+    /** Play the episode from the millis-timecode. */
     fun playFromTimecode(episodeId: String, timecode: Long) {
         playerServiceConnection.playFromTimecode(episodeId, timecode)
     }
 
-    /** Add the episode to the playlist or remove from it. */
-    fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean) = viewModelScope.launch {
-        repository.updateEpisodeInPlaylist(episodeId, inPlaylist)
+    /** Add the episode to the bookmarks or remove from there. */
+    fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
+        repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
     }
 
     /**

@@ -80,8 +80,8 @@ fun PodcastWrapper.episodesToDatabase(): List<EpisodeEntity> = episodes.map {
         position = 0L,
         isCompleted = false,
         completionDate = 0L,
-        inPlaylist = false,
-        addedToPlaylistDate = 0L,
+        inBookmarks = false,
+        addedToBookmarksDate = 0L,
     )
 }
 

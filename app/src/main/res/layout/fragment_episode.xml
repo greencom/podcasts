@@ -78,12 +78,12 @@
                 tools:text="1 hr 45 min" />
 
             <ImageButton
-                android:id="@+id/add_to_playlist"
+                android:id="@+id/add_to_bookmarks"
                 style="@style/ImageButton"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_marginStart="4dp"
-                android:contentDescription="@string/podcast_add_to_playlist_description"
+                android:contentDescription="@string/episode_add_to_bookmarks_description"
                 app:layout_constraintBottom_toBottomOf="@+id/play"
                 app:layout_constraintStart_toEndOf="@+id/play"
                 app:layout_constraintTop_toTopOf="@+id/play"

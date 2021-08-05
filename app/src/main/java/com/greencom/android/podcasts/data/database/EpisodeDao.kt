@@ -31,9 +31,9 @@ abstract class EpisodeDao {
     @Update(entity = EpisodeEntity::class)
     abstract suspend fun update(episodeState: EpisodeEntityState)
 
-    /** Update episode-in-playlist state with [EpisodeEntityPlaylist] data class. */
+    /** Update episode-in-bookmarks state with [EpisodeEntityBookmark] data class. */
     @Update(entity = EpisodeEntity::class)
-    abstract suspend fun update(episodePlaylist: EpisodeEntityPlaylist)
+    abstract suspend fun update(episodeBookmark: EpisodeEntityBookmark)
 
     /** Get the episode by ID. */
     @Query("SELECT * FROM episodes WHERE id = :id")
@@ -74,9 +74,17 @@ abstract class EpisodeDao {
     fun getEpisodeHistoryFlow(): Flow<List<Episode>> = getEpisodeHistoryFlowRaw()
         .distinctUntilChanged()
 
-    /** Returns `true` if the episode is in the playlist. */
-    @Query("SELECT in_playlist FROM episodes where id = :episodeId")
-    abstract suspend fun isEpisodeInPlaylist(episodeId: String): Boolean?
+    /** Returns `true` if the episode is in the bookmarks. */
+    @Query("SELECT in_bookmarks FROM episodes where id = :episodeId")
+    abstract suspend fun isEpisodeInBookmarks(episodeId: String): Boolean?
+
+    /**
+     * Get a Flow with a list of episodes that have been added to the bookmarks in
+     * descending order of the add date. No need to apply [distinctUntilChanged] function
+     * since it is already done under the hood.
+     */
+    fun getBookmarksFlow(): Flow<List<Episode>> = getBookmarksFlowRaw()
+        .distinctUntilChanged()
 
 
 
@@ -89,25 +97,40 @@ abstract class EpisodeDao {
     @Query("""
         SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
             podcast_id, explicit_content, date, position, is_completed, completion_date,
-            in_playlist, added_to_playlist_date
+            in_bookmarks, added_to_bookmarks_date
         FROM episodes
         WHERE id = :id
     """)
     protected abstract fun getEpisodeFlowRaw(id: String): Flow<Episode?>
 
     /**
-     * Get a Flow with a list of completed [Episode]s in descending order of end date. Use
+     * Get a Flow with a list of completed [Episode]s in descending order of the end date. Use
      * [getEpisodeHistoryFlow] with applied [distinctUntilChanged] function instead.
      */
     @Query("""
         SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
             podcast_id, explicit_content, date, position, is_completed, completion_date,
-            in_playlist, added_to_playlist_date
+            in_bookmarks, added_to_bookmarks_date
         FROM episodes
         WHERE is_completed = 1
         ORDER BY completion_date DESC
     """)
     protected abstract fun getEpisodeHistoryFlowRaw(): Flow<List<Episode>>
+
+    /**
+     * Get a Flow with a list of episodes that were have been added to the bookmarks in
+     * descending order of the add date. Use [getBookmarksFlow] with applied [distinctUntilChanged]
+     * function instead.
+     */
+    @Query("""
+        SELECT id, title, description, podcast_title, publisher, image, audio, audio_length, 
+            podcast_id, explicit_content, date, position, is_completed, completion_date,
+            in_bookmarks, added_to_bookmarks_date
+        FROM episodes
+        WHERE in_bookmarks = 1
+        ORDER BY added_to_bookmarks_date DESC
+    """)
+    protected abstract fun getBookmarksFlowRaw(): Flow<List<Episode>>
 
     // Helper methods end.
 }

@@ -72,7 +72,7 @@
 
     <!-- ActivityFragment start -->
     <string-array name="activity_tabs">
-        <item>Playlist</item>
+        <item>Bookmarks</item>
         <item>History</item>
     </string-array>
     <!-- ActivityFragment end -->
@@ -83,9 +83,15 @@
     <!-- ActivityHistoryFragment end -->
 
 
+    <!-- ActivityBookmarksFragment start -->
+    <string name="activity_bookmarks_empty">Bookmark an episode and it will appear here &#128221;</string>
+    <string name="activity_bookmarks_remove_description">Remove the episode from the bookmarks</string>
+    <!-- ActivityBookmarksFragment end -->
+
+
     <!-- PodcastFragment start -->
-    <string name="podcast_add_to_playlist_description">Add episode to playlist</string>
-    <string name="podcast_remove_from_playlist_description">Remove episode from playlist</string>
+    <string name="podcast_add_to_bookmarks_description">Add the episode to the bookmarks</string>
+    <string name="podcast_remove_from_bookmarks_description">Remove the episode from the bookmarks</string>
     <string name="podcast_show_completed">Completed</string>
     <string name="podcast_description_sort_order">Episodes sorting</string>
     <string name="podcast_episode_completed">Completed</string>
@@ -129,6 +135,8 @@
 
 
     <!-- EpisodeFragment start -->
+    <string name="episode_add_to_bookmarks_description">Add the episode to the bookmarks</string>
+    <string name="episode_remove_from_bookmarks_description">Remove the episode from the bookmarks</string>
     <string name="episode_no_such_episode">There is no such episode in the database</string>
     <string name="episode_go_back">Go back</string>
     <!-- EpisodeFragment end -->

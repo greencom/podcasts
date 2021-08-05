@@ -10,11 +10,12 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
+import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryFragment
 import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
-/** Contains a playlist and a listening history made with TabLayout and ViewPager2. */
+/** Contains a bookmarks list and a listening history made with TabLayout and ViewPager2. */
 @AndroidEntryPoint
 class ActivityFragment : Fragment() {
 
@@ -69,7 +70,7 @@ class ActivityFragment : Fragment() {
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 val key = when (binding.tabLayout.selectedTabPosition) {
-                    0 -> ""
+                    0 -> ActivityBookmarksFragment.createOnTabReselectedKey()
                     1 -> ActivityHistoryFragment.createOnTabReselectedKey()
                     else -> ""
                 }

@@ -65,7 +65,7 @@
 
     <!-- ActivityFragment start -->
     <string-array name="activity_tabs">
-        <item>Плейлист</item>
+        <item>Закладки</item>
         <item>История</item>
     </string-array>
     <!-- ActivityFragment end -->
@@ -76,9 +76,15 @@
     <!-- ActivityHistoryFragment end -->
 
 
+    <!-- ActivityBookmarksFragment start -->
+    <string name="activity_bookmarks_empty">Добавьте эпизод в закладки, и он появятся здесь &#128221;</string>
+    <string name="activity_bookmarks_remove_description">Удалить эпизод из закладок</string>
+    <!-- ActivityBookmarksFragment end -->
+
+
     <!-- PodcastFragment start -->
-    <string name="podcast_add_to_playlist_description">Добавить эпизод в плейлист</string>
-    <string name="podcast_remove_from_playlist_description">Удалить эпизод из плейлиста</string>
+    <string name="podcast_add_to_bookmarks_description">Добавить эпизод в закладки</string>
+    <string name="podcast_remove_from_bookmarks_description">Удалить эпизод из закладок</string>
     <string name="podcast_show_completed">Завершённые</string>
     <string name="podcast_description_sort_order">Сортировка эпизодов</string>
     <string name="podcast_episode_completed">Завершено</string>
@@ -122,6 +128,8 @@
 
 
     <!-- EpisodeFragment start -->
+    <string name="episode_add_to_bookmarks_description">Добавить эпизод в закладки</string>
+    <string name="episode_remove_from_bookmarks_description">Удалить эпизод из закладок</string>
     <string name="episode_no_such_episode">В базе данных нет такого эпизода</string>
     <string name="episode_go_back">Вернуться назад</string>
     <!-- EpisodeFragment end -->

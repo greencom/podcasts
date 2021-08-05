@@ -64,16 +64,16 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "completion_date")
     val completionDate: Long,
 
-    /** Is this episode in the playlist. */
-    @ColumnInfo(name = "in_playlist")
-    val inPlaylist: Boolean,
+    /** Is this episode in the bookmarks. */
+    @ColumnInfo(name = "in_bookmarks")
+    val inBookmarks: Boolean,
 
     /**
-     * Date in ms when this episode was added to the playlist. `0` if the episode is not
-     * in the playlist.
+     * Date in ms when this episode was added to the bookmarks. `0` if the episode is not
+     * in the bookmarks.
      */
-    @ColumnInfo(name = "added_to_playlist_date")
-    val addedToPlaylistDate: Long,
+    @ColumnInfo(name = "added_to_bookmarks_date")
+    val addedToBookmarksDate: Long,
 
     /** Whether the episode is selected by the user to play. */
     @Ignore

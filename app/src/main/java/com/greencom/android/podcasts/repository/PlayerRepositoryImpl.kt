@@ -1,7 +1,7 @@
 package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.EpisodeDao
-import com.greencom.android.podcasts.data.database.EpisodeEntityPlaylist
+import com.greencom.android.podcasts.data.database.EpisodeEntityBookmark
 import com.greencom.android.podcasts.data.database.EpisodeEntityState
 import com.greencom.android.podcasts.data.datastore.PreferenceStorage
 import com.greencom.android.podcasts.data.domain.Episode
@@ -20,20 +20,20 @@ class PlayerRepositoryImpl @Inject constructor(
     private val episodeDao: EpisodeDao,
 ) : PlayerRepository {
 
-    override fun getLastEpisodeId(): Flow<String?> {
-        return preferenceStorage.getLastEpisodeId()
-    }
-
-    override suspend fun setLastEpisodeId(episodeId: String) {
-        preferenceStorage.setLastEpisodeId(episodeId)
-    }
-
     override suspend fun getEpisode(episodeId: String): Episode? {
         return episodeDao.getEpisode(episodeId)
     }
 
     override suspend fun getEpisodePosition(episodeId: String): Long? {
         return episodeDao.getEpisodePosition(episodeId)
+    }
+
+    override suspend fun setLastEpisodeId(episodeId: String) {
+        preferenceStorage.setLastEpisodeId(episodeId)
+    }
+
+    override fun getLastEpisodeId(): Flow<String?> {
+        return preferenceStorage.getLastEpisodeId()
     }
 
     override suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long) {
@@ -72,14 +72,16 @@ class PlayerRepositoryImpl @Inject constructor(
         }
         episodeDao.update(episodeState)
 
-        // Remove from the playlist if the episode is completed.
-        // Return if the episode is not in the playlist.
-        if (episodeDao.isEpisodeInPlaylist(episodeId) != true) return
-        episodeDao.update(EpisodeEntityPlaylist(
-            id = episodeId,
-            inPlaylist = !episodeState.isCompleted,
-            addedToPlaylistDate = episodeState.completionDate
-        ))
+        // Remove from the bookmarks if the episode is completed.
+        // Return if the episode is not in the bookmarks or is not completed.
+        if (episodeDao.isEpisodeInBookmarks(episodeId) != true || !episodeState.isCompleted) return
+        episodeDao.update(
+            EpisodeEntityBookmark(
+                id = episodeId,
+                inBookmarks = !episodeState.isCompleted,
+                addedToBookmarksDate = episodeState.completionDate
+            )
+        )
     }
 
     override suspend fun markEpisodeCompleted(episodeId: String) {
@@ -91,11 +93,13 @@ class PlayerRepositoryImpl @Inject constructor(
         )
         episodeDao.update(episodeState)
 
-        // Remove the episode from the playlist.
-        episodeDao.update(EpisodeEntityPlaylist(
-            id = episodeId,
-            inPlaylist = false,
-            addedToPlaylistDate = episodeState.completionDate
-        ))
+        // Remove the episode from the bookmarks.
+        episodeDao.update(
+            EpisodeEntityBookmark(
+                id = episodeId,
+                inBookmarks = false,
+                addedToBookmarksDate = episodeState.completionDate
+            )
+        )
     }
 }

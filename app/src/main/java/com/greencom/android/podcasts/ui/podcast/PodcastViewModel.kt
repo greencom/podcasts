@@ -177,9 +177,9 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
-    /** Add the episode to the playlist or remove from it. */
-    fun updateEpisodeInPlaylist(episodeId: String, inPlaylist: Boolean) = viewModelScope.launch {
-        repository.updateEpisodeInPlaylist(episodeId, inPlaylist)
+    /** Add the episode to the bookmarks or remove from there. */
+    fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
+        repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
     }
 
     /**

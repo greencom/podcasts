@@ -15,7 +15,7 @@ import com.greencom.android.podcasts.utils.episodePubDateToString
 import kotlin.time.ExperimentalTime
 
 /** Adapter used for RecyclerView that represents a history of completed episodes. */
-class EpisodeHistoryAdapter(
+class HistoryEpisodeAdapter(
     private val navigateToEpisode: (String) -> Unit,
 ) : ListAdapter<Episode, HistoryEpisodeViewHolder>(EpisodeDiffCallback) {
 
@@ -59,7 +59,8 @@ class HistoryEpisodeViewHolder private constructor(
         binding.apply {
             cover.load(episode.image) { coverBuilder(context) }
             dateAndPodcastTitle.text = buildString {
-                append("${episodePubDateToString(episode.completionDate, context)} ${Symbol.dot} ")
+                append(episodePubDateToString(episode.completionDate, context))
+                append(" ${Symbol.bullet} ")
                 append(episode.podcastTitle)
             }
             title.text = episode.title
