@@ -161,6 +161,17 @@
         app:srcCompat="@drawable/ic_play_circle_24"
         app:tint="?attr/colorPlayerPlay" />
 
+    <ProgressBar
+        android:id="@+id/buffering"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:indeterminateTint="?attr/colorPlayerPlay"
+        android:padding="4dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/play_pause"
+        app:layout_constraintStart_toStartOf="@id/play_pause"
+        app:layout_constraintTop_toTopOf="@id/play_pause" />
+
     <ImageButton
         android:id="@+id/skip_backward"
         style="@style/ImageButton"

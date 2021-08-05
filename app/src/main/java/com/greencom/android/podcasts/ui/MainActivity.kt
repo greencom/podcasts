@@ -42,10 +42,7 @@ import com.greencom.android.podcasts.ui.episode.EpisodeFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragmentDirections
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
-import com.greencom.android.podcasts.utils.extensions.hideCrossfade
-import com.greencom.android.podcasts.utils.extensions.hideImmediately
-import com.greencom.android.podcasts.utils.extensions.hideImmediatelyWithAnimation
-import com.greencom.android.podcasts.utils.extensions.revealCrossfade
+import com.greencom.android.podcasts.utils.extensions.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
@@ -563,13 +560,33 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     viewModel.playerState.collect { state ->
                         when {
                             state.isPlayerPlaying() -> {
+                                collapsedPlayer.buffering.hideImmediately()
+                                expandedPlayer.buffering.hideImmediately()
+                                collapsedPlayer.playPause.isVisible = true
+                                expandedPlayer.playPause.isVisible = true
                                 collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
                                 expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
                             }
                             state.isPlayerPaused() -> {
+                                collapsedPlayer.buffering.hideImmediately()
+                                expandedPlayer.buffering.hideImmediately()
+                                collapsedPlayer.playPause.isVisible = true
+                                expandedPlayer.playPause.isVisible = true
                                 collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
                                 expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
                             }
+                        }
+                    }
+                }
+
+                // Observe player buffering state.
+                launch {
+                    viewModel.isBuffering.collect { isBuffering ->
+                        if (isBuffering) {
+                            collapsedPlayer.playPause.visibility = View.INVISIBLE
+                            expandedPlayer.playPause.visibility = View.INVISIBLE
+                            collapsedPlayer.buffering.revealImmediately()
+                            expandedPlayer.buffering.revealImmediately()
                         }
                     }
                 }

@@ -42,6 +42,9 @@ class MainActivityViewModel @Inject constructor(
     val playerState: StateFlow<Int>
         get() = playerServiceConnection.playerState
 
+    val isBuffering: StateFlow<Boolean>
+        get() = playerServiceConnection.isBuffering
+
     val currentPosition: StateFlow<Long>
         get() = playerServiceConnection.currentPosition
 

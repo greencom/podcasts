@@ -40,6 +40,9 @@ class PlayerServiceConnection @Inject constructor(
     private val _playerState = MutableStateFlow(MediaPlayer.PLAYER_STATE_IDLE)
     val playerState = _playerState.asStateFlow()
 
+    private val _isBuffering = MutableStateFlow(false)
+    val isBuffering = _isBuffering.asStateFlow()
+
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition = _currentPosition.asStateFlow()
 
@@ -77,6 +80,7 @@ class PlayerServiceConnection @Inject constructor(
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
                 Log.d(PLAYER_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 val episode = CurrentEpisode.from(item)
+                _isBuffering.value = true
                 _currentEpisode.value = episode
                 _duration.value = controller.duration
 
@@ -101,6 +105,10 @@ class PlayerServiceConnection @Inject constructor(
                 _playerState.value = state
                 _duration.value = controller.duration
                 postCurrentPosition()
+
+                if (state.isPlayerPlaying() || state.isPlayerPaused()) {
+                    _isBuffering.value = false
+                }
 
                 if (state.isPlayerError()) {
                     _currentEpisode.value = CurrentEpisode.empty()
@@ -149,10 +157,8 @@ class PlayerServiceConnection @Inject constructor(
         if (currentEpisode.value.id == episodeId) {
             controller.seekTo(timecode)
         } else {
-            startPlaying = true
             this.timecode = timecode
-            _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
-            controller.setMediaItem(episodeId)
+            playEpisode(episodeId)
         }
     }
 

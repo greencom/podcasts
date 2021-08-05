@@ -54,6 +54,17 @@
         app:srcCompat="@drawable/ic_play_outline_24"
         app:tint="?attr/colorOnSurfaceMedium" />
 
+    <ProgressBar
+        android:id="@+id/buffering"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:indeterminateTint="?attr/colorOnSurfaceMedium"
+        android:padding="12dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/play_pause"
+        app:layout_constraintStart_toStartOf="@id/play_pause"
+        app:layout_constraintTop_toTopOf="@id/play_pause" />
+
     <com.google.android.material.progressindicator.LinearProgressIndicator
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
