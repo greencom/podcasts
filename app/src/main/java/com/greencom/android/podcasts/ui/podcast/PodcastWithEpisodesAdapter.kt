@@ -19,6 +19,7 @@ import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.ItemPodcastEpisodeBinding
 import com.greencom.android.podcasts.databinding.ItemPodcastHeaderBinding
 import com.greencom.android.podcasts.utils.*
+import com.greencom.android.podcasts.utils.extensions.containsHtmlTags
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.ExperimentalTime
@@ -220,10 +221,14 @@ class PodcastHeaderViewHolder private constructor(
             setupSubscribeToggleButton(subscribe, podcast.subscribed, context)
 
             // Handle podcast description.
-            description.text = HtmlCompat.fromHtml(
-                podcast.description,
-                HtmlCompat.FROM_HTML_MODE_COMPACT
-            ).trim()
+            description.text = if (podcast.description.containsHtmlTags()) {
+                HtmlCompat.fromHtml(
+                    podcast.description,
+                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                ).trim()
+            } else {
+                podcast.description
+            }
             description.movementMethod = LinkMovementMethod.getInstance()
 
             // Handle description state.
