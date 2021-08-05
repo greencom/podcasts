@@ -3,12 +3,12 @@ package com.greencom.android.podcasts.ui.podcast
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media2.player.MediaPlayer
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
 import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
-import com.greencom.android.podcasts.player.isPlayerPlaying
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
@@ -275,7 +275,7 @@ class PodcastViewModel @Inject constructor(
     ): State<PodcastWithEpisodes> {
         if (flowState is State.Success && isCurrentEpisodeHere) {
             val episodes = flowState.data.episodes.map { episode ->
-                if (episode.isSelected && playerState.isPlayerPlaying()) {
+                if (episode.isSelected && playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
                     episode.copy(isPlaying = true)
                 } else {
                     episode

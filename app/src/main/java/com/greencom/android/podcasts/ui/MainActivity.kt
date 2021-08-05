@@ -24,6 +24,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.media2.player.MediaPlayer
 import androidx.media2.session.*
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -558,8 +559,8 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 // Observe player states.
                 launch {
                     viewModel.playerState.collect { state ->
-                        when {
-                            state.isPlayerPlaying() -> {
+                        when (state) {
+                            MediaPlayer.PLAYER_STATE_PLAYING -> {
                                 collapsedPlayer.buffering.hideImmediately()
                                 expandedPlayer.buffering.hideImmediately()
                                 collapsedPlayer.playPause.isVisible = true
@@ -567,7 +568,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                                 collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
                                 expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
                             }
-                            state.isPlayerPaused() -> {
+                            MediaPlayer.PLAYER_STATE_PAUSED -> {
                                 collapsedPlayer.buffering.hideImmediately()
                                 expandedPlayer.buffering.hideImmediately()
                                 collapsedPlayer.playPause.isVisible = true

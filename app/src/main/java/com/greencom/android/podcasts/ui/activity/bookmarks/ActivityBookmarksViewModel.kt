@@ -2,9 +2,9 @@ package com.greencom.android.podcasts.ui.activity.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media2.player.MediaPlayer
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
-import com.greencom.android.podcasts.player.isPlayerPlaying
 import com.greencom.android.podcasts.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -66,7 +66,7 @@ class ActivityBookmarksViewModel @Inject constructor(
             .combine(playerServiceConnection.playerState) { episodes, playerState ->
                 if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
                     return@combine episodes.map { episode ->
-                        if (episode.isSelected && playerState.isPlayerPlaying()) {
+                        if (episode.isSelected && playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
                             episode.copy(isPlaying = true)
                         } else {
                             episode

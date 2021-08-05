@@ -47,10 +47,14 @@ class PlayerServiceConnection @Inject constructor(
     val currentPosition = _currentPosition.asStateFlow()
 
     val isPlaying: Boolean
-        get() = if (::controller.isInitialized) controller.playerState.isPlayerPlaying() else false
+        get() = if (::controller.isInitialized) {
+            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
+        } else false
 
     val isPaused: Boolean
-        get() = if (::controller.isInitialized) controller.playerState.isPlayerPaused() else false
+        get() = if (::controller.isInitialized) {
+            controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
+        } else false
 
     private var startPlaying = true
 
@@ -102,16 +106,15 @@ class PlayerServiceConnection @Inject constructor(
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_TAG, "controllerCallback: onPlayerStateChanged(), state $state")
+                _isBuffering.value = false
                 _playerState.value = state
                 _duration.value = controller.duration
                 postCurrentPosition()
 
-                if (state.isPlayerPlaying() || state.isPlayerPaused()) {
-                    _isBuffering.value = false
-                }
-
-                if (state.isPlayerError()) {
-                    _currentEpisode.value = CurrentEpisode.empty()
+                when (state) {
+                    MediaPlayer.PLAYER_STATE_ERROR -> {
+                        _currentEpisode.value = CurrentEpisode.empty()
+                    }
                 }
             }
 

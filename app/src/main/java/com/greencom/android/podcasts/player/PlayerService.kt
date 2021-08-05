@@ -74,7 +74,7 @@ class PlayerService : MediaSessionService() {
     }
 
     private val isPlaying: Boolean
-        get() = player.playerState.isPlayerPlaying()
+        get() = player.playerState == MediaPlayer.PLAYER_STATE_PLAYING
 
     private val isNotPlaying: Boolean
         get() = !isPlaying
@@ -201,11 +201,11 @@ class PlayerService : MediaSessionService() {
                 updateNotification()
                 saveLastEpisode()
 
-                if (playerState.isPlayerPlaying() && !isServiceStarted) {
+                if (playerState == MediaPlayer.PLAYER_STATE_PLAYING && !isServiceStarted) {
                     startService(serviceIntent)
                 }
 
-                if (playerState.isPlayerError()) {
+                if (playerState == MediaPlayer.PLAYER_STATE_ERROR) {
                     updateEpisodeState()
                     // Show a toast.
                     scope?.launch {
@@ -328,7 +328,10 @@ class PlayerService : MediaSessionService() {
         }
 
         val playerState = player.playerState
-        if (playerState.isPlayerIdle() || playerState.isPlayerError()) {
+        if (
+            playerState == MediaPlayer.PLAYER_STATE_IDLE ||
+            playerState == MediaPlayer.PLAYER_STATE_ERROR
+        ) {
             removeNotification()
             return
         }

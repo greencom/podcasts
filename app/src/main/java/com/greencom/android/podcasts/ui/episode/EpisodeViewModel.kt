@@ -2,9 +2,9 @@ package com.greencom.android.podcasts.ui.episode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media2.player.MediaPlayer
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
-import com.greencom.android.podcasts.player.isPlayerPlaying
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,8 +41,10 @@ class EpisodeViewModel @Inject constructor(
                 }
             }
             .combine(playerServiceConnection.playerState) { flowState, playerState ->
-                return@combine if (flowState is State.Success && flowState.data.isSelected &&
-                    playerState.isPlayerPlaying()
+                return@combine if (
+                    flowState is State.Success &&
+                    flowState.data.isSelected &&
+                    playerState == MediaPlayer.PLAYER_STATE_PLAYING
                 ) {
                     State.Success(flowState.data.copy(isPlaying = true))
                 } else {
