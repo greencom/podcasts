@@ -352,7 +352,7 @@ class PlayerService : MediaSessionService() {
                         this@PlayerService,
                         0,
                         Intent(ACTION_PAUSE),
-                        PendingIntent.FLAG_CANCEL_CURRENT
+                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                     playPauseIcon = R.drawable.ic_pause_32
                     playPauseTitle = getString(R.string.notification_pause)
@@ -362,7 +362,7 @@ class PlayerService : MediaSessionService() {
                         this@PlayerService,
                         0,
                         Intent(ACTION_PLAY),
-                        PendingIntent.FLAG_CANCEL_CURRENT
+                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                     playPauseIcon = R.drawable.ic_play_32
                     playPauseTitle = getString(R.string.notification_play)
@@ -385,7 +385,7 @@ class PlayerService : MediaSessionService() {
                 this@PlayerService,
                 0,
                 Intent(ACTION_SKIP_BACKWARD),
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             val backwardSkipIcon = R.drawable.ic_backward_10_32
             val backwardSkipTitle = getString(R.string.notification_backward)
@@ -394,7 +394,7 @@ class PlayerService : MediaSessionService() {
                 this@PlayerService,
                 0,
                 Intent(ACTION_SKIP_FORWARD),
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             val forwardSkipIcon = R.drawable.ic_forward_30_32
             val forwardSkipTitle = getString(R.string.notification_forward)
@@ -408,14 +408,14 @@ class PlayerService : MediaSessionService() {
                 this@PlayerService,
                 0,
                 activityIntent,
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             val deleteIntent = PendingIntent.getBroadcast(
                 this@PlayerService,
                 0,
                 Intent(ACTION_CLOSE),
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
             notificationBuilder
