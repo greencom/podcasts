@@ -140,8 +140,9 @@ class ActivityHistoryFragment : Fragment() {
     /** Show Success screen and hide all others. */
     private fun showSuccessScreen() {
         binding.apply {
+            emptyImage.hideImmediately()
+            emptyMessage.hideImmediately()
             historyList.revealCrossfade()
-            emptyScreen.hideImmediately()
         }
     }
 
@@ -149,7 +150,8 @@ class ActivityHistoryFragment : Fragment() {
     private fun showEmptyScreen() {
         binding.apply {
             historyList.hideImmediately()
-            emptyScreen.revealCrossfade()
+            emptyImage.revealCrossfade()
+            emptyMessage.revealCrossfade()
         }
     }
 
@@ -157,21 +159,22 @@ class ActivityHistoryFragment : Fragment() {
     private fun hideScreens() {
         binding.apply {
             historyList.hideImmediately()
-            emptyScreen.hideImmediately()
+            emptyImage.hideImmediately()
+            emptyMessage.hideImmediately()
         }
     }
 
     companion object {
 
         /**
-         * Key used to pass data between [ActivityFragment] and [ActivityHistoryFragment]
-         * about tab reselection.
+         * Key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
+         * and [ActivityHistoryFragment] about tab reselection.
          */
         private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_HISTORY_ON_TAB_RESELECTED"
 
         /**
-         * Return key used to pass data between [ActivityFragment] and [ActivityHistoryFragment]
-         * about tab reselection.
+         * Return key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
+         * and [ActivityHistoryFragment] about tab reselection.
          */
         fun createOnTabReselectedKey(): String = KEY_ON_TAB_RESELECTED
     }
