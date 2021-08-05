@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -31,7 +30,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import coil.load
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.NavGraphDirections
@@ -39,11 +37,8 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.*
 import com.greencom.android.podcasts.ui.MainActivityViewModel.MainActivityEvent
-import com.greencom.android.podcasts.ui.activity.ActivityFragment
 import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
 import com.greencom.android.podcasts.ui.episode.EpisodeFragment
-import com.greencom.android.podcasts.ui.explore.ExploreFragment
-import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
 import com.greencom.android.podcasts.utils.extensions.hideCrossfade
@@ -290,8 +285,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         binding.bottomNavBar.apply {
             // Associate the bottom nav bar items with navigation graph actions.
             setupWithNavController(navController)
-            // Handle Navigation behavior when the bottom navigation item is reselected.
-//            setupOnBottomItemReselectedBehavior(navHostFragment, navController)
         }
     }
 
@@ -579,29 +572,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         }
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * Handle behavior when the bottom navigation item is reselected.
-     *
-     * Check if the current fragment is the starting one. If not, navigate
-     * to the starting one. Otherwise, prevent fragment reloading.
-     *
-     * The starting fragments are fragments associated with bottom navigation
-     * items (tabs).
-     */
-    @Deprecated("Deprecated due to use of the multiple backstacks navigation.")
-    private fun BottomNavigationView.setupOnBottomItemReselectedBehavior(
-        navHostFragment: NavHostFragment,
-        navController: NavController,
-    ) {
-        setOnNavigationItemReselectedListener {
-            val currentFragment = navHostFragment.childFragmentManager.fragments[0]
-            val isNavigationNeeded = !currentFragment.isStarting()
-            if (isNavigationNeeded) {
-                navController.navigateToStartingFragment(it.title)
             }
         }
     }
@@ -906,37 +876,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 .withEndAction { binding.player.root.isVisible = false }
             binding.playerShadowInternal.hideCrossfade(PLAYER_ANIMATION_DURATION)
             binding.playerShadowExternal.hideCrossfade(PLAYER_ANIMATION_DURATION)
-        }
-    }
-
-    /**
-     * Return `true` if the fragment is the starting one. Otherwise return `false`.
-     *
-     * The starting fragments are fragments associated with bottom navigation
-     * items (tabs).
-     */
-    @Deprecated("Deprecated due to use of the multiple backstacks navigation.")
-    private fun Fragment.isStarting(): Boolean {
-        return when (this) {
-            is HomeFragment -> true
-            is ExploreFragment -> true
-            is ActivityFragment -> true
-            else -> false
-        }
-    }
-
-    /**
-     * Navigate to the starting fragment associated with the reselected bottom
-     * navigation item.
-     *
-     * @param title title of the reselected bottom navigation item (tab).
-     */
-    @Deprecated("Deprecated due to use of the multiple backstacks navigation.")
-    private fun NavController.navigateToStartingFragment(title: CharSequence) {
-        when (title) {
-            resources.getString(R.string.bottom_nav_home) -> navigate(R.id.action_global_homeFragment)
-            resources.getString(R.string.bottom_nav_explore) -> navigate(R.id.action_global_exploreFragment)
-            resources.getString(R.string.bottom_nav_activity) -> navigate(R.id.action_global_activityFragment)
         }
     }
 }
