@@ -39,6 +39,7 @@ import com.greencom.android.podcasts.player.*
 import com.greencom.android.podcasts.ui.MainActivityViewModel.MainActivityEvent
 import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
 import com.greencom.android.podcasts.ui.episode.EpisodeFragment
+import com.greencom.android.podcasts.ui.explore.ExploreFragmentDirections
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
 import com.greencom.android.podcasts.utils.extensions.hideCrossfade
@@ -285,6 +286,41 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         binding.bottomNavBar.apply {
             // Associate the bottom nav bar items with navigation graph actions.
             setupWithNavController(navController)
+
+            // Handle onItemReselected to navigate to the first destination associated with the
+            // current bottomNavItem.
+            // Map of bottomNavItem id to the first destination associated with this item.
+            val navItemIdToFirstDestinationMap = hashMapOf(
+                R.id.homeFragment to navController.findDestination(R.id.homeFragment),
+                R.id.exploreFragment to navController.findDestination(R.id.exploreFragment),
+                R.id.activityFragment to navController.findDestination(R.id.activityFragment)
+            )
+            // Map of bottomNavItem id to the global action that leads to the first destination
+            // associated with this item.
+            val navItemIdToActionToFirstDestinationMap = hashMapOf(
+                R.id.homeFragment to R.id.action_global_homeFragment,
+                R.id.exploreFragment to R.id.action_global_exploreFragment,
+                R.id.activityFragment to R.id.action_global_activityFragment
+            )
+            setOnItemReselectedListener { navItem ->
+                val currentDestination = navController.currentDestination
+                val isCurrentDestinationFirstForNavItem =
+                    currentDestination == navItemIdToFirstDestinationMap[navItem.itemId]
+
+                if (!isCurrentDestinationFirstForNavItem) {
+                    // Navigate to the first destination associated with this bottomNavItem.
+                    navItemIdToActionToFirstDestinationMap[navItem.itemId]?.let { action ->
+                        navController.navigate(action)
+                    }
+                } else {
+                    // If the current destination is ExploreFragment, navigate to SearchFragment.
+                    if (currentDestination == navItemIdToFirstDestinationMap[R.id.exploreFragment]) {
+                        navController.navigate(
+                            ExploreFragmentDirections.actionExploreFragmentToSearchFragment()
+                        )
+                    }
+                }
+            }
         }
     }
 
