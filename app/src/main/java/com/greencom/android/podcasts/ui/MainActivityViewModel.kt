@@ -48,6 +48,9 @@ class MainActivityViewModel @Inject constructor(
     val currentPosition: StateFlow<Long>
         get() = playerServiceConnection.currentPosition
 
+    val playbackSpeed: StateFlow<Float>
+        get() = playerServiceConnection.playbackSpeed
+
     val isPlaying: Boolean
         get() = playerServiceConnection.isPlaying
 
@@ -88,6 +91,10 @@ class MainActivityViewModel @Inject constructor(
 
     fun markCompleted(episodeId: String) {
         playerServiceConnection.markCompleted(episodeId)
+    }
+
+    fun changePlaybackSpeed() {
+        playerServiceConnection.changePlaybackSpeed()
     }
 
     fun showPlayerOptionsDialog(episodeId: String?) {

@@ -31,6 +31,7 @@ import com.greencom.android.podcasts.ui.MainActivity
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -292,8 +293,12 @@ class PlayerService : MediaSessionService() {
     }
 
     private fun resetPlayer() {
-        player.reset()
-        player.setAudioAttributes(audioAttrs)
+        runBlocking {
+            player.reset()
+            player.setAudioAttributes(audioAttrs)
+            val playbackSpeed = repository.getPlaybackSpeed().first() ?: 1.0F
+            player.playbackSpeed = playbackSpeed
+        }
     }
 
     @ExperimentalTime

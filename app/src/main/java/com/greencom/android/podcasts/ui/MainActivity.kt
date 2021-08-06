@@ -413,6 +413,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         expandedPlayer.options.setOnClickListener {
             viewModel.showPlayerOptionsDialog(currentEpisode?.id)
         }
+
+        expandedPlayer.playbackSpeed.setOnClickListener {
+            viewModel.changePlaybackSpeed()
+        }
     }
 
     /** Set observers for ViewModel observables. */
@@ -624,6 +628,14 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                             }
                             positionsSkipped++
                         }
+                    }
+                }
+
+                // Update PlaybackSpeed button.
+                launch {
+                    viewModel.playbackSpeed.collectLatest { speed ->
+                        @SuppressLint("SetTextI18n")
+                        expandedPlayer.playbackSpeed.text = "${speed}x"
                     }
                 }
             }

@@ -6,6 +6,12 @@ import kotlinx.coroutines.flow.Flow
 /** Interface that defines player repository that contains player-related use cases. */
 interface PlayerRepository {
 
+    /** Save player playback speed. */
+    suspend fun setPlaybackSpeed(playbackSpeed: Float)
+
+    /** Get a Flow with a player playback speed. */
+    fun getPlaybackSpeed(): Flow<Float?>
+
     /** Get the episode by ID. */
     suspend fun getEpisode(episodeId: String): Episode?
 

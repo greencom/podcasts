@@ -27,6 +27,32 @@ class PreferenceStorageImpl @Inject constructor(
 
     private val dataStore = appContext.dataStore
 
+    override suspend fun setPlaybackSpeed(playbackSpeed: Float) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.PLAYBACK_SPEED] = playbackSpeed
+        }
+    }
+
+    override fun getPlaybackSpeed(): Flow<Float?> {
+        return dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[PreferenceKeys.PLAYBACK_SPEED]
+            }
+    }
+
+    override suspend fun setLastEpisodeId(episodeId: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.LAST_EPISODE_ID] = episodeId
+        }
+    }
+
     override fun getLastEpisodeId(): Flow<String?> {
         return dataStore.data
             .catch { exception ->
@@ -39,11 +65,5 @@ class PreferenceStorageImpl @Inject constructor(
             .map { preferences ->
                 preferences[PreferenceKeys.LAST_EPISODE_ID]
             }
-    }
-
-    override suspend fun setLastEpisodeId(episodeId: String) {
-        dataStore.edit { preferences ->
-            preferences[PreferenceKeys.LAST_EPISODE_ID] = episodeId
-        }
     }
 }
