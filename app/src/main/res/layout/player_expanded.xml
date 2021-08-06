@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/transparent"
-    android:paddingBottom="8dp">
+    android:paddingBottom="16dp">
 
     <View
         android:layout_width="@dimen/bottom_sheet_pill_width"
@@ -209,7 +209,7 @@
         style="@style/OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/player_playback_speed_description"
+        android:contentDescription="@string/player_description_playback_speed"
         android:fontFamily="@font/roboto_medium"
         android:minWidth="0dp"
         android:textColor="?attr/colorOnSurfaceMedium"
@@ -218,6 +218,23 @@
         app:layout_constraintTop_toTopOf="@+id/options"
         app:rippleColor="?attr/colorOnSurfaceUtil"
         tools:text="1.0x" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/sleep_timer"
+        style="@style/OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="0dp"
+        android:paddingStart="8dp"
+        android:text="@string/player_sleep_timer"
+        android:textColor="?attr/colorOnSurfaceMedium"
+        app:cornerRadius="48dp"
+        app:icon="@drawable/ic_night_outline_24"
+        app:iconTint="?attr/colorOnSurfaceMedium"
+        app:layout_constraintEnd_toEndOf="@id/play_pause"
+        app:layout_constraintStart_toStartOf="@id/play_pause"
+        app:layout_constraintTop_toTopOf="@+id/playback_speed"
+        app:rippleColor="?attr/colorOnSurfaceUtil" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/options"

@@ -7,10 +7,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
-import android.os.Binder
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -31,6 +28,9 @@ import com.greencom.android.podcasts.ui.MainActivity
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -56,6 +56,10 @@ class PlayerService : MediaSessionService() {
     private lateinit var player: MediaPlayer
 
     private lateinit var mediaControlReceiver: BroadcastReceiver
+
+    private var sleepTimer: CountDownTimer? = null
+
+    private val _sleepTimer = MutableStateFlow(Long.MIN_VALUE)
 
     private val serviceIntent: Intent by lazy {
         Intent(this, PlayerService::class.java).apply {
@@ -99,6 +103,8 @@ class PlayerService : MediaSessionService() {
                 return SessionCommandGroup.Builder()
                     .addAllPredefinedCommands(SessionCommand.COMMAND_VERSION_2)
                     .addCommand(SessionCommand(CustomSessionCommand.RESET_PLAYER, null))
+                    .addCommand(SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null))
+                    .addCommand(SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null))
                     .build()
             }
 
@@ -183,6 +189,15 @@ class PlayerService : MediaSessionService() {
                         removeNotification()
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
+                    CustomSessionCommand.SET_SLEEP_TIMER -> {
+                        val duration = args?.getLong(PLAYER_SET_SLEEP_TIMER) ?: Long.MIN_VALUE
+                        setSleepTimer(duration)
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
+                    CustomSessionCommand.REMOVE_SLEEP_TIMER -> {
+                        removeSleepTimer()
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
                     else -> super.onCustomCommand(session, controller, customCommand, args)
                 }
             }
@@ -257,6 +272,7 @@ class PlayerService : MediaSessionService() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(PLAYER_TAG,"PlayerService.onDestroy()")
+        sleepTimer?.cancel()
         mediaSession.close()
         player.unregisterPlayerCallback(playerCallback)
         player.close()
@@ -322,6 +338,29 @@ class PlayerService : MediaSessionService() {
                 repository.setLastEpisodeId(episode.id)
             }
         }
+    }
+
+    private fun setSleepTimer(duration: Long) {
+        removeSleepTimer()
+        if (duration <= 0) return
+
+        scope?.launch {
+            sleepTimer = object : CountDownTimer(duration, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    _sleepTimer.value = millisUntilFinished
+                }
+
+                override fun onFinish() {
+                    player.pause()
+                    _sleepTimer.value = Long.MIN_VALUE
+                }
+            }.start()
+        }
+    }
+
+    private fun removeSleepTimer() {
+        sleepTimer?.cancel()
+        _sleepTimer.value = Long.MIN_VALUE
     }
 
     @ExperimentalTime
@@ -490,6 +529,9 @@ class PlayerService : MediaSessionService() {
     inner class PlayerServiceBinder : Binder() {
         val sessionToken: SessionToken
             get() = mediaSession.token
+
+        val sleepTimer: StateFlow<Long>
+            get() = _sleepTimer.asStateFlow()
     }
 
     inner class MediaControlReceiver : BroadcastReceiver() {

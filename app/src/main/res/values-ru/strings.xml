@@ -23,11 +23,12 @@
 
     <!-- Player start -->
     <string name="player_error">В работе плеера приложения Подкасты произошла ошибка. Плеер был закрыт.</string>
+    <string name="player_sleep_timer">Таймер сна</string>
 
     <string name="player_description_play_pause">Играть и пауза</string>
     <string name="player_description_backward">Назад на 10 секунд</string>
     <string name="player_description_forward">Вперёд на 30 секунд</string>
-    <string name="player_playback_speed_description">Изменить скорость проигрывания</string>
+    <string name="player_description_playback_speed">Изменить скорость проигрывания</string>
     <string name="player_description_options">Опции плеера</string>
     <!-- Player end -->
 
@@ -154,6 +155,13 @@
     <!-- PlayerOptionsDialog start -->
     <string name="player_options_mark_completed">Отметить завершённым</string>
     <!-- PlayerOptionsDialog end -->
+
+
+    <!-- SleepTimerDialog start -->
+    <string name="sleep_timer_title">Таймер сна</string>
+    <string name="sleep_timer_clear">Убрать</string>
+    <string name="sleep_timer_set">Установить</string>
+    <!-- SleepTimerDialog end -->
 
 
     <!-- Notification start. -->

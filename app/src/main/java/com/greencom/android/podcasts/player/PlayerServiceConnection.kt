@@ -2,6 +2,7 @@ package com.greencom.android.podcasts.player
 
 import android.content.Context
 import android.util.Log
+import androidx.core.os.bundleOf
 import androidx.media2.common.MediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaController
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // TODO
@@ -205,6 +207,21 @@ class PlayerServiceConnection @Inject constructor(
             1.5F -> 2.0F
             else -> 1.0F
         }
+    }
+
+    @ExperimentalTime
+    fun setSleepTimer(duration: Duration) {
+        controller.sendCustomCommand(
+            SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null),
+            bundleOf(PLAYER_SET_SLEEP_TIMER to duration.inWholeMilliseconds)
+        )
+    }
+
+    fun clearSleepTimer() {
+        controller.sendCustomCommand(
+            SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null),
+            null
+        )
     }
 
     private fun postCurrentPosition() {

@@ -39,6 +39,7 @@ import com.greencom.android.podcasts.databinding.ActivityMainBinding
 import com.greencom.android.podcasts.player.*
 import com.greencom.android.podcasts.ui.MainActivityViewModel.MainActivityEvent
 import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
+import com.greencom.android.podcasts.ui.dialogs.SleepTimerDialog
 import com.greencom.android.podcasts.ui.episode.EpisodeFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragmentDirections
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
@@ -69,7 +70,8 @@ private const val POSITIONS_SKIPPED_THRESHOLD = 10
  */
 @ExperimentalTime
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialogListener {
+class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialogListener,
+    SleepTimerDialog.SleepTimerDialogListener {
 
     private lateinit var binding: ActivityMainBinding
     private val collapsedPlayer get() = binding.player.collapsed
@@ -117,6 +119,9 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
      */
     private var updatePosition = true
 
+    /** Whether the sleep timer is set or not. */
+    private var isSleepTimerSet = false
+
     // App bar colors.
     private var statusBarColor = 0
     private var navigationBarColorDefault = TypedValue()
@@ -133,6 +138,22 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 val binder = service as PlayerService.PlayerServiceBinder
                 val sessionToken = binder.sessionToken
                 viewModel.connectToPlayer(this@MainActivity, sessionToken)
+
+                // Collect data from the PlayerService sleep timer.
+                lifecycleScope.launch {
+                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        binder.sleepTimer.collectLatest { timeLeftMs ->
+                            isSleepTimerSet = timeLeftMs > 0
+                            if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                                expandedPlayer.sleepTimer.text = if (timeLeftMs > 0) {
+                                    getCurrentTime(timeLeftMs)
+                                } else {
+                                    getString(R.string.player_sleep_timer)
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -227,6 +248,16 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     // Mark episode completed on the appropriate PlayerOptionsDialog click.
     override fun onMarkCompletedClick(episodeId: String) {
         viewModel.markCompleted(episodeId)
+    }
+
+    // Set sleep timer.
+    override fun onSleepTimerSet(durationInMs: Long) {
+        viewModel.setSleepTimer(Duration.milliseconds(durationInMs))
+    }
+
+    // Clear sleep timer.
+    override fun onSleepTimerClear() {
+        viewModel.clearSleepTimer()
     }
 
     /** Initialize views. */
@@ -410,12 +441,16 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             viewModel.navigateToPodcast(currentEpisode?.podcastId)
         }
 
+        expandedPlayer.playbackSpeed.setOnClickListener {
+            viewModel.changePlaybackSpeed()
+        }
+
         expandedPlayer.options.setOnClickListener {
             viewModel.showPlayerOptionsDialog(currentEpisode?.id)
         }
 
-        expandedPlayer.playbackSpeed.setOnClickListener {
-            viewModel.changePlaybackSpeed()
+        expandedPlayer.sleepTimer.setOnClickListener {
+            SleepTimerDialog.show(supportFragmentManager)
         }
     }
 
