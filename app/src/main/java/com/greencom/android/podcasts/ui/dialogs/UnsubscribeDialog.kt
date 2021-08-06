@@ -12,7 +12,7 @@ import com.greencom.android.podcasts.databinding.DialogUnsubscribeBinding
 private const val PODCAST_ID = "PODCAST_ID"
 
 /** Dialog that appears on Unsubscribe click. Use [show] to create and display this dialog. */
-class UnsubscribeDialog private constructor() : BottomSheetDialogFragment() {
+class UnsubscribeDialog : BottomSheetDialogFragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: DialogUnsubscribeBinding? = null

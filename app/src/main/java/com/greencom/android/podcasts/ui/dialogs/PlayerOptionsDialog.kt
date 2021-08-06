@@ -12,7 +12,7 @@ import com.greencom.android.podcasts.databinding.DialogPlayerOptionsBinding
 private const val EPISODE_ID = "EPISODE_ID"
 
 /** Dialog that appears on player options click. Use [show] to create and display this dialog. */
-class PlayerOptionsDialog private constructor() : BottomSheetDialogFragment() {
+class PlayerOptionsDialog : BottomSheetDialogFragment() {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: DialogPlayerOptionsBinding? = null
