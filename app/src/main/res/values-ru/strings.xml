@@ -27,6 +27,7 @@
     <string name="player_description_play_pause">Играть и пауза</string>
     <string name="player_description_backward">Назад на 10 секунд</string>
     <string name="player_description_forward">Вперёд на 30 секунд</string>
+    <string name="player_playback_speed_description">Изменить скорость проигрывания</string>
     <string name="player_description_options">Опции плеера</string>
     <!-- Player end -->
 
@@ -122,9 +123,9 @@
     <string name="podcast_episode_duration_h_m">%1$d ч. %2$d мин.</string>
 
     <string name="podcast_episode_time_left_almost_over">Почти всё</string>
-    <string name="podcast_episode_time_left_m">Ещё %d мин.</string>
-    <string name="podcast_episode_time_left_h">Ещё %d ч.</string>
-    <string name="podcast_episode_time_left_h_m">Ещё %d ч. %d мин.</string>
+    <string name="podcast_episode_time_left_m">Осталось %d мин.</string>
+    <string name="podcast_episode_time_left_h">Осталось %d ч.</string>
+    <string name="podcast_episode_time_left_h_m">Осталось %d ч. %d мин.</string>
     <!-- PodcastFragment end -->
 
 

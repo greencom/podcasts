@@ -151,7 +151,7 @@
         style="@style/ImageButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:background="@drawable/ripple_image_button_background_64"
         android:contentDescription="@string/player_description_play_pause"
         android:scaleType="fitCenter"
@@ -209,26 +209,32 @@
         style="@style/OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/player_playback_speed_description"
         android:fontFamily="@font/roboto_medium"
         android:minWidth="0dp"
         android:textColor="?attr/colorOnSurfaceMedium"
         app:cornerRadius="48dp"
         app:layout_constraintStart_toStartOf="@id/cover"
         app:layout_constraintTop_toTopOf="@+id/options"
+        app:rippleColor="?attr/colorOnSurfaceUtil"
         tools:text="1.0x" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/options"
-        style="@style/ImageButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="15dp"
-        android:background="@drawable/ripple_image_button_background_32"
+        style="@style/OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:contentDescription="@string/player_description_options"
-        android:padding="12dp"
+        android:minWidth="0dp"
+        android:paddingHorizontal="8dp"
+        android:textColor="?attr/colorOnSurfaceMedium"
+        app:cornerRadius="48dp"
+        app:icon="@drawable/ic_options_horizontal_24"
+        app:iconPadding="0dp"
+        app:iconTint="?attr/colorOnSurfaceMedium"
         app:layout_constraintEnd_toEndOf="@id/cover"
         app:layout_constraintTop_toBottomOf="@+id/play_pause"
-        app:srcCompat="@drawable/ic_options_horizontal_24"
-        app:tint="?attr/colorOnSurfaceMedium" />
+        app:rippleColor="?attr/colorOnSurfaceUtil" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
