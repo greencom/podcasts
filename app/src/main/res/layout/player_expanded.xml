@@ -223,7 +223,7 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="15dp"
-        android:background="@drawable/ripple_image_button_background_48"
+        android:background="@drawable/ripple_image_button_background_32"
         android:contentDescription="@string/player_description_options"
         android:padding="12dp"
         app:layout_constraintEnd_toEndOf="@id/cover"

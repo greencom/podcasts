@@ -34,7 +34,7 @@
     <string name="player_description_play_pause">Play and pause</string>
     <string name="player_description_backward">Back 10 seconds</string>
     <string name="player_description_forward">Forward 30 seconds</string>
-    <string name="player_description_options">Options</string>
+    <string name="player_description_options">Player options</string>
     <!-- Player end -->
 
 
