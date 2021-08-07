@@ -31,7 +31,7 @@ class UnsubscribeDialog : BottomSheetDialogFragment() {
          * Callback to be invoked when the user clicks Unsubscribe button for a podcast
          * with a given ID.
          */
-        fun onUnsubscribeClick(podcastId: String)
+        fun onUnsubscribe(podcastId: String)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +65,7 @@ class UnsubscribeDialog : BottomSheetDialogFragment() {
 
         // Unsubscribe confirmation.
         binding.unsubscribe.setOnClickListener {
-            listener.onUnsubscribeClick(podcastId)
+            listener.onUnsubscribe(podcastId)
             dismiss()
         }
     }

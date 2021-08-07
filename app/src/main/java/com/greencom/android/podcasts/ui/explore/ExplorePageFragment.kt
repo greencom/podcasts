@@ -91,7 +91,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     }
 
     // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
-    override fun onUnsubscribeClick(podcastId: String) {
+    override fun onUnsubscribe(podcastId: String) {
         viewModel.unsubscribe(podcastId)
     }
 

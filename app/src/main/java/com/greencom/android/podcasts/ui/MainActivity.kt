@@ -245,17 +245,17 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         return super.dispatchTouchEvent(ev)
     }
 
-    // Mark episode completed on the appropriate PlayerOptionsDialog click.
-    override fun onMarkCompletedClick(episodeId: String) {
+    // Mark an episode as completed in the PlayerOptionsDialog.
+    override fun onPlayerOptionsMarkCompleted(episodeId: String) {
         viewModel.markCompleted(episodeId)
     }
 
-    // Set sleep timer.
+    // Set a sleep timer in the SleepTimerDialog.
     override fun onSleepTimerSet(durationInMs: Long) {
         viewModel.setSleepTimer(Duration.milliseconds(durationInMs))
     }
 
-    // Clear sleep timer.
+    // Clear a sleep timer in the SleepTimerDialog.
     override fun onSleepTimerClear() {
         viewModel.clearSleepTimer()
     }

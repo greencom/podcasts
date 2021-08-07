@@ -28,7 +28,7 @@ class PlayerOptionsDialog : BottomSheetDialogFragment() {
     interface PlayerOptionsDialogListener {
 
         /** Callback to be invoked when the user marks an episode as completed. */
-        fun onMarkCompletedClick(episodeId: String)
+        fun onPlayerOptionsMarkCompleted(episodeId: String)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +62,7 @@ class PlayerOptionsDialog : BottomSheetDialogFragment() {
 
         // Mark an episode as completed.
         binding.markCompleted.setOnClickListener {
-            listener.onMarkCompletedClick(episodeId)
+            listener.onPlayerOptionsMarkCompleted(episodeId)
             dismiss()
         }
     }
