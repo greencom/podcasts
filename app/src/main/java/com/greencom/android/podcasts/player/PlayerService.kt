@@ -126,7 +126,11 @@ class PlayerService : MediaSessionService() {
                 updateEpisodeState()
                 saveLastEpisode()
 
-                resetPlayer()
+                if (player.playerState == MediaPlayer.PLAYER_STATE_ERROR) {
+                    runBlocking {
+                        resetPlayer()
+                    }
+                }
 
                 var mediaItem: MediaItem? = null
                 val audio: String
@@ -181,7 +185,9 @@ class PlayerService : MediaSessionService() {
             ): SessionResult {
                 return when (customCommand.customAction) {
                     CustomSessionCommand.RESET_PLAYER -> {
-                        resetPlayer()
+                        runBlocking {
+                            resetPlayer()
+                        }
                         removeNotification()
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
@@ -252,6 +258,10 @@ class PlayerService : MediaSessionService() {
             setAudioAttributes(audioAttrs)
         }
 
+        scope?.launch {
+            player.playbackSpeed = repository.getPlaybackSpeed().first() ?: 1.0F
+        }
+
         mediaSession = MediaSession.Builder(this, player)
             .setSessionCallback(Executors.newSingleThreadExecutor(), sessionCallback)
             .build()
@@ -313,13 +323,10 @@ class PlayerService : MediaSessionService() {
         player.seekTo(position)
     }
 
-    private fun resetPlayer() {
-        runBlocking {
-            player.reset()
-            player.setAudioAttributes(audioAttrs)
-            val playbackSpeed = repository.getPlaybackSpeed().first() ?: 1.0F
-            player.playbackSpeed = playbackSpeed
-        }
+    private suspend fun resetPlayer() {
+        player.reset()
+        player.setAudioAttributes(audioAttrs)
+        player.playbackSpeed = repository.getPlaybackSpeed().first() ?: 1.0F
     }
 
     @ExperimentalTime

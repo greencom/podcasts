@@ -164,7 +164,7 @@ class PlayerServiceConnection @Inject constructor(
 
     fun playEpisode(episodeId: String) {
         startPlaying = true
-        _playerState.value = MediaPlayer.PLAYER_STATE_PAUSED
+        controller.pause() // Pause player to show the appropriate UI state while loading.
         controller.setMediaItem(episodeId)
     }
 

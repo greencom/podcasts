@@ -627,6 +627,11 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                             expandedPlayer.playPause.visibility = View.INVISIBLE
                             collapsedPlayer.buffering.revealImmediately()
                             expandedPlayer.buffering.revealImmediately()
+                        } else {
+                            collapsedPlayer.buffering.hideImmediately()
+                            expandedPlayer.buffering.hideImmediately()
+                            collapsedPlayer.playPause.isVisible = true
+                            expandedPlayer.playPause.isVisible = true
                         }
                     }
                 }
