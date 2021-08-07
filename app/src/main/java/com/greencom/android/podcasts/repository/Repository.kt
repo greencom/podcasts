@@ -96,7 +96,7 @@ interface Repository {
     fun getEpisodeHistory(): Flow<List<Episode>>
 
     /**
-     * Get a Flow with a list of episodes that have beed added to the bookmarks in the
+     * Get a Flow with a list of episodes that have been added to the bookmarks in the
      * descending order of the add date.
      */
     fun getBookmarks(): Flow<List<Episode>>

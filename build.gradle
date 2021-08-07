@@ -2,7 +2,7 @@
 buildscript {
     ext {
         kotlin_version = '1.5.21'
-        navigation_version = '2.4.0-alpha05'
+        navigation_version = '2.4.0-alpha06'
         hilt_version = '2.38.1'
     }
 
@@ -34,7 +34,7 @@ task clean(type: Delete) {
 }
 
 ext {
-    dataStore_version = '1.0.0-rc02'
+    dataStore_version = '1.0.0'
     media2_version = '1.1.3'
     coil_version = '1.3.1'
     retrofit_version = '2.9.0'
@@ -47,7 +47,7 @@ ext {
     hiltJetpack_version = '1.0.0'
     appCompat_version = '1.3.1'
     activity_version = '1.3.1'
-    fragment_version = '1.4.0-alpha05'
+    fragment_version = '1.4.0-alpha06'
     constraintLayout_version = '2.1.0'
     material_version = '1.4.0'
     recyclerView_version = '1.2.1'

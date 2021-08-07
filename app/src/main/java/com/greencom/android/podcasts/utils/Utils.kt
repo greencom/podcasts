@@ -228,7 +228,7 @@ fun ImageRequest.Builder.coilCoverBuilder(context: Context) {
  * Returns the appropriate `ic_play_circle_outline_*_percent` drawable ID depending
  * on the episode position.
  */
-fun getIncompletePlayIconId(position: Long, duration: Long): Int {
+private fun getIncompletePlayIconId(position: Long, duration: Long): Int {
     val completionPercentage = (position.toFloat() / duration * 100).roundToInt()
     return when (completionPercentage) {
         in 0 until 20 -> R.drawable.ic_play_circle_outline_10_percent_24
