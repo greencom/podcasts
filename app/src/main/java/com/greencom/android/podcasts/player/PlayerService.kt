@@ -169,10 +169,6 @@ class PlayerService : MediaSessionService() {
                         safePlay()
                         SessionResult.RESULT_ERROR_INVALID_STATE
                     }
-                    SessionCommand.COMMAND_CODE_PLAYER_PAUSE -> {
-                        updateEpisodeState()
-                        SessionResult.RESULT_SUCCESS
-                    }
                     else -> super.onCommandRequest(session, controller, command)
                 }
             }
@@ -221,6 +217,10 @@ class PlayerService : MediaSessionService() {
                     startService(serviceIntent)
                 }
 
+                if (playerState == MediaPlayer.PLAYER_STATE_PAUSED) {
+                    updateEpisodeState()
+                }
+
                 if (playerState == MediaPlayer.PLAYER_STATE_ERROR) {
                     updateEpisodeState()
                     // Show a toast.
@@ -232,6 +232,11 @@ class PlayerService : MediaSessionService() {
                         ).show()
                     }
                 }
+            }
+
+            override fun onPlaybackCompleted(player: SessionPlayer) {
+                Log.d(PLAYER_TAG, "playerCallback: onPlaybackCompleted()")
+                updateEpisodeState()
             }
         }
     }
