@@ -16,7 +16,7 @@ import kotlin.time.ExperimentalTime
 @ExperimentalTime
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-class EpisodePubDateToStringTest {
+class EpisodeDateToStringTest {
 
     private lateinit var context: Context
     private var currentTime = System.currentTimeMillis()
@@ -32,7 +32,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.minutes(10)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_pub_just_now))
     }
@@ -43,7 +43,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.minutes(50)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.getString(R.string.podcast_episode_pub_just_now))
     }
@@ -54,7 +54,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.hours(1)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.resources.getQuantityString(
             R.plurals.podcast_episode_pub_hours_ago, 1,1))
@@ -66,7 +66,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.hours(10) + Duration.minutes(30)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.resources.getQuantityString(
             R.plurals.podcast_episode_pub_hours_ago, 10,10))
@@ -78,7 +78,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.hours(23)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.resources.getQuantityString(
             R.plurals.podcast_episode_pub_hours_ago, 23,23))
@@ -90,7 +90,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.days(1)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.resources.getQuantityString(
             R.plurals.podcast_episode_pub_days_ago, 1,1))
@@ -102,7 +102,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.days(3) + Duration.hours(10)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.resources.getQuantityString(
             R.plurals.podcast_episode_pub_days_ago, 3,3))
@@ -114,7 +114,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.days(7) + Duration.hours(10)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         assertThat(result).isEqualTo(context.resources.getQuantityString(
             R.plurals.podcast_episode_pub_days_ago, 7,7))
@@ -126,7 +126,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.days(8)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
         assertThat(result).isEqualTo(dateFormatter.format(date))
@@ -138,7 +138,7 @@ class EpisodePubDateToStringTest {
         val timeFromCurrent = Duration.days(30)
         val date = currentTime - timeFromCurrent.inWholeMilliseconds
 
-        val result = episodePubDateToString(date, context)
+        val result = episodeDateToString(date, context)
 
         val dateFormatter = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM)
         assertThat(result).isEqualTo(dateFormatter.format(date))

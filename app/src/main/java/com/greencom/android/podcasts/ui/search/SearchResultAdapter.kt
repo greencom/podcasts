@@ -10,7 +10,7 @@ import coil.load
 import com.greencom.android.podcasts.data.domain.Podcast
 import com.greencom.android.podcasts.databinding.ItemSearchPodcastBinding
 import com.greencom.android.podcasts.utils.PodcastDiffCallback
-import com.greencom.android.podcasts.utils.coverBuilder
+import com.greencom.android.podcasts.utils.coilCoverBuilder
 
 /** Adapter used for RecyclerView that represents a list of podcast search results. */
 class SearchResultAdapter(
@@ -54,7 +54,7 @@ class SearchResultViewHolder private constructor(
         this.podcast = podcast
 
         binding.apply {
-            cover.load(podcast.image) { coverBuilder(context) }
+            cover.load(podcast.image) { coilCoverBuilder(context) }
             title.text = podcast.title
             publisher.text = podcast.publisher
             description.text = HtmlCompat.fromHtml(

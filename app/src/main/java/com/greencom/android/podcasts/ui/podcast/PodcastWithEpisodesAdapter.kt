@@ -207,7 +207,7 @@ class PodcastHeaderViewHolder private constructor(
         this.podcast = podcast
 
         binding.apply {
-            cover.load(podcast.image) { coverBuilder(context) }
+            cover.load(podcast.image) { coilCoverBuilder(context) }
             title.text = podcast.title
             publisher.text = podcast.publisher
             explicitContent.isVisible = podcast.explicitContent
@@ -322,7 +322,7 @@ class PodcastEpisodeViewHolder private constructor(
         this.episode = episode
         binding.apply {
             title.text = episode.title
-            date.text = episodePubDateToString(episode.date, context)
+            date.text = episodeDateToString(episode.date, context)
             setupPlayButton(play, episode, context)
 
             // Set up "Add to bookmarks" button.

@@ -11,8 +11,8 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.ItemHistoryEpisodeBinding
 import com.greencom.android.podcasts.utils.EpisodeDiffCallback
 import com.greencom.android.podcasts.utils.Symbol
-import com.greencom.android.podcasts.utils.coverBuilder
-import com.greencom.android.podcasts.utils.episodePubDateToString
+import com.greencom.android.podcasts.utils.coilCoverBuilder
+import com.greencom.android.podcasts.utils.episodeDateToString
 import kotlin.time.ExperimentalTime
 
 /** Adapter used for RecyclerView that represents a history of completed episodes. */
@@ -58,11 +58,11 @@ class HistoryEpisodeViewHolder private constructor(
     fun bind(episode: Episode) {
         this.episode = episode
         binding.apply {
-            cover.load(episode.image) { coverBuilder(context) }
+            cover.load(episode.image) { coilCoverBuilder(context) }
             dateAndPodcastTitle.text = buildString {
                 append(context.getString(R.string.activity_history_completed))
                 append(" ")
-                append(episodePubDateToString(episode.completionDate, context).lowercase())
+                append(episodeDateToString(episode.completionDate, context).lowercase())
                 append(" ${Symbol.bullet} ")
                 append(episode.podcastTitle)
             }

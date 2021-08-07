@@ -285,7 +285,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
         // Initialize player skip hint views.
         expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
-            coverBuilder(this@MainActivity)
+            coilCoverBuilder(this@MainActivity)
         }
         hideSkipHints(true)
 
@@ -579,13 +579,13 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         collapsedPlayer.apply {
                             progressBar.progress = 0
                             title.text = episode.title
-                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
+                            cover.load(episode.image) { coilCoverBuilder(this@MainActivity) }
                         }
                         expandedPlayer.apply {
                             slider.value = 0F
                             title.text = episode.title
                             podcastTitle.text = episode.podcastTitle
-                            cover.load(episode.image) { coverBuilder(this@MainActivity) }
+                            cover.load(episode.image) { coilCoverBuilder(this@MainActivity) }
                         }
                     }
                 }

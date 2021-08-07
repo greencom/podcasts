@@ -19,16 +19,16 @@ fun Fragment.setupMaterialSharedAxisTransitions(
     popEnter: Boolean = false,
     popExit: Boolean = false,
 ) {
-    val transition: (Boolean) -> MaterialSharedAxis = { forward ->
-        MaterialSharedAxis(axis, forward).apply {
+    fun createMaterialSharedAxisTransition(forward: Boolean): MaterialSharedAxis {
+        return MaterialSharedAxis(axis, forward).apply {
             duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
         }
     }
 
-    if (enter) enterTransition = transition(true)
-    if (exit) exitTransition = transition(true)
-    if (popEnter) reenterTransition = transition(false)
-    if (popExit) returnTransition = transition(false)
+    if (enter) enterTransition = createMaterialSharedAxisTransition(true)
+    if (exit) exitTransition = createMaterialSharedAxisTransition(true)
+    if (popEnter) reenterTransition = createMaterialSharedAxisTransition(false)
+    if (popExit) returnTransition = createMaterialSharedAxisTransition(false)
 }
 
 /**
@@ -38,16 +38,16 @@ fun Fragment.setupMaterialSharedAxisTransitions(
  * certain directions only.
  */
 fun Fragment.setupMaterialSharedAxisTransitions(axis: Int = MaterialSharedAxis.Z) {
-    val transition: (Boolean) -> MaterialSharedAxis = { forward ->
-        MaterialSharedAxis(axis, forward).apply {
+    fun createMaterialSharedAxisTransition(forward: Boolean): MaterialSharedAxis {
+        return MaterialSharedAxis(axis, forward).apply {
             duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
         }
     }
 
-    enterTransition = transition(true)
-    exitTransition = transition(true)
-    reenterTransition = transition(false)
-    returnTransition = transition(false)
+    enterTransition = createMaterialSharedAxisTransition(true)
+    exitTransition = createMaterialSharedAxisTransition(true)
+    reenterTransition = createMaterialSharedAxisTransition(false)
+    returnTransition = createMaterialSharedAxisTransition(false)
 }
 
 /**
@@ -62,16 +62,16 @@ fun Fragment.setupMaterialFadeThroughTransitions(
     popEnter: Boolean = false,
     popExit: Boolean = false,
 ) {
-    val transition: () -> MaterialFadeThrough = {
-        MaterialFadeThrough().apply {
+    fun createMaterialFadeThroughTransition(): MaterialFadeThrough {
+        return MaterialFadeThrough().apply {
             duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
         }
     }
 
-    if (enter) enterTransition = transition()
-    if (exit) exitTransition = transition()
-    if (popEnter) reenterTransition = transition()
-    if (popExit) returnTransition = transition()
+    if (enter) enterTransition = createMaterialFadeThroughTransition()
+    if (exit) exitTransition = createMaterialFadeThroughTransition()
+    if (popEnter) reenterTransition = createMaterialFadeThroughTransition()
+    if (popExit) returnTransition = createMaterialFadeThroughTransition()
 }
 
 /**
@@ -80,14 +80,14 @@ fun Fragment.setupMaterialFadeThroughTransitions(
  * [setupMaterialFadeThroughTransitions] to be able to specify certain directions only.
  */
 fun Fragment.setupMaterialFadeThroughTransitions() {
-    val transition: () -> MaterialFadeThrough = {
-        MaterialFadeThrough().apply {
+    fun createMaterialFadeThroughTransition(): MaterialFadeThrough {
+        return MaterialFadeThrough().apply {
             duration = resources.getInteger(R.integer.shared_axis_transition_duration).toLong()
         }
     }
 
-    enterTransition = transition()
-    exitTransition = transition()
-    reenterTransition = transition()
-    returnTransition = transition()
+    enterTransition = createMaterialFadeThroughTransition()
+    exitTransition = createMaterialFadeThroughTransition()
+    reenterTransition = createMaterialFadeThroughTransition()
+    returnTransition = createMaterialFadeThroughTransition()
 }

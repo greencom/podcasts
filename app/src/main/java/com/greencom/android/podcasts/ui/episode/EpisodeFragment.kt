@@ -215,9 +215,9 @@ class EpisodeFragment : Fragment() {
                 }).handleTimecodes()
 
                 binding.apply {
-                    cover.load(mEpisode.image) { coverBuilder(requireContext()) }
+                    cover.load(mEpisode.image) { coilCoverBuilder(requireContext()) }
                     podcastTitle.text = mEpisode.podcastTitle
-                    date.text = episodePubDateToString(mEpisode.date, requireContext())
+                    date.text = episodeDateToString(mEpisode.date, requireContext())
                     episodeTitle.text = mEpisode.title
                     setupPlayButton(play, mEpisode, requireContext())
 

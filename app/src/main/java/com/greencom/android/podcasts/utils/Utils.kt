@@ -65,7 +65,7 @@ fun setAppBarLayoutCanDrag(appBarLayout: AppBarLayout, canDrag: Boolean) {
 }
 
 /** Swipe-to-refresh setup. */
-fun initSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
+fun setupSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
     swipeToRefresh.apply {
         val color = TypedValue()
         val backgroundColor = TypedValue()
@@ -78,7 +78,7 @@ fun initSwipeToRefresh(swipeToRefresh: SwipeRefreshLayout, context: Context) {
     }
 }
 
-/** Setup given material button as a `Subscribe` toggle button. */
+/** Set up a given material button as a `Subscribe` toggle button. */
 fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, context: Context) {
     button.apply {
         if (subscribed) {
@@ -93,7 +93,7 @@ fun setupSubscribeToggleButton(button: MaterialButton, subscribed: Boolean, cont
     }
 }
 
-/** Setup given material button as `Play` button. */
+/** Set up a given material button as `Play` button. */
 @ExperimentalTime
 fun setupPlayButton(button: MaterialButton, episode: Episode, context: Context) {
     button.apply {
@@ -174,7 +174,7 @@ fun episodeDurationToString(duration: Duration, context: Context): String {
  * in the format `day, month, year`.
  */
 @ExperimentalTime
-fun episodePubDateToString(pubDate: Long, context: Context): String {
+fun episodeDateToString(pubDate: Long, context: Context): String {
     val timeFromNow = System.currentTimeMillis() - pubDate
     Duration.milliseconds(timeFromNow).toComponents { days, hours, _, _, _ ->
         return when {
@@ -215,7 +215,7 @@ fun episodeTimeLeftToString(position: Long, duration: Duration, context: Context
  * Applies rounded corners transformation, crossfade animation and sets resources for the
  * placeholder and the error.
  */
-fun ImageRequest.Builder.coverBuilder(context: Context) {
+fun ImageRequest.Builder.coilCoverBuilder(context: Context) {
     transformations(RoundedCornersTransformation(
         context.resources.getDimension(R.dimen.coil_rounded_corners)
     ))

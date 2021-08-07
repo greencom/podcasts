@@ -103,7 +103,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
 
-        initSwipeToRefresh(binding.swipeToRefresh, requireContext())
+        setupSwipeToRefresh(binding.swipeToRefresh, requireContext())
     }
 
     /** Fragment views setup. */

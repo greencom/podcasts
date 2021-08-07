@@ -80,9 +80,9 @@ class BookmarksEpisodeViewHolder private constructor(
     fun bind(episode: Episode) {
         this.episode = episode
         binding.apply {
-            cover.load(episode.image) { coverBuilder(context) }
+            cover.load(episode.image) { coilCoverBuilder(context) }
             dateAndPodcastTitle.text = buildString {
-                append(episodePubDateToString(episode.date, context))
+                append(episodeDateToString(episode.date, context))
                 append(" ${Symbol.bullet} ")
                 append(episode.podcastTitle)
             }
