@@ -568,7 +568,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 launch {
                     viewModel.currentEpisode.collect { episode ->
                         currentEpisode = episode
-                        showPlayer(episode.isNotEmpty())
+                        showPlayer(
+                            show = episode.isNotEmpty() &&
+                                    viewModel.playerState.value != MediaPlayer.PLAYER_STATE_ERROR
+                        )
                         viewModel.resetPlayerBottomSheetState()
                         // Update current position with delay to make sure there was no skip.
                         positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
