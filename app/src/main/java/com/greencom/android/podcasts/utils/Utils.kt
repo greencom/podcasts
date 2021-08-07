@@ -20,6 +20,7 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.utils.extensions.getColorStateListCompat
 import com.greencom.android.podcasts.utils.extensions.getDrawableCompat
 import java.text.SimpleDateFormat
+import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
@@ -109,14 +110,28 @@ fun setupPlayButton(button: MaterialButton, episode: Episode, context: Context) 
                 iconTint = context.getColorStateListCompat(R.color.green)
             }
             episode.isSelected -> {
-                text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
+                text = episodeTimeLeftToString(
+                    position = episode.position,
+                    duration = Duration.seconds(episode.audioLength),
+                    context = context
+                )
                 icon = context.getDrawableCompat(R.drawable.ic_animated_bar_chart_24)
                 iconTint = context.getColorStateListCompat(R.color.on_surface_hint_color)
             }
             episode.position > 0 -> {
-                text = episodeTimeLeftToString(episode.position, Duration.seconds(episode.audioLength), context)
-                icon = context.getDrawableCompat(R.drawable.ic_play_circle_outline_24)
-                iconTint = context.getColorStateListCompat(R.color.primary_color)
+                text = episodeTimeLeftToString(
+                    position = episode.position,
+                    duration = Duration.seconds(episode.audioLength),
+                    context = context
+                )
+                icon = context.getDrawableCompat(
+                    getIncompletePlayIconId(
+                        position = episode.position,
+                        duration = Duration.seconds(episode.audioLength).inWholeMilliseconds
+                    )
+                )
+                // `ic_play_circle_outline_*_percent` drawables already contain the appropriate colors.
+                iconTint = null
             }
             else -> {
                 text = episodeDurationToString(Duration.seconds(episode.audioLength), context)
@@ -207,4 +222,24 @@ fun ImageRequest.Builder.coverBuilder(context: Context) {
     crossfade(true)
     placeholder(R.drawable.shape_placeholder)
     error(R.drawable.shape_placeholder)
+}
+
+/**
+ * Returns the appropriate `ic_play_circle_outline_*_percent` drawable ID depending
+ * on the episode position.
+ */
+fun getIncompletePlayIconId(position: Long, duration: Long): Int {
+    val completionPercentage = (position.toFloat() / duration * 100).roundToInt()
+    return when (completionPercentage) {
+        in 0 until 20 -> R.drawable.ic_play_circle_outline_10_percent_24
+        in 20 until 30 -> R.drawable.ic_play_circle_outline_20_percent_24
+        in 30 until 40 -> R.drawable.ic_play_circle_outline_30_percent_24
+        in 40 until 50 -> R.drawable.ic_play_circle_outline_40_percent_24
+        in 50 until 60 -> R.drawable.ic_play_circle_outline_50_percent_24
+        in 60 until 70 -> R.drawable.ic_play_circle_outline_60_percent_24
+        in 70 until 80 -> R.drawable.ic_play_circle_outline_70_percent_24
+        in 80 until 90 -> R.drawable.ic_play_circle_outline_80_percent_24
+        in 90 until 100 -> R.drawable.ic_play_circle_outline_90_percent_24
+        else -> throw IllegalArgumentException("Invalid completion percentage")
+    }
 }
