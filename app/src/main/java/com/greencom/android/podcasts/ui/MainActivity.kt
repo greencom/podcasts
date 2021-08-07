@@ -595,6 +595,12 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     viewModel.duration.collect { duration ->
                         collapsedPlayer.progressBar.max = duration.toInt()
                         expandedPlayer.slider.valueTo = duration.toFloat()
+                        // If the slider value is 0 (initial value), update it to make sure
+                        // that the getRemainingTime() has been called with the actual
+                        // duration instead of Long.MAX_VALUE (duration initial value).
+                        if (expandedPlayer.slider.value == 0F) {
+                            expandedPlayer.slider.value += 1
+                        }
                     }
                 }
 
