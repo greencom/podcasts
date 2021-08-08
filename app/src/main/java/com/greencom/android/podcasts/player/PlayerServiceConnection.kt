@@ -234,7 +234,9 @@ class PlayerServiceConnection @Inject constructor(
                 }
             }
         } else {
-            controller.currentPosition.coerceIn(0..duration.value).let { value ->
+            // Make sure that duration is not less than zero.
+            val duration = duration.value.coerceIn(0..Long.MAX_VALUE)
+            controller.currentPosition.coerceIn(0..duration).let { value ->
                 // Make sure _currentPosition gets a new value that will pass the equality check
                 // against the previous one due to the distinctUntilChanged() function applied
                 // under the hood.
