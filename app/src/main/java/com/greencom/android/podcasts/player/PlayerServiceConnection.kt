@@ -181,6 +181,9 @@ class PlayerServiceConnection @Inject constructor(
             val episode = repository.getEpisode(episodeId) ?: return@launch
             if (!episode.isCompleted) {
                 controller.setMediaItem(episodeId)
+            } else {
+                // Reset last episode.
+                repository.setLastEpisodeId("")
             }
         }
     }
