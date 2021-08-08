@@ -135,6 +135,7 @@
     <string name="episode_remove_from_bookmarks_description">Удалить эпизод из закладок</string>
     <string name="episode_no_such_episode">В базе данных нет такого эпизода</string>
     <string name="episode_go_back">Вернуться назад</string>
+    <string name="episode_options">Опции</string>
     <!-- EpisodeFragment end -->
 
 
@@ -162,6 +163,12 @@
     <string name="sleep_timer_clear">Убрать</string>
     <string name="sleep_timer_set">Установить</string>
     <!-- SleepTimerDialog end -->
+
+
+    <!-- EpisodeOptionsDialog start -->
+    <string name="episode_options_mark_completed">Отметить завершённым</string>
+    <string name="episode_options_mark_uncompleted">Отметить не прослушанным</string>
+    <!-- EpisodeOptionsDialog end -->
 
 
     <!-- Notification start. -->

@@ -112,4 +112,7 @@ interface Repository {
 
     /** Add the episode to the bookmarks or remove from there. */
     suspend fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean)
+
+    /** Mark an episode as completed or uncompleted by ID. */
+    suspend fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean)
 }

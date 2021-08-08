@@ -16,6 +16,7 @@ import com.greencom.android.podcasts.databinding.FragmentActivityHistoryBinding
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryEvent
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryViewModel.ActivityHistoryState
+import com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog
 import com.greencom.android.podcasts.utils.extensions.hideImmediately
 import com.greencom.android.podcasts.utils.extensions.revealCrossfade
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +28,7 @@ private const val SMOOTH_SCROLL_THRESHOLD = 50
 
 /** Contains a history of completed episodes. */
 @AndroidEntryPoint
-class ActivityHistoryFragment : Fragment() {
+class ActivityHistoryFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentActivityHistoryBinding? = null
@@ -39,7 +40,8 @@ class ActivityHistoryFragment : Fragment() {
     /** RecyclerView history adapter. */
     private val adapter by lazy {
         HistoryEpisodeAdapter(
-            navigateToEpisode = viewModel::navigateToEpisode
+            navigateToEpisode = viewModel::navigateToEpisode,
+            onLongClick = viewModel::showEpisodeOptions
         )
     }
 
@@ -69,6 +71,15 @@ class ActivityHistoryFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // Mark episode as completed or uncompleted when the user performs action
+    // in the EpisodeOptionsDialog.
+    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+        episodeId: String,
+        isCompleted: Boolean
+    ) {
+        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
     }
 
     /** RecyclerView setup. */
@@ -111,6 +122,15 @@ class ActivityHistoryFragment : Fragment() {
                                     ActivityFragmentDirections.actionActivityFragmentToEpisodeFragment(
                                         event.episodeId
                                     )
+                                )
+                            }
+
+                            // Show an EpisodeOptionsDialog.
+                            is ActivityHistoryEvent.EpisodeOptionDialog -> {
+                                EpisodeOptionsDialog.show(
+                                    fragmentManager = childFragmentManager,
+                                    episodeId = event.episodeId,
+                                    isEpisodeCompleted = event.isEpisodeCompleted
                                 )
                             }
                         }

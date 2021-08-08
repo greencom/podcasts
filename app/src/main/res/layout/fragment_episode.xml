@@ -125,7 +125,7 @@
         app:elevation="0dp"
         app:liftOnScroll="false">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_bar_height"
             android:orientation="horizontal"
@@ -139,9 +139,26 @@
                 android:layout_gravity="center"
                 android:contentDescription="@string/description_back"
                 android:src="@drawable/ic_arrow_back_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:tint="?attr/colorOnSurfaceLow" />
 
-        </LinearLayout>
+            <ImageButton
+                android:id="@+id/app_bar_options"
+                style="@style/ImageButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/episode_options"
+                android:rotation="90"
+                android:src="@drawable/ic_options_horizontal_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceLow" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
             android:id="@+id/app_bar_divider"

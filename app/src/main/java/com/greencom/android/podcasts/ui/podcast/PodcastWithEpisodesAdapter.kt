@@ -47,6 +47,7 @@ class PodcastWithEpisodesAdapter(
     private val play: () -> Unit,
     private val pause: () -> Unit,
     private val onAddToBookmarksClick: (String, Boolean) -> Unit,
+    private val onEpisodeLongClick: (String, Boolean) -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -72,7 +73,8 @@ class PodcastWithEpisodesAdapter(
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,
-                onAddToBookmarksClick = onAddToBookmarksClick
+                onAddToBookmarksClick = onAddToBookmarksClick,
+                showEpisodeOptions = onEpisodeLongClick
             )
             else -> throw ClassCastException("Unknown viewType $viewType")
         }
@@ -287,6 +289,7 @@ class PodcastEpisodeViewHolder private constructor(
     private val play: () -> Unit,
     private val pause: () -> Unit,
     private val onAddToBookmarksClick: (String, Boolean) -> Unit,
+    private val showEpisodeOptions: (String, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context
@@ -299,6 +302,12 @@ class PodcastEpisodeViewHolder private constructor(
         // Navigate to EpisodeFragment.
         binding.root.setOnClickListener {
             navigateToEpisode(episode.id)
+        }
+
+        // Show an EpisodeOptionsDialog.
+        binding.root.setOnLongClickListener {
+            showEpisodeOptions(episode.id, episode.isCompleted)
+            true
         }
 
         // Resume or pause depending on the current state or play if the episode is not selected.
@@ -368,6 +377,7 @@ class PodcastEpisodeViewHolder private constructor(
             play: () -> Unit,
             pause: () -> Unit,
             onAddToBookmarksClick: (String, Boolean) -> Unit,
+            showEpisodeOptions: (String, Boolean) -> Unit,
         ): PodcastEpisodeViewHolder {
             val binding = ItemPodcastEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
@@ -377,7 +387,8 @@ class PodcastEpisodeViewHolder private constructor(
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,
-                onAddToBookmarksClick = onAddToBookmarksClick
+                onAddToBookmarksClick = onAddToBookmarksClick,
+                showEpisodeOptions = showEpisodeOptions
             )
         }
     }

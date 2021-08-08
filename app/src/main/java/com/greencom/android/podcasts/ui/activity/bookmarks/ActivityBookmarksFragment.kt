@@ -16,6 +16,7 @@ import com.greencom.android.podcasts.databinding.FragmentActivityBookmarksBindin
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
 import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksViewModel.ActivityBookmarksEvent
 import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksViewModel.ActivityBookmarksState
+import com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog
 import com.greencom.android.podcasts.utils.extensions.hideImmediately
 import com.greencom.android.podcasts.utils.extensions.revealCrossfade
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,7 +28,7 @@ private const val SMOOTH_SCROLL_THRESHOLD = 50
 
 /** Contains a list of episodes that have been added to the bookmarks. */
 @AndroidEntryPoint
-class ActivityBookmarksFragment : Fragment() {
+class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
     private var _binding: FragmentActivityBookmarksBinding? = null
     private val binding get() = _binding!!
@@ -42,6 +43,7 @@ class ActivityBookmarksFragment : Fragment() {
             playEpisode = viewModel::playEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
+            onLongClick = viewModel::showEpisodeOptions
         )
     }
 
@@ -71,6 +73,15 @@ class ActivityBookmarksFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // Mark episode as completed or uncompleted when the user performs action
+    // in the EpisodeOptionsDialog.
+    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+        episodeId: String,
+        isCompleted: Boolean
+    ) {
+        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
     }
 
     /** RecyclerView setup. */
@@ -113,6 +124,15 @@ class ActivityBookmarksFragment : Fragment() {
                                     ActivityFragmentDirections.actionActivityFragmentToEpisodeFragment(
                                         event.episodeId
                                     )
+                                )
+                            }
+
+                            // Show an EpisodeOptionsDialog.
+                            is ActivityBookmarksEvent.EpisodeOptionDialog -> {
+                                EpisodeOptionsDialog.show(
+                                    fragmentManager = childFragmentManager,
+                                    episodeId = event.episodeId,
+                                    isEpisodeCompleted = event.isEpisodeCompleted
                                 )
                             }
                         }

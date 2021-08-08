@@ -85,6 +85,12 @@ class EpisodeViewModel @Inject constructor(
         repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
     }
 
+    /** Mark an episode as completed or uncompleted by ID. */
+    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+        viewModelScope.launch {
+            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        }
+
     /**
      * Set a new value to the [isAppBarExpanded] StateFlow.
      *

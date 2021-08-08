@@ -18,12 +18,14 @@ import kotlin.time.ExperimentalTime
 /** Adapter used for RecyclerView that represents a history of completed episodes. */
 class HistoryEpisodeAdapter(
     private val navigateToEpisode: (String) -> Unit,
+    private val onLongClick: (String, Boolean) -> Unit,
 ) : ListAdapter<Episode, HistoryEpisodeViewHolder>(EpisodeDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryEpisodeViewHolder {
         return HistoryEpisodeViewHolder.create(
             parent = parent,
             navigateToEpisode = navigateToEpisode,
+            showEpisodeOptions = onLongClick
         )
     }
 
@@ -38,6 +40,7 @@ class HistoryEpisodeAdapter(
 class HistoryEpisodeViewHolder private constructor(
     private val binding: ItemHistoryEpisodeBinding,
     private val navigateToEpisode: (String) -> Unit,
+    private val showEpisodeOptions: (String, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context
@@ -50,6 +53,12 @@ class HistoryEpisodeViewHolder private constructor(
         // Navigate to an episode page.
         binding.root.setOnClickListener {
             navigateToEpisode(episode.id)
+        }
+
+        // Show an EpisodeOptionsDialog.
+        binding.root.setOnLongClickListener {
+            showEpisodeOptions(episode.id, episode.isCompleted)
+            true
         }
     }
 
@@ -75,12 +84,14 @@ class HistoryEpisodeViewHolder private constructor(
         fun create(
             parent: ViewGroup,
             navigateToEpisode: (String) -> Unit,
+            showEpisodeOptions: (String, Boolean) -> Unit,
         ): HistoryEpisodeViewHolder {
             val binding = ItemHistoryEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
             return HistoryEpisodeViewHolder(
                 binding = binding,
                 navigateToEpisode = navigateToEpisode,
+                showEpisodeOptions = showEpisodeOptions,
             )
         }
     }

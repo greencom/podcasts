@@ -453,6 +453,39 @@ class RepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun markEpisodeCompletedOrUncompleted(
+        episodeId: String,
+        isCompleted: Boolean
+    ) {
+        val episodeState = if (isCompleted) {
+            EpisodeEntityState(
+                id = episodeId,
+                position = 0L,
+                isCompleted = true,
+                completionDate = System.currentTimeMillis()
+            )
+        } else {
+            EpisodeEntityState(
+                id = episodeId,
+                position = 0L,
+                isCompleted = false,
+                completionDate = 0L
+            )
+        }
+        episodeDao.update(episodeState)
+
+        // Remove the episode from the bookmarks if it is completed.
+        if (isCompleted) {
+            episodeDao.update(
+                EpisodeEntityBookmark(
+                    id = episodeId,
+                    inBookmarks = false,
+                    addedToBookmarksDate = episodeState.completionDate
+                )
+            )
+        }
+    }
+
     /**
      * Make a safe Retrofit call and return the result. The first overall call will be wrapped
      * in [withContext] function and any other will be done without it.

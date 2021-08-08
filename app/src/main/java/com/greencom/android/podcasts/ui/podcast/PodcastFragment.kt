@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentPodcastBinding
+import com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastState
@@ -40,7 +41,8 @@ private const val SMOOTH_SCROLL_THRESHOLD = 50
 /** Fragment that contains information about podcast and a list of podcast episodes. */
 @ExperimentalTime
 @AndroidEntryPoint
-class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
+class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener,
+    EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentPodcastBinding? = null
@@ -70,7 +72,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
             playEpisode = viewModel::playEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
-            onAddToBookmarksClick = viewModel::updateEpisodeInBookmarks
+            onAddToBookmarksClick = viewModel::updateEpisodeInBookmarks,
+            onEpisodeLongClick = viewModel::showEpisodeOptions
         )
     }
 
@@ -136,6 +139,15 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
     // Unsubscribe from the podcast if the user confirms in the UnsubscribeDialog.
     override fun onUnsubscribe(podcastId: String) {
         viewModel.unsubscribe(podcastId)
+    }
+
+    // Mark episode as completed or uncompleted when the user performs action
+    // in the EpisodeOptionsDialog.
+    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+        episodeId: String,
+        isCompleted: Boolean
+    ) {
+        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
     }
 
     /** App bar setup. */
@@ -330,7 +342,16 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener 
 
             // Show UnsubscribeDialog.
             is PodcastEvent.UnsubscribeDialog -> {
-                UnsubscribeDialog.show(childFragmentManager, podcastId)
+                UnsubscribeDialog.show(childFragmentManager, event.podcastId)
+            }
+
+            // Show an EpisodeOptionsDialog.
+            is PodcastEvent.EpisodeOptionsDialog -> {
+                EpisodeOptionsDialog.show(
+                    fragmentManager = childFragmentManager,
+                    episodeId = event.episodeId,
+                    isEpisodeCompleted = event.isEpisodeCompleted
+                )
             }
 
             // Show Loading process.

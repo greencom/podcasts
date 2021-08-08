@@ -18,6 +18,7 @@ class BookmarksEpisodeAdapter(
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
+    private val onLongClick: (String, Boolean) -> Unit,
 ) : ListAdapter<Episode, BookmarksEpisodeViewHolder>(EpisodeDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BookmarksEpisodeViewHolder {
@@ -28,6 +29,7 @@ class BookmarksEpisodeAdapter(
             playEpisode = playEpisode,
             play = play,
             pause = pause,
+            showEpisodeOptions = onLongClick
         )
     }
 
@@ -46,6 +48,7 @@ class BookmarksEpisodeViewHolder private constructor(
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
+    private val showEpisodeOptions: (String, Boolean) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     private val context: Context
@@ -58,6 +61,12 @@ class BookmarksEpisodeViewHolder private constructor(
         // Navigate to an episode page.
         binding.root.setOnClickListener {
             navigateToEpisode(episode.id)
+        }
+
+        // Show an EpisodeOptionsDialog.
+        binding.root.setOnLongClickListener {
+            showEpisodeOptions(episode.id, episode.isCompleted)
+            true
         }
 
         // Resume or pause depending on the current state or play if the episode is not selected.
@@ -100,6 +109,7 @@ class BookmarksEpisodeViewHolder private constructor(
             playEpisode: (String) -> Unit,
             play: () -> Unit,
             pause: () -> Unit,
+            showEpisodeOptions: (String, Boolean) -> Unit,
         ): BookmarksEpisodeViewHolder {
             val binding = ItemBookmarksEpisodeBinding
                 .inflate(LayoutInflater.from(parent.context), parent, false)
@@ -110,6 +120,7 @@ class BookmarksEpisodeViewHolder private constructor(
                 playEpisode = playEpisode,
                 play = play,
                 pause = pause,
+                showEpisodeOptions = showEpisodeOptions,
             )
         }
     }

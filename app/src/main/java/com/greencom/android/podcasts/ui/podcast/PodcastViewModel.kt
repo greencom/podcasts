@@ -177,6 +177,11 @@ class PodcastViewModel @Inject constructor(
         }
     }
 
+    /** Show an [EpisodeOptionsDialog][com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog]. */
+    fun showEpisodeOptions(episodeId: String, isEpisodeCompleted: Boolean) = viewModelScope.launch {
+        _event.send(PodcastEvent.EpisodeOptionsDialog(episodeId, isEpisodeCompleted))
+    }
+
     /** Add the episode to the bookmarks or remove from there. */
     fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
         repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
@@ -189,6 +194,12 @@ class PodcastViewModel @Inject constructor(
     fun unsubscribe(id: String) = viewModelScope.launch {
         repository.updateSubscription(id, false)
     }
+
+    /** Mark an episode as completed or uncompleted by ID. */
+    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+        viewModelScope.launch {
+            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        }
 
     /** Navigate to EpisodeFragment with a given episode ID. */
     fun navigateToEpisode(episodeId: String) = viewModelScope.launch {
@@ -322,6 +333,10 @@ class PodcastViewModel @Inject constructor(
 
         /** Represents an UnsubscribeDialog event. */
         data class UnsubscribeDialog(val podcastId: String) : PodcastEvent()
+
+        /** Show an [EpisodeOptionsDialog]. */
+        data class EpisodeOptionsDialog(val episodeId: String, val isEpisodeCompleted: Boolean) :
+            PodcastEvent()
 
         /** Episodes fetching has started. */
         object EpisodesFetchingStarted : PodcastEvent()

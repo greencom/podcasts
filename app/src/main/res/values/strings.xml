@@ -142,6 +142,7 @@
     <string name="episode_remove_from_bookmarks_description">Remove the episode from the bookmarks</string>
     <string name="episode_no_such_episode">There is no such episode in the database</string>
     <string name="episode_go_back">Go back</string>
+    <string name="episode_options">Options</string>
     <!-- EpisodeFragment end -->
 
 
@@ -170,6 +171,12 @@
     <string name="sleep_timer_clear">Clear</string>
     <string name="sleep_timer_set">Set</string>
     <!-- SleepTimerDialog end -->
+
+
+    <!-- EpisodeOptionsDialog start -->
+    <string name="episode_options_mark_completed">Mark completed</string>
+    <string name="episode_options_mark_uncompleted">Mark uncompleted</string>
+    <!-- EpisodeOptionsDialog end -->
 
 
     <!-- Notification start. -->

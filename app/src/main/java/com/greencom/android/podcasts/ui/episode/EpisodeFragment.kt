@@ -24,6 +24,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.FragmentEpisodeBinding
+import com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog
 import com.greencom.android.podcasts.ui.episode.EpisodeViewModel.EpisodeState
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
@@ -42,7 +43,7 @@ private const val TIMECODE_PATTERN = "([0-9]{1,2})(:[0-9]{1,2}){1,2}"
 
 /** Fragment that contains specific information about single episode. */
 @AndroidEntryPoint
-class EpisodeFragment : Fragment() {
+class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
     /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentEpisodeBinding? = null
@@ -110,6 +111,15 @@ class EpisodeFragment : Fragment() {
         }
     }
 
+    // Mark episode as completed or uncompleted when the user performs action
+    // in the EpisodeOptionsDialog.
+    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+        episodeId: String,
+        isCompleted: Boolean
+    ) {
+        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+    }
+
     /** App bar setup. */
     private fun initAppBar() {
         // Disable AppBarLayout dragging behavior.
@@ -140,6 +150,17 @@ class EpisodeFragment : Fragment() {
 
         // Handle toolbar back button clicks.
         binding.appBarBack.setOnClickListener { findNavController().navigateUp() }
+
+        // Show an EpisodeOptionsDialog.
+        binding.appBarOptions.setOnClickListener {
+            episode?.let { episode ->
+                EpisodeOptionsDialog.show(
+                    fragmentManager = childFragmentManager,
+                    episodeId = episodeId,
+                    isEpisodeCompleted = episode.isCompleted
+                )
+            }
+        }
 
         // Resume or pause depending on the current state or play if the episode is not selected.
         binding.play.setOnClickListener {
@@ -344,6 +365,7 @@ class EpisodeFragment : Fragment() {
     /** Show success screen and hide all others. */
     private fun showSuccessScreen() {
         binding.apply {
+            appBarOptions.revealCrossfade()
             nestedScrollView.revealCrossfade()
             error.root.hideImmediately()
             loading.hideImmediately()
@@ -355,6 +377,7 @@ class EpisodeFragment : Fragment() {
         binding.apply {
             loading.revealImmediately()
             nestedScrollView.hideImmediately()
+            appBarOptions.hideImmediately()
             error.root.hideImmediately()
         }
     }
@@ -364,6 +387,7 @@ class EpisodeFragment : Fragment() {
         binding.apply {
             error.root.revealCrossfade()
             nestedScrollView.hideImmediately()
+            appBarOptions.hideImmediately()
             loading.hideImmediately()
         }
     }
@@ -372,6 +396,7 @@ class EpisodeFragment : Fragment() {
     private fun hideScreens() {
         binding.apply {
             nestedScrollView.hideImmediately()
+            appBarOptions.hideImmediately()
             error.root.hideImmediately()
             loading.hideImmediately()
         }

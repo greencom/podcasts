@@ -6,6 +6,7 @@ import androidx.media2.player.MediaPlayer
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
+import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent.EpisodeOptionsDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -93,6 +94,17 @@ class ActivityBookmarksViewModel @Inject constructor(
         repository.updateEpisodeInBookmarks(episodeId, false)
     }
 
+    /** Show an [EpisodeOptionsDialog]. */
+    fun showEpisodeOptions(episodeId: String, isEpisodeCompleted: Boolean) = viewModelScope.launch {
+        _event.send(ActivityBookmarksEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
+    }
+
+    /** Mark an episode as completed or uncompleted by ID. */
+    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+        viewModelScope.launch {
+            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        }
+
     /** Sealed class that represents the UI state of the [ActivityBookmarksFragment]. */
     sealed class ActivityBookmarksState {
 
@@ -108,5 +120,9 @@ class ActivityBookmarksViewModel @Inject constructor(
 
         /** Navigate to episode page. */
         data class NavigateToEpisode(val episodeId: String) : ActivityBookmarksEvent()
+
+        /** Show an [EpisodeOptionsDialog]. */
+        data class EpisodeOptionDialog(val episodeId: String, val isEpisodeCompleted: Boolean) :
+            ActivityBookmarksEvent()
     }
 }

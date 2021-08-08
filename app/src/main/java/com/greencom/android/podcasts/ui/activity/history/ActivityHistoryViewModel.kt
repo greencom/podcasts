@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.repository.Repository
+import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent.EpisodeOptionsDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,17 @@ class ActivityHistoryViewModel @Inject constructor(
         _event.send(ActivityHistoryEvent.NavigateToEpisode(episodeId))
     }
 
+    /** Show an [EpisodeOptionsDialog]. */
+    fun showEpisodeOptions(episodeId: String, isEpisodeCompleted: Boolean) = viewModelScope.launch {
+        _event.send(ActivityHistoryEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
+    }
+
+    /** Mark an episode as completed or uncompleted by ID. */
+    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+        viewModelScope.launch {
+            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        }
+
     /** Sealed class that represents the UI state of the [ActivityHistoryFragment]. */
     sealed class ActivityHistoryState {
 
@@ -57,5 +69,9 @@ class ActivityHistoryViewModel @Inject constructor(
 
         /** Event to navigate to EpisodeFragment with given ID. */
         data class NavigateToEpisode(val episodeId: String) : ActivityHistoryEvent()
+
+        /** Show an [EpisodeOptionsDialog]. */
+        data class EpisodeOptionDialog(val episodeId: String, val isEpisodeCompleted: Boolean) :
+                ActivityHistoryEvent()
     }
 }
