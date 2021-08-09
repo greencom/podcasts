@@ -9,7 +9,11 @@
         android:id="@+id/homeFragment"
         android:name="com.greencom.android.podcasts.ui.home.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_podcastFragment"
+            app:destination="@id/podcastFragment" />
+    </fragment>
     <fragment
         android:id="@+id/exploreFragment"
         android:name="com.greencom.android.podcasts.ui.explore.ExploreFragment"

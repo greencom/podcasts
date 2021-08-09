@@ -48,7 +48,8 @@
 
 
     <!-- HomeFragment start -->
-    <string name="home_dark_theme">Night mode</string>
+    <string name="home_title">Subscriptions</string>
+    <string name="home_empty">Your subscriptions will appear here &#128035;</string>
     <!-- HomeFragment end -->
 
 

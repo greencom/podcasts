@@ -32,7 +32,7 @@ class ExploreFragment : Fragment() {
     private var _binding: FragmentExploreBinding? = null
     private val binding get() = _binding!!
 
-    /** Whether the app bar is collapsed or not. */
+    /** Whether the app bar is expanded or not. */
     var isAppBarExpanded = true
         private set
 

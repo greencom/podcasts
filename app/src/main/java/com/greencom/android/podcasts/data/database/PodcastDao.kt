@@ -142,6 +142,13 @@ abstract class PodcastDao {
     fun getBestPodcastsFlow(genreId: Int): Flow<List<PodcastShort>> =
         getBestPodcastsFlowRaw(genreId).distinctUntilChanged()
 
+    /**
+     * Get a Flow with a list of subscriptions represented by [PodcastShort]. No need to
+     * apply [distinctUntilChanged] function since it is already done under the hood.
+     */
+    fun getSubscriptionsFlow(): Flow<List<PodcastShort>> =
+        getSubscriptionsFlowRaw().distinctUntilChanged()
+
 
 
 
@@ -280,6 +287,18 @@ abstract class PodcastDao {
         WHERE genre_id = :genreId
     """)
     protected abstract fun getBestPodcastsFlowRaw(genreId: Int): Flow<List<PodcastShort>>
+
+    /**
+     * Get a Flow with a list of subscriptions represented by [PodcastShort]. Use
+     * [getSubscriptionsFlow] with applied [distinctUntilChanged] function instead.
+     */
+    @Query("""
+        SELECT id, title, description, image, publisher, explicit_content, subscribed, genre_id
+        FROM podcasts
+        WHERE subscribed = 1
+        ORDER BY latest_pub_date DESC
+    """)
+    protected abstract fun getSubscriptionsFlowRaw(): Flow<List<PodcastShort>>
 
     // Helper methods end.
 }

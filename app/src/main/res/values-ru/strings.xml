@@ -41,7 +41,8 @@
 
 
     <!-- HomeFragment start -->
-    <string name="home_dark_theme">Тёмная тема</string>
+    <string name="home_title">Подписки</string>
+    <string name="home_empty">Здесь появятся Ваши подписки &#128035;</string>
     <!-- HomeFragment end -->
 
 

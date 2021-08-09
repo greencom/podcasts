@@ -386,6 +386,10 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getSubscriptions(): Flow<List<PodcastShort>> {
+        return podcastDao.getSubscriptionsFlow()
+    }
+
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = flow {
         emit(State.Loading)
         podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->
