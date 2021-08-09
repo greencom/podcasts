@@ -1,6 +1,5 @@
 package com.greencom.android.podcasts.ui.home
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -41,9 +40,6 @@ class SubscriptionsPodcastViewHolder private constructor(
     private val showUnsubscribeDialog: (String) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context: Context
-        get() = binding.root.context
-
     /** Podcast associated with this ViewHolder. */
     private lateinit var podcast: PodcastShort
 
@@ -60,7 +56,7 @@ class SubscriptionsPodcastViewHolder private constructor(
         }
     }
 
-    /** Bind ViewHOlder with a given [PodcastShort]. */
+    /** Bind ViewHolder with a given [PodcastShort]. */
     fun bind(podcast: PodcastShort) {
         this.podcast = podcast
 

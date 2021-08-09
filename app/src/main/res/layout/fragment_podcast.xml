@@ -23,16 +23,22 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <!-- marginTop should match the app bar height. -->
     <include
         android:id="@+id/error"
         layout="@layout/screen_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="60dp"
         android:visibility="gone" />
 
+    <!-- marginTop should match the app bar height. -->
     <ProgressBar
         android:id="@+id/loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginTop="60dp"
         android:indeterminateTint="?attr/colorPrimary"
         android:visibility="gone" />
 

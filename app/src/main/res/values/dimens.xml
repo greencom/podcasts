@@ -6,6 +6,7 @@
     <dimen name="bottom_sheet_pill_width">36dp</dimen>
     <dimen name="bottom_nav_bar_height">56dp</dimen>
     <dimen name="app_bar_height">56dp</dimen>
+    <dimen name="app_bar_height_with_divider">57dp</dimen>
     <dimen name="tab_layout_height">48dp</dimen>
     <!-- Global end -->
 
