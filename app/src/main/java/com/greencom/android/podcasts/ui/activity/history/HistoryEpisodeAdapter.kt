@@ -19,10 +19,10 @@ import kotlin.time.ExperimentalTime
 class HistoryEpisodeAdapter(
     private val navigateToEpisode: (String) -> Unit,
     private val onLongClick: (String, Boolean) -> Unit,
-) : ListAdapter<Episode, HistoryEpisodeViewHolder>(EpisodeDiffCallback) {
+) : ListAdapter<Episode, HistoryEpisodeAdapter.ViewHolder>(EpisodeDiffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryEpisodeViewHolder {
-        return HistoryEpisodeViewHolder.create(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        return ViewHolder.create(
             parent = parent,
             navigateToEpisode = navigateToEpisode,
             showEpisodeOptions = onLongClick
@@ -30,69 +30,69 @@ class HistoryEpisodeAdapter(
     }
 
     @ExperimentalTime
-    override fun onBindViewHolder(holder: HistoryEpisodeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val episode = getItem(position)
         holder.bind(episode)
     }
-}
 
-/** ViewHolder that represents a single item in the history of completed episodes. */
-class HistoryEpisodeViewHolder private constructor(
-    private val binding: ItemHistoryEpisodeBinding,
-    private val navigateToEpisode: (String) -> Unit,
-    private val showEpisodeOptions: (String, Boolean) -> Unit,
-) : RecyclerView.ViewHolder(binding.root) {
+    /** ViewHolder that represents a single item in the history of completed episodes. */
+    class ViewHolder private constructor(
+        private val binding: ItemHistoryEpisodeBinding,
+        private val navigateToEpisode: (String) -> Unit,
+        private val showEpisodeOptions: (String, Boolean) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context: Context
-        get() = binding.root.context
+        private val context: Context
+            get() = binding.root.context
 
-    /** Episode associated with this ViewHolder. */
-    private lateinit var episode: Episode
+        /** Episode associated with this ViewHolder. */
+        private lateinit var episode: Episode
 
-    init {
-        // Navigate to an episode page.
-        binding.root.setOnClickListener {
-            navigateToEpisode(episode.id)
-        }
-
-        // Show an EpisodeOptionsDialog.
-        binding.root.setOnLongClickListener {
-            showEpisodeOptions(episode.id, episode.isCompleted)
-            true
-        }
-    }
-
-    /** Bind ViewHolder with a given [Episode]. */
-    @ExperimentalTime
-    fun bind(episode: Episode) {
-        this.episode = episode
-        binding.apply {
-            cover.load(episode.image) { coilCoverBuilder(context) }
-            dateAndPodcastTitle.text = buildString {
-                append(context.getString(R.string.activity_history_completed))
-                append(" ")
-                append(episodeDateToString(episode.completionDate, context).lowercase())
-                append(" ${Symbol.bullet} ")
-                append(episode.podcastTitle)
+        init {
+            // Navigate to an episode page.
+            binding.root.setOnClickListener {
+                navigateToEpisode(episode.id)
             }
-            title.text = episode.title
-        }
-    }
 
-    companion object {
-        /** Create a [HistoryEpisodeViewHolder]. */
-        fun create(
-            parent: ViewGroup,
-            navigateToEpisode: (String) -> Unit,
-            showEpisodeOptions: (String, Boolean) -> Unit,
-        ): HistoryEpisodeViewHolder {
-            val binding = ItemHistoryEpisodeBinding
-                .inflate(LayoutInflater.from(parent.context), parent, false)
-            return HistoryEpisodeViewHolder(
-                binding = binding,
-                navigateToEpisode = navigateToEpisode,
-                showEpisodeOptions = showEpisodeOptions,
-            )
+            // Show an EpisodeOptionsDialog.
+            binding.root.setOnLongClickListener {
+                showEpisodeOptions(episode.id, episode.isCompleted)
+                true
+            }
+        }
+
+        /** Bind ViewHolder with a given [Episode]. */
+        @ExperimentalTime
+        fun bind(episode: Episode) {
+            this.episode = episode
+            binding.apply {
+                cover.load(episode.image) { coilCoverBuilder(context) }
+                dateAndPodcastTitle.text = buildString {
+                    append(context.getString(R.string.activity_history_completed))
+                    append(" ")
+                    append(episodeDateToString(episode.completionDate, context).lowercase())
+                    append(" ${Symbol.bullet} ")
+                    append(episode.podcastTitle)
+                }
+                title.text = episode.title
+            }
+        }
+
+        companion object {
+            /** Create a [ViewHolder]. */
+            fun create(
+                parent: ViewGroup,
+                navigateToEpisode: (String) -> Unit,
+                showEpisodeOptions: (String, Boolean) -> Unit,
+            ): ViewHolder {
+                val binding = ItemHistoryEpisodeBinding
+                    .inflate(LayoutInflater.from(parent.context), parent, false)
+                return ViewHolder(
+                    binding = binding,
+                    navigateToEpisode = navigateToEpisode,
+                    showEpisodeOptions = showEpisodeOptions,
+                )
+            }
         }
     }
 }

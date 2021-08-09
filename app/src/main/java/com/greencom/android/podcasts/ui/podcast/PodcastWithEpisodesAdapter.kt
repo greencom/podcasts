@@ -60,14 +60,14 @@ class PodcastWithEpisodesAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ITEM_VIEW_TYPE_PODCAST_HEADER -> PodcastHeaderViewHolder.create(
+            ITEM_VIEW_TYPE_PODCAST_HEADER -> PodcastViewHolder.create(
                 parent = parent,
                 updateSubscription = updateSubscription,
                 sortOrder = sortOrder,
                 changeSortOrder = changeSortOrder,
                 changeShowCompleted = changeShowCompleted,
             )
-            ITEM_VIEW_TYPE_EPISODE -> PodcastEpisodeViewHolder.create(
+            ITEM_VIEW_TYPE_EPISODE -> EpisodeViewHolder.create(
                 parent = parent,
                 navigateToEpisode = navigateToEpisode,
                 playEpisode = playEpisode,
@@ -83,7 +83,7 @@ class PodcastWithEpisodesAdapter(
     @ExperimentalTime
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is PodcastHeaderViewHolder -> {
+            is PodcastViewHolder -> {
                 val podcast = getItem(position) as PodcastWithEpisodesDataItem.PodcastHeader
                 holder.bind(
                     podcast = podcast.podcast,
@@ -92,7 +92,7 @@ class PodcastWithEpisodesAdapter(
                     isDescriptionExpanded = isPodcastDescriptionExpanded
                 )
             }
-            is PodcastEpisodeViewHolder -> {
+            is EpisodeViewHolder -> {
                 val episode = getItem(position) as PodcastWithEpisodesDataItem.EpisodeItem
                 holder.bind(episode.episode)
             }
@@ -136,260 +136,260 @@ class PodcastWithEpisodesAdapter(
         // Make the adapter redraw the podcast header with a new description state.
         notifyItemChanged(0)
     }
-}
 
-/** PodcastHeaderViewHolder represents a podcast header in the list. */
-class PodcastHeaderViewHolder private constructor(
-    private val binding: ItemPodcastHeaderBinding,
-    private val updateSubscription: (String, Boolean) -> Unit,
-    private val sortOrder: StateFlow<SortOrder>,
-    private val changeSortOrder: () -> Unit,
-    private val changeShowCompleted: (Boolean) -> Unit,
-) : RecyclerView.ViewHolder(binding.root) {
+    /** Represents a podcast header in the list. */
+    class PodcastViewHolder private constructor(
+        private val binding: ItemPodcastHeaderBinding,
+        private val updateSubscription: (String, Boolean) -> Unit,
+        private val sortOrder: StateFlow<SortOrder>,
+        private val changeSortOrder: () -> Unit,
+        private val changeShowCompleted: (Boolean) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context: Context
-        get() = binding.root.context
+        private val context: Context
+            get() = binding.root.context
 
-    /** Podcast associated with this ViewHolder. */
-    private lateinit var podcast: Podcast
+        /** Podcast associated with this ViewHolder. */
+        private lateinit var podcast: Podcast
 
-    /** Whether the description is expandable depending on the line count. */
-    private var isDescriptionExpandable = true
+        /** Whether the description is expandable depending on the line count. */
+        private var isDescriptionExpandable = true
 
-    private var sortOrderAnimator: ObjectAnimator? = null
+        private var sortOrderAnimator: ObjectAnimator? = null
 
-    init {
-        // Update subscription to the podcast.
-        binding.subscribe.setOnClickListener {
-            updateSubscription(podcast.id, (it as MaterialButton).isChecked)
-            // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
-            if (podcast.subscribed) {
-                binding.subscribe.isChecked = true
+        init {
+            // Update subscription to the podcast.
+            binding.subscribe.setOnClickListener {
+                updateSubscription(podcast.id, (it as MaterialButton).isChecked)
+                // Keep the button checked until the user makes his choice in the UnsubscribeDialog.
+                if (podcast.subscribed) {
+                    binding.subscribe.isChecked = true
+                }
             }
-        }
 
-        // Check line count when the description is laid out.
-        binding.description.doOnLayout {
-            if (binding.description.lineCount <= DESCRIPTION_MIN_LINES) {
-                // Do not show 'More' button and do not set a click listener.
-                isDescriptionExpandable = false
-                binding.descriptionTrailingGradient.isVisible = false
-                binding.descriptionMore.isVisible = false
-                binding.descriptionArrowDown.isVisible = false
-            } else {
-                // Set OnClickListener to expand and collapse description text.
-                binding.description.setOnClickListener {
-                    (bindingAdapter as PodcastWithEpisodesAdapter).expandOrCollapseDescription()
+            // Check line count when the description is laid out.
+            binding.description.doOnLayout {
+                if (binding.description.lineCount <= DESCRIPTION_MIN_LINES) {
+                    // Do not show 'More' button and do not set a click listener.
+                    isDescriptionExpandable = false
+                    binding.descriptionTrailingGradient.isVisible = false
+                    binding.descriptionMore.isVisible = false
+                    binding.descriptionArrowDown.isVisible = false
+                } else {
+                    // Set OnClickListener to expand and collapse description text.
+                    binding.description.setOnClickListener {
+                        (bindingAdapter as PodcastWithEpisodesAdapter).expandOrCollapseDescription()
+                    }
+                }
+            }
+
+            // Filter completed.
+            binding.showCompleted.setOnCheckedChangeListener { _, isChecked ->
+                changeShowCompleted(isChecked)
+            }
+
+            // Change sort order.
+            binding.sortOrder.setOnClickListener {
+                changeSortOrder()
+                when (sortOrder.value) {
+                    SortOrder.RECENT_FIRST -> rotateSortOrder(0F)
+                    SortOrder.OLDEST_FIRST -> rotateSortOrder(180F)
                 }
             }
         }
 
-        // Filter completed.
-        binding.showCompleted.setOnCheckedChangeListener { _, isChecked ->
-            changeShowCompleted(isChecked)
-        }
+        /** Bind PodcastViewHolder with a given [Podcast]. */
+        fun bind(
+            podcast: Podcast,
+            sortOrder: SortOrder,
+            showCompeted: Boolean,
+            isDescriptionExpanded: Boolean
+        ) {
+            this.podcast = podcast
 
-        // Change sort order.
-        binding.sortOrder.setOnClickListener {
-            changeSortOrder()
-            when (sortOrder.value) {
-                SortOrder.RECENT_FIRST -> rotateSortOrder(0F)
-                SortOrder.OLDEST_FIRST -> rotateSortOrder(180F)
-            }
-        }
-    }
-
-    /** Bind PodcastViewHolder with a given [Podcast]. */
-    fun bind(
-        podcast: Podcast,
-        sortOrder: SortOrder,
-        showCompeted: Boolean,
-        isDescriptionExpanded: Boolean
-    ) {
-        this.podcast = podcast
-
-        binding.apply {
-            cover.load(podcast.image) { coilCoverBuilder(context) }
-            title.text = podcast.title
-            publisher.text = podcast.publisher
-            explicitContent.isVisible = podcast.explicitContent
-            episodeCount.text = context.resources.getQuantityString(
-                R.plurals.podcast_episode_count,
-                podcast.episodeCount,
-                podcast.episodeCount
-            )
-            this.showCompleted.isChecked = showCompeted
-            this.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
-            setupSubscribeToggleButton(subscribe, podcast.subscribed, context)
-
-            // Handle podcast description.
-            description.text = if (podcast.description.containsHtmlTags()) {
-                HtmlCompat.fromHtml(
-                    podcast.description,
-                    HtmlCompat.FROM_HTML_MODE_LEGACY
-                ).trim()
-            } else {
-                podcast.description
-            }
-            description.movementMethod = LinkMovementMethod.getInstance()
-
-            // Handle description state.
-            val isDescriptionCollapsed = !isDescriptionExpanded && isDescriptionExpandable
-            descriptionTrailingGradient.isVisible = isDescriptionCollapsed
-            descriptionMore.isVisible = isDescriptionCollapsed
-            descriptionArrowDown.isVisible = isDescriptionCollapsed
-            description.maxLines = if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
-        }
-    }
-
-    /** Rotate the 'Sort order' button to a given value. */
-    private fun rotateSortOrder(to: Float) {
-        if (sortOrderAnimator != null) {
-            sortOrderAnimator?.setFloatValues(to)
-        } else {
-            sortOrderAnimator = ObjectAnimator.ofFloat(
-                binding.sortOrder,
-                "rotation",
-                to
-            ).apply {
-                duration = SORT_ORDER_ANIMATION_DURATION
-                setAutoCancel(true)
-            }
-        }
-        sortOrderAnimator?.start()
-    }
-
-    companion object {
-        /** Create a [PodcastHeaderViewHolder]. */
-        fun create(
-            parent: ViewGroup,
-            updateSubscription: (String, Boolean) -> Unit,
-            sortOrder: StateFlow<SortOrder>,
-            changeSortOrder: () -> Unit,
-            changeShowCompleted: (Boolean) -> Unit,
-        ): PodcastHeaderViewHolder {
-            val binding = ItemPodcastHeaderBinding
-                .inflate(LayoutInflater.from(parent.context), parent, false)
-            return PodcastHeaderViewHolder(
-                binding = binding,
-                updateSubscription = updateSubscription,
-                sortOrder = sortOrder,
-                changeSortOrder = changeSortOrder,
-                changeShowCompleted = changeShowCompleted,
-            )
-        }
-    }
-}
-
-/** PodcastEpisodeViewHolder represents a single episode item in the list. */
-class PodcastEpisodeViewHolder private constructor(
-    private val navigateToEpisode: (String) -> Unit,
-    private val binding: ItemPodcastEpisodeBinding,
-    private val playEpisode: (String) -> Unit,
-    private val play: () -> Unit,
-    private val pause: () -> Unit,
-    private val onAddToBookmarksClick: (String, Boolean) -> Unit,
-    private val showEpisodeOptions: (String, Boolean) -> Unit,
-) : RecyclerView.ViewHolder(binding.root) {
-
-    private val context: Context
-        get() = binding.root.context
-
-    /** Episode associated with this ViewHolder. */
-    private lateinit var episode: Episode
-
-    init {
-        // Navigate to EpisodeFragment.
-        binding.root.setOnClickListener {
-            navigateToEpisode(episode.id)
-        }
-
-        // Show an EpisodeOptionsDialog.
-        binding.root.setOnLongClickListener {
-            showEpisodeOptions(episode.id, episode.isCompleted)
-            true
-        }
-
-        // Resume or pause depending on the current state or play if the episode is not selected.
-        binding.play.setOnClickListener {
-            when {
-                episode.isSelected && episode.isPlaying -> pause()
-                episode.isSelected && !episode.isPlaying -> play()
-                else -> playEpisode(episode.id)
-            }
-        }
-
-        // Add the episode to the bookmarks or remove from there.
-        binding.addToBookmarks.setOnClickListener {
-            onAddToBookmarksClick(episode.id, !episode.inBookmarks)
-        }
-    }
-
-    /** Bind EpisodeViewHolder with a given [Episode]. */
-    @ExperimentalTime
-    fun bind(episode: Episode) {
-        this.episode = episode
-        binding.apply {
-            title.text = episode.title
-            date.text = episodeDateToString(episode.date, context)
-            setupPlayButton(play, episode, context)
-
-            // Set up "Add to bookmarks" button.
-            if (episode.inBookmarks) {
-                addToBookmarks.setImageResource(R.drawable.ic_playlist_check_24)
-                addToBookmarks.imageTintList = context.getColorStateList(R.color.green)
-                addToBookmarks.contentDescription =
-                    context.getString(R.string.podcast_remove_from_bookmarks_description)
-            } else {
-                addToBookmarks.setImageResource(R.drawable.ic_playlist_add_24)
-                addToBookmarks.imageTintList = context.getColorStateList(R.color.primary_color)
-                addToBookmarks.contentDescription =
-                    context.getString(R.string.podcast_add_to_bookmarks_description)
-            }
-
-            // Change title color depending on whether the episode is completed.
-            if (episode.isCompleted) {
-                val completedColor = TypedValue()
-                context.theme.resolveAttribute(
-                    R.attr.colorOnSurfaceLow,
-                    completedColor,
-                    true
+            binding.apply {
+                cover.load(podcast.image) { coilCoverBuilder(context) }
+                title.text = podcast.title
+                publisher.text = podcast.publisher
+                explicitContent.isVisible = podcast.explicitContent
+                episodeCount.text = context.resources.getQuantityString(
+                    R.plurals.podcast_episode_count,
+                    podcast.episodeCount,
+                    podcast.episodeCount
                 )
-                title.setTextColor(completedColor.data)
+                this.showCompleted.isChecked = showCompeted
+                this.sortOrder.rotation = if (sortOrder == SortOrder.RECENT_FIRST) 0F else 180F
+                setupSubscribeToggleButton(subscribe, podcast.subscribed, context)
+
+                // Handle podcast description.
+                description.text = if (podcast.description.containsHtmlTags()) {
+                    HtmlCompat.fromHtml(
+                        podcast.description,
+                        HtmlCompat.FROM_HTML_MODE_LEGACY
+                    ).trim()
+                } else {
+                    podcast.description
+                }
+                description.movementMethod = LinkMovementMethod.getInstance()
+
+                // Handle description state.
+                val isDescriptionCollapsed = !isDescriptionExpanded && isDescriptionExpandable
+                descriptionTrailingGradient.isVisible = isDescriptionCollapsed
+                descriptionMore.isVisible = isDescriptionCollapsed
+                descriptionArrowDown.isVisible = isDescriptionCollapsed
+                description.maxLines = if (isDescriptionExpanded) DESCRIPTION_MAX_LINES else DESCRIPTION_MIN_LINES
+            }
+        }
+
+        /** Rotate the 'Sort order' button to a given value. */
+        private fun rotateSortOrder(to: Float) {
+            if (sortOrderAnimator != null) {
+                sortOrderAnimator?.setFloatValues(to)
             } else {
-                val defaultColor = TypedValue()
-                context.theme.resolveAttribute(
-                    R.attr.colorOnSurfaceHigh,
-                    defaultColor,
-                    true
+                sortOrderAnimator = ObjectAnimator.ofFloat(
+                    binding.sortOrder,
+                    "rotation",
+                    to
+                ).apply {
+                    duration = SORT_ORDER_ANIMATION_DURATION
+                    setAutoCancel(true)
+                }
+            }
+            sortOrderAnimator?.start()
+        }
+
+        companion object {
+            /** Create a [PodcastViewHolder]. */
+            fun create(
+                parent: ViewGroup,
+                updateSubscription: (String, Boolean) -> Unit,
+                sortOrder: StateFlow<SortOrder>,
+                changeSortOrder: () -> Unit,
+                changeShowCompleted: (Boolean) -> Unit,
+            ): PodcastViewHolder {
+                val binding = ItemPodcastHeaderBinding
+                    .inflate(LayoutInflater.from(parent.context), parent, false)
+                return PodcastViewHolder(
+                    binding = binding,
+                    updateSubscription = updateSubscription,
+                    sortOrder = sortOrder,
+                    changeSortOrder = changeSortOrder,
+                    changeShowCompleted = changeShowCompleted,
                 )
-                title.setTextColor(defaultColor.data)
             }
         }
     }
 
-    companion object {
-        /** Create an [PodcastEpisodeViewHolder]. */
-        fun create(
-            parent: ViewGroup,
-            navigateToEpisode: (String) -> Unit,
-            playEpisode: (String) -> Unit,
-            play: () -> Unit,
-            pause: () -> Unit,
-            onAddToBookmarksClick: (String, Boolean) -> Unit,
-            showEpisodeOptions: (String, Boolean) -> Unit,
-        ): PodcastEpisodeViewHolder {
-            val binding = ItemPodcastEpisodeBinding
-                .inflate(LayoutInflater.from(parent.context), parent, false)
-            return PodcastEpisodeViewHolder(
-                binding = binding,
-                navigateToEpisode = navigateToEpisode,
-                playEpisode = playEpisode,
-                play = play,
-                pause = pause,
-                onAddToBookmarksClick = onAddToBookmarksClick,
-                showEpisodeOptions = showEpisodeOptions
-            )
+    /** Represents a single episode item in the list. */
+    class EpisodeViewHolder private constructor(
+        private val navigateToEpisode: (String) -> Unit,
+        private val binding: ItemPodcastEpisodeBinding,
+        private val playEpisode: (String) -> Unit,
+        private val play: () -> Unit,
+        private val pause: () -> Unit,
+        private val onAddToBookmarksClick: (String, Boolean) -> Unit,
+        private val showEpisodeOptions: (String, Boolean) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        private val context: Context
+            get() = binding.root.context
+
+        /** Episode associated with this ViewHolder. */
+        private lateinit var episode: Episode
+
+        init {
+            // Navigate to EpisodeFragment.
+            binding.root.setOnClickListener {
+                navigateToEpisode(episode.id)
+            }
+
+            // Show an EpisodeOptionsDialog.
+            binding.root.setOnLongClickListener {
+                showEpisodeOptions(episode.id, episode.isCompleted)
+                true
+            }
+
+            // Resume or pause depending on the current state or play if the episode is not selected.
+            binding.play.setOnClickListener {
+                when {
+                    episode.isSelected && episode.isPlaying -> pause()
+                    episode.isSelected && !episode.isPlaying -> play()
+                    else -> playEpisode(episode.id)
+                }
+            }
+
+            // Add the episode to the bookmarks or remove from there.
+            binding.addToBookmarks.setOnClickListener {
+                onAddToBookmarksClick(episode.id, !episode.inBookmarks)
+            }
+        }
+
+        /** Bind EpisodeViewHolder with a given [Episode]. */
+        @ExperimentalTime
+        fun bind(episode: Episode) {
+            this.episode = episode
+            binding.apply {
+                title.text = episode.title
+                date.text = episodeDateToString(episode.date, context)
+                setupPlayButton(play, episode, context)
+
+                // Set up "Add to bookmarks" button.
+                if (episode.inBookmarks) {
+                    addToBookmarks.setImageResource(R.drawable.ic_playlist_check_24)
+                    addToBookmarks.imageTintList = context.getColorStateList(R.color.green)
+                    addToBookmarks.contentDescription =
+                        context.getString(R.string.podcast_remove_from_bookmarks_description)
+                } else {
+                    addToBookmarks.setImageResource(R.drawable.ic_playlist_add_24)
+                    addToBookmarks.imageTintList = context.getColorStateList(R.color.primary_color)
+                    addToBookmarks.contentDescription =
+                        context.getString(R.string.podcast_add_to_bookmarks_description)
+                }
+
+                // Change title color depending on whether the episode is completed.
+                if (episode.isCompleted) {
+                    val completedColor = TypedValue()
+                    context.theme.resolveAttribute(
+                        R.attr.colorOnSurfaceLow,
+                        completedColor,
+                        true
+                    )
+                    title.setTextColor(completedColor.data)
+                } else {
+                    val defaultColor = TypedValue()
+                    context.theme.resolveAttribute(
+                        R.attr.colorOnSurfaceHigh,
+                        defaultColor,
+                        true
+                    )
+                    title.setTextColor(defaultColor.data)
+                }
+            }
+        }
+
+        companion object {
+            /** Create an [EpisodeViewHolder]. */
+            fun create(
+                parent: ViewGroup,
+                navigateToEpisode: (String) -> Unit,
+                playEpisode: (String) -> Unit,
+                play: () -> Unit,
+                pause: () -> Unit,
+                onAddToBookmarksClick: (String, Boolean) -> Unit,
+                showEpisodeOptions: (String, Boolean) -> Unit,
+            ): EpisodeViewHolder {
+                val binding = ItemPodcastEpisodeBinding
+                    .inflate(LayoutInflater.from(parent.context), parent, false)
+                return EpisodeViewHolder(
+                    binding = binding,
+                    navigateToEpisode = navigateToEpisode,
+                    playEpisode = playEpisode,
+                    play = play,
+                    pause = pause,
+                    onAddToBookmarksClick = onAddToBookmarksClick,
+                    showEpisodeOptions = showEpisodeOptions
+                )
+            }
         }
     }
 }

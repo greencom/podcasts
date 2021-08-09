@@ -18,75 +18,75 @@ import com.greencom.android.podcasts.utils.coilCoverBuilder
 class SubscriptionsPodcastWithTitleAdapter(
     private val navigateToPodcast: (String) -> Unit,
     private val showUnsubscribeDialog: (String) -> Unit,
-) : ListAdapter<PodcastShort, SubscriptionsPodcastWithTitleViewHolder>(PodcastShortDiffCallback) {
+) : ListAdapter<PodcastShort, SubscriptionsPodcastWithTitleAdapter.ViewHolder>(PodcastShortDiffCallback) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): SubscriptionsPodcastWithTitleViewHolder {
-        return SubscriptionsPodcastWithTitleViewHolder.create(
+    ): ViewHolder {
+        return ViewHolder.create(
             parent = parent,
             navigateToPodcast = navigateToPodcast,
             showUnsubscribeDialog = showUnsubscribeDialog
         )
     }
 
-    override fun onBindViewHolder(holder: SubscriptionsPodcastWithTitleViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val podcast = getItem(position)
         holder.bind(podcast)
     }
-}
 
-/** ViewHolder that represents a single item in the list. */
-class SubscriptionsPodcastWithTitleViewHolder private constructor(
-    private val binding: ItemSubscriptionsPodcastWithTitleBinding,
-    private val navigateToPodcast: (String) -> Unit,
-    private val showUnsubscribeDialog: (String) -> Unit,
-) : RecyclerView.ViewHolder(binding.root) {
+    /** ViewHolder that represents a single item in the list. */
+    class ViewHolder private constructor(
+        private val binding: ItemSubscriptionsPodcastWithTitleBinding,
+        private val navigateToPodcast: (String) -> Unit,
+        private val showUnsubscribeDialog: (String) -> Unit,
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-    private val context: Context
-        get() = binding.root.context
+        private val context: Context
+            get() = binding.root.context
 
-    /** Podcast associated with this ViewHolder. */
-    private lateinit var podcast: PodcastShort
+        /** Podcast associated with this ViewHolder. */
+        private lateinit var podcast: PodcastShort
 
-    init {
-        // Navigate to a podcast page.
-        binding.root.setOnClickListener {
-            navigateToPodcast(podcast.id)
+        init {
+            // Navigate to a podcast page.
+            binding.root.setOnClickListener {
+                navigateToPodcast(podcast.id)
+            }
+
+            // Show an UnsubscribeDialog.
+            binding.root.setOnLongClickListener {
+                showUnsubscribeDialog(podcast.id)
+                true
+            }
         }
 
-        // Show an UnsubscribeDialog.
-        binding.root.setOnLongClickListener {
-            showUnsubscribeDialog(podcast.id)
-            true
+        /** Bind ViewHolder with a given [PodcastShort]. */
+        fun bind(podcast: PodcastShort) {
+            this.podcast = podcast
+
+            binding.apply {
+                cover.load(podcast.image) { coilCoverBuilder(context) }
+                title.text = podcast.title
+            }
         }
-    }
 
-    /** Bind ViewHolder with a given [PodcastShort]. */
-    fun bind(podcast: PodcastShort) {
-        this.podcast = podcast
-
-        binding.apply {
-            cover.load(podcast.image) { coilCoverBuilder(context) }
-            title.text = podcast.title
-        }
-    }
-
-    companion object {
-        /** Create a [SubscriptionsPodcastWithTitleViewHolder]. */
-        fun create(
-            parent: ViewGroup,
-            navigateToPodcast: (String) -> Unit,
-            showUnsubscribeDialog: (String) -> Unit,
-        ): SubscriptionsPodcastWithTitleViewHolder {
-            val binding = ItemSubscriptionsPodcastWithTitleBinding
-                .inflate(LayoutInflater.from(parent.context), parent, false)
-            return SubscriptionsPodcastWithTitleViewHolder(
-                binding = binding,
-                navigateToPodcast = navigateToPodcast,
-                showUnsubscribeDialog = showUnsubscribeDialog,
-            )
+        companion object {
+            /** Create a [ViewHolder]. */
+            fun create(
+                parent: ViewGroup,
+                navigateToPodcast: (String) -> Unit,
+                showUnsubscribeDialog: (String) -> Unit,
+            ): ViewHolder {
+                val binding = ItemSubscriptionsPodcastWithTitleBinding
+                    .inflate(LayoutInflater.from(parent.context), parent, false)
+                return ViewHolder(
+                    binding = binding,
+                    navigateToPodcast = navigateToPodcast,
+                    showUnsubscribeDialog = showUnsubscribeDialog,
+                )
+            }
         }
     }
 }
