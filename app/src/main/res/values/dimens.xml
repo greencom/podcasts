@@ -20,4 +20,8 @@
     <dimen name="player_slider_thumb_increased">8dp</dimen>
     <!-- Player end -->
 
+    <!-- HomeFragment start -->
+    <dimen name="home_recycler_view_padding">4dp</dimen>
+    <!-- HomeFragment end -->
+
 </resources>

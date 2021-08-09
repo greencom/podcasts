@@ -14,7 +14,7 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         app:spanCount="3"
-        tools:listitem="@layout/item_subscriptions_podcast" />
+        tools:listitem="@layout/item_subscriptions_podcast_cover_only" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/empty_screen"

@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
@@ -25,6 +26,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+
+private const val SUBSCRIPTION_MODE_GRID_COVER_ONLY = 1
+private const val SUBSCRIPTION_MODE_GRID_WITH_TITLE = 2
 
 // Saving instance state.
 private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
@@ -40,13 +44,11 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
     /** HomeViewModel. */
     private val viewModel: HomeViewModel by viewModels()
 
-    /** RecyclerView adapter. */
-    private val adapter: SubscriptionsPodcastAdapter by lazy {
-        SubscriptionsPodcastAdapter(
-            navigateToPodcast = viewModel::navigateToPodcast,
-            showUnsubscribeDialog = viewModel::showUnsubscribeDialog,
-        )
-    }
+    /** RecyclerView adapter used in the [SUBSCRIPTION_MODE_GRID_COVER_ONLY] mode. */
+    private var adapterGridCoverOnly: SubscriptionsPodcastCoverOnlyAdapter? = null
+
+    /** RecyclerView adapter used in the [SUBSCRIPTION_MODE_GRID_WITH_TITLE] mode. */
+    private var adapterGridWithTitle: SubscriptionsPodcastWithTitleAdapter? = null
 
     /** Whether the app bar is expanded or not. */
     private var isAppBarExpanded = true
@@ -75,25 +77,6 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
         savedInstanceState?.apply {
             binding.appBarLayout.setExpanded(getBoolean(SAVED_STATE_IS_APP_BAR_EXPANDED), false)
         }
-
-//        binding.nightModeButton.setOnClickListener {
-//            when (AppCompatDelegate.getDefaultNightMode()) {
-//                AppCompatDelegate.MODE_NIGHT_UNSPECIFIED ->
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-//                AppCompatDelegate.MODE_NIGHT_NO ->
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-//                AppCompatDelegate.MODE_NIGHT_YES ->
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-//            }
-//        }
-//
-//        binding.deleteAll.setOnClickListener {
-//            viewModel.deleteAll()
-//        }
-//
-//        binding.deleteEpisodes.setOnClickListener {
-//            viewModel.deleteEpisodes()
-//        }
 
         // Hide all screens at start.
         hideScreens()
@@ -142,12 +125,7 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
     /** RecyclerView setup. */
     private fun initRecyclerView() {
-        binding.recyclerView.apply {
-            adapter = this@HomeFragment.adapter
-            adapter?.stateRestorationPolicy =
-                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-            setHasFixedSize(true)
-        }
+        binding.recyclerView.setHasFixedSize(true)
     }
 
     /** Set observers for ViewModel observables. */
@@ -161,12 +139,20 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
                             // Show Success screen.
                             is HomeViewModel.HomeState.Success -> {
                                 showSuccessScreen()
-                                adapter.submitList(state.podcasts)
+                                adapterGridCoverOnly?.submitList(state.podcasts)
+                                adapterGridWithTitle?.submitList(state.podcasts)
                             }
 
                             // Show Empty screen.
                             HomeViewModel.HomeState.Empty -> showEmptyScreen()
                         }
+                    }
+                }
+
+                // Observe subscription presentation mode.
+                launch {
+                    viewModel.getSubscriptionMode().collectLatest { mode ->
+                        handleSubscriptionMode(mode ?: SUBSCRIPTION_MODE_GRID_COVER_ONLY)
                     }
                 }
 
@@ -189,6 +175,74 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle subscription presentation mode. This method changes RecyclerView adapters
+     * to present subscription list in the appropriate way.
+     */
+    private fun handleSubscriptionMode(mode: Int) {
+        binding.recyclerView.apply {
+            when (mode) {
+                SUBSCRIPTION_MODE_GRID_COVER_ONLY -> {
+                    // The required adapter is already initialized, just set it to the RV.
+                    if (adapterGridCoverOnly != null) {
+                        setPadding(0, 0, 0, 0) // Update RV paddings.
+                        adapter = adapterGridCoverOnly
+                        return
+                    }
+
+                    // Clear the unnecessary adapter.
+                    adapterGridWithTitle = null
+                    // Initialize the correct adapter.
+                    adapterGridCoverOnly = SubscriptionsPodcastCoverOnlyAdapter(
+                        navigateToPodcast = viewModel::navigateToPodcast,
+                        showUnsubscribeDialog = viewModel::showUnsubscribeDialog,
+                    ).apply {
+                        stateRestorationPolicy =
+                            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                        // Restore the last UI state.
+                        val lastUiState = viewModel.uiState.value
+                        if (lastUiState is HomeViewModel.HomeState.Success) {
+                            submitList(lastUiState.podcasts)
+                        }
+                    }
+
+                    setPadding(0, 0, 0, 0)
+                    adapter = adapterGridCoverOnly
+                }
+
+                SUBSCRIPTION_MODE_GRID_WITH_TITLE -> {
+                    // The required adapter is already initialized, just set it to the RV.
+                    if (adapterGridWithTitle != null) {
+                        val horizontalPadding = resources.getDimensionPixelOffset(R.dimen.home_recycler_view_padding) // Update RV paddings.
+                        setPadding(horizontalPadding, 0, horizontalPadding, 0)
+                        adapter = adapterGridWithTitle
+                        return
+                    }
+
+                    // Clear the unnecessary adapter.
+                    adapterGridCoverOnly = null
+                    // Initialize the correct adapter.
+                    adapterGridWithTitle = SubscriptionsPodcastWithTitleAdapter(
+                        navigateToPodcast = viewModel::navigateToPodcast,
+                        showUnsubscribeDialog = viewModel::showUnsubscribeDialog,
+                    ).apply {
+                        stateRestorationPolicy =
+                            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                        // Restore the last UI state.
+                        val lastUiState = viewModel.uiState.value
+                        if (lastUiState is HomeViewModel.HomeState.Success) {
+                            submitList(lastUiState.podcasts)
+                        }
+                    }
+
+                    val horizontalPadding = resources.getDimensionPixelOffset(R.dimen.home_recycler_view_padding)
+                    setPadding(horizontalPadding, 0, horizontalPadding, 0)
+                    adapter = adapterGridWithTitle
                 }
             }
         }

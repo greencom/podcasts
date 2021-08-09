@@ -1,6 +1,7 @@
 package com.greencom.android.podcasts.repository
 
 import com.greencom.android.podcasts.data.database.*
+import com.greencom.android.podcasts.data.datastore.PreferenceStorage
 import com.greencom.android.podcasts.data.domain.*
 import com.greencom.android.podcasts.di.DispatcherModule.IoDispatcher
 import com.greencom.android.podcasts.network.*
@@ -38,6 +39,7 @@ private const val PODCAST_MAX_HOURS_FROM_UPDATE = 6L
  */
 @Singleton
 class RepositoryImpl @Inject constructor(
+    private val preferenceStorage: PreferenceStorage,
     private val listenApi: ListenApiService,
     private val podcastDao: PodcastDao,
     private val episodeDao: EpisodeDao,
@@ -388,6 +390,14 @@ class RepositoryImpl @Inject constructor(
 
     override fun getSubscriptions(): Flow<List<PodcastShort>> {
         return podcastDao.getSubscriptionsFlow()
+    }
+
+    override suspend fun setSubscriptionMode(mode: Int) {
+        preferenceStorage.setSubscriptionMode(mode)
+    }
+
+    override fun getSubscriptionMode(): Flow<Int?> {
+        return preferenceStorage.getSubscriptionMode()
     }
 
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = flow {

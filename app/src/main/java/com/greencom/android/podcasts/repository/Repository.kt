@@ -88,6 +88,12 @@ interface Repository {
     /** Get a Flow with a list of subscriptions represented by [PodcastShort]. */
     fun getSubscriptions(): Flow<List<PodcastShort>>
 
+    /** Save subscription presentation mode. */
+    suspend fun setSubscriptionMode(mode: Int)
+
+    /** Get a Flow with a subscription presentation mode. */
+    fun getSubscriptionMode(): Flow<Int?>
+
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of
      * [State]. If the database already contains the appropriate podcasts, return them.

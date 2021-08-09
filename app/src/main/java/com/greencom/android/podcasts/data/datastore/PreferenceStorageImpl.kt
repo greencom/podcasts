@@ -1,11 +1,13 @@
 package com.greencom.android.podcasts.data.datastore
 
 import android.content.Context
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
@@ -35,13 +37,7 @@ class PreferenceStorageImpl @Inject constructor(
 
     override fun getPlaybackSpeed(): Flow<Float?> {
         return dataStore.data
-            .catch { exception ->
-                if (exception is IOException) {
-                    emit(emptyPreferences())
-                } else {
-                    throw exception
-                }
-            }
+            .catch { handleException(it) }
             .map { preferences ->
                 preferences[PreferenceKeys.PLAYBACK_SPEED]
             }
@@ -55,15 +51,31 @@ class PreferenceStorageImpl @Inject constructor(
 
     override fun getLastEpisodeId(): Flow<String?> {
         return dataStore.data
-            .catch { exception ->
-                if (exception is IOException) {
-                    emit(emptyPreferences())
-                } else {
-                    throw exception
-                }
-            }
+            .catch { handleException(it) }
             .map { preferences ->
                 preferences[PreferenceKeys.LAST_EPISODE_ID]
             }
+    }
+
+    override suspend fun setSubscriptionMode(mode: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.SUBSCRIPTION_MODE] = mode
+        }
+    }
+
+    override fun getSubscriptionMode(): Flow<Int?> {
+        return dataStore.data
+            .catch { handleException(it) }
+            .map { preferences ->
+                preferences[PreferenceKeys.SUBSCRIPTION_MODE]
+            }
+    }
+
+    private suspend fun FlowCollector<Preferences>.handleException(exception: Throwable) {
+        if (exception is IOException) {
+            emit(emptyPreferences())
+        } else {
+            throw exception
+        }
     }
 }

@@ -14,6 +14,12 @@ interface PreferenceStorage {
     /** Save last played episode ID. */
     suspend fun setLastEpisodeId(episodeId: String)
 
-    /** Get last played episode ID. */
+    /** Get a Flow with the last played episode ID. */
     fun getLastEpisodeId(): Flow<String?>
+
+    /** Save subscription presentation mode. */
+    suspend fun setSubscriptionMode(mode: Int)
+
+    /** Get a Flow with a subscription presentation mode. */
+    fun getSubscriptionMode(): Flow<Int?>
 }
