@@ -12,15 +12,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentHomeBinding
 import com.greencom.android.podcasts.ui.dialogs.UnsubscribeDialog
 import com.greencom.android.podcasts.utils.AppBarLayoutStateChangeListener
-import com.greencom.android.podcasts.utils.extensions.hideImmediately
-import com.greencom.android.podcasts.utils.extensions.revealCrossfade
-import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
+import com.greencom.android.podcasts.utils.extensions.*
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -125,7 +124,25 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
     /** RecyclerView setup. */
     private fun initRecyclerView() {
-        binding.recyclerView.setHasFixedSize(true)
+        val onScrollListener = object : RecyclerView.OnScrollListener() {
+            val layoutManager = binding.recyclerView.layoutManager as GridLayoutManager
+            var firstCompletelyVisibleItemPosition = 0
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                firstCompletelyVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+
+                // Show and hide app bar divider.
+                binding.appBarDivider.apply {
+                    if (firstCompletelyVisibleItemPosition > 0) revealImmediately() else hideCrossfade()
+                }
+            }
+        }
+
+        binding.recyclerView.apply {
+            setHasFixedSize(true)
+            addOnScrollListener(onScrollListener)
+        }
     }
 
     /** Set observers for ViewModel observables. */
