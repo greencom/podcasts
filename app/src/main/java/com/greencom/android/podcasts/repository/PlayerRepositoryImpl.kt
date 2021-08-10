@@ -47,14 +47,7 @@ class PlayerRepositoryImpl @Inject constructor(
     override suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long) {
         val positionEnoughForCompletion = duration - EPISODE_END_THRESHOLD
         val episodeState = when {
-            position < EPISODE_START_THRESHOLD -> {
-                EpisodeEntityState(
-                    id = episodeId,
-                    position = 0L,
-                    isCompleted = false,
-                    completionDate = 0L
-                )
-            }
+            position < EPISODE_START_THRESHOLD -> return
             position in EPISODE_START_THRESHOLD..positionEnoughForCompletion -> {
                 val newPosition = if (position >= EPISODE_START_THRESHOLD + EPISODE_SKIP_BACKWARD) {
                     position - EPISODE_SKIP_BACKWARD
