@@ -95,7 +95,7 @@
                 android:layout_height="wrap_content"
                 android:indeterminate="true"
                 android:visibility="gone"
-                app:trackColor="?attr/colorSurface" />
+                app:trackColor="@color/transparent" />
 
             <View
                 android:id="@+id/app_bar_divider"
