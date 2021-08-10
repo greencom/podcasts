@@ -400,6 +400,10 @@ class RepositoryImpl @Inject constructor(
         return preferenceStorage.getSubscriptionMode()
     }
 
+    override fun getPlaybackSpeed(): Flow<Float?> {
+        return preferenceStorage.getPlaybackSpeed()
+    }
+
     override fun getBestPodcasts(genreId: Int): Flow<State<List<PodcastShort>>> = flow {
         emit(State.Loading)
         podcastDao.getBestPodcastsFlow(genreId).collect { podcasts ->

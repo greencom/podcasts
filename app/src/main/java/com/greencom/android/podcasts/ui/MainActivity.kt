@@ -682,9 +682,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
                 // Update PlaybackSpeed button.
                 launch {
-                    viewModel.playbackSpeed.collectLatest { speed ->
+                    viewModel.getPlaybackSpeed().collectLatest { speed ->
+                        val mSpeed = speed ?: 1.0F
                         @SuppressLint("SetTextI18n")
-                        expandedPlayer.playbackSpeed.text = "${speed}x"
+                        expandedPlayer.playbackSpeed.text = "${mSpeed}x"
                     }
                 }
             }

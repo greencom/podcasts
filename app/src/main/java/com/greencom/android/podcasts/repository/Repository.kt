@@ -94,6 +94,9 @@ interface Repository {
     /** Get a Flow with a subscription presentation mode. */
     fun getSubscriptionMode(): Flow<Int?>
 
+    /** Get a Flow with a player playback speed. */
+    fun getPlaybackSpeed(): Flow<Float?>
+
     /**
      * Return the best podcasts for a given genre ID. The result presented by instances of
      * [State]. If the database already contains the appropriate podcasts, return them.

@@ -7,13 +7,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.media2.session.SessionToken
 import com.greencom.android.podcasts.player.CurrentEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
+import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.PLAYER_TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -23,6 +21,7 @@ import kotlin.time.ExperimentalTime
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
+    private val repository: Repository,
 ) : ViewModel() {
 
     private val _event = Channel<MainActivityEvent>(Channel.BUFFERED)
@@ -48,9 +47,6 @@ class MainActivityViewModel @Inject constructor(
 
     val currentPosition: StateFlow<Long>
         get() = playerServiceConnection.currentPosition
-
-    val playbackSpeed: StateFlow<Float>
-        get() = playerServiceConnection.playbackSpeed
 
     val isPlaying: Boolean
         get() = playerServiceConnection.isPlaying
@@ -96,6 +92,10 @@ class MainActivityViewModel @Inject constructor(
 
     fun changePlaybackSpeed() {
         playerServiceConnection.changePlaybackSpeed()
+    }
+
+    fun getPlaybackSpeed(): Flow<Float?> {
+        return repository.getPlaybackSpeed()
     }
 
     @ExperimentalTime

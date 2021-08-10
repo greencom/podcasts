@@ -48,9 +48,6 @@ class PlayerServiceConnection @Inject constructor(
     private val _currentPosition = MutableStateFlow(0L)
     val currentPosition = _currentPosition.asStateFlow()
 
-    private val _playbackSpeed = MutableStateFlow(1.0F)
-    val playbackSpeed = _playbackSpeed.asStateFlow()
-
     val isPlaying: Boolean
         get() = if (::controller.isInitialized) {
             controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
@@ -131,14 +128,6 @@ class PlayerServiceConnection @Inject constructor(
                     startFromTimecode = false
                 }
             }
-
-            override fun onPlaybackSpeedChanged(controller: MediaController, speed: Float) {
-                Log.d(PLAYER_TAG, "controllerCallback: onPlaybackSpeedChanged()")
-                _playbackSpeed.value = speed
-                scope.launch {
-                    repository.setPlaybackSpeed(speed)
-                }
-            }
         }
     }
 
@@ -200,11 +189,15 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun changePlaybackSpeed() {
-        controller.playbackSpeed = when (controller.playbackSpeed) {
-            1.0F -> 1.2F
-            1.2F -> 1.5F
-            1.5F -> 2.0F
-            else -> 1.0F
+        scope.launch {
+            val newSpeed = when (repository.getPlaybackSpeed().first() ?: 1.0F) {
+                1.0F -> 1.2F
+                1.2F -> 1.5F
+                1.5F -> 2.0F
+                else -> 1.0F
+            }
+            controller.playbackSpeed = newSpeed
+            repository.setPlaybackSpeed(newSpeed)
         }
     }
 
