@@ -170,7 +170,7 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
                 // Observe subscription presentation mode.
                 launch {
                     viewModel.getSubscriptionMode().collectLatest { mode ->
-                        handleSubscriptionMode(mode ?: SUBSCRIPTION_MODE_GRID_COVER_ONLY)
+                        handleSubscriptionMode(mode ?: SUBSCRIPTION_MODE_GRID_WITH_TITLE)
                     }
                 }
 
