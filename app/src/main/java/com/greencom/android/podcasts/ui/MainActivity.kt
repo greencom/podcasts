@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
         initViews()
         initNavigation()
-        initPlayerListeners()
+        initPlayerUiListeners()
         initObservers()
     }
 
@@ -355,7 +355,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     /** Set listeners for the player's content. */
     @SuppressLint("ClickableViewAccessibility")
-    private fun initPlayerListeners() {
+    private fun initPlayerUiListeners() {
 
         // COLLAPSED
         collapsedPlayer.root.setOnClickListener {
