@@ -86,6 +86,7 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
         initAppBar()
         initRecyclerView()
         initObservers()
+        initFragmentResultListeners()
     }
 
     override fun onDestroyView() {
@@ -197,6 +198,18 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
         }
     }
 
+    /** Init fragment result listeners. */
+    private fun initFragmentResultListeners() {
+        // Scroll the list to the top when the corresponding bottom nav item reselected.
+        parentFragmentManager.setFragmentResultListener(
+            createOnNavItemReselectedKey(),
+            viewLifecycleOwner
+        ) { _, _ ->
+            binding.recyclerView.smoothScrollToPosition(0)
+            binding.appBarLayout.setExpanded(true, true)
+        }
+    }
+
     /**
      * Handle subscription presentation mode. This method changes RecyclerView adapters
      * to present subscription list in the appropriate way.
@@ -287,5 +300,20 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
             recyclerView.hideImmediately()
             emptyScreen.hideImmediately()
         }
+    }
+
+    companion object {
+        /**
+         * Key used to pass data between [MainActivity][com.greencom.android.podcasts.ui.MainActivity]
+         * and [HomeFragment] about the reselection of the corresponding nav item.
+         */
+        private const val KEY_ON_NAV_ITEM_RESELECTED = "HOME_ON_NAV_ITEM_RESELECTED"
+
+        /**
+         * Returns key used to pass data between
+         * [MainActivity][com.greencom.android.podcasts.ui.MainActivity] and [HomeFragment]
+         * about the reselection of the corresponding nav item.
+         */
+        fun createOnNavItemReselectedKey(): String = KEY_ON_NAV_ITEM_RESELECTED
     }
 }

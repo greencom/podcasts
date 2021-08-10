@@ -42,6 +42,7 @@ import com.greencom.android.podcasts.ui.dialogs.PlayerOptionsDialog
 import com.greencom.android.podcasts.ui.dialogs.SleepTimerDialog
 import com.greencom.android.podcasts.ui.episode.EpisodeFragment
 import com.greencom.android.podcasts.ui.explore.ExploreFragmentDirections
+import com.greencom.android.podcasts.ui.home.HomeFragment
 import com.greencom.android.podcasts.ui.podcast.PodcastFragment
 import com.greencom.android.podcasts.utils.*
 import com.greencom.android.podcasts.utils.extensions.*
@@ -342,11 +343,21 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         navController.navigate(action)
                     }
                 } else {
-                    // If the current destination is ExploreFragment, navigate to SearchFragment.
-                    if (currentDestination == navItemIdToFirstDestinationMap[R.id.exploreFragment]) {
-                        navController.navigate(
-                            ExploreFragmentDirections.actionExploreFragmentToSearchFragment()
-                        )
+                    // Perform custom actions for the first-destination-fragments.
+                    when (currentDestination) {
+                        navItemIdToFirstDestinationMap[R.id.homeFragment] -> {
+                            // Scroll the HomeFragment list to the top.
+                            navHostFragment.childFragmentManager.setFragmentResult(
+                                HomeFragment.createOnNavItemReselectedKey(),
+                                Bundle()
+                            )
+                        }
+                        navItemIdToFirstDestinationMap[R.id.exploreFragment] -> {
+                            // Navigate to the SearchFragment.
+                            navController.navigate(
+                                ExploreFragmentDirections.actionExploreFragmentToSearchFragment()
+                            )
+                        }
                     }
                 }
             }
