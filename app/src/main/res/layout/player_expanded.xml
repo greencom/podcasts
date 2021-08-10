@@ -231,8 +231,8 @@
         app:cornerRadius="48dp"
         app:icon="@drawable/ic_night_outline_24"
         app:iconTint="?attr/colorOnSurfaceMedium"
-        app:layout_constraintEnd_toEndOf="@id/play_pause"
-        app:layout_constraintStart_toStartOf="@id/play_pause"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/playback_speed"
         app:rippleColor="?attr/colorOnSurfaceUtil" />
 
