@@ -72,8 +72,8 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener,
             playEpisode = viewModel::playEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
-            onAddToBookmarksClick = viewModel::updateEpisodeInBookmarks,
-            onEpisodeLongClick = viewModel::showEpisodeOptions
+            onAddToBookmarksClick = viewModel::onEpisodeInBookmarksChange,
+            showEpisodeOptions = viewModel::showEpisodeOptions
         )
     }
 
@@ -143,11 +143,11 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener,
 
     // Mark episode as completed or uncompleted when the user performs action
     // in the EpisodeOptionsDialog.
-    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+    override fun onEpisodeOptionsIsCompletedChange(
         episodeId: String,
         isCompleted: Boolean
     ) {
-        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        viewModel.onEpisodeIsCompletedChange(episodeId, isCompleted)
     }
 
     /** App bar setup. */

@@ -78,11 +78,11 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
 
     // Mark episode as completed or uncompleted when the user performs action
     // in the EpisodeOptionsDialog.
-    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+    override fun onEpisodeOptionsIsCompletedChange(
         episodeId: String,
         isCompleted: Boolean
     ) {
-        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        viewModel.onIsCompletedChange(episodeId, isCompleted)
     }
 
     /** RecyclerView setup. */

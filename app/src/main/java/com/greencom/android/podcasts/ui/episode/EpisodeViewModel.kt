@@ -81,14 +81,14 @@ class EpisodeViewModel @Inject constructor(
     }
 
     /** Add the episode to the bookmarks or remove from there. */
-    fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
-        repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
+    fun onInBookmarksChange(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
+        repository.onEpisodeInBookmarksChange(episodeId, inBookmarks)
     }
 
     /** Mark an episode as completed or uncompleted by ID. */
-    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
-            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
         }
 
     /**

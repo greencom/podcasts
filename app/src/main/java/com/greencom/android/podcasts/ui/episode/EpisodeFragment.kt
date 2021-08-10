@@ -113,11 +113,11 @@ class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogLis
 
     // Mark episode as completed or uncompleted when the user performs action
     // in the EpisodeOptionsDialog.
-    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+    override fun onEpisodeOptionsIsCompletedChange(
         episodeId: String,
         isCompleted: Boolean
     ) {
-        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        viewModel.onIsCompletedChange(episodeId, isCompleted)
     }
 
     /** App bar setup. */
@@ -176,7 +176,7 @@ class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogLis
         // Add the episode to the bookmarks or remove from there.
         binding.addToBookmarks.setOnClickListener {
             episode?.let { episode ->
-                viewModel.updateEpisodeInBookmarks(episodeId, !episode.inBookmarks)
+                viewModel.onInBookmarksChange(episodeId, !episode.inBookmarks)
             }
         }
 

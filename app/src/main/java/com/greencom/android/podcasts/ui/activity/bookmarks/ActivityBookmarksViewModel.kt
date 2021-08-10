@@ -90,7 +90,7 @@ class ActivityBookmarksViewModel @Inject constructor(
 
     /** Add an episode to the bookmarks or remove from there. */
     fun onInBookmarksChange(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
-        repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
+        repository.onEpisodeInBookmarksChange(episodeId, inBookmarks)
     }
 
     /**
@@ -101,9 +101,9 @@ class ActivityBookmarksViewModel @Inject constructor(
     }
 
     /** Mark an episode as completed or uncompleted by ID. */
-    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
-            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
         }
 
     /** Sealed class that represents the UI state of the [ActivityBookmarksFragment]. */

@@ -184,7 +184,7 @@ class PlayerServiceConnection @Inject constructor(
         )
         _currentEpisode.value = CurrentEpisode.empty()
         scope.launch {
-            repository.markEpisodeCompleted(episodeId)
+            repository.onEpisodeCompleted(episodeId)
         }
     }
 

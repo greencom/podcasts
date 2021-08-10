@@ -30,7 +30,7 @@ class EpisodeOptionsDialog : BottomSheetDialogFragment() {
          * Callback to be invoked when the user clicks Mark completed (or uncompleted) button
          * for an episode with a given ID.
          */
-        fun onEpisodeOptionsMarkCompletedOrUncompleted(episodeId: String, isCompleted: Boolean)
+        fun onEpisodeOptionsIsCompletedChange(episodeId: String, isCompleted: Boolean)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +73,7 @@ class EpisodeOptionsDialog : BottomSheetDialogFragment() {
 
         // Mark an episode as completed or uncompleted.
         binding.markCompletedOrUncompleted.setOnClickListener {
-            listener.onEpisodeOptionsMarkCompletedOrUncompleted(episodeId, !isEpisodeCompleted)
+            listener.onEpisodeOptionsIsCompletedChange(episodeId, !isEpisodeCompleted)
             dismiss()
         }
     }

@@ -460,11 +460,11 @@ class RepositoryImpl @Inject constructor(
 
     override fun getLastSearch(): PodcastSearchResult? = searchResult
 
-    override suspend fun updateSubscription(podcastId: String, subscribed: Boolean) {
+    override suspend fun onPodcastSubscribedChange(podcastId: String, subscribed: Boolean) {
         podcastDao.updateSubscription(PodcastSubscription(podcastId, subscribed))
     }
 
-    override suspend fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) {
+    override suspend fun onEpisodeInBookmarksChange(episodeId: String, inBookmarks: Boolean) {
         val date = if (inBookmarks) System.currentTimeMillis() else 0L
         episodeDao.update(
             EpisodeEntityBookmark(
@@ -475,7 +475,7 @@ class RepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun markEpisodeCompletedOrUncompleted(
+    override suspend fun onEpisodeIsCompletedChange(
         episodeId: String,
         isCompleted: Boolean
     ) {

@@ -171,7 +171,7 @@ class PodcastViewModel @Inject constructor(
      */
     fun updateSubscription(id: String, subscribed: Boolean) = viewModelScope.launch {
         if (subscribed) {
-            repository.updateSubscription(id, subscribed)
+            repository.onPodcastSubscribedChange(id, subscribed)
         } else {
             _event.send(PodcastEvent.UnsubscribeDialog(id))
         }
@@ -183,8 +183,8 @@ class PodcastViewModel @Inject constructor(
     }
 
     /** Add the episode to the bookmarks or remove from there. */
-    fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
-        repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
+    fun onEpisodeInBookmarksChange(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
+        repository.onEpisodeInBookmarksChange(episodeId, inBookmarks)
     }
 
     /**
@@ -192,13 +192,13 @@ class PodcastViewModel @Inject constructor(
      * confirmation.
      */
     fun unsubscribe(id: String) = viewModelScope.launch {
-        repository.updateSubscription(id, false)
+        repository.onPodcastSubscribedChange(id, false)
     }
 
     /** Mark an episode as completed or uncompleted by ID. */
-    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+    fun onEpisodeIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
-            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
         }
 
     /** Navigate to EpisodeFragment with a given episode ID. */

@@ -18,14 +18,14 @@ import kotlin.time.ExperimentalTime
 /** Adapter used for RecyclerView that represents a history of completed episodes. */
 class HistoryEpisodeAdapter(
     private val navigateToEpisode: (String) -> Unit,
-    private val onLongClick: (String, Boolean) -> Unit,
+    private val showEpisodeOptions: (String, Boolean) -> Unit,
 ) : ListAdapter<Episode, HistoryEpisodeAdapter.ViewHolder>(EpisodeDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.create(
             parent = parent,
             navigateToEpisode = navigateToEpisode,
-            showEpisodeOptions = onLongClick
+            showEpisodeOptions = showEpisodeOptions
         )
     }
 

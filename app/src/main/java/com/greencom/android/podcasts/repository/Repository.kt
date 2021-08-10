@@ -126,11 +126,11 @@ interface Repository {
     fun getLastSearch(): PodcastSearchResult?
 
     /** Update subscription to a Podcast by ID with a given value. */
-    suspend fun updateSubscription(podcastId: String, subscribed: Boolean)
+    suspend fun onPodcastSubscribedChange(podcastId: String, subscribed: Boolean)
 
     /** Add the episode to the bookmarks or remove from there. */
-    suspend fun updateEpisodeInBookmarks(episodeId: String, inBookmarks: Boolean)
+    suspend fun onEpisodeInBookmarksChange(episodeId: String, inBookmarks: Boolean)
 
     /** Mark an episode as completed or uncompleted by ID. */
-    suspend fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean)
+    suspend fun onEpisodeIsCompletedChange(episodeId: String, isCompleted: Boolean)
 }

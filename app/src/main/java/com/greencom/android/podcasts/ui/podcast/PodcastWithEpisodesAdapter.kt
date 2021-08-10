@@ -47,7 +47,7 @@ class PodcastWithEpisodesAdapter(
     private val play: () -> Unit,
     private val pause: () -> Unit,
     private val onAddToBookmarksClick: (String, Boolean) -> Unit,
-    private val onEpisodeLongClick: (String, Boolean) -> Unit,
+    private val showEpisodeOptions: (String, Boolean) -> Unit,
 ) : ListAdapter<PodcastWithEpisodesDataItem, RecyclerView.ViewHolder>(
     PodcastWithEpisodesDiffCallback
 ) {
@@ -74,7 +74,7 @@ class PodcastWithEpisodesAdapter(
                 play = play,
                 pause = pause,
                 onAddToBookmarksClick = onAddToBookmarksClick,
-                showEpisodeOptions = onEpisodeLongClick
+                showEpisodeOptions = showEpisodeOptions
             )
             else -> throw ClassCastException("Unknown viewType $viewType")
         }

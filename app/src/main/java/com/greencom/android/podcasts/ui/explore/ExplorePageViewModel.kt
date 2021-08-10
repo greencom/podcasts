@@ -72,7 +72,7 @@ class ExplorePageViewModel @Inject constructor(private val repository: Repositor
      */
     fun updateSubscription(podcastId: String, subscribed: Boolean) = viewModelScope.launch {
         if (subscribed) {
-            repository.updateSubscription(podcastId, subscribed)
+            repository.onPodcastSubscribedChange(podcastId, subscribed)
         } else {
             _event.send(ExplorePageEvent.UnsubscribeDialog(podcastId))
         }
@@ -83,7 +83,7 @@ class ExplorePageViewModel @Inject constructor(private val repository: Repositor
      * confirmation.
      */
     fun unsubscribe(podcastId: String) = viewModelScope.launch {
-        repository.updateSubscription(podcastId, false)
+        repository.onPodcastSubscribedChange(podcastId, false)
     }
 
     /** Sealed class that represents the UI state of the [ExplorePageFragment]. */

@@ -6,17 +6,17 @@ import kotlinx.coroutines.flow.Flow
 /** Interface that defines player repository that contains player-related use cases. */
 interface PlayerRepository {
 
-    /** Save player playback speed. */
-    suspend fun setPlaybackSpeed(playbackSpeed: Float)
-
-    /** Get a Flow with a player playback speed. */
-    fun getPlaybackSpeed(): Flow<Float?>
-
     /** Get the episode by ID. */
     suspend fun getEpisode(episodeId: String): Episode?
 
     /** Get the episode's last position by ID. */
     suspend fun getEpisodePosition(episodeId: String): Long?
+
+    /** Save player playback speed. */
+    suspend fun setPlaybackSpeed(playbackSpeed: Float)
+
+    /** Get a Flow with a player playback speed. */
+    fun getPlaybackSpeed(): Flow<Float?>
 
     /** Save the ID of the episode that was last played by the player to the DataStore. */
     suspend fun setLastEpisodeId(episodeId: String)
@@ -28,5 +28,5 @@ interface PlayerRepository {
     suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long)
 
     /** Mark episode completed by ID. */
-    suspend fun markEpisodeCompleted(episodeId: String)
+    suspend fun onEpisodeCompleted(episodeId: String)
 }

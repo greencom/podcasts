@@ -41,7 +41,7 @@ class ActivityHistoryFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsD
     private val adapter by lazy {
         HistoryEpisodeAdapter(
             navigateToEpisode = viewModel::navigateToEpisode,
-            onLongClick = viewModel::showEpisodeOptions
+            showEpisodeOptions = viewModel::showEpisodeOptions
         )
     }
 
@@ -75,11 +75,11 @@ class ActivityHistoryFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsD
 
     // Mark episode as completed or uncompleted when the user performs action
     // in the EpisodeOptionsDialog.
-    override fun onEpisodeOptionsMarkCompletedOrUncompleted(
+    override fun onEpisodeOptionsIsCompletedChange(
         episodeId: String,
         isCompleted: Boolean
     ) {
-        viewModel.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+        viewModel.onIsCompletedChange(episodeId, isCompleted)
     }
 
     /** RecyclerView setup. */

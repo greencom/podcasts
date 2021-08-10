@@ -49,7 +49,7 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
 
     /** Unsubscribe from the podcast by ID. */
     fun unsubscribe(podcastId: String) = viewModelScope.launch {
-        repository.updateSubscription(podcastId, false)
+        repository.onPodcastSubscribedChange(podcastId, false)
     }
 
     /** Navigate to a PodcastFragment by ID. */

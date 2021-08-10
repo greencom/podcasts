@@ -49,9 +49,9 @@ class ActivityHistoryViewModel @Inject constructor(
     }
 
     /** Mark an episode as completed or uncompleted by ID. */
-    fun markEpisodeCompletedOrUncompleted(episodeId: String, isCompleted: Boolean) =
+    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
-            repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
+            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
         }
 
     /** Sealed class that represents the UI state of the [ActivityHistoryFragment]. */

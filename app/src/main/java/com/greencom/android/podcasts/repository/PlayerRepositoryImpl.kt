@@ -20,20 +20,20 @@ class PlayerRepositoryImpl @Inject constructor(
     private val episodeDao: EpisodeDao,
 ) : PlayerRepository {
 
-    override suspend fun setPlaybackSpeed(playbackSpeed: Float) {
-        preferenceStorage.setPlaybackSpeed(playbackSpeed)
-    }
-
-    override fun getPlaybackSpeed(): Flow<Float?> {
-        return preferenceStorage.getPlaybackSpeed()
-    }
-
     override suspend fun getEpisode(episodeId: String): Episode? {
         return episodeDao.getEpisode(episodeId)
     }
 
     override suspend fun getEpisodePosition(episodeId: String): Long? {
         return episodeDao.getEpisodePosition(episodeId)
+    }
+
+    override suspend fun setPlaybackSpeed(playbackSpeed: Float) {
+        preferenceStorage.setPlaybackSpeed(playbackSpeed)
+    }
+
+    override fun getPlaybackSpeed(): Flow<Float?> {
+        return preferenceStorage.getPlaybackSpeed()
     }
 
     override suspend fun setLastEpisodeId(episodeId: String) {
@@ -87,7 +87,7 @@ class PlayerRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun markEpisodeCompleted(episodeId: String) {
+    override suspend fun onEpisodeCompleted(episodeId: String) {
         val episodeState = EpisodeEntityState(
             id = episodeId,
             position = 0L,
