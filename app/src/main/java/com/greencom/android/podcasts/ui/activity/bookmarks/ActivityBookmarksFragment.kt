@@ -39,7 +39,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
     private val adapter by lazy {
         BookmarksEpisodeAdapter(
             navigateToEpisode = viewModel::navigateToEpisode,
-            removeFromBookmarks = viewModel::removeFromBookmarks,
+            onInBookmarksChange = viewModel::onInBookmarksChange,
             playEpisode = viewModel::playEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
@@ -86,7 +86,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
 
     /** RecyclerView setup. */
     private fun initRecyclerView() {
-        binding.bookmarks.apply {
+        binding.recyclerView.apply {
             setHasFixedSize(true)
             adapter = this@ActivityBookmarksFragment.adapter
             adapter?.stateRestorationPolicy =
@@ -150,12 +150,12 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
             createOnTabReselectedKey(),
             viewLifecycleOwner
         ) { _, _ ->
-            val listLayoutManager = binding.bookmarks.layoutManager as LinearLayoutManager
+            val layoutManager = binding.recyclerView.layoutManager as LinearLayoutManager
             // Smooth scroll or instant scroll depending on the first visible position.
-            if (listLayoutManager.findFirstVisibleItemPosition() <= SMOOTH_SCROLL_THRESHOLD) {
-                binding.bookmarks.smoothScrollToPosition(0)
+            if (layoutManager.findFirstVisibleItemPosition() <= SMOOTH_SCROLL_THRESHOLD) {
+                binding.recyclerView.smoothScrollToPosition(0)
             } else {
-                binding.bookmarks.scrollToPosition(0)
+                binding.recyclerView.scrollToPosition(0)
             }
         }
     }
@@ -165,14 +165,14 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
         binding.apply {
             emptyImage.hideImmediately()
             emptyMessage.hideImmediately()
-            bookmarks.revealCrossfade()
+            recyclerView.revealCrossfade()
         }
     }
 
     /** Show Empty screen and hide all others. */
     private fun showEmptyScreen() {
         binding.apply {
-            bookmarks.hideImmediately()
+            recyclerView.hideImmediately()
             emptyImage.revealCrossfade()
             emptyMessage.revealCrossfade()
         }
@@ -181,7 +181,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
     /** Hide all screens. */
     private fun hideScreens() {
         binding.apply {
-            bookmarks.hideImmediately()
+            recyclerView.hideImmediately()
             emptyImage.hideImmediately()
             emptyMessage.hideImmediately()
         }

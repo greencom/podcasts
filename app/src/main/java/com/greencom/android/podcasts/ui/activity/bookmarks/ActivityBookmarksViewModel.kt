@@ -89,9 +89,9 @@ class ActivityBookmarksViewModel @Inject constructor(
         _event.send(ActivityBookmarksEvent.NavigateToEpisode(episodeId))
     }
 
-    /** Remove the episode from the bookmarks. */
-    fun removeFromBookmarks(episodeId: String) = viewModelScope.launch {
-        repository.updateEpisodeInBookmarks(episodeId, false)
+    /** Add an episode to the bookmarks or remove from there. */
+    fun onInBookmarksChange(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
+        repository.updateEpisodeInBookmarks(episodeId, inBookmarks)
     }
 
     /** Show an [EpisodeOptionsDialog]. */

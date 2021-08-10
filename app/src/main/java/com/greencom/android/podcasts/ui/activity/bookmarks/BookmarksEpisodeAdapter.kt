@@ -14,7 +14,7 @@ import kotlin.time.ExperimentalTime
 /** Adapter used for RecyclerView that represents a list of episodes added to bookmarks. */
 class BookmarksEpisodeAdapter(
     private val navigateToEpisode: (String) -> Unit,
-    private val removeFromBookmarks: (String) -> Unit,
+    private val onInBookmarksChange: (String, Boolean) -> Unit,
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
@@ -25,7 +25,7 @@ class BookmarksEpisodeAdapter(
         return ViewHolder.create(
             parent = parent,
             navigateToEpisode = navigateToEpisode,
-            removeFromBookmarks = removeFromBookmarks,
+            onInBookmarksChange = onInBookmarksChange,
             playEpisode = playEpisode,
             play = play,
             pause = pause,
@@ -43,7 +43,7 @@ class BookmarksEpisodeAdapter(
     class ViewHolder private constructor(
         private val binding: ItemBookmarksEpisodeBinding,
         private val navigateToEpisode: (String) -> Unit,
-        private val removeFromBookmarks: (String) -> Unit,
+        private val onInBookmarksChange: (String, Boolean) -> Unit,
         private val playEpisode: (String) -> Unit,
         private val play: () -> Unit,
         private val pause: () -> Unit,
@@ -77,9 +77,9 @@ class BookmarksEpisodeAdapter(
                 }
             }
 
-            // Remove from bookmarks.
+            // Add the episode to the bookmarks or remove from there.
             binding.removeFromBookmarks.setOnClickListener {
-                removeFromBookmarks(episode.id)
+                onInBookmarksChange(episode.id, !episode.inBookmarks)
             }
         }
 
@@ -104,7 +104,7 @@ class BookmarksEpisodeAdapter(
             fun create(
                 parent: ViewGroup,
                 navigateToEpisode: (String) -> Unit,
-                removeFromBookmarks: (String) -> Unit,
+                onInBookmarksChange: (String, Boolean) -> Unit,
                 playEpisode: (String) -> Unit,
                 play: () -> Unit,
                 pause: () -> Unit,
@@ -115,7 +115,7 @@ class BookmarksEpisodeAdapter(
                 return ViewHolder(
                     binding = binding,
                     navigateToEpisode = navigateToEpisode,
-                    removeFromBookmarks = removeFromBookmarks,
+                    onInBookmarksChange = onInBookmarksChange,
                     playEpisode = playEpisode,
                     play = play,
                     pause = pause,
