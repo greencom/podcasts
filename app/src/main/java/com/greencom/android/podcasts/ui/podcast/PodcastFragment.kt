@@ -215,6 +215,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener,
         }
 
         binding.list.apply {
+            setHasFixedSize(true)
             adapter = this@PodcastFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY

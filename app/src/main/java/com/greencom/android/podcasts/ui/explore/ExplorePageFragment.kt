@@ -98,6 +98,7 @@ class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListe
     /** RecyclerView setup. */
     private fun initRecyclerView() {
         binding.podcastList.apply {
+            setHasFixedSize(true)
             adapter = this@ExplorePageFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY

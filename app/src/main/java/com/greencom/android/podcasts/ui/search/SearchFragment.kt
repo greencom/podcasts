@@ -1,5 +1,6 @@
 package com.greencom.android.podcasts.ui.search
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
@@ -137,6 +138,7 @@ class SearchFragment : Fragment() {
     }
 
     /** RecyclerView setup. */
+    @SuppressLint("ClickableViewAccessibility")
     private fun initRecyclerView() {
         val onScrollListener = object : RecyclerView.OnScrollListener() {
             val layoutManager = binding.results.layoutManager as LinearLayoutManager
@@ -160,6 +162,7 @@ class SearchFragment : Fragment() {
         }
 
         binding.results.apply {
+            setHasFixedSize(true)
             adapter = this@SearchFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY

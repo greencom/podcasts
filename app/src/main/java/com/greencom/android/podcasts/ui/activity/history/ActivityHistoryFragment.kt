@@ -85,6 +85,7 @@ class ActivityHistoryFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsD
     /** RecyclerView setup. */
     private fun initRecyclerView() {
         binding.historyList.apply {
+            setHasFixedSize(true)
             adapter = this@ActivityHistoryFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY

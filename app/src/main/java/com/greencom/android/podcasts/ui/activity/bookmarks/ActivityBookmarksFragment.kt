@@ -87,6 +87,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
     /** RecyclerView setup. */
     private fun initRecyclerView() {
         binding.bookmarks.apply {
+            setHasFixedSize(true)
             adapter = this@ActivityBookmarksFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
