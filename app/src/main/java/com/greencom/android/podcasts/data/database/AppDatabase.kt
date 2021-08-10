@@ -10,7 +10,7 @@ import androidx.room.RoomDatabase
         PodcastEntityTemp::class,
         EpisodeEntity::class,
     ],
-    version = 15
+    version = 16
 )
 abstract class AppDatabase : RoomDatabase() {
 

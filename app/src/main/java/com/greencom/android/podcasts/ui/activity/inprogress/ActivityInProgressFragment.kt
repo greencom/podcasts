@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.activity.bookmarks
+package com.greencom.android.podcasts.ui.activity.inprogress
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,11 +12,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentActivityBookmarksAndProgressBinding
 import com.greencom.android.podcasts.ui.activity.ActivityEpisodeAdapter
 import com.greencom.android.podcasts.ui.activity.ActivityFragmentDirections
-import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksViewModel.ActivityBookmarksEvent
-import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksViewModel.ActivityBookmarksState
+import com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressViewModel.ActivityInProgressEvent
+import com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressViewModel.ActivityInProgressState
 import com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog
 import com.greencom.android.podcasts.utils.extensions.hideImmediately
 import com.greencom.android.podcasts.utils.extensions.revealCrossfade
@@ -27,14 +28,14 @@ import kotlinx.coroutines.launch
 
 private const val SMOOTH_SCROLL_THRESHOLD = 50
 
-/** Contains a list of episodes that have been added to the bookmarks. */
+/** Contains a list of episodes in progress. */
 @AndroidEntryPoint
-class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
+class ActivityInProgressFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
     private var _binding: FragmentActivityBookmarksAndProgressBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ActivityBookmarksViewModel by viewModels()
+    private val viewModel: ActivityInProgressViewModel by viewModels()
 
     /** RecyclerView bookmarks adapter. */
     private val adapter by lazy {
@@ -60,8 +61,8 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Load bookmarks.
-        viewModel.getBookmarks()
+        // Load episodes in progress.
+        viewModel.getEpisodesInProgress()
 
         // Hide all screens at start.
         hideScreens()
@@ -76,7 +77,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
         _binding = null
     }
 
-    // Mark episode as completed or uncompleted when the user performs action
+    // Mark episode as completed or uncompleted when the user performs an action
     // in the EpisodeOptionsDialog.
     override fun onEpisodeOptionsMarkCompletedOrUncompleted(
         episodeId: String,
@@ -89,7 +90,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
     private fun initRecyclerView() {
         binding.recyclerView.apply {
             setHasFixedSize(true)
-            adapter = this@ActivityBookmarksFragment.adapter
+            adapter = this@ActivityInProgressFragment.adapter
             adapter?.stateRestorationPolicy =
                 RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
@@ -105,23 +106,25 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
                     viewModel.uiState.collectLatest { state ->
                         when (state) {
                             // Show Success screen.
-                            is ActivityBookmarksState.Success -> {
+                            is ActivityInProgressState.Success -> {
                                 showSuccessScreen()
-                                adapter.submitList(state.episodes)
+                                adapter.submitList(state.episode)
                             }
 
                             // Show Empty screen.
-                            ActivityBookmarksState.Empty -> showEmptyScreen()
+                            ActivityInProgressState.Empty -> {
+                                binding.emptyMessage.text = getString(R.string.activity_in_progress_empty)
+                                showEmptyScreen()
+                            }
                         }
                     }
                 }
 
-                // Observe events.
                 launch {
                     viewModel.event.collect { event ->
                         when (event) {
                             // Navigate to episode page.
-                            is ActivityBookmarksEvent.NavigateToEpisode -> {
+                            is ActivityInProgressEvent.NavigateToEpisode -> {
                                 findNavController().navigate(
                                     ActivityFragmentDirections.actionActivityFragmentToEpisodeFragment(
                                         event.episodeId
@@ -130,7 +133,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
                             }
 
                             // Show an EpisodeOptionsDialog.
-                            is ActivityBookmarksEvent.EpisodeOptionDialog -> {
+                            is ActivityInProgressEvent.EpisodeOptionDialog -> {
                                 EpisodeOptionsDialog.show(
                                     fragmentManager = childFragmentManager,
                                     episodeId = event.episodeId,
@@ -192,13 +195,13 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
 
         /**
          * Key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
-         * and [ActivityBookmarksFragment] about tab reselection.
+         * and [ActivityInProgressFragment] about tab reselection.
          */
-        private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_BOOKMARKS_ON_TAB_RESELECTED"
+        private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_IN_PROGRESS_ON_TAB_RESELECTED"
 
         /**
          * Return key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
-         * and [ActivityBookmarksFragment] about tab reselection.
+         * and [ActivityInProgressFragment] about tab reselection.
          */
         fun createOnTabReselectedKey(): String = KEY_ON_TAB_RESELECTED
     }

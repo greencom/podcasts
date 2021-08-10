@@ -74,12 +74,12 @@
             tools:text="1 hr 45 min" />
 
         <ImageButton
-            android:id="@+id/remove_from_bookmarks"
+            android:id="@+id/in_bookmarks"
             style="@style/ImageButton"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="4dp"
-            android:contentDescription="@string/activity_bookmarks_remove_description"
+            android:contentDescription="@null"
             app:srcCompat="@drawable/ic_playlist_check_24"
             app:tint="@color/green" />
 

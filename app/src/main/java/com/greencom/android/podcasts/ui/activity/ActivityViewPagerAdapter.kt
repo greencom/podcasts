@@ -5,10 +5,11 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryFragment
+import com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressFragment
 
 /**
  * Adapter used for the ViewPager2 implementation inside [ActivityFragment]. Creates
- * [ActivityBookmarksFragment] and [ActivityHistoryFragment].
+ * [ActivityBookmarksFragment], [ActivityInProgressFragment] and [ActivityHistoryFragment].
  */
 class ActivityViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
@@ -19,7 +20,8 @@ class ActivityViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> ActivityBookmarksFragment()
-            1 -> ActivityHistoryFragment()
+            1 -> ActivityInProgressFragment()
+            2 -> ActivityHistoryFragment()
             else -> throw IllegalStateException("Fragment has not been added to ActivityViewPagerAdapter.createFragment()")
         }
     }

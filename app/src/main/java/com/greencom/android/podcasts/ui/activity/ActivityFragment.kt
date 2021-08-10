@@ -12,6 +12,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentActivityBinding
 import com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment
 import com.greencom.android.podcasts.ui.activity.history.ActivityHistoryFragment
+import com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressFragment
 import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -71,7 +72,8 @@ class ActivityFragment : Fragment() {
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 val key = when (binding.tabLayout.selectedTabPosition) {
                     0 -> ActivityBookmarksFragment.createOnTabReselectedKey()
-                    1 -> ActivityHistoryFragment.createOnTabReselectedKey()
+                    1 -> ActivityInProgressFragment.createOnTabReselectedKey()
+                    2 -> ActivityHistoryFragment.createOnTabReselectedKey()
                     else -> ""
                 }
                 childFragmentManager.setFragmentResult(key, Bundle())

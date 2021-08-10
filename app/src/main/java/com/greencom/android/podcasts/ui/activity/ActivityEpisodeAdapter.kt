@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.activity.bookmarks
+package com.greencom.android.podcasts.ui.activity
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,20 +6,25 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
-import com.greencom.android.podcasts.databinding.ItemBookmarksEpisodeBinding
+import com.greencom.android.podcasts.databinding.ItemActivityEpisodeBinding
 import com.greencom.android.podcasts.utils.*
 import kotlin.time.ExperimentalTime
 
-/** Adapter used for RecyclerView that represents a list of episodes added to bookmarks. */
-class BookmarksEpisodeAdapter(
+/**
+ * RecyclerView adapter used by
+ * [ActivityBookmarksFragment][com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment] and
+ * [ActivityInProgressFragment][com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressFragment].
+ */
+class ActivityEpisodeAdapter(
     private val navigateToEpisode: (String) -> Unit,
     private val onInBookmarksChange: (String, Boolean) -> Unit,
     private val playEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
-    private val onLongClick: (String, Boolean) -> Unit,
-) : ListAdapter<Episode, BookmarksEpisodeAdapter.ViewHolder>(EpisodeDiffCallback) {
+    private val showEpisodeOptions: (String, Boolean) -> Unit,
+) : ListAdapter<Episode, ActivityEpisodeAdapter.ViewHolder>(EpisodeDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.create(
@@ -29,7 +34,7 @@ class BookmarksEpisodeAdapter(
             playEpisode = playEpisode,
             play = play,
             pause = pause,
-            showEpisodeOptions = onLongClick
+            showEpisodeOptions = showEpisodeOptions
         )
     }
 
@@ -41,7 +46,7 @@ class BookmarksEpisodeAdapter(
 
     /** ViewHolder that represents a single episode in the bookmarks list. */
     class ViewHolder private constructor(
-        private val binding: ItemBookmarksEpisodeBinding,
+        private val binding: ItemActivityEpisodeBinding,
         private val navigateToEpisode: (String) -> Unit,
         private val onInBookmarksChange: (String, Boolean) -> Unit,
         private val playEpisode: (String) -> Unit,
@@ -78,7 +83,7 @@ class BookmarksEpisodeAdapter(
             }
 
             // Add the episode to the bookmarks or remove from there.
-            binding.removeFromBookmarks.setOnClickListener {
+            binding.inBookmarks.setOnClickListener {
                 onInBookmarksChange(episode.id, !episode.inBookmarks)
             }
         }
@@ -96,6 +101,19 @@ class BookmarksEpisodeAdapter(
                 }
                 title.text = episode.title
                 setupPlayButton(play, episode, context)
+
+                // Set up "Add to bookmarks" button.
+                if (episode.inBookmarks) {
+                    inBookmarks.setImageResource(R.drawable.ic_playlist_check_24)
+                    inBookmarks.imageTintList = context.getColorStateList(R.color.green)
+                    inBookmarks.contentDescription =
+                        context.getString(R.string.episode_remove_from_bookmarks_description)
+                } else {
+                    inBookmarks.setImageResource(R.drawable.ic_playlist_add_24)
+                    inBookmarks.imageTintList = context.getColorStateList(R.color.primary_color)
+                    inBookmarks.contentDescription =
+                        context.getString(R.string.episode_add_to_bookmarks_description)
+                }
             }
         }
 
@@ -110,7 +128,7 @@ class BookmarksEpisodeAdapter(
                 pause: () -> Unit,
                 showEpisodeOptions: (String, Boolean) -> Unit,
             ): ViewHolder {
-                val binding = ItemBookmarksEpisodeBinding
+                val binding = ItemActivityEpisodeBinding
                     .inflate(LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(
                     binding = binding,

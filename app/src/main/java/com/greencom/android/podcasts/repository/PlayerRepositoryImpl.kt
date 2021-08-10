@@ -57,6 +57,7 @@ class PlayerRepositoryImpl @Inject constructor(
                 EpisodeEntityState(
                     id = episodeId,
                     position = newPosition,
+                    lastPlayedDate = System.currentTimeMillis(),
                     isCompleted = false,
                     completionDate = 0L
                 )
@@ -66,6 +67,7 @@ class PlayerRepositoryImpl @Inject constructor(
                 EpisodeEntityState(
                     id = episodeId,
                     position = 0L,
+                    lastPlayedDate = System.currentTimeMillis(),
                     isCompleted = true,
                     completionDate = System.currentTimeMillis()
                 )
@@ -89,6 +91,7 @@ class PlayerRepositoryImpl @Inject constructor(
         val episodeState = EpisodeEntityState(
             id = episodeId,
             position = 0L,
+            lastPlayedDate = System.currentTimeMillis(),
             isCompleted = true,
             completionDate = System.currentTimeMillis()
         )

@@ -113,6 +113,12 @@ interface Repository {
      */
     fun getBookmarks(): Flow<List<Episode>>
 
+    /**
+     * Get a Flow with a list of episodes in progress in descending order of the last
+     * played date.
+     */
+    fun getEpisodesInProgress(): Flow<List<Episode>>
+
     /** Search for a podcast by given arguments, cache the result and return it as [State]. */
     suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult>
 

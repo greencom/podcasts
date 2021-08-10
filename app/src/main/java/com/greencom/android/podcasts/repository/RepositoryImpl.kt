@@ -422,6 +422,10 @@ class RepositoryImpl @Inject constructor(
 
     override fun getBookmarks(): Flow<List<Episode>> = episodeDao.getBookmarksFlow()
 
+    override fun getEpisodesInProgress(): Flow<List<Episode>> {
+        return episodeDao.getEpisodesInProgressFlow()
+    }
+
     override suspend fun searchPodcast(query: String, offset: Int): State<PodcastSearchResult> {
         // If search arguments are the same as they were for the previous one, return last result.
         searchResult?.let { searchResult ->
@@ -479,6 +483,7 @@ class RepositoryImpl @Inject constructor(
             EpisodeEntityState(
                 id = episodeId,
                 position = 0L,
+                lastPlayedDate = System.currentTimeMillis(),
                 isCompleted = true,
                 completionDate = System.currentTimeMillis()
             )
@@ -486,6 +491,7 @@ class RepositoryImpl @Inject constructor(
             EpisodeEntityState(
                 id = episodeId,
                 position = 0L,
+                lastPlayedDate = System.currentTimeMillis(),
                 isCompleted = false,
                 completionDate = 0L
             )

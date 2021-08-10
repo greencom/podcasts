@@ -69,21 +69,26 @@
     <!-- ActivityFragment start -->
     <string-array name="activity_tabs">
         <item>Закладки</item>
+        <item>В процессе</item>
         <item>История</item>
     </string-array>
     <!-- ActivityFragment end -->
+
+
+    <!-- ActivityBookmarksFragment start -->
+    <string name="activity_bookmarks_empty">Добавьте эпизод в закладки, и он появятся здесь &#128221;</string>
+    <!-- ActivityBookmarksFragment end -->
+
+
+    <!-- ActivityInProgress start -->
+    <string name="activity_in_progress_empty">Здесь будут отображаться текущие эпизоды &#9203;</string>
+    <!-- ActivityInProgress end -->
 
 
     <!-- ActivityHistoryFragment start -->
     <string name="activity_history_completed">Завершено</string>
     <string name="activity_history_empty">Здесь появятся завершённые эпизоды &#128035;</string>
     <!-- ActivityHistoryFragment end -->
-
-
-    <!-- ActivityBookmarksFragment start -->
-    <string name="activity_bookmarks_empty">Добавьте эпизод в закладки, и он появятся здесь &#128221;</string>
-    <string name="activity_bookmarks_remove_description">Удалить эпизод из закладок</string>
-    <!-- ActivityBookmarksFragment end -->
 
 
     <!-- PodcastFragment start -->

@@ -76,21 +76,26 @@
     <!-- ActivityFragment start -->
     <string-array name="activity_tabs">
         <item>Bookmarks</item>
+        <item>In progress</item>
         <item>History</item>
     </string-array>
     <!-- ActivityFragment end -->
+
+
+    <!-- ActivityBookmarksFragment start -->
+    <string name="activity_bookmarks_empty">Bookmark an episode and it will appear here &#128221;</string>
+    <!-- ActivityBookmarksFragment end -->
+
+
+    <!-- ActivityInProgress start -->
+    <string name="activity_in_progress_empty">Episodes in progress will appear here &#9203;</string>
+    <!-- ActivityInProgress end -->
 
 
     <!-- ActivityHistoryFragment start -->
     <string name="activity_history_completed">Completed</string>
     <string name="activity_history_empty">Completed episodes will appear here &#128035;</string>
     <!-- ActivityHistoryFragment end -->
-
-
-    <!-- ActivityBookmarksFragment start -->
-    <string name="activity_bookmarks_empty">Bookmark an episode and it will appear here &#128221;</string>
-    <string name="activity_bookmarks_remove_description">Remove the episode from the bookmarks</string>
-    <!-- ActivityBookmarksFragment end -->
 
 
     <!-- PodcastFragment start -->

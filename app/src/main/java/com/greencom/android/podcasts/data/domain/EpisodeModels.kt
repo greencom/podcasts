@@ -54,6 +54,10 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "position")
     val position: Long,
 
+    /** The date in ms when the episode was last time played. `0` if the episode was not played. */
+    @ColumnInfo(name = "last_played_date")
+    val lastPlayedDate: Long,
+
     /** Whether the episode is completed. */
     @ColumnInfo(name = "is_completed")
     val isCompleted: Boolean,

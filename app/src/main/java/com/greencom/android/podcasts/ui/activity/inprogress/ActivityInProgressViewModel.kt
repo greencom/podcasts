@@ -1,4 +1,4 @@
-package com.greencom.android.podcasts.ui.activity.bookmarks
+package com.greencom.android.podcasts.ui.activity.inprogress
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,19 +12,19 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/** ViewModel used by [ActivityBookmarksFragment]. */
+/** ViewModel used by [ActivityInProgressFragment]. */
 @HiltViewModel
-class ActivityBookmarksViewModel @Inject constructor(
+class ActivityInProgressViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
     private val repository: Repository,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ActivityBookmarksState>(ActivityBookmarksState.Empty)
-    /** StateFlow of UI state. States are represented by [ActivityBookmarksState]. */
+    private val _uiState = MutableStateFlow<ActivityInProgressState>(ActivityInProgressState.Empty)
+    /** StateFlow of UI state. States are represented by [ActivityInProgressState]. */
     val uiState = _uiState.asStateFlow()
 
-    private val _event = Channel<ActivityBookmarksEvent>(Channel.BUFFERED)
-    /** Flow of events represented by [ActivityBookmarksEvent]. */
+    private val _event = Channel<ActivityInProgressEvent>(Channel.BUFFERED)
+    /** Flow of events represented by [ActivityInProgressEvent]. */
     val event = _event.receiveAsFlow()
 
     /** Is the currently selected episode one of the episodes in the bookmarks. */
@@ -45,9 +45,9 @@ class ActivityBookmarksViewModel @Inject constructor(
         playerServiceConnection.pause()
     }
 
-    /** Load a list of bookmarks. Result will be posted to [uiState]. */
-    fun getBookmarks() = viewModelScope.launch {
-        repository.getBookmarks()
+    /** Load a list of episodes in progress. Result will be posted to [uiState]. */
+    fun getEpisodesInProgress() = viewModelScope.launch {
+        repository.getEpisodesInProgress()
             .combine(playerServiceConnection.currentEpisode) { episodes, currentEpisode ->
                 if (episodes.isNotEmpty()) {
                     var mIsCurrentEpisodeHere = false
@@ -77,15 +77,15 @@ class ActivityBookmarksViewModel @Inject constructor(
             }
             .collectLatest { episodes ->
                 _uiState.value = when {
-                    episodes.isNotEmpty() -> ActivityBookmarksState.Success(episodes)
-                    else -> ActivityBookmarksState.Empty
+                    episodes.isNotEmpty() -> ActivityInProgressState.Success(episodes)
+                    else -> ActivityInProgressState.Empty
                 }
             }
     }
 
     /** Navigate to EpisodeFragment with given ID. */
     fun navigateToEpisode(episodeId: String) = viewModelScope.launch {
-        _event.send(ActivityBookmarksEvent.NavigateToEpisode(episodeId))
+        _event.send(ActivityInProgressEvent.NavigateToEpisode(episodeId))
     }
 
     /** Add an episode to the bookmarks or remove from there. */
@@ -97,7 +97,7 @@ class ActivityBookmarksViewModel @Inject constructor(
      * Show an [EpisodeOptionsDialog][com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog].
      */
     fun showEpisodeOptions(episodeId: String, isEpisodeCompleted: Boolean) = viewModelScope.launch {
-        _event.send(ActivityBookmarksEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
+        _event.send(ActivityInProgressEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
     }
 
     /** Mark an episode as completed or uncompleted by ID. */
@@ -106,26 +106,26 @@ class ActivityBookmarksViewModel @Inject constructor(
             repository.markEpisodeCompletedOrUncompleted(episodeId, isCompleted)
         }
 
-    /** Sealed class that represents the UI state of the [ActivityBookmarksFragment]. */
-    sealed class ActivityBookmarksState {
+    /** Sealed class that represents the UI state of the [ActivityInProgressFragment]. */
+    sealed class ActivityInProgressState {
 
         /** Empty screen. */
-        object Empty : ActivityBookmarksState()
+        object Empty : ActivityInProgressState()
 
         /** Success screen with a list of episodes. */
-        data class Success(val episodes: List<Episode>) : ActivityBookmarksState()
+        data class Success(val episode: List<Episode>) : ActivityInProgressState()
     }
 
-    /** Sealed class that represents events of the [ActivityBookmarksFragment]. */
-    sealed class ActivityBookmarksEvent {
+    /** Sealed class that represents events of the [ActivityInProgressFragment]. */
+    sealed class ActivityInProgressEvent {
 
         /** Navigate to episode page. */
-        data class NavigateToEpisode(val episodeId: String) : ActivityBookmarksEvent()
+        data class NavigateToEpisode(val episodeId: String) : ActivityInProgressEvent()
 
         /**
          * Show an [EpisodeOptionsDialog][com.greencom.android.podcasts.ui.dialogs.EpisodeOptionsDialog].
          */
         data class EpisodeOptionDialog(val episodeId: String, val isEpisodeCompleted: Boolean) :
-            ActivityBookmarksEvent()
+            ActivityInProgressEvent()
     }
 }

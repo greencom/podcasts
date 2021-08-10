@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="6"
-        tools:listitem="@layout/item_bookmarks_episode" />
+        tools:listitem="@layout/item_activity_episode" />
 
     <ImageView
         android:id="@+id/empty_image"
