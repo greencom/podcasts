@@ -62,6 +62,15 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="?attr/colorOnSurfaceHint" />
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:trackColor="@color/transparent" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -80,15 +89,6 @@
         app:layout_constraintTop_toBottomOf="@+id/search_bar"
         tools:itemCount="5"
         tools:listitem="@layout/item_search_podcast" />
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/search_bar"
-        app:trackColor="?attr/colorSurface" />
 
     <include
         android:id="@+id/error"
