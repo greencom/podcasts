@@ -102,7 +102,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_gravity="bottom"
-                android:background="?attr/colorOnSurfaceUtil" />
+                android:background="?attr/colorOnSurfaceUtil"
+                android:visibility="gone" />
 
         </FrameLayout>
 
