@@ -40,6 +40,7 @@ class ActivityInProgressFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptio
     /** RecyclerView bookmarks adapter. */
     private val adapter by lazy {
         ActivityEpisodeAdapter(
+            dateMode = ActivityEpisodeAdapter.MODE_LAST_PLAYED_DATE,
             navigateToEpisode = viewModel::navigateToEpisode,
             onInBookmarksChange = viewModel::onInBookmarksChange,
             playEpisode = viewModel::playEpisode,

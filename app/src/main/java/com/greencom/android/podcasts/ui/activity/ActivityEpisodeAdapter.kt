@@ -9,6 +9,8 @@ import coil.load
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.ItemActivityEpisodeBinding
+import com.greencom.android.podcasts.ui.activity.ActivityEpisodeAdapter.Companion.MODE_LAST_PLAYED_DATE
+import com.greencom.android.podcasts.ui.activity.ActivityEpisodeAdapter.Companion.MODE_PUB_DATE
 import com.greencom.android.podcasts.utils.*
 import kotlin.time.ExperimentalTime
 
@@ -16,8 +18,12 @@ import kotlin.time.ExperimentalTime
  * RecyclerView adapter used by
  * [ActivityBookmarksFragment][com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment] and
  * [ActivityInProgressFragment][com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressFragment].
+ *
+ * Use [dateMode] to specify episode date presentation mode. Should be either [MODE_PUB_DATE] or
+ * [MODE_LAST_PLAYED_DATE].
  */
 class ActivityEpisodeAdapter(
+    private val dateMode: Int,
     private val navigateToEpisode: (String) -> Unit,
     private val onInBookmarksChange: (String, Boolean) -> Unit,
     private val playEpisode: (String) -> Unit,
@@ -25,6 +31,14 @@ class ActivityEpisodeAdapter(
     private val pause: () -> Unit,
     private val showEpisodeOptions: (String, Boolean) -> Unit,
 ) : ListAdapter<Episode, ActivityEpisodeAdapter.ViewHolder>(EpisodeDiffCallback) {
+
+    init {
+        if (dateMode != MODE_PUB_DATE && dateMode != MODE_LAST_PLAYED_DATE) {
+            throw IllegalArgumentException(
+                "dateMode should be either MODE_PUB_DATE or MODE_LAST_PLAYED_DATE"
+            )
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.create(
@@ -41,7 +55,16 @@ class ActivityEpisodeAdapter(
     @ExperimentalTime
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val episode = getItem(position)
-        holder.bind(episode)
+        holder.bind(episode, dateMode)
+    }
+
+    companion object {
+
+        /** Adapter will use episode pub date. */
+        const val MODE_PUB_DATE = 1
+
+        /** Adapter will use episode last played date. */
+        const val MODE_LAST_PLAYED_DATE = 2
     }
 
     /** ViewHolder that represents a single episode in the bookmarks list. */
@@ -90,12 +113,17 @@ class ActivityEpisodeAdapter(
 
         /** Bind ViewHolder with a given [Episode]. */
         @ExperimentalTime
-        fun bind(episode: Episode) {
+        fun bind(episode: Episode, dateMode: Int) {
             this.episode = episode
             binding.apply {
                 cover.load(episode.image) { coilCoverBuilder(context) }
                 dateAndPodcastTitle.text = buildString {
-                    append(episodeDateToString(episode.date, context))
+                    val date = when (dateMode) {
+                        MODE_PUB_DATE -> episode.date
+                        MODE_LAST_PLAYED_DATE -> episode.lastPlayedDate
+                        else -> episode.date
+                    }
+                    append(episodeDateToString(date, context))
                     append(" ${Symbol.bullet} ")
                     append(episode.podcastTitle)
                 }
