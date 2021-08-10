@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- AppBarLayout -->
+    <style name="AppBarLayout">
+        <item name="elevation">0dp</item>
+        <item name="liftOnScroll">false</item>
+        <item name="android:background">@null</item>
+    </style>
+
+
     <!-- BottomSheetDialog start -->
     <style name="BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheet</item>
@@ -22,13 +30,33 @@
         <item name="cornerSizeTopLeft">16dp</item>
         <item name="cornerSizeTopRight">16dp</item>
     </style>
+
+    <style name="BottomSheetPill">
+        <item name="android:layout_width">@dimen/bottom_sheet_pill_width</item>
+        <item name="android:layout_height">@dimen/bottom_sheet_pill_height</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">12dp</item>
+        <item name="android:background">@drawable/shape_bottom_sheet_pill</item>
+    </style>
     <!-- BottomSheetDialog end -->
 
 
-    <!-- TabLayout tab text. -->
+    <!-- TabLayout start -->
+    <style name="TabLayout">
+        <item name="tabIndicator">@drawable/shape_tab_indicator</item>
+        <item name="tabIndicatorAnimationMode">elastic</item>
+        <item name="tabIndicatorFullWidth">false</item>
+        <item name="tabIndicatorHeight">4dp</item>
+        <item name="tabPaddingStart">16dp</item>
+        <item name="tabPaddingEnd">16dp</item>
+        <item name="tabRippleColor">@color/tab_ripple_color</item>
+        <item name="tabTextAppearance">@style/TabLayout.Tab.Text</item>
+    </style>
+
     <style name="TabLayout.Tab.Text" parent="TextAppearance.AppCompat.Body1">
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
+    <!-- TabLayout end -->
 
 
     <!-- Buttons start -->

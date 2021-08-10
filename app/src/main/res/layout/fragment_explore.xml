@@ -15,11 +15,9 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
+        style="@style/AppBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorSurface"
-        app:elevation="0dp"
-        app:liftOnScroll="false">
+        android:layout_height="wrap_content">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -60,18 +58,11 @@
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_layout"
+                style="@style/TabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/tab_layout_height"
                 app:tabGravity="center"
-                app:tabIndicator="@drawable/shape_tab_indicator"
-                app:tabIndicatorAnimationMode="elastic"
-                app:tabIndicatorFullWidth="false"
-                app:tabIndicatorHeight="4dp"
-                app:tabMode="scrollable"
-                app:tabPaddingEnd="16dp"
-                app:tabPaddingStart="16dp"
-                app:tabRippleColor="@color/tab_ripple_color"
-                app:tabTextAppearance="@style/TabLayout.Tab.Text" />
+                app:tabMode="scrollable" />
 
             <View
                 android:layout_width="match_parent"

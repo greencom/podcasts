@@ -6,12 +6,7 @@
     android:orientation="vertical"
     android:paddingBottom="16dp">
 
-    <View
-        android:layout_width="@dimen/bottom_sheet_pill_width"
-        android:layout_height="@dimen/bottom_sheet_pill_height"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/shape_bottom_sheet_pill" />
+    <View style="@style/BottomSheetPill" />
 
     <LinearLayout
         android:id="@+id/mark_completed"

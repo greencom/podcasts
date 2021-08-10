@@ -7,11 +7,7 @@
 
     <View
         android:id="@+id/pill"
-        android:layout_width="@dimen/bottom_sheet_pill_width"
-        android:layout_height="@dimen/bottom_sheet_pill_height"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/shape_bottom_sheet_pill"
+        style="@style/BottomSheetPill"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
