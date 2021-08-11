@@ -56,31 +56,28 @@
 
             <ImageButton
                 android:id="@+id/app_bar_back"
-                style="@style/ImageButton"
+                style="@style/AppBarLayout.Back"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
-                android:contentDescription="@string/description_back"
-                android:src="@drawable/ic_arrow_back_24"
-                app:tint="?attr/colorOnSurfaceLow" />
+                android:contentDescription="@string/description_back" />
 
             <TextView
                 android:id="@+id/app_bar_title"
                 style="@style/AppBarLayout.Title"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
                 android:ellipsize="marquee"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:fontFamily="@font/roboto"
                 android:gravity="center_vertical"
                 android:marqueeRepeatLimit="marquee_forever"
-                android:paddingStart="8dp"
-                android:paddingEnd="16dp"
                 android:singleLine="true"
-                android:textColor="?attr/colorOnSurfaceMedium"
-                android:textSize="20sp"
-                android:visibility="gone"
+                android:visibility="visible"
                 tools:text="Чтение" />
 
         </LinearLayout>

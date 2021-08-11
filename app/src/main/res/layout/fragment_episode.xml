@@ -135,16 +135,14 @@
 
             <ImageButton
                 android:id="@+id/app_bar_back"
-                style="@style/ImageButton"
+                style="@style/AppBarLayout.Back"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:contentDescription="@string/description_back"
-                android:src="@drawable/ic_arrow_back_24"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/colorOnSurfaceLow" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/app_bar_options"

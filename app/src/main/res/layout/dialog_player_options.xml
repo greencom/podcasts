@@ -30,7 +30,8 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="16dp"
+            android:layout_marginHorizontal="16dp"
+            android:ellipsize="end"
             android:gravity="center_vertical"
             android:text="@string/player_options_mark_completed"
             android:textColor="?attr/colorOnSurfaceHigh"
