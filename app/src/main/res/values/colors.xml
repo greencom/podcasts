@@ -40,6 +40,7 @@
     <color name="dark_image_button_background_ripple">#646464</color>
     <color name="dark_bottom_nav_view_background">#222223</color>
     <color name="dark_fab_ripple">#535353</color>
+    <color name="dark_material_alert_dialog_background">#090909</color>
     <!-- Other end -->
 
 

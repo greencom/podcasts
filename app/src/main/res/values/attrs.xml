@@ -11,6 +11,7 @@
 
 
     <!-- Other start -->
+    <attr name="colorMaterialAlertDialogBackground" format="color" />
     <attr name="colorBottomNavViewBackground" format="color" />
     <attr name="colorSwipeToRefreshBackground" format="color" />
     <attr name="colorFabRipple" format="color" />

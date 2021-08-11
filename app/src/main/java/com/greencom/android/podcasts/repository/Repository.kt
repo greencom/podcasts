@@ -88,6 +88,12 @@ interface Repository {
     /** Get a Flow with a list of subscriptions represented by [PodcastShort]. */
     fun getSubscriptions(): Flow<List<PodcastShort>>
 
+    /** Set app theme mode. */
+    suspend fun setTheme(mode: Int)
+
+    /** Get a Flow with the app theme mode. */
+    fun getTheme(): Flow<Int?>
+
     /** Save subscription presentation mode. */
     suspend fun setSubscriptionMode(mode: Int)
 

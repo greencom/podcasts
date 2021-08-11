@@ -29,6 +29,20 @@ class PreferenceStorageImpl @Inject constructor(
 
     private val dataStore = appContext.dataStore
 
+    override suspend fun setTheme(mode: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.THEME_MODE] = mode
+        }
+    }
+
+    override fun getTheme(): Flow<Int?> {
+        return dataStore.data
+            .catch { handleException(it) }
+            .map { preferences ->
+                preferences[PreferenceKeys.THEME_MODE]
+            }
+    }
+
     override suspend fun setPlaybackSpeed(playbackSpeed: Float) {
         dataStore.edit { preferences ->
             preferences[PreferenceKeys.PLAYBACK_SPEED] = playbackSpeed

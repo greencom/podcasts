@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeFragment_to_podcastFragment"
             app:destination="@id/podcastFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/exploreFragment"
@@ -89,4 +92,9 @@
             android:id="@+id/action_searchFragment_to_podcastFragment"
             app:destination="@id/podcastFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.greencom.android.podcasts.ui.settings.SettingsFragment"
+        android:label="SettingsFragment"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

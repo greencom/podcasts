@@ -66,15 +66,30 @@
 
             <TextView
                 android:id="@+id/app_bar_title"
-                android:layout_width="match_parent"
+                style="@style/AppBarLayout.Title"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginHorizontal="16dp"
                 android:ellipsize="end"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:paddingHorizontal="16dp"
                 android:text="@string/home_title"
-                android:textColor="?attr/colorOnSurfaceMedium"
-                android:textSize="20sp" />
+                app:layout_constraintEnd_toStartOf="@id/app_bar_options"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageButton
+                android:id="@+id/app_bar_options"
+                style="@style/ImageButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/episode_options"
+                android:rotation="90"
+                android:src="@drawable/ic_options_horizontal_24"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurfaceLow" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

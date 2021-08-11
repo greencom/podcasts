@@ -154,6 +154,19 @@
     <!-- SearchFragment end -->
 
 
+    <!-- SettingsFragment start -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_system">Система</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_show_subscription_titles">Показывать заголовки подписок</string>
+    <string name="settings_developer_options">Параметры разработчика</string>
+    <string name="settings_delete_episodes">Удалить все эпизоды</string>
+    <string name="settings_delete_podcasts_and_episodes">Удалить все подкасты и эпизоды</string>
+    <!-- SettingsFragment end -->
+
+
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Отписаться</string>
     <!-- UnsubscribeDialog end -->

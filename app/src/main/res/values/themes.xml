@@ -60,5 +60,10 @@
         <item name="colorErrorRobotWire">@color/light_error_robot_wire</item>
         <!-- Error screen end -->
 
+        <!-- MaterialAlertDialog start -->
+        <item name="colorMaterialAlertDialogBackground">@color/light_surface</item>
+        <item name="materialAlertDialogTheme">@style/MaterialAlertDialog</item>
+        <!-- MaterialAlertDialog end -->
+
     </style>
 </resources>

@@ -392,6 +392,14 @@ class RepositoryImpl @Inject constructor(
         return podcastDao.getSubscriptionsFlow()
     }
 
+    override suspend fun setTheme(mode: Int) {
+        preferenceStorage.setTheme(mode)
+    }
+
+    override fun getTheme(): Flow<Int?> {
+        return preferenceStorage.getTheme()
+    }
+
     override suspend fun setSubscriptionMode(mode: Int) {
         preferenceStorage.setSubscriptionMode(mode)
     }

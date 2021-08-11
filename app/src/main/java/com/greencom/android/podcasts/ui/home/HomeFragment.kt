@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-private const val SUBSCRIPTION_MODE_GRID_COVER_ONLY = 1
-private const val SUBSCRIPTION_MODE_GRID_WITH_TITLE = 2
+const val SUBSCRIPTION_MODE_GRID_COVER_ONLY = 1
+const val SUBSCRIPTION_MODE_GRID_WITH_TITLE = 2
 
 // Saving instance state.
 private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
@@ -121,6 +121,13 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
                 }
             }
         })
+
+        // Navigate to SettingsFragment.
+        binding.appBarOptions.setOnClickListener {
+            findNavController().navigate(
+                HomeFragmentDirections.actionHomeFragmentToSettingsFragment()
+            )
+        }
     }
 
     /** RecyclerView setup. */

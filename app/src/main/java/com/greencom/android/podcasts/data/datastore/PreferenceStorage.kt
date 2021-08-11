@@ -5,6 +5,12 @@ import kotlinx.coroutines.flow.Flow
 /** Provides access to the storage that uses DataStore APIs. */
 interface PreferenceStorage {
 
+    /** Save app theme mode. */
+    suspend fun setTheme(mode: Int)
+
+    /** Get a Flow with the app theme mode. */
+    fun getTheme(): Flow<Int?>
+
     /** Save player playback speed. */
     suspend fun setPlaybackSpeed(playbackSpeed: Float)
 

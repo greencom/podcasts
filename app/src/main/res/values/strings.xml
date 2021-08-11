@@ -162,6 +162,19 @@
     <!-- SearchFragment end -->
 
 
+    <!-- SettingsFragment start -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_show_subscription_titles">Show subscription titles</string>
+    <string name="settings_developer_options">Developer options</string>
+    <string name="settings_delete_episodes">Delete all episodes</string>
+    <string name="settings_delete_podcasts_and_episodes">Delete all podcasts and episodes</string>
+    <!-- SettingsFragment end -->
+
+
     <!-- UnsubscribeDialog start -->
     <string name="unsubscribe_unsubscribe">Unsubscribe</string>
     <!-- UnsubscribeDialog end -->

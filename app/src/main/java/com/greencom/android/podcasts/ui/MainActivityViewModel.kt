@@ -107,6 +107,8 @@ class MainActivityViewModel @Inject constructor(
         playerServiceConnection.clearSleepTimer()
     }
 
+    fun getTheme(): Flow<Int?> = repository.getTheme()
+
     fun showPlayerOptionsDialog(episodeId: String?) {
         episodeId ?: return
         viewModelScope.launch {
