@@ -14,7 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Podcasts">
 
-        <activity android:name=".ui.MainActivity"
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan">
             <intent-filter>
@@ -23,7 +25,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".player.PlayerService">
+        <service
+            android:name=".player.PlayerService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="androidx.media2.session.MediaSessionService" />
             </intent-filter>
