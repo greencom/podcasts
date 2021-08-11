@@ -103,6 +103,7 @@
                 android:textColor="?attr/colorOnSurfaceLow" />
 
             <LinearLayout
+                android:id="@+id/delete_episodes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_list_item_background"
@@ -130,6 +131,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/delete_all"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_list_item_background"

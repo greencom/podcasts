@@ -17,10 +17,10 @@ import kotlinx.coroutines.flow.Flow
  */
 interface Repository {
 
-    // TODO: Test code.
+    /** Clear the whole database. */
     suspend fun deleteAll()
 
-    // TODO: Test code.
+    /** Remove all episodes from the database. */
     suspend fun deleteEpisodes()
 
     /**

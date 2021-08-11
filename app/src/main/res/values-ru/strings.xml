@@ -4,6 +4,9 @@
     <string name="app_name">Подкасты</string>
 
     <!-- Common start -->
+    <string name="yes">Да</string>
+    <string name="are_you_sure">Вы уверены?</string>
+    <string name="action_cannot_be_undone">Это действие невозможно отменить</string>
     <string name="subscribe">Подписаться</string>
     <string name="subscribed">Подписка оформлена</string>
     <string name="something_went_wrong">Что-то пошло не так</string>

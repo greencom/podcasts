@@ -124,6 +124,36 @@ class SettingsFragment : Fragment() {
                 val mode = if (isChecked) SUBSCRIPTION_MODE_GRID_WITH_TITLE else SUBSCRIPTION_MODE_GRID_COVER_ONLY
                 viewModel.setSubscriptionMode(mode)
             }
+
+            // Remove all episodes from the database.
+            deleteEpisodes.setOnClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.are_you_sure)
+                    .setMessage(R.string.action_cannot_be_undone)
+                    .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton(R.string.yes) { dialog, _ ->
+                        dialog.dismiss()
+                        viewModel.deleteEpisodes()
+                    }
+                    .show()
+            }
+
+            // Clear the whole database.
+            deleteAll.setOnClickListener {
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle(R.string.are_you_sure)
+                    .setMessage(R.string.action_cannot_be_undone)
+                    .setNegativeButton(android.R.string.cancel) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton(R.string.yes) { dialog, _ ->
+                        dialog.dismiss()
+                        viewModel.deleteAll()
+                    }
+                    .show()
+            }
         }
     }
 

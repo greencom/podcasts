@@ -29,4 +29,14 @@ class SettingsViewModel @Inject constructor(
 
     /** Get a Flow with a subscription presentation mode. */
     fun getSubscriptionMode(): Flow<Int?> = repository.getSubscriptionMode()
+
+    /** Remove all episodes from the database. */
+    fun deleteEpisodes() = viewModelScope.launch {
+        repository.deleteEpisodes()
+    }
+
+    /** Clear the whole database. */
+    fun deleteAll() = viewModelScope.launch {
+        repository.deleteAll()
+    }
 }
