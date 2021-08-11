@@ -77,6 +77,14 @@ class PlayerServiceConnection @Inject constructor(
                 } else {
                     restoreEpisode()
                 }
+
+                // Check for buffering state.
+                if (
+                    isBuffering.value && (controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED ||
+                            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING)
+                ) {
+                    _isBuffering.value = false
+                }
             }
 
             override fun onCurrentMediaItemChanged(controller: MediaController, item: MediaItem?) {
