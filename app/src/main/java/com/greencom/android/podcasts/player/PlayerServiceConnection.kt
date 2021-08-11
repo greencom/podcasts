@@ -27,11 +27,11 @@ class PlayerServiceConnection @Inject constructor(
     @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
 
-    private lateinit var scope: CoroutineScope
+    private var scope: CoroutineScope? = null
 
     private var currentPositionJob: Job? = null
 
-    private lateinit var controller: MediaController
+    private var controller: MediaController? = null
 
     private val _currentEpisode = MutableStateFlow(CurrentEpisode.empty())
     val currentEpisode = _currentEpisode.asStateFlow()
@@ -49,14 +49,10 @@ class PlayerServiceConnection @Inject constructor(
     val currentPosition = _currentPosition.asStateFlow()
 
     val isPlaying: Boolean
-        get() = if (::controller.isInitialized) {
-            controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING
-        } else false
+        get() = controller?.playerState == MediaPlayer.PLAYER_STATE_PLAYING
 
     val isPaused: Boolean
-        get() = if (::controller.isInitialized) {
-            controller.playerState == MediaPlayer.PLAYER_STATE_PAUSED
-        } else false
+        get() = controller?.playerState == MediaPlayer.PLAYER_STATE_PAUSED
 
     private var startPlaying = true
 
@@ -132,31 +128,33 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun play() {
-        controller.play()
+        controller?.play()
     }
 
     fun pause() {
-        controller.pause()
+        controller?.pause()
     }
 
     fun seekTo(position: Long) {
-        controller.currentMediaItem ?: return
+        controller?.let { controller ->
+            controller.currentMediaItem ?: return
 
-        val mPosition = position.coerceIn(0..controller.duration)
-        controller.seekTo(mPosition)
-        _currentPosition.value = mPosition
+            val mPosition = position.coerceIn(0..controller.duration)
+            controller.seekTo(mPosition)
+            _currentPosition.value = mPosition
+        }
     }
 
     fun playEpisode(episodeId: String) {
         startPlaying = true
-        controller.pause() // Pause player to show the appropriate UI state while loading.
-        controller.setMediaItem(episodeId)
+        controller?.pause() // Pause player to show the appropriate UI state while loading.
+        controller?.setMediaItem(episodeId)
     }
 
     fun playFromTimecode(episodeId: String, timecode: Long) {
         startFromTimecode = true
         if (currentEpisode.value.id == episodeId) {
-            controller.seekTo(timecode)
+            controller?.seekTo(timecode)
         } else {
             this.timecode = timecode
             playEpisode(episodeId)
@@ -165,11 +163,11 @@ class PlayerServiceConnection @Inject constructor(
 
     fun restoreEpisode() {
         startPlaying = false
-        scope.launch {
+        scope?.launch {
             val episodeId = repository.getLastEpisodeId().first() ?: return@launch
             val episode = repository.getEpisode(episodeId) ?: return@launch
             if (!episode.isCompleted) {
-                controller.setMediaItem(episodeId)
+                controller?.setMediaItem(episodeId)
             } else {
                 // Reset last episode.
                 repository.setLastEpisodeId("")
@@ -178,58 +176,59 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun markCompleted(episodeId: String) {
-        controller.sendCustomCommand(
+        controller?.sendCustomCommand(
             SessionCommand(CustomSessionCommand.RESET_PLAYER, null),
             null
         )
         _currentEpisode.value = CurrentEpisode.empty()
-        scope.launch {
+        scope?.launch {
             repository.onEpisodeCompleted(episodeId)
         }
     }
 
     fun changePlaybackSpeed() {
-        scope.launch {
+        scope?.launch {
             val newSpeed = when (repository.getPlaybackSpeed().first() ?: 1.0F) {
                 1.0F -> 1.2F
                 1.2F -> 1.5F
                 1.5F -> 2.0F
                 else -> 1.0F
             }
-            controller.playbackSpeed = newSpeed
+            controller?.playbackSpeed = newSpeed
             repository.setPlaybackSpeed(newSpeed)
         }
     }
 
     @ExperimentalTime
     fun setSleepTimer(duration: Duration) {
-        controller.sendCustomCommand(
+        controller?.sendCustomCommand(
             SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null),
             bundleOf(PLAYER_SET_SLEEP_TIMER to duration.inWholeMilliseconds)
         )
     }
 
     fun clearSleepTimer() {
-        controller.sendCustomCommand(
+        controller?.sendCustomCommand(
             SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null),
             null
         )
     }
 
     private fun postCurrentPosition() {
+        val mController = controller ?: return
         currentPositionJob?.cancel()
         if (isPlaying) {
-            currentPositionJob = scope.launch {
+            currentPositionJob = scope?.launch {
                 while (true) {
                     ensureActive()
-                    _currentPosition.value = controller.currentPosition.coerceIn(0..duration.value)
+                    _currentPosition.value = mController.currentPosition.coerceIn(0..duration.value)
                     delay(1000)
                 }
             }
         } else {
             // Make sure that duration is not less than zero.
             val duration = duration.value.coerceIn(0..Long.MAX_VALUE)
-            controller.currentPosition.coerceIn(0..duration).let { value ->
+            mController.currentPosition.coerceIn(0..duration).let { value ->
                 // Make sure _currentPosition gets a new value that will pass the equality check
                 // against the previous one due to the distinctUntilChanged() function applied
                 // under the hood.
@@ -256,7 +255,7 @@ class PlayerServiceConnection @Inject constructor(
 
     fun disconnect() {
         Log.d(PLAYER_TAG, "PlayerServiceConnection.disconnect()")
-        controller.close()
-        scope.cancel()
+        controller?.close()
+        scope?.cancel()
     }
 }
