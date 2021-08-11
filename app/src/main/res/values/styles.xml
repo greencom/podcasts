@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- AppBarLayout -->
+    <!-- AppBarLayout start -->
     <style name="AppBarLayout">
         <item name="elevation">0dp</item>
         <item name="liftOnScroll">false</item>
         <item name="android:background">@null</item>
     </style>
+
+    <style name="AppBarLayout.Title">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">?attr/colorOnSurfaceHigh</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+    <!-- AppBarLayout end -->
 
 
     <!-- BottomSheetDialog start -->
