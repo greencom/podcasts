@@ -194,10 +194,8 @@ class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogLis
         // Show and hide app bar divider depending on the scroll state.
         binding.appBarDivider.hideImmediately()
         binding.nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            if (scrollY > 0) {
-                binding.appBarDivider.revealImmediately()
-            } else {
-                binding.appBarDivider.hideCrossfade()
+            binding.appBarDivider.apply {
+                if (scrollY > 0) revealImmediately() else hideCrossfade()
             }
         }
     }

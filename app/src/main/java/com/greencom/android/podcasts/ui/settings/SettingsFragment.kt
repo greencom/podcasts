@@ -17,6 +17,8 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.databinding.FragmentSettingsBinding
 import com.greencom.android.podcasts.ui.home.SUBSCRIPTION_MODE_GRID_COVER_ONLY
 import com.greencom.android.podcasts.ui.home.SUBSCRIPTION_MODE_GRID_WITH_TITLE
+import com.greencom.android.podcasts.utils.extensions.hideCrossfade
+import com.greencom.android.podcasts.utils.extensions.revealImmediately
 import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +65,13 @@ class SettingsFragment : Fragment() {
     /** Fragment views setup. */
     private fun initViews() {
         setAppBarLayoutCanDrag(binding.appBarLayout, false)
+
+        // Show and hide the app bar divider depending on the scroll state.
+        binding.nestedScrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            binding.appBarDivider.apply {
+                if (scrollY > 0) revealImmediately() else hideCrossfade()
+            }
+        }
 
         binding.apply {
             // Navigate up.

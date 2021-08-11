@@ -11,11 +11,12 @@
     <LinearLayout
         android:id="@+id/mark_completed_or_uncompleted"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/ripple_list_item_background"
         android:clickable="true"
         android:focusable="true"
+        android:minHeight="48dp"
         android:orientation="horizontal">
 
         <ImageView
@@ -31,10 +32,9 @@
         <TextView
             android:id="@+id/mark_completed_or_uncompleted_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:layout_marginHorizontal="16dp"
-            android:ellipsize="end"
-            android:gravity="center_vertical"
             android:text="@string/episode_options_mark_completed"
             android:textColor="?attr/colorOnSurfaceHigh"
             android:textSize="16sp" />

@@ -30,7 +30,7 @@
     <string name="player_time_stamp_left_format_h_m_s" translatable="false">-%d:%02d:%02d</string>
 
     <string name="player_error">An error has occurred in the Podcasts app player. The player is closed.</string>
-    <string name="player_sleep_timer">Sleep timer</string>
+    <string name="player_sleep_timer">Timer</string>
 
     <string name="player_description_play_pause">Play and pause</string>
     <string name="player_description_backward">Back 10 seconds</string>
