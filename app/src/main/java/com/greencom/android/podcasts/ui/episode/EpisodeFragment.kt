@@ -168,7 +168,7 @@ class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogLis
                 when {
                     episode.isSelected && episode.isPlaying -> viewModel.pause()
                     episode.isSelected && !episode.isPlaying -> viewModel.play()
-                    else -> viewModel.playEpisode(episode.id)
+                    else -> viewModel.setEpisode(episode.id)
                 }
             }
         }

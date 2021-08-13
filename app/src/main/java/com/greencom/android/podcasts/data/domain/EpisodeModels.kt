@@ -83,6 +83,10 @@ data class Episode @JvmOverloads constructor(
     @Ignore
     val isSelected: Boolean = false,
 
+    /** Whether the episode is buffering right now. */
+    @Ignore
+    val isBuffering: Boolean = false,
+
     /** Whether the episode is playing right now. Makes sense only if the episode is selected. */
     @Ignore
     val isPlaying: Boolean = false,

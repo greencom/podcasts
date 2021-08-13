@@ -104,6 +104,11 @@ fun setupPlayButton(button: MaterialButton, episode: Episode, context: Context) 
                 iconTint = context.getColorStateListCompat(R.color.primary_color)
                 icon.animateVectorDrawable()
             }
+            episode.isBuffering -> {
+                text = context.getString(R.string.podcast_episode_buffering)
+                icon = context.getDrawableCompat(R.drawable.ic_line_24)
+                iconTint = context.getColorStateListCompat(R.color.primary_color)
+            }
             episode.isCompleted -> {
                 text = context.getString(R.string.podcast_episode_completed)
                 icon = context.getDrawableCompat(R.drawable.ic_check_24)

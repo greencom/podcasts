@@ -42,7 +42,7 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
             dateMode = ActivityEpisodeAdapter.MODE_PUB_DATE,
             navigateToEpisode = viewModel::navigateToEpisode,
             onInBookmarksChange = viewModel::onInBookmarksChange,
-            playEpisode = viewModel::playEpisode,
+            playEpisode = viewModel::setEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
             showEpisodeOptions = viewModel::showEpisodeOptions

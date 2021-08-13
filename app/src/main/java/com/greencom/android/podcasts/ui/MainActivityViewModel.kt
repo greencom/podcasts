@@ -14,7 +14,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // TODO
@@ -39,23 +38,14 @@ class MainActivityViewModel @Inject constructor(
     val duration: StateFlow<Long>
         get() = playerServiceConnection.duration
 
-    val playerState: StateFlow<Int>
-        get() = playerServiceConnection.playerState
-
-    val isBuffering: StateFlow<Boolean>
-        get() = playerServiceConnection.isBuffering
-
     val currentPosition: StateFlow<Long>
         get() = playerServiceConnection.currentPosition
 
-    val isPlaying: Boolean
+    val exoPlayerState: StateFlow<Int>
+        get() = playerServiceConnection.exoPlayerState
+
+    val isPlaying: StateFlow<Boolean>
         get() = playerServiceConnection.isPlaying
-
-    val isNotPlaying: Boolean
-        get() = !isPlaying
-
-    val isPaused: Boolean
-        get() = playerServiceConnection.isPaused
 
     fun play() {
         playerServiceConnection.play()
@@ -74,8 +64,9 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun resetPlayerBottomSheetState() {
-        _isPlayerBottomSheetExpanded.value = !_isPlayerBottomSheetExpanded.value
-        _isPlayerBottomSheetExpanded.value = !_isPlayerBottomSheetExpanded.value
+        repeat(2) {
+            _isPlayerBottomSheetExpanded.value = !_isPlayerBottomSheetExpanded.value
+        }
     }
 
     fun updateSkipBackwardOrForwardValue(value: Long) {
@@ -86,28 +77,19 @@ class MainActivityViewModel @Inject constructor(
         _skipBackwardOrForwardValue.value = 0L
     }
 
-    fun markCompleted(episodeId: String) {
-        playerServiceConnection.markCompleted(episodeId)
-    }
-
-    fun changePlaybackSpeed() {
-        playerServiceConnection.changePlaybackSpeed()
-    }
-
     fun getPlaybackSpeed(): Flow<Float?> {
         return repository.getPlaybackSpeed()
     }
 
-    @ExperimentalTime
-    fun setSleepTimer(duration: Duration) {
-        playerServiceConnection.setSleepTimer(duration)
-    }
-
-    fun clearSleepTimer() {
-        playerServiceConnection.clearSleepTimer()
-    }
-
     fun getTheme(): Flow<Int?> = repository.getTheme()
+
+    fun setExoPlayerState(state: Int) {
+        playerServiceConnection.setExoPlayerState(state)
+    }
+
+    fun setIsPlaying(isPlaying: Boolean) {
+        playerServiceConnection.setIsPlaying(isPlaying)
+    }
 
     fun showPlayerOptionsDialog(episodeId: String?) {
         episodeId ?: return

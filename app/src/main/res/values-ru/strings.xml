@@ -101,6 +101,7 @@
     <string name="podcast_description_sort_order">Сортировка эпизодов</string>
     <string name="podcast_episode_completed">Завершено</string>
     <string name="podcast_episode_playing">Сейчас воспроизводится</string>
+    <string name="podcast_episode_buffering">Загрузка</string>
     <plurals name="podcast_episode_count" tools:ignore="UnusedQuantity">
         <item quantity="zero">%d Эпизодов</item>
         <item quantity="one">%d Эпизод</item>
@@ -197,8 +198,8 @@
     <string name="notification_player_channel_name">Плеер</string>
     <string name="notification_play">Продолжить</string>
     <string name="notification_pause">Пауза</string>
-    <string name="notification_backward">Назад</string>
-    <string name="notification_forward">Вперёд</string>
+    <string name="notification_backward">Назад на 10 секунд</string>
+    <string name="notification_forward">Вперёд на 30 секунд</string>
     <!-- Notification end. -->
 
 </resources>
