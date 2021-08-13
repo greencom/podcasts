@@ -166,9 +166,6 @@ class PlayerService : MediaSessionService() {
                 controllerInfo: MediaSession.ControllerInfo,
                 baseAllowedSessionCommands: SessionCommandGroup
             ): SessionCommandGroup {
-//                baseAllowedSessionCommands.commands.forEach {
-//                    Log.d(GLOBAL_TAG, "command ${it.commandCode}")
-//                }
                 return baseAllowedSessionCommands
             }
 
