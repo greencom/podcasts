@@ -10,7 +10,9 @@ import androidx.media2.session.SessionToken
 import com.google.android.exoplayer2.Player
 import com.greencom.android.podcasts.repository.PlayerRepository
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -33,6 +35,9 @@ class PlayerServiceConnection @Inject constructor(
 
     private val _currentEpisode = MutableStateFlow(CurrentEpisode.empty())
     val currentEpisode = _currentEpisode.asStateFlow()
+
+    private val _forceCoverUpdate = MutableSharedFlow<Unit>()
+    val forceCoverUpdate = _forceCoverUpdate.asSharedFlow()
 
     private val _duration = MutableStateFlow(Long.MAX_VALUE)
     val duration = _duration.asStateFlow()
@@ -65,12 +70,15 @@ class PlayerServiceConnection @Inject constructor(
                 Log.d(PLAYER_SERVICE_CONNECTION_TAG, "controllerCallback: onCurrentMediaItemChanged()")
                 updateCurrentEpisode(item)
                 updateDuration(controller)
+                resetCurrentPosition(controller)
             }
 
             override fun onPlayerStateChanged(controller: MediaController, state: Int) {
                 Log.d(PLAYER_SERVICE_CONNECTION_TAG, "controllerCallback: onPlayerStateChanged() with state $state")
                 updateDuration(controller)
                 updateCurrentPosition(controller)
+
+                forceCoverUpdate(state)
             }
         }
     }
@@ -127,15 +135,25 @@ class PlayerServiceConnection @Inject constructor(
         _currentEpisode.value = CurrentEpisode.from(mediaItem)
     }
 
+    private fun forceCoverUpdate(playerState: Int) {
+        if (playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
+            scope?.launch(Dispatchers.Default) {
+                _forceCoverUpdate.emit(Unit)
+            }
+        }
+    }
+
     private fun updateDuration(controller: MediaController) {
         if (controller.duration > 0) {
             _duration.value = controller.duration
+        } else {
+            _duration.value = Long.MAX_VALUE
         }
     }
 
     private fun updateCurrentPosition(controller: MediaController) {
         currentPositionJob?.cancel()
-        if (controller.playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
+        if (isPlaying.value) {
             currentPositionJob = scope?.launch(Dispatchers.Default) {
                 while (true) {
                     ensureActive()
@@ -146,6 +164,11 @@ class PlayerServiceConnection @Inject constructor(
         } else {
             _currentPosition.value = modifiedCurrentPosition(controller)
         }
+    }
+
+    private fun resetCurrentPosition(controller: MediaController) {
+        controller.pause()
+        controller.play()
     }
 
     private fun modifiedCurrentPosition(controller: MediaController): Long {

@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.media2.DefaultMediaItemConverter
 import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
 import com.greencom.android.podcasts.R
@@ -70,6 +71,12 @@ class PlayerService : MediaSessionService() {
     private val _exoPlayerState = MutableStateFlow(Player.STATE_IDLE)
 
     private val _isPlaying = MutableStateFlow(false)
+
+    private var startPosition = 0L
+
+    private val mediaItemConverter: DefaultMediaItemConverter by lazy {
+        DefaultMediaItemConverter()
+    }
 
     private val playServiceIntent: Intent by lazy {
         Intent(this, PlayerService::class.java).apply {
@@ -122,6 +129,7 @@ class PlayerService : MediaSessionService() {
             .build()
     }
 
+    @ExperimentalTime
     private val sessionCallback: MediaSession.SessionCallback by lazy {
         SessionCallbackBuilder(this, sessionPlayerConnector)
             .setMediaItemProvider { _, _, mediaId ->
@@ -136,6 +144,8 @@ class PlayerService : MediaSessionService() {
                 val podcastId = episode.podcastId
                 val image = episode.image
 
+                startPosition = episode.position
+
                 UriMediaItem.Builder(Uri.parse(audio))
                     .setMetadata(
                         MediaMetadata.Builder()
@@ -148,11 +158,18 @@ class PlayerService : MediaSessionService() {
                     )
                     .build()
             }
+            .setPostConnectCallback { _, _ ->
+                Handler(exoPlayer.applicationLooper).post {
+                    updateExoPlayerState()
+                    updateIsPlaying()
+                }
+            }
             .setAllowedCommandProvider(allowedCommandProvider)
             .build()
     }
 
-    private val allowedCommandProvider by lazy {
+    @ExperimentalTime
+    private val allowedCommandProvider: SessionCallbackBuilder.AllowedCommandProvider by lazy {
         object : SessionCallbackBuilder.AllowedCommandProvider {
             override fun acceptConnection(
                 session: MediaSession,
@@ -180,11 +197,16 @@ class PlayerService : MediaSessionService() {
                         Handler(exoPlayer.applicationLooper).post {
                             safePlay()
                         }
+                        return SessionResult.RESULT_ERROR_UNKNOWN
                     }
                     SessionCommand.COMMAND_CODE_PLAYER_SET_MEDIA_ITEM -> {
                         Handler(exoPlayer.applicationLooper).post {
-                            if (exoPlayer.playbackState == Player.STATE_IDLE && exoPlayer.mediaItemCount >= 1) {
-                                exoPlayer.removeMediaItem(0)
+                            updateEpisodeState()
+
+                            // ExoPlayer does not set a new item after an error while
+                            // in IDLE state for some reason. prepare() solves this.
+                            if (exoPlayer.playbackState == Player.STATE_IDLE) {
+                                exoPlayer.prepare()
                             }
                         }
                     }
@@ -200,20 +222,27 @@ class PlayerService : MediaSessionService() {
             override fun onMediaMetadataChanged(mediaMetadata: com.google.android.exoplayer2.MediaMetadata) {
                 Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onMediaMetadataChanged()")
                 exoPlayer.prepare()
+
+                seekToStartPosition()
+
                 exoPlayer.play()
                 updateNotification()
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
                 Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onPlaybackStateChanged() with state $playbackState")
-                _exoPlayerState.value = playbackState
+                updateExoPlayerState(playbackState)
                 updateNotification()
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onIsPlayingChanged() with isPlaying $isPlaying")
-                _isPlaying.value = isPlaying
+                updateIsPlaying(isPlaying)
                 updateNotification()
+
+                if (!isPlaying) {
+                    updateEpisodeState()
+                }
             }
 
             override fun onIsLoadingChanged(isLoading: Boolean) {
@@ -305,6 +334,40 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    private fun seekToStartPosition() {
+        if (startPosition > 0) {
+            exoPlayer.seekTo(startPosition)
+            startPosition = 0
+        }
+    }
+
+    private fun updateExoPlayerState(playbackState: Int? = null) {
+        val mPlaybackState = playbackState ?: exoPlayer.playbackState
+        if (isServiceBound) {
+            _exoPlayerState.value = mPlaybackState
+        }
+    }
+
+    private fun updateIsPlaying(isPlaying: Boolean? = null) {
+        val mIsPlaying = isPlaying ?: exoPlayer.isPlaying
+        if (isServiceBound) {
+            _isPlaying.value = mIsPlaying
+        }
+    }
+
+    @ExperimentalTime
+    private fun updateEpisodeState() {
+        val exoPlayerMediaItem = exoPlayer.currentMediaItem ?: return
+        val episode = CurrentEpisode.from(mediaItemConverter.convertToMedia2MediaItem(exoPlayerMediaItem))
+        if (episode.isNotEmpty()) {
+            val position = exoPlayer.currentPosition
+            val duration = exoPlayer.duration
+            scope?.launch {
+                playerRepository.updateEpisodeState(episode.id, position, duration)
+            }
+        }
+    }
+
     @ExperimentalTime
     private fun updateNotification() {
         Log.d(PLAYER_SERVICE_TAG, "updateNotification()")
@@ -343,8 +406,8 @@ class PlayerService : MediaSessionService() {
             val request = ImageRequest.Builder(this@PlayerService)
                 .data(currentEpisode.image)
                 .build()
-            val result = (loader.execute(request) as SuccessResult).drawable
-            val largeIcon = (result as BitmapDrawable).bitmap
+            val result = (loader.execute(request) as? SuccessResult)?.drawable
+            val largeIcon = (result as? BitmapDrawable)?.bitmap
 
             playerNotificationBuilder
                 .setContentTitle(currentEpisode.title)

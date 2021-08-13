@@ -35,6 +35,9 @@ class MainActivityViewModel @Inject constructor(
     val currentEpisode: StateFlow<CurrentEpisode>
         get() = playerServiceConnection.currentEpisode
 
+    val forceCoverUpdate: SharedFlow<Unit>
+        get() = playerServiceConnection.forceCoverUpdate
+
     val duration: StateFlow<Long>
         get() = playerServiceConnection.duration
 

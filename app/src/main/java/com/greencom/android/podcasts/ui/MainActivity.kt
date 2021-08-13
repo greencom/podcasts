@@ -31,6 +31,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import coil.load
+import coil.request.ImageRequest
+import coil.request.ImageResult
 import com.google.android.exoplayer2.Player
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
@@ -68,6 +70,15 @@ private const val SKIP_HINT_BACKGROUND_ALPHA = 0.5F
 private const val PLAYER_ANIMATION_DURATION = 300L
 
 private const val POSITIONS_SKIPPED_THRESHOLD = 10
+
+/**
+ * Max duration to be set to the player slider and progress bar in case of duration of
+ * [Long.MAX_VALUE] got from the MediaController. This value is equivalent to
+ * 30 days in milliseconds.
+ *
+ * Note: values like [Long.MAX_VALUE] can break sliders and progress bars sometimes.
+ */
+private const val MAX_DURATION = 2592000000L
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,
@@ -111,6 +122,13 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private var thumbAnimator: ObjectAnimator? = null
 
     /**
+     * Whether the cover of the current episode was successfully loaded or not. If not,
+     * a new attempt will be made when the [MainActivityViewModel.forceCoverUpdate] trigger
+     * is received.
+     */
+    private var isCurrentCoverLoaded = false
+
+    /**
      * Whether the expanded player's slider position should be updated with a new value or not.
      * Stop updating when the user starts touching the slider and resume when the
      * user stops.
@@ -137,17 +155,17 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 val sessionToken = playerServiceBinder.sessionToken
                 viewModel.connectToPlayer(this@MainActivity, sessionToken)
 
-                // Pass data to the PlayerServiceConnection.
+                // Observe PlayerService observables.
                 lifecycleScope.launch {
                     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        // Pass ExoPlayer state.
+                        // Pass ExoPlayer state to PlayerServiceConnection.
                         launch {
                             playerServiceBinder.exoPlayerState.collect { state ->
                                 viewModel.setExoPlayerState(state)
                             }
                         }
 
-                        // Pass ExoPlayer isPlaying.
+                        // Pass ExoPlayer isPlaying state to PlayerServiceConnection.
                         launch {
                             playerServiceBinder.isPlaying.collect { isPlaying ->
                                 viewModel.setIsPlaying(isPlaying)
@@ -175,6 +193,26 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
             override fun onServiceDisconnected(name: ComponentName?) {
                 Log.d(PLAYER_TAG, "serviceConnection: onServiceDisconnected()")
+            }
+        }
+    }
+
+    /**
+     * Coil [ImageRequest.Listener] used to update [isCurrentCoverLoaded] variable. Needs
+     * to be attached to the appropriate Coil loaders.
+     */
+    private val currentCoverListener: ImageRequest.Listener by lazy {
+        object : ImageRequest.Listener {
+            override fun onCancel(request: ImageRequest) {
+                isCurrentCoverLoaded = false
+            }
+
+            override fun onError(request: ImageRequest, throwable: Throwable) {
+                isCurrentCoverLoaded = false
+            }
+
+            override fun onSuccess(request: ImageRequest, metadata: ImageResult.Metadata) {
+                isCurrentCoverLoaded = true
             }
         }
     }
@@ -445,10 +483,16 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         // Update time stamps.
         expandedPlayer.slider.addOnChangeListener { slider, value, _ ->
             expandedPlayer.timeCurrent.text = getCurrentTime(value.toLong())
-            expandedPlayer.timeLeft.text = getRemainingTime(
-                position = value.toLong(),
-                duration = slider.valueTo.toLong(),
-            )
+            // Duration of MAX_DURATION means that the MediaController has returned
+            // the unknown duration. In this case show infinity symbol.
+            expandedPlayer.timeLeft.text = if (slider.valueTo.toLong() != MAX_DURATION) {
+                getRemainingTime(
+                    position = value.toLong(),
+                    duration = slider.valueTo.toLong(),
+                )
+            } else {
+                Symbol.infinity.toString()
+            }
         }
 
         // Skip backward of forward through the track.
@@ -604,13 +648,36 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         collapsedPlayer.apply {
                             progressBar.progress = 0
                             title.text = episode.title
-                            cover.load(episode.image) { coilCoverBuilder(this@MainActivity) }
+                            cover.load(episode.image) {
+                                coilCoverBuilder(this@MainActivity)
+                                listener(currentCoverListener)
+                            }
                         }
                         expandedPlayer.apply {
                             slider.value = 0F
                             title.text = episode.title
                             podcastTitle.text = episode.podcastTitle
-                            cover.load(episode.image) { coilCoverBuilder(this@MainActivity) }
+                            cover.load(episode.image) {
+                                coilCoverBuilder(this@MainActivity)
+                                listener(currentCoverListener)
+                            }
+                        }
+                    }
+                }
+
+                // Update the cover of the current episode in case it was not loaded due
+                // during the previous attempt.
+                launch {
+                    viewModel.forceCoverUpdate.collect {
+                        if (!isCurrentCoverLoaded) {
+                            collapsedPlayer.cover.load(currentEpisode?.image) {
+                                coilCoverBuilder(this@MainActivity)
+                                listener(currentCoverListener)
+                            }
+                            expandedPlayer.cover.load(currentEpisode?.image) {
+                                coilCoverBuilder(this@MainActivity)
+                                listener(currentCoverListener)
+                            }
                         }
                     }
                 }
@@ -618,8 +685,15 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 // Observe current episode duration.
                 launch {
                     viewModel.duration.collect { duration ->
-                        collapsedPlayer.progressBar.max = duration.toInt()
-                        expandedPlayer.slider.valueTo = duration.toFloat()
+                        // MediaController can return unknown duration of Long.MAX_VALUE,
+                        // so prevent from settings this kind of values to not break the UI.
+                        if (duration != Long.MAX_VALUE) {
+                            collapsedPlayer.progressBar.max = duration.toInt()
+                            expandedPlayer.slider.valueTo = duration.toFloat()
+                        } else {
+                            collapsedPlayer.progressBar.max = MAX_DURATION.toInt()
+                            expandedPlayer.slider.valueTo = MAX_DURATION.toFloat()
+                        }
                     }
                 }
 
@@ -657,8 +731,13 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 launch {
                     viewModel.currentPosition.collect { position ->
                         if (updatePosition) {
-                            collapsedPlayer.progressBar.progress = position.toInt()
-                            expandedPlayer.slider.value = position.toFloat()
+                            when (playerBehavior.state) {
+                                BottomSheetBehavior.STATE_COLLAPSED, BottomSheetBehavior.STATE_EXPANDED -> {
+                                    collapsedPlayer.progressBar.progress = position.toInt()
+                                    expandedPlayer.slider.value = position.toFloat()
+                                }
+                                else -> {  }
+                            }
                         }
                     }
                 }
