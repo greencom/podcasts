@@ -2,7 +2,7 @@ package com.greencom.android.podcasts.ui.episode
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media2.player.MediaPlayer
+import com.google.android.exoplayer2.Player
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
@@ -30,34 +30,9 @@ class EpisodeViewModel @Inject constructor(
      */
     val isAppBarExpanded = _isAppBarExpanded.asStateFlow()
 
-    /** Load an episode for a given ID. The result will be posted to [uiState]. */
-    fun getEpisode(episodeId: String) = viewModelScope.launch {
-        repository.getEpisode(episodeId)
-            .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
-                return@combine if (flowState is State.Success && flowState.data.id == currentEpisode.id) {
-                    State.Success(flowState.data.copy(isSelected = true))
-                } else {
-                    flowState
-                }
-            }
-            .combine(playerServiceConnection.playerState) { flowState, playerState ->
-                return@combine if (
-                    flowState is State.Success &&
-                    flowState.data.isSelected &&
-                    playerState == MediaPlayer.PLAYER_STATE_PLAYING
-                ) {
-                    State.Success(flowState.data.copy(isPlaying = true))
-                } else {
-                    flowState
-                }
-            }
-            .collectLatest { state ->
-                when (state) {
-                    is State.Loading -> _uiState.value = EpisodeState.Loading
-                    is State.Success -> _uiState.value = EpisodeState.Success(state.data)
-                    is State.Error -> _uiState.value = EpisodeState.Error(state.exception)
-                }
-            }
+    // TODO
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
     }
 
     // TODO
@@ -71,13 +46,50 @@ class EpisodeViewModel @Inject constructor(
     }
 
     // TODO
-    fun playEpisode(episodeId: String) {
-        playerServiceConnection.playEpisode(episodeId)
+    fun playFromTimecode(episodeId: String, timecode: Long) {
+        // TODO
+//        playerServiceConnection.playFromTimecode(episodeId, timecode)
     }
 
-    /** Play the episode from the millis-timecode. */
-    fun playFromTimecode(episodeId: String, timecode: Long) {
-        playerServiceConnection.playFromTimecode(episodeId, timecode)
+    /** Load an episode for a given ID. The result will be posted to [uiState]. */
+    fun getEpisode(episodeId: String) = viewModelScope.launch {
+        repository.getEpisode(episodeId)
+            .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
+                return@combine if (flowState is State.Success && flowState.data.id == currentEpisode.id) {
+                    State.Success(flowState.data.copy(isSelected = true))
+                } else {
+                    flowState
+                }
+            }
+            .combine(playerServiceConnection.exoPlayerState) { flowState, exoPlayerState ->
+                return@combine if (
+                    flowState is State.Success &&
+                    flowState.data.isSelected &&
+                    exoPlayerState == Player.STATE_BUFFERING
+                ) {
+                    State.Success(flowState.data.copy(isBuffering = true))
+                } else {
+                    flowState
+                }
+            }
+            .combine(playerServiceConnection.isPlaying) { flowState, isPlaying ->
+                return@combine if (
+                    flowState is State.Success &&
+                    flowState.data.isSelected &&
+                    isPlaying
+                ) {
+                    State.Success(flowState.data.copy(isPlaying = true))
+                } else {
+                    flowState
+                }
+            }
+            .collectLatest { state ->
+                when (state) {
+                    is State.Loading -> _uiState.value = EpisodeState.Loading
+                    is State.Success -> _uiState.value = EpisodeState.Success(state.data)
+                    is State.Error -> _uiState.value = EpisodeState.Error(state.exception)
+                }
+            }
     }
 
     /** Add the episode to the bookmarks or remove from there. */

@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media2.player.MediaPlayer
+import com.google.android.exoplayer2.Player
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
 import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
@@ -67,8 +68,8 @@ class PodcastViewModel @Inject constructor(
     private var isCurrentEpisodeHere = false
 
     // TODO
-    fun playEpisode(episodeId: String) {
-        playerServiceConnection.playEpisode(episodeId)
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
     }
 
     // TODO
@@ -105,8 +106,11 @@ class PodcastViewModel @Inject constructor(
             .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
                 setCurrentEpisode(flowState, currentEpisode)
             }
-            .combine(playerServiceConnection.playerState) { flowState, playerState ->
-                setCurrentEpisodeState(flowState, playerState)
+            .combine(playerServiceConnection.exoPlayerState) { flowState, exoPlayerState ->
+                setCurrentEpisodeIsBuffering(flowState, exoPlayerState)
+            }
+            .combine(playerServiceConnection.isPlaying) { flowState, isPlaying ->
+                setCurrentEpisodeIsPlaying(flowState, isPlaying)
             }
             .collectLatest { state ->
                 when (state) {
@@ -270,6 +274,42 @@ class PodcastViewModel @Inject constructor(
                 episode
             }
             isCurrentEpisodeHere = mIsCurrentEpisodeHere
+            return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
+        }
+        return flowState
+    }
+
+    /** Set the buffering state for the selected episode (if it exists on this list.) */
+    private fun setCurrentEpisodeIsBuffering(
+        flowState: State<PodcastWithEpisodes>,
+        exoPlayerState: Int,
+    ): State<PodcastWithEpisodes> {
+        if (flowState is State.Success && isCurrentEpisodeHere) {
+            val episodes = flowState.data.episodes.map { episode ->
+                if (episode.isSelected && exoPlayerState == Player.STATE_BUFFERING) {
+                    episode.copy(isBuffering = true)
+                } else {
+                    episode
+                }
+            }
+            return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
+        }
+        return flowState
+    }
+
+    /** Set isPlaying state for the selected episode (if it exists on this list.) */
+    private fun setCurrentEpisodeIsPlaying(
+        flowState: State<PodcastWithEpisodes>,
+        isPlaying: Boolean,
+    ): State<PodcastWithEpisodes> {
+        if (flowState is State.Success && isCurrentEpisodeHere) {
+            val episodes = flowState.data.episodes.map { episode ->
+                if (episode.isSelected && isPlaying) {
+                    episode.copy(isPlaying = true)
+                } else {
+                    episode
+                }
+            }
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState

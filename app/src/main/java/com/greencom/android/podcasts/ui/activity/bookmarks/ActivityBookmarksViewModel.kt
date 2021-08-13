@@ -2,7 +2,7 @@ package com.greencom.android.podcasts.ui.activity.bookmarks
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media2.player.MediaPlayer
+import com.google.android.exoplayer2.Player
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
@@ -31,8 +31,8 @@ class ActivityBookmarksViewModel @Inject constructor(
     private var isCurrentEpisodeHere = false
 
     // TODO
-    fun playEpisode(episodeId: String) {
-        playerServiceConnection.playEpisode(episodeId)
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
     }
 
     // TODO
@@ -61,19 +61,31 @@ class ActivityBookmarksViewModel @Inject constructor(
                     isCurrentEpisodeHere = mIsCurrentEpisodeHere
                     return@combine mEpisodes
                 }
-                return@combine episodes
+                episodes
             }
-            .combine(playerServiceConnection.playerState) { episodes, playerState ->
+            .combine(playerServiceConnection.exoPlayerState) { episodes, exoPlayerState ->
                 if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
                     return@combine episodes.map { episode ->
-                        if (episode.isSelected && playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
+                        if (episode.isSelected && exoPlayerState == Player.STATE_BUFFERING) {
+                            episode.copy(isBuffering = true)
+                        } else {
+                            episode
+                        }
+                    }
+                }
+                episodes
+            }
+            .combine(playerServiceConnection.isPlaying) { episodes, isPlaying ->
+                if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
+                    return@combine episodes.map { episode ->
+                        if (episode.isSelected && isPlaying) {
                             episode.copy(isPlaying = true)
                         } else {
                             episode
                         }
                     }
                 }
-                return@combine episodes
+                episodes
             }
             .collectLatest { episodes ->
                 _uiState.value = when {

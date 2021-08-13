@@ -43,7 +43,7 @@ class ActivityInProgressFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptio
             dateMode = ActivityEpisodeAdapter.MODE_LAST_PLAYED_DATE,
             navigateToEpisode = viewModel::navigateToEpisode,
             onInBookmarksChange = viewModel::onInBookmarksChange,
-            playEpisode = viewModel::playEpisode,
+            playEpisode = viewModel::setEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
             showEpisodeOptions = viewModel::showEpisodeOptions

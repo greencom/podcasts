@@ -108,6 +108,7 @@
     <string name="podcast_description_sort_order">Episodes sorting</string>
     <string name="podcast_episode_completed">Completed</string>
     <string name="podcast_episode_playing">Playing</string>
+    <string name="podcast_episode_buffering">Loading</string>
     <plurals name="podcast_episode_count">
         <item quantity="zero">%d Episodes</item>
         <item quantity="one">%d Episode</item>
@@ -205,8 +206,8 @@
     <string name="notification_player_channel_name">Player</string>
     <string name="notification_play">Play</string>
     <string name="notification_pause">Pause</string>
-    <string name="notification_backward">Backward</string>
-    <string name="notification_forward">Forward</string>
+    <string name="notification_backward">Backward for 10 seconds</string>
+    <string name="notification_forward">Forward for 30 seconds</string>
     <!-- Notification end. -->
 
 </resources>

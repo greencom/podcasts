@@ -25,13 +25,13 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.media2.player.MediaPlayer
 import androidx.media2.session.*
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import coil.load
+import com.google.android.exoplayer2.Player
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import com.greencom.android.podcasts.NavGraphDirections
@@ -57,6 +57,8 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
+
+private const val MAIN_ACTIVITY_TAG = "MAIN_ACTIVITY_TAG"
 
 // Saving instance state.
 private const val SAVED_STATE_PLAYER_BEHAVIOR_STATE = "PLAYER_BEHAVIOR_STATE"
@@ -109,13 +111,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private var thumbAnimator: ObjectAnimator? = null
 
     /**
-     * How many new position have been skipped for the hidden player. Used to update the
-     * progress bar of the hidden player only once per [POSITIONS_SKIPPED_THRESHOLD]
-     * updates.
-     */
-    private var positionsSkipped = 0
-
-    /**
      * Whether the expanded player's slider position should be updated with a new value or not.
      * Stop updating when the user starts touching the slider and resume when the
      * user stops.
@@ -137,26 +132,45 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private val serviceConnection: ServiceConnection by lazy {
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                Log.d(PLAYER_TAG, "serviceConnection: onServiceConnected()")
-                val binder = service as PlayerService.PlayerServiceBinder
-                val sessionToken = binder.sessionToken
+                Log.d(MAIN_ACTIVITY_TAG, "serviceConnection: onServiceConnected()")
+                val playerServiceBinder = service as PlayerService.PlayerServiceBinder
+                val sessionToken = playerServiceBinder.sessionToken
                 viewModel.connectToPlayer(this@MainActivity, sessionToken)
 
-                // Collect data from the PlayerService sleep timer.
+                // Pass data to the PlayerServiceConnection.
                 lifecycleScope.launch {
                     lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                        binder.sleepTimer.collectLatest { timeLeftMs ->
-                            isSleepTimerSet = timeLeftMs > 0
-                            if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-                                expandedPlayer.sleepTimer.text = if (timeLeftMs > 0) {
-                                    getCurrentTime(timeLeftMs)
-                                } else {
-                                    getString(R.string.player_sleep_timer)
-                                }
+                        // Pass ExoPlayer state.
+                        launch {
+                            playerServiceBinder.exoPlayerState.collect { state ->
+                                viewModel.setExoPlayerState(state)
+                            }
+                        }
+
+                        // Pass ExoPlayer isPlaying.
+                        launch {
+                            playerServiceBinder.isPlaying.collect { isPlaying ->
+                                viewModel.setIsPlaying(isPlaying)
                             }
                         }
                     }
                 }
+
+                // Collect data from the PlayerService sleep timer.
+//                lifecycleScope.launch {
+//                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                        binder.sleepTimer.collectLatest { timeLeftMs ->
+//                            isSleepTimerSet = timeLeftMs > 0
+//                            if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+//                                expandedPlayer.sleepTimer.text = if (timeLeftMs > 0) {
+//                                    getCurrentTime(timeLeftMs)
+//                                } else {
+//                                    getString(R.string.player_sleep_timer)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -257,17 +271,20 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     // Mark an episode as completed in the PlayerOptionsDialog.
     override fun onPlayerOptionsMarkCompleted(episodeId: String) {
-        viewModel.markCompleted(episodeId)
+        // TODO
+//        viewModel.markCompleted(episodeId)
     }
 
     // Set a sleep timer in the SleepTimerDialog.
     override fun onSleepTimerSet(durationInMs: Long) {
-        viewModel.setSleepTimer(Duration.milliseconds(durationInMs))
+        // TODO
+//        viewModel.setSleepTimer(Duration.milliseconds(durationInMs))
     }
 
     // Clear a sleep timer in the SleepTimerDialog.
     override fun onSleepTimerClear() {
-        viewModel.clearSleepTimer()
+        // TODO
+//        viewModel.clearSleepTimer()
     }
 
     /** Initialize views. */
@@ -393,18 +410,18 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         })
 
         collapsedPlayer.playPause.setOnClickListener {
-            when {
-                viewModel.isPlaying -> viewModel.pause()
-                viewModel.isPaused -> viewModel.play()
+            when (viewModel.isPlaying.value) {
+                true -> viewModel.pause()
+                false -> viewModel.play()
             }
         }
 
 
         // EXPANDED
         expandedPlayer.playPause.setOnClickListener {
-            when {
-                viewModel.isPlaying -> viewModel.pause()
-                viewModel.isPaused -> viewModel.play()
+            when (viewModel.isPlaying.value) {
+                true -> viewModel.pause()
+                false -> viewModel.play()
             }
         }
 
@@ -462,7 +479,8 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         }
 
         expandedPlayer.playbackSpeed.setOnClickListener {
-            viewModel.changePlaybackSpeed()
+            // TODO
+//            viewModel.changePlaybackSpeed()
         }
 
         expandedPlayer.options.setOnClickListener {
@@ -563,16 +581,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 // Control player text marquee animations depending on the bottom sheet state.
                 launch {
                     viewModel.isPlayerBottomSheetExpanded.collectLatest { isPlayerExpanded ->
-                        // Keep progress bars updated even if the player is not playing.
-                        if (viewModel.isNotPlaying) {
-                            if (isPlayerExpanded) {
-                                expandedPlayer.slider.value = viewModel.currentPosition.value.toFloat()
-                            } else {
-                                collapsedPlayer.progressBar.progress = viewModel.currentPosition.value.toInt()
-                            }
-                            positionsSkipped = 0
-                        }
-
                         marqueePlayerTextViews(isPlayerExpanded)
                     }
                 }
@@ -584,17 +592,14 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // Observe episodes from the player.
+                // Observe current episode.
                 launch {
                     viewModel.currentEpisode.collect { episode ->
                         currentEpisode = episode
-                        showPlayer(
-                            show = episode.isNotEmpty() &&
-                                    viewModel.playerState.value != MediaPlayer.PLAYER_STATE_ERROR
-                        )
+
+                        showPlayer(episode.isNotEmpty())
+
                         viewModel.resetPlayerBottomSheetState()
-                        // Update current position with delay to make sure there was no skip.
-                        positionsSkipped = POSITIONS_SKIPPED_THRESHOLD - 1
 
                         collapsedPlayer.apply {
                             progressBar.progress = 0
@@ -610,48 +615,31 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // Observe current duration from the player.
+                // Observe current episode duration.
                 launch {
                     viewModel.duration.collect { duration ->
                         collapsedPlayer.progressBar.max = duration.toInt()
                         expandedPlayer.slider.valueTo = duration.toFloat()
-                        // If the slider value is 0 (initial value), update it to make sure
-                        // that the getRemainingTime() has been called with the actual
-                        // duration instead of Long.MAX_VALUE (duration initial value).
-                        if (expandedPlayer.slider.value == 0F) {
-                            expandedPlayer.slider.value += 1
+                    }
+                }
+
+                // Observe ExoPlayer isPlaying.
+                launch {
+                    viewModel.isPlaying.collect { isPlaying ->
+                        if (isPlaying) {
+                            collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
+                            expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+                        } else {
+                            collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
+                            expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
                         }
                     }
                 }
 
-                // Observe player states.
+                // Observe ExoPlayer state.
                 launch {
-                    viewModel.playerState.collect { state ->
-                        when (state) {
-                            MediaPlayer.PLAYER_STATE_PLAYING -> {
-                                collapsedPlayer.buffering.hideImmediately()
-                                expandedPlayer.buffering.hideImmediately()
-                                collapsedPlayer.playPause.isVisible = true
-                                expandedPlayer.playPause.isVisible = true
-                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
-                                expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
-                            }
-                            MediaPlayer.PLAYER_STATE_PAUSED -> {
-                                collapsedPlayer.buffering.hideImmediately()
-                                expandedPlayer.buffering.hideImmediately()
-                                collapsedPlayer.playPause.isVisible = true
-                                expandedPlayer.playPause.isVisible = true
-                                collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
-                                expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)
-                            }
-                        }
-                    }
-                }
-
-                // Observe player buffering state.
-                launch {
-                    viewModel.isBuffering.collect { isBuffering ->
-                        if (isBuffering) {
+                    viewModel.exoPlayerState.collect { exoPlayerState ->
+                        if (exoPlayerState == Player.STATE_BUFFERING) {
                             collapsedPlayer.playPause.visibility = View.INVISIBLE
                             expandedPlayer.playPause.visibility = View.INVISIBLE
                             collapsedPlayer.buffering.revealImmediately()
@@ -665,37 +653,12 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // Observe current position from the player.
+                // Observe current player position.
                 launch {
                     viewModel.currentPosition.collect { position ->
                         if (updatePosition) {
-                            if (positionsSkipped >= POSITIONS_SKIPPED_THRESHOLD) {
-                                collapsedPlayer.progressBar.progress = position.toInt()
-                                expandedPlayer.slider.value = position.toFloat()
-                                positionsSkipped = 0
-                                return@collect
-                            }
-
-                            @SuppressLint("SwitchIntDef")
-                            when (playerBehavior.state) {
-                                BottomSheetBehavior.STATE_COLLAPSED -> {
-                                    collapsedPlayer.progressBar.progress = position.toInt()
-                                }
-                                BottomSheetBehavior.STATE_EXPANDED -> {
-                                    expandedPlayer.slider.value = position.toFloat()
-                                }
-                                BottomSheetBehavior.STATE_DRAGGING -> {
-                                    collapsedPlayer.progressBar.progress = position.toInt()
-                                    expandedPlayer.slider.value = position.toFloat()
-                                    positionsSkipped = 0
-                                }
-                                BottomSheetBehavior.STATE_SETTLING -> {
-                                    collapsedPlayer.progressBar.progress = position.toInt()
-                                    expandedPlayer.slider.value = position.toFloat()
-                                    positionsSkipped = 0
-                                }
-                            }
-                            positionsSkipped++
+                            collapsedPlayer.progressBar.progress = position.toInt()
+                            expandedPlayer.slider.value = position.toFloat()
                         }
                     }
                 }
@@ -930,8 +893,8 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         }
 
         delay(1000)
-        val newValue = (expandedPlayer.slider.value + value).toLong()
-        viewModel.seekTo(newValue)
+        val position = viewModel.currentPosition.value + value
+        viewModel.seekTo(position)
 
         hideSkipHints()
         viewModel.resetSkipBackwardOrForwardValue()

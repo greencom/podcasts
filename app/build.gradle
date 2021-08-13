@@ -60,6 +60,10 @@ dependencies {
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStore_version"
 
+    // ExoPlayer
+    implementation "com.google.android.exoplayer:exoplayer:$exoPlayer_version"
+    implementation "com.google.android.exoplayer:extension-media2:$exoPlayer_version"
+
     // Media2
     implementation "androidx.media2:media2-session:$media2_version"
     implementation "androidx.media2:media2-player:$media2_version"

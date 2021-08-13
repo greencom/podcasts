@@ -162,4 +162,9 @@
         app:layout_constraintTop_toBottomOf="@+id/divider"
         app:tint="?attr/colorOnSurfaceLow" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        app:layout_constraintTop_toBottomOf="@id/show_completed" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

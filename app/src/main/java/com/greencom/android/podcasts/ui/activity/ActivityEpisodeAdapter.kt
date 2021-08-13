@@ -99,6 +99,7 @@ class ActivityEpisodeAdapter(
             // Resume or pause depending on the current state or play if the episode is not selected.
             binding.play.setOnClickListener {
                 when {
+                    episode.isSelected && episode.isBuffering -> {  }
                     episode.isSelected && episode.isPlaying -> pause()
                     episode.isSelected && !episode.isPlaying -> play()
                     else -> playEpisode(episode.id)
