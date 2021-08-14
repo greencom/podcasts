@@ -523,8 +523,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         }
 
         expandedPlayer.playbackSpeed.setOnClickListener {
-            // TODO
-//            viewModel.changePlaybackSpeed()
+            viewModel.changePlaybackSpeed()
         }
 
         expandedPlayer.options.setOnClickListener {

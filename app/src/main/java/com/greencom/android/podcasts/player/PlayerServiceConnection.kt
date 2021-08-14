@@ -10,10 +10,7 @@ import androidx.media2.session.SessionToken
 import com.google.android.exoplayer2.Player
 import com.greencom.android.podcasts.repository.PlayerRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -139,6 +136,19 @@ class PlayerServiceConnection @Inject constructor(
 
     fun seekTo(position: Long) {
         controller?.seekTo(position.coerceIn(0..duration.value))
+    }
+
+    fun changePlaybackSpeed() {
+        scope?.launch(Dispatchers.Default) {
+            val speed = when (playerRepository.getPlaybackSpeed().first() ?: 1.0F) {
+                1.0F -> 1.2F
+                1.2F -> 1.5F
+                1.5F -> 2.0F
+                else -> 1.0F
+            }
+            controller?.playbackSpeed = speed
+            playerRepository.setPlaybackSpeed(speed)
+        }
     }
 
     fun setExoPlayerState(state: Int) {

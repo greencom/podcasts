@@ -272,6 +272,10 @@ class PlayerService : MediaSessionService() {
             .build()
             .apply { addListener(exoPlayerListener) }
 
+        scope?.launch {
+            exoPlayer.setPlaybackSpeed(playerRepository.getPlaybackSpeed().first() ?: 1.0F)
+        }
+
         sessionPlayerConnector = SessionPlayerConnector(exoPlayer)
 
         mediaSession = MediaSession.Builder(this, sessionPlayerConnector)

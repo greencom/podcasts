@@ -62,6 +62,10 @@ class MainActivityViewModel @Inject constructor(
         playerServiceConnection.seekTo(position)
     }
 
+    fun changePlaybackSpeed() {
+        playerServiceConnection.changePlaybackSpeed()
+    }
+
     fun setPlayerBottomSheetState(isExpanded: Boolean) {
         _isPlayerBottomSheetExpanded.value = isExpanded
     }
