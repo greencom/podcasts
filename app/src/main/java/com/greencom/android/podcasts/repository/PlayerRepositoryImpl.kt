@@ -36,11 +36,11 @@ class PlayerRepositoryImpl @Inject constructor(
         return preferenceStorage.getPlaybackSpeed()
     }
 
-    override suspend fun setLastEpisodeId(episodeId: String) {
+    override suspend fun setLastPlayedEpisodeId(episodeId: String) {
         preferenceStorage.setLastEpisodeId(episodeId)
     }
 
-    override fun getLastEpisodeId(): Flow<String?> {
+    override fun getLastPlayedEpisodeId(): Flow<String?> {
         return preferenceStorage.getLastEpisodeId()
     }
 

@@ -74,11 +74,11 @@ private const val POSITIONS_SKIPPED_THRESHOLD = 10
 /**
  * Max duration to be set to the player slider and progress bar in case of duration of
  * [Long.MAX_VALUE] got from the MediaController. This value is equivalent to
- * 30 days in milliseconds.
+ * 5 days in milliseconds.
  *
  * Note: values like [Long.MAX_VALUE] can break sliders and progress bars sometimes.
  */
-private const val MAX_DURATION = 2592000000L
+private const val MAX_DURATION = 432000000L
 
 /**
  * MainActivity is the entry point for the app. This is where the Navigation component,

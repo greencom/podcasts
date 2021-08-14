@@ -166,11 +166,6 @@ class PlayerServiceConnection @Inject constructor(
         }
     }
 
-    private fun resetCurrentPosition(controller: MediaController) {
-        controller.pause()
-        controller.play()
-    }
-
     private fun modifiedCurrentPosition(controller: MediaController): Long {
         return controller.currentPosition.coerceIn(0..duration.value).let { position ->
             when {
@@ -179,6 +174,11 @@ class PlayerServiceConnection @Inject constructor(
                 else -> position - 1
             }
         }
+    }
+
+    private fun resetCurrentPosition(controller: MediaController) {
+        controller.pause()
+        controller.play()
     }
 
 //    private var scope: CoroutineScope? = null

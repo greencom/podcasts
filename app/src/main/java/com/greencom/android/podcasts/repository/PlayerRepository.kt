@@ -18,11 +18,11 @@ interface PlayerRepository {
     /** Get a Flow with a player playback speed. */
     fun getPlaybackSpeed(): Flow<Float?>
 
-    /** Save the ID of the episode that was last played by the player to the DataStore. */
-    suspend fun setLastEpisodeId(episodeId: String)
+    /** Save the ID of the episode that was last played. */
+    suspend fun setLastPlayedEpisodeId(episodeId: String)
 
-    /** Get Flow with the ID of the episode that was last played by the player from the DataStore. */
-    fun getLastEpisodeId(): Flow<String?>
+    /** Get Flow with the ID of the episode that was last played. */
+    fun getLastPlayedEpisodeId(): Flow<String?>
 
     /** Update episode state depending on the last position. */
     suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long)

@@ -12,6 +12,7 @@ import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.media2.common.MediaItem
 import androidx.media2.common.MediaMetadata
 import androidx.media2.common.UriMediaItem
 import androidx.media2.session.*
@@ -31,6 +32,7 @@ import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.greencom.android.podcasts.R
+import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.repository.PlayerRepository
 import com.greencom.android.podcasts.ui.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +40,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
@@ -65,15 +68,17 @@ class PlayerService : MediaSessionService() {
 
     private var notificationJob: Job? = null
 
+    private val _exoPlayerState = MutableStateFlow(Player.STATE_IDLE)
+
+    private val _isPlaying = MutableStateFlow(false)
+
     private var isServiceStarted = false
 
     private var isServiceBound = false
 
     private var isServiceForeground = false
 
-    private val _exoPlayerState = MutableStateFlow(Player.STATE_IDLE)
-
-    private val _isPlaying = MutableStateFlow(false)
+    private var playWhenReady = false
 
     private var startPosition = 0L
 
@@ -141,25 +146,10 @@ class PlayerService : MediaSessionService() {
                     playerRepository.getEpisode(mediaId)
                 } ?: return@setMediaItemProvider null
 
-                val audio = episode.audio
-                val title = episode.title
-                val podcastTitle = episode.podcastTitle
-                val podcastId = episode.podcastId
-                val image = episode.image
-
+                playWhenReady = true
                 startPosition = episode.position
 
-                UriMediaItem.Builder(Uri.parse(audio))
-                    .setMetadata(
-                        MediaMetadata.Builder()
-                            .putString(EpisodeMetadata.ID, mediaId)
-                            .putString(EpisodeMetadata.TITLE, title)
-                            .putString(EpisodeMetadata.PODCAST_TITLE, podcastTitle)
-                            .putString(EpisodeMetadata.PODCAST_ID, podcastId)
-                            .putString(EpisodeMetadata.IMAGE, image)
-                            .build()
-                    )
-                    .build()
+                createMedia2MediaItem(episode)
             }
             .setPostConnectCallback { _, _ ->
                 Handler(exoPlayer.applicationLooper).post {
@@ -228,8 +218,13 @@ class PlayerService : MediaSessionService() {
 
                 seekToStartPosition()
 
-                exoPlayer.play()
+                if (playWhenReady) {
+                    safePlay()
+                }
+
                 updateNotification()
+
+                updateLastPlayedEpisodeId()
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
@@ -285,6 +280,8 @@ class PlayerService : MediaSessionService() {
 
         createPlayerNotificationChannel()
         createMediaControlReceiver()
+
+        restoreLastPlayedEpisode()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -374,6 +371,47 @@ class PlayerService : MediaSessionService() {
                 playerRepository.updateEpisodeState(episode.id, position, duration)
             }
         }
+    }
+
+    @ExperimentalTime
+    private fun updateLastPlayedEpisodeId() {
+        val exoPlayerMediaItem = exoPlayer.currentMediaItem ?: return
+        val episode = CurrentEpisode.from(mediaItemConverter.convertToMedia2MediaItem(exoPlayerMediaItem))
+        if (episode.isNotEmpty()) {
+            scope?.launch {
+                playerRepository.setLastPlayedEpisodeId(episode.id)
+            }
+        }
+    }
+
+    private fun restoreLastPlayedEpisode() {
+        scope?.launch {
+            val episodeId = playerRepository.getLastPlayedEpisodeId().first() ?: return@launch
+            val episode = playerRepository.getEpisode(episodeId) ?: return@launch
+            if (!episode.isCompleted) {
+                val media2MediaItem = createMedia2MediaItem(episode)
+                val exoPlayerMediaItem = mediaItemConverter.convertToExoPlayerMediaItem(media2MediaItem)
+                playWhenReady = false
+                startPosition = episode.position
+                exoPlayer.setMediaItem(exoPlayerMediaItem)
+            } else {
+                playerRepository.setLastPlayedEpisodeId("")
+            }
+        }
+    }
+
+    private fun createMedia2MediaItem(episode: Episode): MediaItem {
+        return UriMediaItem.Builder(Uri.parse(episode.audio))
+            .setMetadata(
+                MediaMetadata.Builder()
+                    .putString(EpisodeMetadata.ID, episode.id)
+                    .putString(EpisodeMetadata.TITLE, episode.title)
+                    .putString(EpisodeMetadata.IMAGE, episode.image)
+                    .putString(EpisodeMetadata.PODCAST_ID, episode.podcastId)
+                    .putString(EpisodeMetadata.PODCAST_TITLE, episode.podcastTitle)
+                    .build()
+            )
+            .build()
     }
 
     @ExperimentalTime
