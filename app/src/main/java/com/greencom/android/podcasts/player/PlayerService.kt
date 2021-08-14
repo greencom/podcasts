@@ -64,9 +64,13 @@ class PlayerService : MediaSessionService() {
 
     private lateinit var mediaControlReceiver: MediaControlReceiver
 
+    private var sleepTimer: CountDownTimer? = null
+
     private var scope: CoroutineScope? = null
 
     private var notificationJob: Job? = null
+
+    private val _sleepTimerRemainingTime = MutableStateFlow(Long.MIN_VALUE)
 
     private val _exoPlayerState = MutableStateFlow(Player.STATE_IDLE)
 
@@ -82,11 +86,7 @@ class PlayerService : MediaSessionService() {
 
     private var startPosition = 0L
 
-    private val mediaItemConverter: DefaultMediaItemConverter by lazy {
-        DefaultMediaItemConverter()
-    }
-
-    private val playServiceIntent: Intent by lazy {
+    private val playerServiceIntent: Intent by lazy {
         Intent(this, PlayerService::class.java).apply {
             action = SERVICE_INTERFACE
         }
@@ -94,6 +94,10 @@ class PlayerService : MediaSessionService() {
 
     private val notificationManager: NotificationManagerCompat by lazy {
         NotificationManagerCompat.from(this)
+    }
+
+    private val mediaItemConverter: DefaultMediaItemConverter by lazy {
+        DefaultMediaItemConverter()
     }
 
     @ExperimentalTime
@@ -158,6 +162,7 @@ class PlayerService : MediaSessionService() {
                 }
             }
             .setAllowedCommandProvider(allowedCommandProvider)
+            .setCustomCommandProvider(customCommandProvider)
             .build()
     }
 
@@ -205,6 +210,43 @@ class PlayerService : MediaSessionService() {
                     }
                 }
                 return SessionResult.RESULT_SUCCESS
+            }
+        }
+    }
+
+    private val customCommandProvider: SessionCallbackBuilder.CustomCommandProvider by lazy {
+        object : SessionCallbackBuilder.CustomCommandProvider {
+            override fun onCustomCommand(
+                session: MediaSession,
+                controllerInfo: MediaSession.ControllerInfo,
+                customCommand: SessionCommand,
+                args: Bundle?
+            ): SessionResult {
+                return when (customCommand.customAction) {
+                    CustomSessionCommand.SET_SLEEP_TIMER -> {
+                        val duration = args?.getLong(CustomSessionCommand.SET_SLEEP_TIMER_DURATION_KEY)
+                            ?: Long.MIN_VALUE
+                        scope?.launch {
+                            setSleepTimer(duration)
+                        }
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
+                    CustomSessionCommand.REMOVE_SLEEP_TIMER -> {
+                        removeSleepTimer()
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
+                    else -> SessionResult(SessionResult.RESULT_ERROR_UNKNOWN, null)
+                }
+            }
+
+            override fun getCustomCommands(
+                session: MediaSession,
+                controllerInfo: MediaSession.ControllerInfo
+            ): SessionCommandGroup {
+                return SessionCommandGroup.Builder()
+                    .addCommand(SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null))
+                    .addCommand(SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null))
+                    .build()
             }
         }
     }
@@ -322,6 +364,8 @@ class PlayerService : MediaSessionService() {
         exoPlayer.removeListener(exoPlayerListener)
         sessionPlayerConnector.close()
         unregisterReceiver(mediaControlReceiver)
+        sleepTimer?.cancel()
+        sleepTimer = null
         scope?.cancel()
     }
 
@@ -348,6 +392,28 @@ class PlayerService : MediaSessionService() {
             exoPlayer.seekTo(startPosition)
             startPosition = 0
         }
+    }
+
+    private fun setSleepTimer(duration: Long) {
+        removeSleepTimer()
+        if (duration <= 0) return
+
+        sleepTimer = object : CountDownTimer(duration, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                _sleepTimerRemainingTime.value = millisUntilFinished
+            }
+
+            override fun onFinish() {
+                exoPlayer.pause()
+                _sleepTimerRemainingTime.value = Long.MIN_VALUE
+            }
+        }.start()
+    }
+
+    private fun removeSleepTimer() {
+        sleepTimer?.cancel()
+        sleepTimer = null
+        _sleepTimerRemainingTime.value = Long.MIN_VALUE
     }
 
     private fun updateExoPlayerState(playbackState: Int? = null) {
@@ -493,7 +559,7 @@ class PlayerService : MediaSessionService() {
         notificationManager.notify(PLAYER_NOTIFICATION_ID, notification)
 
         if (!isServiceStarted) {
-            startService(playServiceIntent)
+            startService(playerServiceIntent)
             isServiceStarted = true
         }
 
@@ -563,6 +629,9 @@ class PlayerService : MediaSessionService() {
 
         val isPlaying: StateFlow<Boolean>
             get() = _isPlaying.asStateFlow()
+
+        val sleepTimerRemainingTime: StateFlow<Long>
+            get() = _sleepTimerRemainingTime
     }
 
     companion object {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 // TODO
@@ -64,6 +65,15 @@ class MainActivityViewModel @Inject constructor(
 
     fun changePlaybackSpeed() {
         playerServiceConnection.changePlaybackSpeed()
+    }
+
+    @ExperimentalTime
+    fun setSleepTimer(duration: Duration) {
+        playerServiceConnection.setSleepTimer(duration)
+    }
+
+    fun removeSleepTimer() {
+        playerServiceConnection.removeSleepTimer()
     }
 
     fun setPlayerBottomSheetState(isExpanded: Boolean) {

@@ -171,24 +171,21 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                                 viewModel.setIsPlaying(isPlaying)
                             }
                         }
+
+                        // Observe PlayerService SleepTimer remaining time.
+                        launch {
+                            playerServiceBinder.sleepTimerRemainingTime.collect { remainingTime ->
+                                if (remainingTime > 0) {
+                                    if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                                        expandedPlayer.sleepTimer.text = getCurrentTime(remainingTime)
+                                    }
+                                } else {
+                                    expandedPlayer.sleepTimer.text = getString(R.string.player_sleep_timer)
+                                }
+                            }
+                        }
                     }
                 }
-
-                // Collect data from the PlayerService sleep timer.
-//                lifecycleScope.launch {
-//                    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                        binder.sleepTimer.collectLatest { timeLeftMs ->
-//                            isSleepTimerSet = timeLeftMs > 0
-//                            if (playerBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
-//                                expandedPlayer.sleepTimer.text = if (timeLeftMs > 0) {
-//                                    getCurrentTime(timeLeftMs)
-//                                } else {
-//                                    getString(R.string.player_sleep_timer)
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -315,14 +312,12 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     // Set a sleep timer in the SleepTimerDialog.
     override fun onSleepTimerSet(durationInMs: Long) {
-        // TODO
-//        viewModel.setSleepTimer(Duration.milliseconds(durationInMs))
+        viewModel.setSleepTimer(Duration.milliseconds(durationInMs))
     }
 
     // Clear a sleep timer in the SleepTimerDialog.
     override fun onSleepTimerClear() {
-        // TODO
-//        viewModel.clearSleepTimer()
+        viewModel.removeSleepTimer()
     }
 
     /** Initialize views. */

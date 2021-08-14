@@ -2,9 +2,11 @@ package com.greencom.android.podcasts.player
 
 import android.content.Context
 import android.util.Log
+import androidx.core.os.bundleOf
 import androidx.media2.common.MediaItem
 import androidx.media2.player.MediaPlayer
 import androidx.media2.session.MediaController
+import androidx.media2.session.SessionCommand
 import androidx.media2.session.SessionCommandGroup
 import androidx.media2.session.SessionToken
 import com.google.android.exoplayer2.Player
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.*
 import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 private const val PLAYER_SERVICE_CONNECTION_TAG = "PLAYER_SERVICE_CONNECTION_TAG"
@@ -149,6 +152,23 @@ class PlayerServiceConnection @Inject constructor(
             controller?.playbackSpeed = speed
             playerRepository.setPlaybackSpeed(speed)
         }
+    }
+
+    @ExperimentalTime
+    fun setSleepTimer(duration: Duration) {
+        controller?.sendCustomCommand(
+            SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null),
+            bundleOf(
+                CustomSessionCommand.SET_SLEEP_TIMER_DURATION_KEY to duration.inWholeMilliseconds
+            )
+        )
+    }
+
+    fun removeSleepTimer() {
+        controller?.sendCustomCommand(
+            SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null),
+            null
+        )
     }
 
     fun setExoPlayerState(state: Int) {
