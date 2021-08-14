@@ -27,6 +27,9 @@ import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.media2.DefaultMediaItemConverter
 import com.google.android.exoplayer2.ext.media2.SessionCallbackBuilder
 import com.google.android.exoplayer2.ext.media2.SessionPlayerConnector
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.repository.PlayerRepository
 import com.greencom.android.podcasts.ui.MainActivity
@@ -262,7 +265,12 @@ class PlayerService : MediaSessionService() {
 
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
+        // Allow cross-protocol redirects.
+        val httpDataSourceFactory = DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true)
+        val dataSourceFactory = DefaultDataSourceFactory(this, httpDataSourceFactory)
+
         exoPlayer = SimpleExoPlayer.Builder(this)
+            .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
             .setAudioAttributes(audioAttributes, true)
             .setSeekBackIncrementMs(10_000L)
             .setSeekForwardIncrementMs(30_000L)
