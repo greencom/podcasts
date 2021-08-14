@@ -51,6 +51,15 @@ class PlayerServiceConnection @Inject constructor(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
+    /**
+     * Used to indicate whether the playback should start after current position reset
+     * in [resetCurrentPosition]. `false` value (do not start after resetting) used to not
+     * start playback for the restored last played episode on the app start. In any other case
+     * the playback should start (e.g. user sets an episode to the player, or the next episode
+     * in the playlist has started after the end of the previous one).
+     */
+    private var resetCurrentPositionAndPlay = false
+
     @ExperimentalTime
     private val controllerCallback: MediaController.ControllerCallback by lazy {
         object : MediaController.ControllerCallback() {
@@ -79,6 +88,12 @@ class PlayerServiceConnection @Inject constructor(
                 updateCurrentPosition(controller)
 
                 forceCoverUpdate(state)
+
+                // If an error occurred while loading a restored last played episode, it means
+                // the restored episode has not started anyway. So set to true.
+                if (state == MediaPlayer.PLAYER_STATE_ERROR) {
+                    resetCurrentPositionAndPlay = true
+                }
             }
         }
     }
@@ -86,6 +101,9 @@ class PlayerServiceConnection @Inject constructor(
     @ExperimentalTime
     fun connect(context: Context, sessionToken: SessionToken) {
         Log.d(PLAYER_SERVICE_CONNECTION_TAG, "connect()")
+        // Set to false, so the restored last played episode does not start playing
+        // on the application start.
+        resetCurrentPositionAndPlay = false
 
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
@@ -102,6 +120,8 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun setEpisode(episodeId: String) {
+        // Episodes explicitly set by the user should start playing.
+        resetCurrentPositionAndPlay = true
         controller?.setMediaItem(episodeId)
     }
 
@@ -154,6 +174,9 @@ class PlayerServiceConnection @Inject constructor(
     private fun updateCurrentPosition(controller: MediaController) {
         currentPositionJob?.cancel()
         if (isPlaying.value) {
+            // If the player is playing (including the application start), it means
+            // there is no need for the player to restore last played episode. So set to true.
+            resetCurrentPositionAndPlay = true
             currentPositionJob = scope?.launch(Dispatchers.Default) {
                 while (true) {
                     ensureActive()
@@ -178,7 +201,11 @@ class PlayerServiceConnection @Inject constructor(
 
     private fun resetCurrentPosition(controller: MediaController) {
         controller.pause()
-        controller.play()
+        // Do not start the playback on the application start for the restored
+        // last played episode.
+        if (resetCurrentPositionAndPlay) {
+            controller.play()
+        }
     }
 
 //    private var scope: CoroutineScope? = null
