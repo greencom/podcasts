@@ -95,6 +95,10 @@ class PlayerServiceConnection @Inject constructor(
                     resetCurrentPositionAndPlay = true
                 }
             }
+
+            override fun onSeekCompleted(controller: MediaController, position: Long) {
+                updateCurrentPositionOneShot(controller)
+            }
         }
     }
 
@@ -187,6 +191,10 @@ class PlayerServiceConnection @Inject constructor(
         } else {
             _currentPosition.value = modifiedCurrentPosition(controller)
         }
+    }
+
+    private fun updateCurrentPositionOneShot(controller: MediaController) {
+        _currentPosition.value = modifiedCurrentPosition(controller)
     }
 
     private fun modifiedCurrentPosition(controller: MediaController): Long {
