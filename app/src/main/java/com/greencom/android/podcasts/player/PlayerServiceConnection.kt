@@ -201,14 +201,15 @@ class PlayerServiceConnection @Inject constructor(
     }
 
     fun markCurrentEpisodeCompleted() {
-        scope?.launch(Dispatchers.Default) {
-            playerRepository.onEpisodeCompleted(currentEpisode.value.id)
-        }
-        _currentEpisode.value = CurrentEpisode.empty()
         controller?.sendCustomCommand(
             SessionCommand(CustomSessionCommand.MARK_CURRENT_EPISODE_COMPLETED, null),
             null
         )
+        scope?.launch(Dispatchers.Default) {
+            delay(250)
+            playerRepository.onEpisodeCompleted(currentEpisode.value.id)
+            _currentEpisode.value = CurrentEpisode.empty()
+        }
     }
 
     fun setExoPlayerState(state: Int) {
