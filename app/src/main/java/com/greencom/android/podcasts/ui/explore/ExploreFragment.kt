@@ -28,7 +28,6 @@ private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 @AndroidEntryPoint
 class ExploreFragment : Fragment() {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExploreBinding? = null
     private val binding get() = _binding!!
 

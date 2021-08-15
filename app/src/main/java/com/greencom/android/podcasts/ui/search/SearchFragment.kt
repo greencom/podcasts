@@ -35,11 +35,9 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class SearchFragment : Fragment() {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
 
-    /** SearchViewModel. */
     private val viewModel: SearchViewModel by viewModels()
 
     /** RecyclerView adapter. */

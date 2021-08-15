@@ -40,14 +40,12 @@ private const val GENRE_ID = "GENRE_ID"
 @AndroidEntryPoint
 class ExplorePageFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentExplorePageBinding? = null
     private val binding get() = _binding!!
 
-    /** ExplorePageViewModel. */
     private val viewModel: ExplorePageViewModel by viewModels()
 
-    /** Genre ID associated with this fragment. */
+    /** The genre ID associated with this fragment. */
     var genreId = 0
 
     /** RecyclerView adapter. */

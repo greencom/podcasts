@@ -8,7 +8,6 @@ import android.content.IntentFilter
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.*
-import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -21,7 +20,6 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.google.android.exoplayer2.C.CONTENT_TYPE_SPEECH
 import com.google.android.exoplayer2.C.USAGE_MEDIA
-import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -33,6 +31,8 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
+import com.greencom.android.podcasts.player.PlayerService.MediaControlReceiver
+import com.greencom.android.podcasts.player.PlayerService.PlayerServiceBinder
 import com.greencom.android.podcasts.repository.PlayerRepository
 import com.greencom.android.podcasts.ui.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,61 +45,149 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
-private const val PLAYER_SERVICE_TAG = "PLAYER_SERVICE_TAG"
-
+/** Notification channel ID used for the player. */
 private const val PLAYER_CHANNEL_ID = "PLAYER_CHANNEL_ID"
+
+/** Notification ID used for the player. */
 private const val PLAYER_NOTIFICATION_ID = 1
 
-// TODO
+// Seeking increments in ms used by exoPlayer.
+private const val SEEK_BACK_INCREMENT = 10_000L
+private const val SEEK_FORWARD_INCREMENT = 30_000L
+
+/**
+ * The service used for media playback using Media2 and ExoPlayer, use [PlayerServiceConnection]
+ * to communicate with the MediaSession. Also responsible for displaying a media notification
+ * while playing. The service is foreground only if the `ExoPlayer.isPlaying` returns `true`.
+ * Otherwise the media notification can be dismissed, resulting in a call to `stopSelf()`.
+ * Media notification controls are handled by the [MediaControlReceiver].
+ *
+ * PlayerService is bound and started, use [PlayerServiceBinder] for the binding.
+ */
 @AndroidEntryPoint
 class PlayerService : MediaSessionService() {
 
+    /** [PlayerRepository] provides access to the player-related Room and DataStore methods. */
     @Inject lateinit var playerRepository: PlayerRepository
 
+    /** The instance of Media2 MediaSession. Uses [sessionCallback]. */
     private lateinit var mediaSession: MediaSession
 
+    /**
+     * The instance of ExoPlayer. Uses [exoPlayerListener] and [audioAttributes]. Use
+     * [exoPlayerHandler] to get access to the player from another threads.
+     */
     private lateinit var exoPlayer: SimpleExoPlayer
 
+    /**
+     * ExoPlayer wrapper for the [exoPlayer] that allows to use it within the
+     * [mediaSession]'s [sessionCallback].
+     */
     private lateinit var sessionPlayerConnector: SessionPlayerConnector
 
+    /** The instance of the [MediaControlReceiver] that handles the player notification controls. */
     private lateinit var mediaControlReceiver: MediaControlReceiver
 
+    /**
+     * PlayerService [CoroutineScope]. Uses [SupervisorJob] and [Dispatchers.Main].
+     * Cancels on [onDestroy].
+     */
     private var scope: CoroutineScope? = null
 
-    private var notificationJob: Job? = null
+    /**
+     * The [Job] that manages the updating of the player media notification, see
+     * [updatePlayerNotification].
+     */
+    private var playerNotificationJob: Job? = null
 
+    /**
+     * The [Job] that runs the sleep timer. See [_sleepTimerRemainingTime], [setSleepTimer]
+     * and [removeSleepTimer].
+     */
     private var sleepTimerJob: Job? = null
 
+    /**
+     * [MutableStateFlow] that contains the remaining time of the sleep timer. See [sleepTimerJob].
+     */
     private val _sleepTimerRemainingTime = MutableStateFlow(Long.MIN_VALUE)
 
+    /**
+     * [MutableStateFlow] that contains the current state of the [exoPlayer],
+     * see [updateExoPlayerState].
+     */
     private val _exoPlayerState = MutableStateFlow(Player.STATE_IDLE)
 
+    /**
+     * [MutableStateFlow] that contains the current `isPlaying` state of the [exoPlayer],
+     * see [updateIsPlaying].
+     */
     private val _isPlaying = MutableStateFlow(false)
 
+    /**
+     * Whether the service is started. [stopSelf] will be called if the user dismisses
+     * the player media notification.
+     */
     private var isServiceStarted = false
 
+    /** Whether the service is bound. */
     private var isServiceBound = false
 
+    /**
+     * Whether the service is foreground. The service should be foreground when
+     * `exoPlayer.isPlaying` returns true to prevent the media notification from being
+     * dismissed.
+     */
     private var isServiceForeground = false
 
+    /**
+     * Whether the new media item should start playing after installation or not. This value
+     * will be used in the [Player.Listener.onMediaMetadataChanged]. E.g., an episode
+     * explicitly set by the user should start playing while the restored last played
+     * episode should not start playing on the app start.
+     */
     private var playWhenReady = false
 
+    /**
+     * The position in ms from which the player should start playing the episode.
+     * Most of times is the position where the episode was stopped last time. Also used
+     * for playing the episode from the specified timecode, see [setEpisodeAndPlayFromTimecode].
+     */
     private var startPosition = 0L
 
+    /** The instance of [Handler] that uses [exoPlayer]'s application [Looper]. */
+    private val exoPlayerHandler: Handler by lazy {
+        Handler(exoPlayer.applicationLooper)
+    }
+
+    /** The [Intent] used for starting [PlayerService]. */
     private val playerServiceIntent: Intent by lazy {
         Intent(this, PlayerService::class.java).apply {
             action = SERVICE_INTERFACE
         }
     }
 
+    /**
+     * The [NotificationManagerCompat] that handles all the notification-related work.
+     * See [createPlayerNotificationChannel], [setPlayerNotification],
+     * [removePlayerNotification].
+     */
     private val notificationManager: NotificationManagerCompat by lazy {
         NotificationManagerCompat.from(this)
     }
 
+    /**
+     * The [DefaultMediaItemConverter] that converts Media2 media items to ExoPlayer media
+     * items and vice versa.
+     */
     private val mediaItemConverter: DefaultMediaItemConverter by lazy {
         DefaultMediaItemConverter()
     }
 
+    /**
+     * The [NotificationCompat.Builder] used to create and update all media notifications.
+     * Default settings that will not change in the future are pre-installed. See
+     * [updatePlayerNotification].
+     */
     @ExperimentalTime
     private val playerNotificationBuilder: NotificationCompat.Builder by lazy {
         val activityIntent = Intent(this, MainActivity::class.java).apply {
@@ -107,6 +195,7 @@ class PlayerService : MediaSessionService() {
             addCategory(Intent.CATEGORY_LAUNCHER)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
+        // Action to be performed when the user clicks the notification.
         val contentIntent = PendingIntent.getActivity(
             this,
             0,
@@ -114,6 +203,7 @@ class PlayerService : MediaSessionService() {
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Action to be performed when the user dismisses the notification.
         val deleteIntent = PendingIntent.getBroadcast(
             this,
             0,
@@ -125,7 +215,7 @@ class PlayerService : MediaSessionService() {
             .setStyle(
                 androidx.media.app.NotificationCompat.MediaStyle()
                     .setMediaSession(mediaSession.sessionCompatToken)
-                    .setShowActionsInCompactView(1)
+                    .setShowActionsInCompactView(1) // Show play/pause button.
             )
             .setSilent(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -134,6 +224,33 @@ class PlayerService : MediaSessionService() {
             .setDeleteIntent(deleteIntent)
     }
 
+    /**
+     * The instance of [PendingIntent] used for 'seek backward' action in the player
+     * media notification. See [updatePlayerNotification].
+     */
+    private val seekBackwardAction: PendingIntent by lazy {
+        PendingIntent.getBroadcast(
+            this@PlayerService,
+            0,
+            Intent(PLAYER_ACTION_SEEK_BACKWARD),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    /**
+     * The instance of [PendingIntent] used for 'seek forward' action in the player
+     * media notification. See [updatePlayerNotification].
+     */
+    private val seekForwardAction: PendingIntent by lazy {
+        PendingIntent.getBroadcast(
+            this@PlayerService,
+            0,
+            Intent(PLAYER_ACTION_SEEK_FORWARD),
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    /** The [AudioAttributes] used by the [exoPlayer] to handle audio focus. */
     private val audioAttributes: AudioAttributes by lazy {
         AudioAttributes.Builder()
             .setUsage(USAGE_MEDIA)
@@ -141,30 +258,32 @@ class PlayerService : MediaSessionService() {
             .build()
     }
 
+    /**
+     * The instance of [MediaSession.SessionCallback]. The callback is created with the
+     * helper [SessionCallbackBuilder] provided by the ExoPlayer.
+     */
     @ExperimentalTime
     private val sessionCallback: MediaSession.SessionCallback by lazy {
         SessionCallbackBuilder(this, sessionPlayerConnector)
             .setMediaItemProvider { _, _, mediaId ->
-                Log.d(PLAYER_SERVICE_TAG, "sessionCallback: mediaItemProvider()")
                 val episode = runBlocking {
                     playerRepository.getEpisode(mediaId)
                 } ?: return@setMediaItemProvider null
 
+                // Play an episode from the position where the episode was stopped last time.
                 playWhenReady = true
                 startPosition = episode.position
                 createMedia2MediaItem(episode)
-            }
-            .setPostConnectCallback { _, _ ->
-                Handler(exoPlayer.applicationLooper).post {
-                    updateExoPlayerState()
-                    updateIsPlaying()
-                }
             }
             .setAllowedCommandProvider(allowedCommandProvider)
             .setCustomCommandProvider(customCommandProvider)
             .build()
     }
 
+    /**
+     * The instance of [SessionCallbackBuilder.AllowedCommandProvider]. Used to handle
+     * default controller commands.
+     */
     @ExperimentalTime
     private val allowedCommandProvider: SessionCallbackBuilder.AllowedCommandProvider by lazy {
         object : SessionCallbackBuilder.AllowedCommandProvider {
@@ -188,16 +307,17 @@ class PlayerService : MediaSessionService() {
                 controllerInfo: MediaSession.ControllerInfo,
                 command: SessionCommand
             ): Int {
-                Log.d(PLAYER_SERVICE_TAG, "onCommandRequest() with command ${command.commandCode}")
                 when (command.commandCode) {
                     SessionCommand.COMMAND_CODE_PLAYER_PLAY -> {
-                        Handler(exoPlayer.applicationLooper).post {
+                        // Handle PLAY commands by yourself.
+                        exoPlayerHandler.post {
                             safePlay()
                         }
                         return SessionResult.RESULT_ERROR_UNKNOWN
                     }
                     SessionCommand.COMMAND_CODE_PLAYER_SET_MEDIA_ITEM -> {
-                        Handler(exoPlayer.applicationLooper).post {
+                        exoPlayerHandler.post {
+                            // Update the state of the previous episode before setting a new one.
                             updateEpisodeState()
 
                             // ExoPlayer does not set a new item after an error while
@@ -213,6 +333,13 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    /**
+     * The instance of [SessionCallbackBuilder.CustomCommandProvider]. Used to handle
+     * custom commands. Custom commands are defined in the [CustomCommand] object and
+     * keys to retrieve the appropriate data along with custom commands are defined
+     * in the [CustomCommandKey] object.
+     */
+    @ExperimentalTime
     private val customCommandProvider: SessionCallbackBuilder.CustomCommandProvider by lazy {
         object : SessionCallbackBuilder.CustomCommandProvider {
             override fun onCustomCommand(
@@ -222,30 +349,36 @@ class PlayerService : MediaSessionService() {
                 args: Bundle?
             ): SessionResult {
                 return when (customCommand.customAction) {
-                    CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE -> {
+                    CustomCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE -> {
+                        // Update the previous episode state first.
+                        exoPlayerHandler.post {
+                            updateEpisodeState()
+                        }
                         val episodeId = args?.getString(
-                            CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE_EPISODE_ID_KEY
+                            CustomCommandKey.SET_EPISODE_AND_PLAY_FROM_TIMECODE_EPISODE_ID_KEY
                         ) ?: ""
                         val timecode = args?.getLong(
-                            CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE_TIMECODE_KEY
+                            CustomCommandKey.SET_EPISODE_AND_PLAY_FROM_TIMECODE_TIMECODE_KEY
                         ) ?: 0L
                         setEpisodeAndPlayFromTimecode(episodeId, timecode)
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
-                    CustomSessionCommand.SET_SLEEP_TIMER -> {
-                        val duration = args?.getLong(CustomSessionCommand.SET_SLEEP_TIMER_DURATION_KEY)
+                    CustomCommand.SET_SLEEP_TIMER -> {
+                        val duration = args?.getLong(CustomCommandKey.SET_SLEEP_TIMER_DURATION_KEY)
                             ?: Long.MIN_VALUE
                         setSleepTimer(duration)
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
-                    CustomSessionCommand.REMOVE_SLEEP_TIMER -> {
+                    CustomCommand.REMOVE_SLEEP_TIMER -> {
                         removeSleepTimer()
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
-                    CustomSessionCommand.MARK_CURRENT_EPISODE_COMPLETED -> {
-                        Handler(exoPlayer.applicationLooper).post {
-                            if (exoPlayer.currentMediaItem == null) return@post
-                            exoPlayer.removeMediaItem(0)
+                    CustomCommand.MARK_CURRENT_EPISODE_COMPLETED -> {
+                        // Remove the current media item and player notification.
+                        exoPlayerHandler.post {
+                            if (exoPlayer.currentMediaItem != null) {
+                                exoPlayer.removeMediaItem(0)
+                            }
                         }
                         removePlayerNotification()
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
@@ -254,67 +387,55 @@ class PlayerService : MediaSessionService() {
                 }
             }
 
+            // Specify allowed custom commands.
             override fun getCustomCommands(
                 session: MediaSession,
                 controllerInfo: MediaSession.ControllerInfo
             ): SessionCommandGroup {
                 return SessionCommandGroup.Builder()
-                    .addCommand(SessionCommand(CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE, null))
-                    .addCommand(SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null))
-                    .addCommand(SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null))
-                    .addCommand(SessionCommand(CustomSessionCommand.MARK_CURRENT_EPISODE_COMPLETED, null))
+                    .addCommand(SessionCommand(CustomCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE, null))
+                    .addCommand(SessionCommand(CustomCommand.SET_SLEEP_TIMER, null))
+                    .addCommand(SessionCommand(CustomCommand.REMOVE_SLEEP_TIMER, null))
+                    .addCommand(SessionCommand(CustomCommand.MARK_CURRENT_EPISODE_COMPLETED, null))
                     .build()
             }
         }
     }
 
+    /** The instance of [Player.Listener] used by [exoPlayer]. */
     @ExperimentalTime
     private val exoPlayerListener: Player.Listener by lazy {
         object : Player.Listener {
             override fun onMediaMetadataChanged(mediaMetadata: com.google.android.exoplayer2.MediaMetadata) {
-                Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onMediaMetadataChanged()")
                 exoPlayer.prepare()
-
                 seekToStartPosition()
 
                 if (playWhenReady) {
                     safePlay()
                 }
 
-                updateNotification()
-
+                updatePlayerNotification()
                 updateLastPlayedEpisodeId()
             }
 
             override fun onPlaybackStateChanged(playbackState: Int) {
-                Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onPlaybackStateChanged() with state $playbackState")
                 updateExoPlayerState(playbackState)
-                updateNotification()
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onIsPlayingChanged() with isPlaying $isPlaying")
                 updateIsPlaying(isPlaying)
-                updateNotification()
+                updatePlayerNotification()
 
+                // Update the episode state when the player is paused.
                 if (!isPlaying) {
                     updateEpisodeState()
                 }
-            }
-
-            override fun onIsLoadingChanged(isLoading: Boolean) {
-                Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onIsLoadingChanged() with isLoading $isLoading")
-            }
-
-            override fun onPlayerError(error: PlaybackException) {
-                Log.d(PLAYER_SERVICE_TAG, "exoPlayerListener: onPlayerError() with error $error")
             }
         }
     }
 
     @ExperimentalTime
     override fun onCreate() {
-        Log.d(PLAYER_SERVICE_TAG, "onCreate()")
         super.onCreate()
 
         scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -324,16 +445,21 @@ class PlayerService : MediaSessionService() {
         val dataSourceFactory = DefaultDataSourceFactory(this, httpDataSourceFactory)
 
         exoPlayer = SimpleExoPlayer.Builder(this)
+            // Allow cross-protocol redirects.
             .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
             .setAudioAttributes(audioAttributes, true)
             .setHandleAudioBecomingNoisy(true)
-            .setSeekBackIncrementMs(10_000L)
-            .setSeekForwardIncrementMs(30_000L)
+            .setSeekBackIncrementMs(SEEK_BACK_INCREMENT)
+            .setSeekForwardIncrementMs(SEEK_FORWARD_INCREMENT)
             .build()
             .apply {
                 addListener(exoPlayerListener)
-                scope?.launch {
-                    setPlaybackSpeed(playerRepository.getPlaybackSpeed().first() ?: 1.0F)
+                // Restore playback speed.
+                scope?.launch(Dispatchers.IO) {
+                    val speed = playerRepository.getPlaybackSpeed().first() ?: 1.0F
+                    exoPlayerHandler.post {
+                        setPlaybackSpeed(speed)
+                    }
                 }
             }
 
@@ -350,33 +476,28 @@ class PlayerService : MediaSessionService() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d(PLAYER_SERVICE_TAG, "onStartCommand()")
         super.onStartCommand(intent, flags, startId)
         isServiceStarted = true
         return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder {
-        Log.d(PLAYER_SERVICE_TAG, "onBind()")
         super.onBind(intent)
         isServiceBound = true
         return PlayerServiceBinder()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(PLAYER_SERVICE_TAG, "onUnbind()")
         isServiceBound = false
         return true
     }
 
     override fun onRebind(intent: Intent?) {
-        Log.d(PLAYER_SERVICE_TAG, "onRebind()")
         isServiceBound = true
     }
 
     @ExperimentalTime
     override fun onDestroy() {
-        Log.d(PLAYER_SERVICE_TAG, "onDestroy()")
         super.onDestroy()
         mediaSession.close()
         exoPlayer.release()
@@ -390,20 +511,30 @@ class PlayerService : MediaSessionService() {
         return mediaSession
     }
 
+    /**
+     * Custom `play()` command that behaves differently depending on the [exoPlayer] state.
+     * - If the [exoPlayer] is in the [Player.STATE_IDLE], calls [SimpleExoPlayer.prepare]
+     * before `play()`.
+     * - If the [exoPlayer] is in the [Player.STATE_ENDED], calls [SimpleExoPlayer.seekToPrevious]
+     * before `play()`.
+     *
+     * Otherwise just calls `play()`.
+     */
     private fun safePlay() {
         when (exoPlayer.playbackState) {
-            Player.STATE_ENDED -> {
-                exoPlayer.seekToPrevious()
-                exoPlayer.play()
-            }
             Player.STATE_IDLE -> {
                 exoPlayer.prepare()
+                exoPlayer.play()
+            }
+            Player.STATE_ENDED -> {
+                exoPlayer.seekToPrevious()
                 exoPlayer.play()
             }
             else -> exoPlayer.play()
         }
     }
 
+    /** Seeks to the [startPosition] and resets it. */
     private fun seekToStartPosition() {
         if (startPosition > 0) {
             exoPlayer.seekTo(startPosition)
@@ -411,17 +542,29 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    /**
+     * Creates an ExoPlayer media item, sets it to the player and sets the [startPosition]
+     * value according to a given [timecode].
+     */
     private fun setEpisodeAndPlayFromTimecode(episodeId: String, timecode: Long) {
-        scope?.launch {
+        scope?.launch(Dispatchers.IO) {
             val episode = playerRepository.getEpisode(episodeId) ?: return@launch
             val media2MediaItem = createMedia2MediaItem(episode)
             val exoPlayerMediaItem = mediaItemConverter.convertToExoPlayerMediaItem(media2MediaItem)
             playWhenReady = true
             startPosition = timecode
-            exoPlayer.setMediaItem(exoPlayerMediaItem)
+            exoPlayerHandler.post {
+                exoPlayer.setMediaItem(exoPlayerMediaItem)
+            }
         }
     }
 
+    /**
+     * Sets a sleep timer for a given [duration], updates [_sleepTimerRemainingTime] value
+     * every second until the end and then pauses [exoPlayer]. This method removes the previous
+     * timer so only one sleep timer can exist at the same time. See [removeSleepTimer],
+     * [sleepTimerJob].
+     */
     private fun setSleepTimer(duration: Long) {
         removeSleepTimer()
         if (duration <= 0) return
@@ -436,58 +579,65 @@ class PlayerService : MediaSessionService() {
                 _sleepTimerRemainingTime.value = remainingTime
             }
 
-            Handler(exoPlayer.applicationLooper).post {
+            exoPlayerHandler.post {
                 exoPlayer.pause()
             }
             removeSleepTimer()
         }
     }
 
+    /**
+     * Removes the current sleep timer if it is set and sets [_sleepTimerRemainingTime] to
+     * `Long.MIN_VALUE`. See [setSleepTimer], [sleepTimerJob].
+     */
     private fun removeSleepTimer() {
         sleepTimerJob?.cancel()
         _sleepTimerRemainingTime.value = Long.MIN_VALUE
     }
 
-    private fun updateExoPlayerState(playbackState: Int? = null) {
-        val mPlaybackState = playbackState ?: exoPlayer.playbackState
-        if (isServiceBound) {
-            _exoPlayerState.value = mPlaybackState
-        }
+    /** Updates [_exoPlayerState] value. */
+    private fun updateExoPlayerState(playbackState: Int) {
+        _exoPlayerState.value = playbackState
     }
 
-    private fun updateIsPlaying(isPlaying: Boolean? = null) {
-        val mIsPlaying = isPlaying ?: exoPlayer.isPlaying
-        if (isServiceBound) {
-            _isPlaying.value = mIsPlaying
-        }
+    /** Updates [_isPlaying] value. */
+    private fun updateIsPlaying(isPlaying: Boolean) {
+        _isPlaying.value = isPlaying
     }
 
+    /** Updates episode state. See [PlayerRepository.updateEpisodeState]. */
     @ExperimentalTime
     private fun updateEpisodeState() {
-        val exoPlayerMediaItem = exoPlayer.currentMediaItem ?: return
-        val episode = CurrentEpisode.from(mediaItemConverter.convertToMedia2MediaItem(exoPlayerMediaItem))
+        val episode = MediaItemEpisode.from(sessionPlayerConnector.currentMediaItem)
         if (episode.isNotEmpty()) {
             val position = exoPlayer.currentPosition
             val duration = exoPlayer.duration
-            scope?.launch {
+            scope?.launch(Dispatchers.IO) {
                 playerRepository.updateEpisodeState(episode.id, position, duration)
             }
         }
     }
 
+    /**
+     * Updates the ID of the last played episode. Allows player to restore the episode
+     * on the app start. See [restoreLastPlayedEpisode].
+     */
     @ExperimentalTime
     private fun updateLastPlayedEpisodeId() {
-        val exoPlayerMediaItem = exoPlayer.currentMediaItem ?: return
-        val episode = CurrentEpisode.from(mediaItemConverter.convertToMedia2MediaItem(exoPlayerMediaItem))
+        val episode = MediaItemEpisode.from(sessionPlayerConnector.currentMediaItem)
         if (episode.isNotEmpty()) {
-            scope?.launch {
+            scope?.launch(Dispatchers.IO) {
                 playerRepository.setLastPlayedEpisodeId(episode.id)
             }
         }
     }
 
+    /**
+     * Restores the last played episode and sets it to the player. DO NOT start playing
+     * automatically. See [updateLastPlayedEpisodeId].
+     */
     private fun restoreLastPlayedEpisode() {
-        scope?.launch {
+        scope?.launch(Dispatchers.IO) {
             val episodeId = playerRepository.getLastPlayedEpisodeId().first() ?: return@launch
             val episode = playerRepository.getEpisode(episodeId) ?: return@launch
             if (!episode.isCompleted) {
@@ -495,13 +645,16 @@ class PlayerService : MediaSessionService() {
                 val exoPlayerMediaItem = mediaItemConverter.convertToExoPlayerMediaItem(media2MediaItem)
                 playWhenReady = false
                 startPosition = episode.position
-                exoPlayer.setMediaItem(exoPlayerMediaItem)
+                exoPlayerHandler.post {
+                    exoPlayer.setMediaItem(exoPlayerMediaItem)
+                }
             } else {
                 playerRepository.setLastPlayedEpisodeId("")
             }
         }
     }
 
+    /** Creates a Media2 media item from a given [episode] and returns it. */
     private fun createMedia2MediaItem(episode: Episode): MediaItem {
         return UriMediaItem.Builder(Uri.parse(episode.audio))
             .setMetadata(
@@ -511,26 +664,32 @@ class PlayerService : MediaSessionService() {
                     .putString(EpisodeMetadata.IMAGE, episode.image)
                     .putString(EpisodeMetadata.PODCAST_ID, episode.podcastId)
                     .putString(EpisodeMetadata.PODCAST_TITLE, episode.podcastTitle)
+                    .putLong(EpisodeMetadata.DURATION, episode.audioLength * 1000L)
                     .build()
             )
             .build()
     }
 
+    /**
+     * Updates the media notification. If the current [exoPlayer] media item is null,
+     * removes the notification using [removePlayerNotification]. See [playerNotificationBuilder],
+     * [playerNotificationJob].
+     */
     @ExperimentalTime
-    private fun updateNotification() {
-        Log.d(PLAYER_SERVICE_TAG, "updateNotification()")
-        val currentEpisode = CurrentEpisode.from(sessionPlayerConnector.currentMediaItem)
+    private fun updatePlayerNotification() {
+        val currentEpisode = MediaItemEpisode.from(sessionPlayerConnector.currentMediaItem)
         if (currentEpisode.isEmpty()) {
             removePlayerNotification()
             return
         }
 
-        notificationJob?.cancel()
-        notificationJob = scope?.launch {
+        playerNotificationJob?.cancel()
+        playerNotificationJob = scope?.launch(Dispatchers.Default) {
+            // Set up play/pause button.
             val playPauseAction: PendingIntent
             val playPauseIcon: Int
             val playPauseTitle: String
-            if (exoPlayer.isPlaying) {
+            if (_isPlaying.value) {
                 playPauseAction = PendingIntent.getBroadcast(
                     this@PlayerService,
                     0,
@@ -550,6 +709,7 @@ class PlayerService : MediaSessionService() {
                 playPauseTitle = getString(R.string.notification_play)
             }
 
+            // Load episode image.
             val loader = this@PlayerService.imageLoader
             val request = ImageRequest.Builder(this@PlayerService)
                 .data(currentEpisode.image)
@@ -565,37 +725,36 @@ class PlayerService : MediaSessionService() {
                 .addAction(
                     R.drawable.ic_backward_10_32,
                     getString(R.string.notification_backward),
-                    PendingIntent.getBroadcast(
-                        this@PlayerService,
-                        0,
-                        Intent(PLAYER_ACTION_SEEK_BACKWARD),
-                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                    seekBackwardAction
                 )
                 .addAction(playPauseIcon, playPauseTitle, playPauseAction)
                 .addAction(
                     R.drawable.ic_forward_30_32,
                     getString(R.string.notification_forward),
-                    PendingIntent.getBroadcast(
-                        this@PlayerService,
-                        0,
-                        Intent(PLAYER_ACTION_SEEK_FORWARD),
-                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                    )
+                    seekForwardAction
                 )
             setPlayerNotification(playerNotificationBuilder.build())
         }
     }
 
+    /**
+     * Sets the media notification and starts the service, if it is not started.
+     * The following actions will be performed depending on the [SimpleExoPlayer.isPlaying]
+     * state:
+     * - If `isPlaying` returns `true`, the service should be started in the foreground, so
+     * the user can not dismiss the notification.
+     * - If `isPlaying` returns `false`, the service should be removed from the foreground,
+     * so the user can dismiss the notification (resulting in a [stopSelf] call). See
+     * [MediaControlReceiver].
+     */
     private fun setPlayerNotification(notification: Notification) {
         notificationManager.notify(PLAYER_NOTIFICATION_ID, notification)
-
         if (!isServiceStarted) {
             startService(playerServiceIntent)
             isServiceStarted = true
         }
 
-        if (exoPlayer.isPlaying) {
+        if (_isPlaying.value) {
             if (!isServiceForeground) {
                 startForeground(PLAYER_NOTIFICATION_ID, notification)
                 isServiceForeground = true
@@ -606,8 +765,12 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    /**
+     * Removes the media notification, removes the service from the foreground and calls
+     * [stopSelf].
+     */
     private fun removePlayerNotification() {
-        notificationJob?.cancel()
+        playerNotificationJob?.cancel()
         notificationManager.cancel(PLAYER_NOTIFICATION_ID)
         stopForeground(false)
         isServiceForeground = false
@@ -615,6 +778,7 @@ class PlayerService : MediaSessionService() {
         isServiceStarted = false
     }
 
+    /** Creates a notification channel for the player media notifications. */
     private fun createPlayerNotificationChannel() {
         val importance = NotificationManagerCompat.IMPORTANCE_LOW
         val channel = NotificationChannelCompat.Builder(PLAYER_CHANNEL_ID, importance)
@@ -625,6 +789,10 @@ class PlayerService : MediaSessionService() {
         notificationManager.createNotificationChannel(channel)
     }
 
+    /**
+     * Create and register an instance of the [MediaControlReceiver] that handles
+     * media notification controls.
+     */
     private fun createMediaControlReceiver() {
         mediaControlReceiver = MediaControlReceiver()
         val filter = IntentFilter().apply {
@@ -637,6 +805,12 @@ class PlayerService : MediaSessionService() {
         registerReceiver(mediaControlReceiver, filter)
     }
 
+    /**
+     * Custom [BroadcastReceiver] that handles media notification controls. Use
+     * [createMediaControlReceiver] to create and register an instance.
+     *
+     * Note: [PLAYER_ACTION_CLOSE] resulting in a call to [stopSelf].
+     */
     inner class MediaControlReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -652,549 +826,47 @@ class PlayerService : MediaSessionService() {
         }
     }
 
+    /**
+     * Custom [Binder] that exposes service properties through the service binding
+     * mechanism.
+     */
     inner class PlayerServiceBinder : Binder() {
+        /** MediaSession token. */
         val sessionToken: SessionToken
             get() = mediaSession.token
 
+        /** StateFlow with the ExoPlayer state. */
         val exoPlayerState: StateFlow<Int>
             get() = _exoPlayerState.asStateFlow()
 
+        /** StateFlow with the ExoPlayer `isPlaying` state. */
         val isPlaying: StateFlow<Boolean>
             get() = _isPlaying.asStateFlow()
 
+        /**
+         * StateFlow with the remaining time of the sleep timer in milliseconds.
+         * If the timer is not set, the value is `Long.MIN_VALUE`.
+         */
         val sleepTimerRemainingTime: StateFlow<Long>
-            get() = _sleepTimerRemainingTime
+            get() = _sleepTimerRemainingTime.asStateFlow()
     }
 
     companion object {
+        /** Play action for [MediaControlReceiver]. */
         private const val PLAYER_ACTION_PLAY = "com.greencom.android.podcasts.PLAYER_ACTION_PLAY"
+
+        /** Pause action for [MediaControlReceiver]. */
         private const val PLAYER_ACTION_PAUSE = "com.greencom.android.podcasts.PLAYER_ACTION_PAUSE"
-        private const val PLAYER_ACTION_SEEK_BACKWARD = "com.greencom.android.podcasts.PLAYER_ACTION_SEEK_BACKWARD"
-        private const val PLAYER_ACTION_SEEK_FORWARD = "com.greencom.android.podcasts.PLAYER_ACTION_SEEK_FORWARD"
+
+        /** Seek backward action for [MediaControlReceiver]. */
+        private const val PLAYER_ACTION_SEEK_BACKWARD =
+            "com.greencom.android.podcasts.PLAYER_ACTION_SEEK_BACKWARD"
+
+        /** Seek forward action for [MediaControlReceiver]. */
+        private const val PLAYER_ACTION_SEEK_FORWARD =
+            "com.greencom.android.podcasts.PLAYER_ACTION_SEEK_FORWARD"
+
+        /** Close player action for [MediaControlReceiver]. */
         private const val PLAYER_ACTION_CLOSE = "com.greencom.android.podcasts.PLAYER_ACTION_CLOSE"
     }
-
-//    @Inject lateinit var repository: PlayerRepository
-//
-//    private var scope: CoroutineScope? = null
-//
-//    private var notificationJob: Job? = null
-//
-//    private lateinit var mediaSession: MediaSession
-//
-//    private lateinit var player: MediaPlayer
-//
-//    private lateinit var mediaControlReceiver: BroadcastReceiver
-//
-//    private var sleepTimer: CountDownTimer? = null
-//
-//    private val _sleepTimer = MutableStateFlow(Long.MIN_VALUE)
-//
-//    private val serviceIntent: Intent by lazy {
-//        Intent(this, PlayerService::class.java).apply {
-//            action = SERVICE_INTERFACE
-//        }
-//    }
-//
-//    private val notificationManger: NotificationManagerCompat by lazy {
-//        NotificationManagerCompat.from(this)
-//    }
-//
-//    private val audioAttrs: AudioAttributesCompat by lazy {
-//        AudioAttributesCompat.Builder()
-//            .setUsage(AudioAttributesCompat.USAGE_MEDIA)
-//            .setContentType(AudioAttributesCompat.CONTENT_TYPE_SPEECH)
-//            .build()
-//    }
-//
-//    private val isPlaying: Boolean
-//        get() = player.playerState == MediaPlayer.PLAYER_STATE_PLAYING
-//
-//    private val isNotPlaying: Boolean
-//        get() = !isPlaying
-//
-//    private var isServiceStarted = false
-//
-//    private var isServiceForeground = false
-//
-//    private var isServiceBound = false
-//
-//    @ExperimentalTime
-//    private val sessionCallback: MediaSession.SessionCallback by lazy {
-//        object : MediaSession.SessionCallback() {
-//            override fun onConnect(
-//                session: MediaSession,
-//                controller: MediaSession.ControllerInfo
-//            ): SessionCommandGroup {
-//                Log.d(PLAYER_TAG, "sessionCallback: onConnect()")
-//                isServiceBound = true
-//                updateNotification(true)
-//                return SessionCommandGroup.Builder()
-//                    .addAllPredefinedCommands(SessionCommand.COMMAND_VERSION_2)
-//                    .addCommand(SessionCommand(CustomSessionCommand.RESET_PLAYER, null))
-//                    .addCommand(SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null))
-//                    .addCommand(SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null))
-//                    .build()
-//            }
-//
-//            override fun onDisconnected(
-//                session: MediaSession,
-//                controller: MediaSession.ControllerInfo
-//            ) {
-//                super.onDisconnected(session, controller)
-//                Log.d(PLAYER_TAG,"sessionCallback: onDisconnected()")
-//                isServiceBound = false
-//            }
-//
-//            override fun onCreateMediaItem(
-//                session: MediaSession,
-//                controller: MediaSession.ControllerInfo,
-//                mediaId: String
-//            ): MediaItem? {
-//                Log.d(PLAYER_TAG,"sessionCallback: onCreateMediaItem()")
-//                updateEpisodeState()
-//                saveLastEpisode()
-//
-//                if (player.playerState == MediaPlayer.PLAYER_STATE_ERROR) {
-//                    runBlocking {
-//                        resetPlayer()
-//                    }
-//                }
-//
-//                var mediaItem: MediaItem? = null
-//                val audio: String
-//                val duration: Long
-//                val title: String
-//                val podcastTitle: String
-//                val podcastId: String
-//                val image: String
-//
-//                runBlocking {
-//                    val episode = repository.getEpisode(mediaId) ?: return@runBlocking
-//                    audio = episode.audio
-//                    duration = Duration.seconds(episode.audioLength).inWholeMilliseconds
-//                    title = episode.title
-//                    podcastTitle = episode.podcastTitle
-//                    podcastId = episode.podcastId
-//                    image = episode.image
-//
-//                    mediaItem = UriMediaItem.Builder(Uri.parse(audio))
-//                        .setMetadata(MediaMetadata.Builder()
-//                            .putString(EpisodeMetadata.ID, mediaId)
-//                            .putString(EpisodeMetadata.TITLE, title)
-//                            .putString(EpisodeMetadata.PODCAST_TITLE, podcastTitle)
-//                            .putString(EpisodeMetadata.PODCAST_ID, podcastId)
-//                            .putString(EpisodeMetadata.IMAGE, image)
-//                            .putLong(EpisodeMetadata.DURATION, duration)
-//                            .build())
-//                        .build()
-//                }
-//                return mediaItem
-//            }
-//
-//            override fun onCommandRequest(
-//                session: MediaSession,
-//                controller: MediaSession.ControllerInfo,
-//                command: SessionCommand
-//            ): Int {
-//                return when (command.commandCode) {
-//                    SessionCommand.COMMAND_CODE_PLAYER_PLAY -> {
-//                        safePlay()
-//                        SessionResult.RESULT_ERROR_INVALID_STATE
-//                    }
-//                    else -> super.onCommandRequest(session, controller, command)
-//                }
-//            }
-//
-//            override fun onCustomCommand(
-//                session: MediaSession,
-//                controller: MediaSession.ControllerInfo,
-//                customCommand: SessionCommand,
-//                args: Bundle?
-//            ): SessionResult {
-//                return when (customCommand.customAction) {
-//                    CustomSessionCommand.RESET_PLAYER -> {
-//                        runBlocking {
-//                            resetPlayer()
-//                        }
-//                        removeNotification()
-//                        SessionResult(SessionResult.RESULT_SUCCESS, null)
-//                    }
-//                    CustomSessionCommand.SET_SLEEP_TIMER -> {
-//                        val duration = args?.getLong(PLAYER_SET_SLEEP_TIMER) ?: Long.MIN_VALUE
-//                        setSleepTimer(duration)
-//                        SessionResult(SessionResult.RESULT_SUCCESS, null)
-//                    }
-//                    CustomSessionCommand.REMOVE_SLEEP_TIMER -> {
-//                        removeSleepTimer()
-//                        SessionResult(SessionResult.RESULT_SUCCESS, null)
-//                    }
-//                    else -> super.onCustomCommand(session, controller, customCommand, args)
-//                }
-//            }
-//        }
-//    }
-//
-//    @ExperimentalTime
-//    private val playerCallback: MediaPlayer.PlayerCallback by lazy {
-//        object : MediaPlayer.PlayerCallback() {
-//            override fun onCurrentMediaItemChanged(player: SessionPlayer, item: MediaItem) {
-//                Log.d(PLAYER_TAG, "playerCallback: onCurrentMediaItemChanged()")
-//                updateNotification()
-//            }
-//
-//            override fun onPlayerStateChanged(player: SessionPlayer, playerState: Int) {
-//                Log.d(PLAYER_TAG, "playerCallback: onPlayerStateChanged(), state $playerState")
-//                updateNotification()
-//                saveLastEpisode()
-//
-//                if (playerState == MediaPlayer.PLAYER_STATE_PLAYING && !isServiceStarted) {
-//                    startService(serviceIntent)
-//                }
-//
-//                if (playerState == MediaPlayer.PLAYER_STATE_PAUSED) {
-//                    updateEpisodeState()
-//                }
-//
-//                if (playerState == MediaPlayer.PLAYER_STATE_ERROR) {
-//                    updateEpisodeState()
-//                    // Show a toast.
-//                    scope?.launch {
-//                        Toast.makeText(
-//                            this@PlayerService,
-//                            R.string.player_error,
-//                            Toast.LENGTH_LONG
-//                        ).show()
-//                    }
-//                }
-//            }
-//
-//            override fun onPlaybackCompleted(player: SessionPlayer) {
-//                Log.d(PLAYER_TAG, "playerCallback: onPlaybackCompleted()")
-//                updateEpisodeState()
-//            }
-//        }
-//    }
-//
-//    @ExperimentalTime
-//    override fun onCreate() {
-//        super.onCreate()
-//        Log.d(PLAYER_TAG,"PlayerService.onCreate()")
-//        scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-//
-//        player = MediaPlayer(this).apply {
-//            registerPlayerCallback(Executors.newSingleThreadExecutor(), playerCallback)
-//            setAudioAttributes(audioAttrs)
-//        }
-//
-//        scope?.launch {
-//            player.playbackSpeed = repository.getPlaybackSpeed().first() ?: 1.0F
-//        }
-//
-//        mediaSession = MediaSession.Builder(this, player)
-//            .setSessionCallback(Executors.newSingleThreadExecutor(), sessionCallback)
-//            .build()
-//
-//        createNotificationChannel()
-//        createMediaControlReceiver()
-//    }
-//
-//    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        super.onStartCommand(intent, flags, startId)
-//        Log.d(PLAYER_TAG,"PlayerService.onStartCommand()")
-//        isServiceStarted = true
-//        return START_NOT_STICKY
-//    }
-//
-//    override fun onBind(intent: Intent): IBinder {
-//        super.onBind(intent)
-//        Log.d(PLAYER_TAG,"PlayerService.onBind()")
-//        return PlayerServiceBinder()
-//    }
-//
-//    @ExperimentalTime
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        Log.d(PLAYER_TAG,"PlayerService.onDestroy()")
-//        sleepTimer?.cancel()
-//        mediaSession.close()
-//        player.unregisterPlayerCallback(playerCallback)
-//        player.close()
-//        unregisterReceiver(mediaControlReceiver)
-//        scope?.cancel()
-//        removeNotification()
-//    }
-//
-//    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
-//        Log.d(PLAYER_TAG,"PlayerService.onGetSession()")
-//        return mediaSession
-//    }
-//
-//    private fun safePlay() {
-//        when {
-//            player.currentPosition in 0 until player.duration -> {
-//                player.play()
-//            }
-//            player.currentPosition >= player.duration -> {
-//                player.seekTo(0L)
-//                player.play()
-//            }
-//        }
-//    }
-//
-//    private fun skipBackwardOrForward(value: Long) {
-//        var position = player.currentPosition + value
-//        position = when {
-//            position <= 0L -> 0L
-//            position >= player.duration -> player.duration
-//            else -> position
-//        }
-//        player.seekTo(position)
-//    }
-//
-//    private suspend fun resetPlayer() {
-//        player.reset()
-//        player.setAudioAttributes(audioAttrs)
-//        player.playbackSpeed = repository.getPlaybackSpeed().first() ?: 1.0F
-//    }
-//
-//    @ExperimentalTime
-//    private fun updateEpisodeState() {
-//        val episode = CurrentEpisode.from(player.currentMediaItem)
-//        if (episode.isNotEmpty()) {
-//            val position = player.currentPosition
-//            val duration = player.duration
-//            scope?.launch {
-//                repository.updateEpisodeState(episode.id, position, duration)
-//            }
-//        }
-//    }
-//
-//    @ExperimentalTime
-//    private fun saveLastEpisode() {
-//        Log.d(PLAYER_TAG, "saveLastEpisode()")
-//        val episode = CurrentEpisode.from(player.currentMediaItem)
-//        if (episode.isNotEmpty()) {
-//            scope?.launch {
-//                repository.setLastEpisodeId(episode.id)
-//            }
-//        }
-//    }
-//
-//    private fun setSleepTimer(duration: Long) {
-//        removeSleepTimer()
-//        if (duration <= 0) return
-//
-//        scope?.launch {
-//            sleepTimer = object : CountDownTimer(duration, 1000) {
-//                override fun onTick(millisUntilFinished: Long) {
-//                    _sleepTimer.value = millisUntilFinished
-//                }
-//
-//                override fun onFinish() {
-//                    player.pause()
-//                    _sleepTimer.value = Long.MIN_VALUE
-//                }
-//            }.start()
-//        }
-//    }
-//
-//    private fun removeSleepTimer() {
-//        sleepTimer?.cancel()
-//        _sleepTimer.value = Long.MIN_VALUE
-//    }
-//
-//    @ExperimentalTime
-//    private fun updateNotification(forceForeground: Boolean = false) {
-//        val mediaItem = player.currentMediaItem
-//        if (mediaItem == null) {
-//            removeNotification()
-//            return
-//        }
-//
-//        val playerState = player.playerState
-//        if (
-//            playerState == MediaPlayer.PLAYER_STATE_IDLE ||
-//            playerState == MediaPlayer.PLAYER_STATE_ERROR
-//        ) {
-//            removeNotification()
-//            return
-//        }
-//
-//        notificationJob?.cancel()
-//        notificationJob = scope?.launch {
-//            val notificationBuilder = NotificationCompat.Builder(this@PlayerService, CHANNEL_ID)
-//                .setSilent(true)
-//                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-//                .setSmallIcon(R.drawable.media_session_service_notification_ic_music_note)
-//
-//            val playPauseAction: PendingIntent
-//            val playPauseIcon: Int
-//            val playPauseTitle: String
-//            when (playerState) {
-//                MediaPlayer.PLAYER_STATE_PLAYING -> {
-//                    playPauseAction = PendingIntent.getBroadcast(
-//                        this@PlayerService,
-//                        0,
-//                        Intent(ACTION_PAUSE),
-//                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//                    )
-//                    playPauseIcon = R.drawable.ic_pause_32
-//                    playPauseTitle = getString(R.string.notification_pause)
-//                }
-//                MediaPlayer.PLAYER_STATE_PAUSED -> {
-//                    playPauseAction = PendingIntent.getBroadcast(
-//                        this@PlayerService,
-//                        0,
-//                        Intent(ACTION_PLAY),
-//                        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//                    )
-//                    playPauseIcon = R.drawable.ic_play_32
-//                    playPauseTitle = getString(R.string.notification_play)
-//                }
-//                else -> {
-//                    removeNotification()
-//                    return@launch
-//                }
-//            }
-//
-//            val episode = CurrentEpisode.from(mediaItem)
-//            val loader = baseContext.imageLoader
-//            val request = ImageRequest.Builder(this@PlayerService)
-//                .data(episode.image)
-//                .build()
-//            val result = (loader.execute(request) as SuccessResult).drawable
-//            val bitmap = (result as BitmapDrawable).bitmap
-//
-//            val backwardSkipAction = PendingIntent.getBroadcast(
-//                this@PlayerService,
-//                0,
-//                Intent(ACTION_SKIP_BACKWARD),
-//                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//            )
-//            val backwardSkipIcon = R.drawable.ic_backward_10_32
-//            val backwardSkipTitle = getString(R.string.notification_backward)
-//
-//            val forwardSkipAction = PendingIntent.getBroadcast(
-//                this@PlayerService,
-//                0,
-//                Intent(ACTION_SKIP_FORWARD),
-//                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//            )
-//            val forwardSkipIcon = R.drawable.ic_forward_30_32
-//            val forwardSkipTitle = getString(R.string.notification_forward)
-//
-//            val activityIntent = Intent(this@PlayerService, MainActivity::class.java).apply {
-//                action = Intent.ACTION_MAIN
-//                addCategory(Intent.CATEGORY_LAUNCHER)
-//                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//            }
-//            val contentIntent = PendingIntent.getActivity(
-//                this@PlayerService,
-//                0,
-//                activityIntent,
-//                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//            )
-//
-//            val deleteIntent = PendingIntent.getBroadcast(
-//                this@PlayerService,
-//                0,
-//                Intent(ACTION_CLOSE),
-//                PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
-//            )
-//
-//            notificationBuilder
-//                .setContentIntent(contentIntent)
-//                .setDeleteIntent(deleteIntent)
-//                .setContentTitle(episode.title)
-//                .setContentText(episode.podcastTitle)
-//                .setLargeIcon(bitmap)
-//                .addAction(backwardSkipIcon, backwardSkipTitle, backwardSkipAction)
-//                .addAction(playPauseIcon, playPauseTitle, playPauseAction)
-//                .addAction(forwardSkipIcon, forwardSkipTitle, forwardSkipAction)
-//                .setStyle(MediaNotificationCompat.MediaStyle()
-//                    .setMediaSession(mediaSession.sessionCompatToken)
-//                    .setShowActionsInCompactView(1))
-//            setNotification(notificationBuilder.build(), forceForeground)
-//        }
-//    }
-//
-//    private fun setNotification(notification: Notification, forceForeground: Boolean) {
-//        notificationManger.notify(NOTIFICATION_ID, notification)
-//        if (forceForeground) {
-//            startForeground(NOTIFICATION_ID, notification)
-//            isServiceForeground = true
-//        }
-//
-//        if (isPlaying && !isServiceForeground) {
-//            startForeground(NOTIFICATION_ID, notification)
-//            isServiceForeground = true
-//        }
-//
-//        if (isNotPlaying && !isServiceBound) {
-//            stopForeground(false)
-//            isServiceForeground = false
-//        }
-//    }
-//
-//    private fun removeNotification() {
-//        notificationJob?.cancel()
-//        notificationManger.cancel(NOTIFICATION_ID)
-//        stopForeground(true)
-//        isServiceForeground = false
-//    }
-//
-//    private fun createNotificationChannel() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            val name = getString(R.string.notification_player_channel_name)
-//            val importance = NotificationManager.IMPORTANCE_LOW
-//            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-//                enableVibration(false)
-//            }
-//            notificationManger.createNotificationChannel(channel)
-//        }
-//    }
-//
-//    private fun createMediaControlReceiver() {
-//        mediaControlReceiver = MediaControlReceiver()
-//        val filter = IntentFilter().apply {
-//            addAction(ACTION_PAUSE)
-//            addAction(ACTION_PLAY)
-//            addAction(ACTION_SKIP_BACKWARD)
-//            addAction(ACTION_SKIP_FORWARD)
-//            addAction(ACTION_CLOSE)
-//        }
-//        registerReceiver(mediaControlReceiver, filter)
-//    }
-//
-//    inner class PlayerServiceBinder : Binder() {
-//        val sessionToken: SessionToken
-//            get() = mediaSession.token
-//
-//        val sleepTimer: StateFlow<Long>
-//            get() = _sleepTimer.asStateFlow()
-//    }
-//
-//    inner class MediaControlReceiver : BroadcastReceiver() {
-//        override fun onReceive(context: Context?, intent: Intent?) {
-//            when (intent?.action) {
-//                ACTION_PLAY -> safePlay()
-//                ACTION_PAUSE -> player.pause()
-//                ACTION_SKIP_BACKWARD -> skipBackwardOrForward(PLAYER_SKIP_BACKWARD_VALUE)
-//                ACTION_SKIP_FORWARD -> skipBackwardOrForward(PLAYER_SKIP_FORWARD_VALUE)
-//                ACTION_CLOSE -> {
-//                    stopSelf()
-//                    isServiceStarted = false
-//                }
-//            }
-//        }
-//    }
-//
-//    companion object {
-//        private const val ACTION_PLAY = "com.greencom.android.podcasts.ACTION_PLAY"
-//        private const val ACTION_PAUSE = "com.greencom.android.podcasts.ACTION_PAUSE"
-//        private const val ACTION_SKIP_BACKWARD = "com.greencom.android.podcasts.ACTION_SKIP_BACKWARD"
-//        private const val ACTION_SKIP_FORWARD = "com.greencom.android.podcasts.ACTION_SKIP_FORWARD"
-//        private const val ACTION_CLOSE = "com.greencom.android.podcasts.ACTION_CLOSE"
-//    }
 }

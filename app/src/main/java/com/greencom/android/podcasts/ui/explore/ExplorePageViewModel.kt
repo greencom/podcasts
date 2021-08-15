@@ -21,10 +21,12 @@ import javax.inject.Inject
 class ExplorePageViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ExplorePageState>(ExplorePageState.Loading)
+
     /** StateFlow of UI states. States are presented by [ExplorePageState]. */
     val uiState = _uiState.asStateFlow()
 
     private val _event = Channel<ExplorePageEvent>(Channel.BUFFERED)
+
     /** Flow of events. Events are presented by [ExplorePageEvent]. */
     val event = _event.receiveAsFlow()
 

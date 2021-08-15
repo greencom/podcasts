@@ -14,17 +14,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
 
-    // TODO: Test code.
-    fun deleteAll() = viewModelScope.launch { repository.deleteAll() }
-
-    // TODO: Test code.
-    fun deleteEpisodes() = viewModelScope.launch { repository.deleteEpisodes() }
-
     private val _uiState = MutableStateFlow<HomeState>(HomeState.Empty)
+
     /** StateFlow of UI state. States are represented by [HomeState]. */
     val uiState = _uiState.asStateFlow()
 
     private val _event = Channel<HomeEvent>(Channel.BUFFERED)
+
     /** Flow of events represented by [HomeEvent]. */
     val event = _event.receiveAsFlow()
 
@@ -41,11 +37,6 @@ class HomeViewModel @Inject constructor(private val repository: Repository) : Vi
 
     /** Get a Flow of the subscription presentation mode. */
     fun getSubscriptionMode(): Flow<Int?> = repository.getSubscriptionMode()
-
-    /** Set a subscription presentation mode. */
-    fun setSubscriptionMode(mode: Int) = viewModelScope.launch {
-        repository.setSubscriptionMode(mode)
-    }
 
     /** Unsubscribe from the podcast by ID. */
     fun unsubscribe(podcastId: String) = viewModelScope.launch {

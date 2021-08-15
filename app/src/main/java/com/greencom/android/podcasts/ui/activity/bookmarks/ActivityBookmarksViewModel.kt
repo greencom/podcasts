@@ -7,6 +7,7 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -20,30 +21,17 @@ class ActivityBookmarksViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ActivityBookmarksState>(ActivityBookmarksState.Empty)
+    
     /** StateFlow of UI state. States are represented by [ActivityBookmarksState]. */
     val uiState = _uiState.asStateFlow()
 
     private val _event = Channel<ActivityBookmarksEvent>(Channel.BUFFERED)
+    
     /** Flow of events represented by [ActivityBookmarksEvent]. */
     val event = _event.receiveAsFlow()
 
-    /** Is the currently selected episode one of the episodes in the bookmarks. */
-    private var isCurrentEpisodeHere = false
-
-    // TODO
-    fun setEpisode(episodeId: String) {
-        playerServiceConnection.setEpisode(episodeId)
-    }
-
-    // TODO
-    fun play() {
-        playerServiceConnection.play()
-    }
-
-    // TODO
-    fun pause() {
-        playerServiceConnection.pause()
-    }
+    /** Is the currently selected episode one of the episodes in the list. */
+    private var isCurrentEpisodePresented = false
 
     /** Load a list of bookmarks. Result will be posted to [uiState]. */
     fun getBookmarks() = viewModelScope.launch {
@@ -58,13 +46,13 @@ class ActivityBookmarksViewModel @Inject constructor(
                         }
                         episode
                     }
-                    isCurrentEpisodeHere = mIsCurrentEpisodeHere
+                    isCurrentEpisodePresented = mIsCurrentEpisodeHere
                     return@combine mEpisodes
                 }
                 episodes
             }
             .combine(playerServiceConnection.exoPlayerState) { episodes, exoPlayerState ->
-                if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
+                if (episodes.isNotEmpty() && isCurrentEpisodePresented) {
                     return@combine episodes.map { episode ->
                         if (episode.isSelected && exoPlayerState == Player.STATE_BUFFERING) {
                             episode.copy(isBuffering = true)
@@ -76,7 +64,7 @@ class ActivityBookmarksViewModel @Inject constructor(
                 episodes
             }
             .combine(playerServiceConnection.isPlaying) { episodes, isPlaying ->
-                if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
+                if (episodes.isNotEmpty() && isCurrentEpisodePresented) {
                     return@combine episodes.map { episode ->
                         if (episode.isSelected && isPlaying) {
                             episode.copy(isPlaying = true)
@@ -87,6 +75,7 @@ class ActivityBookmarksViewModel @Inject constructor(
                 }
                 episodes
             }
+            .flowOn(Dispatchers.Default)
             .collectLatest { episodes ->
                 _uiState.value = when {
                     episodes.isNotEmpty() -> ActivityBookmarksState.Success(episodes)
@@ -95,7 +84,22 @@ class ActivityBookmarksViewModel @Inject constructor(
             }
     }
 
-    /** Navigate to EpisodeFragment with given ID. */
+    /** Send `Play` command to the player. */
+    fun play() {
+        playerServiceConnection.play()
+    }
+
+    /** Send `Pause` command to the player. */
+    fun pause() {
+        playerServiceConnection.pause()
+    }
+
+    /** Set an episode to the player by episode ID and play. */
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
+    }
+
+    /** Navigate to EpisodeFragment with a given ID. */
     fun navigateToEpisode(episodeId: String) = viewModelScope.launch {
         _event.send(ActivityBookmarksEvent.NavigateToEpisode(episodeId))
     }
@@ -112,7 +116,7 @@ class ActivityBookmarksViewModel @Inject constructor(
         _event.send(ActivityBookmarksEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
     }
 
-    /** Mark an episode as completed or uncompleted by ID. */
+    /** Mark an episode as completed or reset its progress by ID. */
     fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
             repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
@@ -131,7 +135,7 @@ class ActivityBookmarksViewModel @Inject constructor(
     /** Sealed class that represents events of the [ActivityBookmarksFragment]. */
     sealed class ActivityBookmarksEvent {
 
-        /** Navigate to episode page. */
+        /** Navigate to the episode page by ID. */
         data class NavigateToEpisode(val episodeId: String) : ActivityBookmarksEvent()
 
         /**

@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val EPISODE_START_THRESHOLD = 30_000
-private const val EPISODE_END_THRESHOLD = 60_000
-private const val EPISODE_SKIP_BACKWARD = 5_000
+private const val EPISODE_START_THRESHOLD = 20_000
+private const val EPISODE_END_THRESHOLD = 45_000
+private const val EPISODE_SEEK_BACKWARD = 2_500
 
 /** Implements [PlayerRepository] interface. */
 @Singleton
@@ -49,8 +49,8 @@ class PlayerRepositoryImpl @Inject constructor(
         val episodeState = when {
             position < EPISODE_START_THRESHOLD -> return
             position in EPISODE_START_THRESHOLD..positionEnoughForCompletion -> {
-                val newPosition = if (position >= EPISODE_START_THRESHOLD + EPISODE_SKIP_BACKWARD) {
-                    position - EPISODE_SKIP_BACKWARD
+                val newPosition = if (position >= EPISODE_START_THRESHOLD + EPISODE_SEEK_BACKWARD) {
+                    position - EPISODE_SEEK_BACKWARD
                 } else {
                     position
                 }

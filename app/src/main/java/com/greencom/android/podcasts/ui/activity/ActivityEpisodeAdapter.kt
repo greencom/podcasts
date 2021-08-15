@@ -15,9 +15,10 @@ import com.greencom.android.podcasts.utils.*
 import kotlin.time.ExperimentalTime
 
 /**
- * RecyclerView adapter used by
- * [ActivityBookmarksFragment][com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment] and
- * [ActivityInProgressFragment][com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressFragment].
+ * RecyclerView adapter used by [ActivityBookmarksFragment]
+ * [com.greencom.android.podcasts.ui.activity.bookmarks.ActivityBookmarksFragment] and
+ * [ActivityInProgressFragment]
+ * [com.greencom.android.podcasts.ui.activity.inprogress.ActivityInProgressFragment].
  *
  * Use [dateMode] to specify episode date presentation mode. Should be either [MODE_PUB_DATE] or
  * [MODE_LAST_PLAYED_DATE].
@@ -26,7 +27,7 @@ class ActivityEpisodeAdapter(
     private val dateMode: Int,
     private val navigateToEpisode: (String) -> Unit,
     private val onInBookmarksChange: (String, Boolean) -> Unit,
-    private val playEpisode: (String) -> Unit,
+    private val setEpisode: (String) -> Unit,
     private val play: () -> Unit,
     private val pause: () -> Unit,
     private val showEpisodeOptions: (String, Boolean) -> Unit,
@@ -45,7 +46,7 @@ class ActivityEpisodeAdapter(
             parent = parent,
             navigateToEpisode = navigateToEpisode,
             onInBookmarksChange = onInBookmarksChange,
-            playEpisode = playEpisode,
+            setEpisode = setEpisode,
             play = play,
             pause = pause,
             showEpisodeOptions = showEpisodeOptions
@@ -72,7 +73,7 @@ class ActivityEpisodeAdapter(
         private val binding: ItemActivityEpisodeBinding,
         private val navigateToEpisode: (String) -> Unit,
         private val onInBookmarksChange: (String, Boolean) -> Unit,
-        private val playEpisode: (String) -> Unit,
+        private val setEpisode: (String) -> Unit,
         private val play: () -> Unit,
         private val pause: () -> Unit,
         private val showEpisodeOptions: (String, Boolean) -> Unit,
@@ -102,7 +103,7 @@ class ActivityEpisodeAdapter(
                     episode.isSelected && episode.isBuffering -> {  }
                     episode.isSelected && episode.isPlaying -> pause()
                     episode.isSelected && !episode.isPlaying -> play()
-                    else -> playEpisode(episode.id)
+                    else -> setEpisode(episode.id)
                 }
             }
 
@@ -125,7 +126,7 @@ class ActivityEpisodeAdapter(
                         else -> episode.date
                     }
                     append(episodeDateToString(date, context))
-                    append(" ${Symbol.bullet} ")
+                    append(" ${Symbols.bullet} ")
                     append(episode.podcastTitle)
                 }
                 title.text = episode.title
@@ -152,7 +153,7 @@ class ActivityEpisodeAdapter(
                 parent: ViewGroup,
                 navigateToEpisode: (String) -> Unit,
                 onInBookmarksChange: (String, Boolean) -> Unit,
-                playEpisode: (String) -> Unit,
+                setEpisode: (String) -> Unit,
                 play: () -> Unit,
                 pause: () -> Unit,
                 showEpisodeOptions: (String, Boolean) -> Unit,
@@ -163,7 +164,7 @@ class ActivityEpisodeAdapter(
                     binding = binding,
                     navigateToEpisode = navigateToEpisode,
                     onInBookmarksChange = onInBookmarksChange,
-                    playEpisode = playEpisode,
+                    setEpisode = setEpisode,
                     play = play,
                     pause = pause,
                     showEpisodeOptions = showEpisodeOptions,

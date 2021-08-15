@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Dao
 abstract class PodcastDao {
 
-    // TODO: Test code.
+    /** Clears the whole `podcasts` table. */
     @Query("DELETE FROM podcasts")
     abstract suspend fun clear()
 
@@ -111,11 +111,11 @@ abstract class PodcastDao {
     @Update(entity = PodcastEntity::class)
     abstract suspend fun updateWithPodcastShort(podcast: List<PodcastShort>)
 
-    /** Update subscription to a Podcast with given [PodcastSubscription] object. */
+    /** Update subscription to a [Podcast] with given [PodcastSubscription] object. */
     @Update(entity = PodcastEntity::class)
     abstract suspend fun updateSubscription(podcastSubscription: PodcastSubscription)
 
-    /** Get an update date of the podcast by ID. */
+    /** Get the update date of the podcast by ID. */
     @Query("SELECT update_date FROM podcasts WHERE id = :id")
     abstract suspend fun getUpdateDate(id: String): Long?
 

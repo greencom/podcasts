@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media2.session.SessionToken
-import com.greencom.android.podcasts.player.CurrentEpisode
+import com.greencom.android.podcasts.player.MediaItemEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.PLAYER_TAG
@@ -33,11 +33,8 @@ class MainActivityViewModel @Inject constructor(
     private val _skipBackwardOrForwardValue = MutableStateFlow(0L)
     val skipBackwardOrForwardValue = _skipBackwardOrForwardValue.asStateFlow()
 
-    val currentEpisode: StateFlow<CurrentEpisode>
+    val currentEpisode: StateFlow<MediaItemEpisode>
         get() = playerServiceConnection.currentEpisode
-
-    val forceCoverUpdate: SharedFlow<Unit>
-        get() = playerServiceConnection.forceCoverUpdate
 
     val duration: StateFlow<Long>
         get() = playerServiceConnection.duration

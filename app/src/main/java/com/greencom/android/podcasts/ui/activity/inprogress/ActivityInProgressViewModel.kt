@@ -7,6 +7,7 @@ import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -28,22 +29,7 @@ class ActivityInProgressViewModel @Inject constructor(
     val event = _event.receiveAsFlow()
 
     /** Is the currently selected episode one of the episodes in the bookmarks. */
-    private var isCurrentEpisodeHere = false
-
-    // TODO
-    fun setEpisode(episodeId: String) {
-        playerServiceConnection.setEpisode(episodeId)
-    }
-
-    // TODO
-    fun play() {
-        playerServiceConnection.play()
-    }
-
-    // TODO
-    fun pause() {
-        playerServiceConnection.pause()
-    }
+    private var isCurrentEpisodePresented = false
 
     /** Load a list of episodes in progress. Result will be posted to [uiState]. */
     fun getEpisodesInProgress() = viewModelScope.launch {
@@ -58,13 +44,13 @@ class ActivityInProgressViewModel @Inject constructor(
                         }
                         episode
                     }
-                    isCurrentEpisodeHere = mIsCurrentEpisodeHere
+                    isCurrentEpisodePresented = mIsCurrentEpisodeHere
                     return@combine mEpisodes
                 }
                 episodes
             }
             .combine(playerServiceConnection.exoPlayerState) { episodes, exoPlayerState ->
-                if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
+                if (episodes.isNotEmpty() && isCurrentEpisodePresented) {
                     return@combine episodes.map { episode ->
                         if (episode.isSelected && exoPlayerState == Player.STATE_BUFFERING) {
                             episode.copy(isBuffering = true)
@@ -76,7 +62,7 @@ class ActivityInProgressViewModel @Inject constructor(
                 episodes
             }
             .combine(playerServiceConnection.isPlaying) { episodes, isPlaying ->
-                if (episodes.isNotEmpty() && isCurrentEpisodeHere) {
+                if (episodes.isNotEmpty() && isCurrentEpisodePresented) {
                     return@combine episodes.map { episode ->
                         if (episode.isSelected && isPlaying) {
                             episode.copy(isPlaying = true)
@@ -87,12 +73,28 @@ class ActivityInProgressViewModel @Inject constructor(
                 }
                 episodes
             }
+            .flowOn(Dispatchers.Default)
             .collectLatest { episodes ->
                 _uiState.value = when {
                     episodes.isNotEmpty() -> ActivityInProgressState.Success(episodes)
                     else -> ActivityInProgressState.Empty
                 }
             }
+    }
+
+    /** Send `Play` command to the player. */
+    fun play() {
+        playerServiceConnection.play()
+    }
+
+    /** Send `Pause` command to the player. */
+    fun pause() {
+        playerServiceConnection.pause()
+    }
+
+    /** Set an episode to the player by episode ID and play. */
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
     }
 
     /** Navigate to EpisodeFragment with given ID. */
@@ -112,7 +114,7 @@ class ActivityInProgressViewModel @Inject constructor(
         _event.send(ActivityInProgressEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
     }
 
-    /** Mark an episode as completed or uncompleted by ID. */
+    /** Mark an episode as completed or reset its progress by ID. */
     fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
             repository.onEpisodeIsCompletedChange(episodeId, isCompleted)

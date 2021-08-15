@@ -20,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ActivityFragment : Fragment() {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentActivityBinding? = null
     private val binding get() = _binding!!
 

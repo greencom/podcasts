@@ -17,7 +17,7 @@ data class EpisodeEntity(
     @ColumnInfo(name = "title")
     val title: String,
 
-    /** Podcast title. */
+    /** The title of the parent podcast. */
     @ColumnInfo(name = "podcast_title")
     val podcastTitle: String,
 
@@ -25,7 +25,7 @@ data class EpisodeEntity(
     @ColumnInfo(name = "description")
     val description: String,
 
-    /** Podcast publisher. */
+    /** The publisher of the parent podcast. */
     @ColumnInfo(name = "publisher")
     val publisher: String,
 
@@ -37,11 +37,11 @@ data class EpisodeEntity(
     @ColumnInfo(name = "audio")
     val audio: String,
 
-    /** Audio length in seconds. */
+    /** Audio length in SECONDS. */
     @ColumnInfo(name = "audio_length")
     val audioLength: Int,
 
-    /** The ID of the podcast that this episode belongs to. */
+    /** The ID of the parent podcast. */
     @ColumnInfo(name = "podcast_id")
     val podcastId: String,
 
@@ -53,7 +53,7 @@ data class EpisodeEntity(
     @ColumnInfo(name = "date")
     val date: Long,
 
-    /** The position where the episode was last stopped. */
+    /** The position where the episode was stopped last time. */
     @ColumnInfo(name = "position")
     val position: Long,
 
@@ -83,7 +83,7 @@ data class EpisodeEntity(
     val addedToBookmarksDate: Long,
 )
 
-/** Model class that used to update episode state in the database. */
+/** Model class that used to update the episode state in the database. */
 data class EpisodeEntityState(
 
     /** Episode ID. */

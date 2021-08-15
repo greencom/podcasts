@@ -1,10 +1,15 @@
 package com.greencom.android.podcasts.player
 
 import androidx.media2.common.MediaItem
+import com.greencom.android.podcasts.player.MediaItemEpisode.Companion.empty
+import com.greencom.android.podcasts.player.MediaItemEpisode.Companion.from
 import kotlin.time.ExperimentalTime
 
-/** Wrapper class for the player media items. */
-data class CurrentEpisode(
+/**
+ * Wrapper class for Media2 media items. Use [from] to convert Media2 media items or [empty]
+ * to create empty [MediaItemEpisode].
+ */
+data class MediaItemEpisode(
     val id: String,
     val title: String,
     val podcastTitle: String,
@@ -20,19 +25,19 @@ data class CurrentEpisode(
 
     companion object {
 
-        /** Create an empty [CurrentEpisode]. */
-        fun empty(): CurrentEpisode = CurrentEpisode("", "", "", "", "")
+        /** Create empty [MediaItemEpisode]. */
+        fun empty(): MediaItemEpisode = MediaItemEpisode("", "", "", "", "")
 
         /**
-         * Obtain [CurrentEpisode] from the player media item. If the media item is `null`,
-         * returns empty [CurrentEpisode].
+         * Obtain [MediaItemEpisode] from the Media2 media item. If the media item is `null`,
+         * returns empty [MediaItemEpisode].
          */
         @ExperimentalTime
-        fun from(mediaItem: MediaItem?): CurrentEpisode {
+        fun from(mediaItem: MediaItem?): MediaItemEpisode {
             return if (mediaItem == null) {
-                CurrentEpisode.empty()
+                MediaItemEpisode.empty()
             } else {
-                CurrentEpisode(
+                MediaItemEpisode(
                     id = mediaItem.metadata?.getString(EpisodeMetadata.ID) ?: "",
                     title = mediaItem.metadata?.getString(EpisodeMetadata.TITLE) ?: "",
                     podcastTitle = mediaItem.metadata?.getString(EpisodeMetadata.PODCAST_TITLE) ?: "",

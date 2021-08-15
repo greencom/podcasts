@@ -30,14 +30,12 @@ private const val SMOOTH_SCROLL_THRESHOLD = 50
 @AndroidEntryPoint
 class ActivityHistoryFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentActivityHistoryBinding? = null
     private val binding get() = _binding!!
 
-    /** ActivityHistoryViewModel. */
     private val viewModel: ActivityHistoryViewModel by viewModels()
 
-    /** RecyclerView history adapter. */
+    /** RecyclerView adapter. */
     private val adapter by lazy {
         HistoryEpisodeAdapter(
             navigateToEpisode = viewModel::navigateToEpisode,

@@ -45,20 +45,18 @@ private const val TIMECODE_PATTERN = "([0-9]{1,2})(:[0-9]{1,2}){1,2}"
 @AndroidEntryPoint
 class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentEpisodeBinding? = null
     private val binding get() = _binding!!
 
-    /** EpisodeViewModel. */
     private val viewModel: EpisodeViewModel by viewModels()
 
     // Navigation arguments.
     private val args: EpisodeFragmentArgs by navArgs()
 
-    /** ID of the episode associated with this fragment. */
+    /** The ID of the episode associated with this fragment. */
     private var episodeId = ""
 
-    /** Episode associated with this fragment. */
+    /** An [Episode] associated with this fragment. */
     private var episode: Episode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -402,7 +400,7 @@ class EpisodeFragment : Fragment(), EpisodeOptionsDialog.EpisodeOptionsDialogLis
 
     companion object {
 
-        /** Key to retrieve `episodeId` SafeArg from outside. */
+        /** Key to retrieve an `episodeId` SafeArg from the outside. */
         const val SAFE_ARGS_EPISODE_ID = "episodeId"
     }
 }

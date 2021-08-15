@@ -36,7 +36,7 @@ data class PodcastEntity(
     @ColumnInfo(name = "explicit_content")
     val explicitContent: Boolean,
 
-    /** Total number of episodes in this podcast. */
+    /** The total number of episodes in this podcast. */
     @ColumnInfo(name = "episode_count")
     val episodeCount: Int,
 

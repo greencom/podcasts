@@ -21,10 +21,12 @@ class ActivityHistoryViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<ActivityHistoryState>(ActivityHistoryState.Empty)
+
     /** StateFlow of UI state. States are presented by [ActivityHistoryState]. */
     val uiState = _uiState.asStateFlow()
 
     private val _event = Channel<ActivityHistoryEvent>(Channel.BUFFERED)
+
     /** Flow of events represented by [ActivityHistoryEvent]. */
     val event = _event.receiveAsFlow()
 
@@ -44,11 +46,12 @@ class ActivityHistoryViewModel @Inject constructor(
     }
 
     /** Show an [EpisodeOptionsDialog]. */
-    fun showEpisodeOptions(episodeId: String, isEpisodeCompleted: Boolean) = viewModelScope.launch {
-        _event.send(ActivityHistoryEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
-    }
+    fun showEpisodeOptions(episodeId: String, isEpisodeCompleted: Boolean) =
+        viewModelScope.launch {
+            _event.send(ActivityHistoryEvent.EpisodeOptionDialog(episodeId, isEpisodeCompleted))
+        }
 
-    /** Mark an episode as completed or uncompleted by ID. */
+    /** Mark an episode as completed or reset its progress by ID. */
     fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
             repository.onEpisodeIsCompletedChange(episodeId, isCompleted)

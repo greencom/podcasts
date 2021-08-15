@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 /** Interface that defines player repository that contains player-related use cases. */
 interface PlayerRepository {
 
-    /** Get the episode by ID. */
+    /** Get an episode by ID. */
     suspend fun getEpisode(episodeId: String): Episode?
 
     /** Get the episode's last position by ID. */
@@ -21,10 +21,10 @@ interface PlayerRepository {
     /** Save the ID of the episode that was last played. */
     suspend fun setLastPlayedEpisodeId(episodeId: String)
 
-    /** Get Flow with the ID of the episode that was last played. */
+    /** Get a Flow with the ID of the episode that was last played. */
     fun getLastPlayedEpisodeId(): Flow<String?>
 
-    /** Update episode state depending on the last position. */
+    /** Update the episode state (position, isCompleted) depending on the last position. */
     suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long)
 
     /** Mark episode completed by ID. */

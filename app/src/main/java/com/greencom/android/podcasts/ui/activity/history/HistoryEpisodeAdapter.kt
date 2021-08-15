@@ -10,7 +10,7 @@ import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.Episode
 import com.greencom.android.podcasts.databinding.ItemHistoryEpisodeBinding
 import com.greencom.android.podcasts.utils.EpisodeDiffCallback
-import com.greencom.android.podcasts.utils.Symbol
+import com.greencom.android.podcasts.utils.Symbols
 import com.greencom.android.podcasts.utils.coilCoverBuilder
 import com.greencom.android.podcasts.utils.episodeDateToString
 import kotlin.time.ExperimentalTime
@@ -71,7 +71,7 @@ class HistoryEpisodeAdapter(
                     append(context.getString(R.string.activity_history_completed))
                     append(" ")
                     append(episodeDateToString(episode.completionDate, context).lowercase())
-                    append(" ${Symbol.bullet} ")
+                    append(" ${Symbols.bullet} ")
                     append(episode.podcastTitle)
                 }
                 title.text = episode.title

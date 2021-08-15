@@ -22,7 +22,9 @@ class ActivityViewPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragme
             0 -> ActivityBookmarksFragment()
             1 -> ActivityInProgressFragment()
             2 -> ActivityHistoryFragment()
-            else -> throw IllegalStateException("Fragment has not been added to ActivityViewPagerAdapter.createFragment()")
+            else -> throw IllegalStateException(
+                "Fragment has not been added to ActivityViewPagerAdapter.createFragment()"
+            )
         }
     }
 }

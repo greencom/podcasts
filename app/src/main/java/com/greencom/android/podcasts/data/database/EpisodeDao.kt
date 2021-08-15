@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Dao
 abstract class EpisodeDao {
 
-    // TODO: Test code.
+    /** Clears the whole `episodes` table. */
     @Query("DELETE FROM episodes")
     abstract suspend fun clear()
 
@@ -21,7 +21,7 @@ abstract class EpisodeDao {
     abstract suspend fun insert(episode: EpisodeEntity)
 
     /**
-     * Insert an [EpisodeEntity] list into the database. [OnConflictStrategy.IGNORE]
+     * Insert a list of [EpisodeEntity]s into the database. [OnConflictStrategy.IGNORE]
      * on conflict.
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -35,19 +35,9 @@ abstract class EpisodeDao {
     @Update(entity = EpisodeEntity::class)
     abstract suspend fun update(episodeBookmark: EpisodeEntityBookmark)
 
-    /** Get the episode by ID. */
-    @Query("SELECT * FROM episodes WHERE id = :id")
-    abstract suspend fun getEpisode(id: String): Episode?
-
-    /**
-     * Get a Flow with an [Episode] for a given ID. No need to apply [distinctUntilChanged]
-     * function since it is already done under the hood.
-     */
-    fun getEpisodeFlow(id: String): Flow<Episode?> = getEpisodeFlowRaw(id).distinctUntilChanged()
-
-    /** Get the episode's last position by ID. */
-    @Query("SELECT position FROM episodes WHERE id = :id")
-    abstract suspend fun getEpisodePosition(id: String): Long?
+    /** Get the number of loaded episodes for a given podcast ID. */
+    @Query("SELECT COUNT(id) FROM episodes WHERE podcast_id = :podcastId")
+    abstract suspend fun getEpisodeCount(podcastId: String): Int
 
     /**
      * Get the publication date of the latest podcast episode which was uploaded
@@ -63,13 +53,23 @@ abstract class EpisodeDao {
     @Query("SELECT date from episodes WHERE podcast_id = :podcastId ORDER BY date ASC LIMIT 1")
     abstract suspend fun getEarliestLoadedEpisodePubDate(podcastId: String): Long?
 
-    /** Get the number of loaded episodes for a given podcast ID. */
-    @Query("SELECT COUNT(id) FROM episodes WHERE podcast_id = :podcastId")
-    abstract suspend fun getEpisodeCount(podcastId: String): Int
-
     /** Returns `true` if the episode is in the bookmarks. */
     @Query("SELECT in_bookmarks FROM episodes where id = :episodeId")
     abstract suspend fun isEpisodeInBookmarks(episodeId: String): Boolean?
+
+    /** Get episode's last position by ID. */
+    @Query("SELECT position FROM episodes WHERE id = :id")
+    abstract suspend fun getEpisodePosition(id: String): Long?
+
+    /** Get an episode by ID. */
+    @Query("SELECT * FROM episodes WHERE id = :id")
+    abstract suspend fun getEpisode(id: String): Episode?
+
+    /**
+     * Get a Flow with an [Episode] for a given ID. No need to apply [distinctUntilChanged]
+     * function since it is already done under the hood.
+     */
+    fun getEpisodeFlow(id: String): Flow<Episode?> = getEpisodeFlowRaw(id).distinctUntilChanged()
 
     /**
      * Get a Flow with a list of episodes that have been added to the bookmarks in

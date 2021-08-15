@@ -12,6 +12,8 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+private const val APP_DATABASE_NAME = "podcasts_database"
+
 /** Hilt module that provides database-related components. */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,19 +26,19 @@ object DatabaseModule {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
-            "podcasts_database"
+            APP_DATABASE_NAME
         )
             .fallbackToDestructiveMigration()
             .build()
     }
 
-    /** Provides an access to the [PodcastDao]. */
+    /** Provides access to the [PodcastDao]. */
     @Provides
     fun providePodcastDao(database: AppDatabase): PodcastDao {
         return database.podcastDao()
     }
 
-    /** Provides an access to the [EpisodeDao]. */
+    /** Provides access to the [EpisodeDao]. */
     @Provides
     fun provideEpisodeDao(database: AppDatabase): EpisodeDao {
         return database.episodeDao()

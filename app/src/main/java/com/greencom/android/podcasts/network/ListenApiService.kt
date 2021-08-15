@@ -5,7 +5,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
- * Interface that defines the methods for interacting with ListenAPI.
+ * Interface that defines methods for interacting with ListenAPI.
  * Available methods: [searchEpisode], [searchPodcast], [getPodcast], [getBestPodcasts].
  */
 interface ListenApiService {

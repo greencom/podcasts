@@ -18,11 +18,11 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "description")
     val description: String,
 
-    /** Podcast title. */
+    /** The title of the parent podcast. */
     @ColumnInfo(name = "podcast_title")
     val podcastTitle: String,
 
-    /** Podcast publisher. */
+    /** The publisher of the parent podcast. */
     @ColumnInfo(name = "publisher")
     val publisher: String,
 
@@ -34,11 +34,11 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "audio")
     val audio: String,
 
-    /** Audio length in seconds. */
+    /** Audio length in SECONDS. */
     @ColumnInfo(name = "audio_length")
     val audioLength: Int,
 
-    /** The ID of the podcast that this episode belongs to. */
+    /** The ID of parent podcast. */
     @ColumnInfo(name = "podcast_id")
     val podcastId: String,
 
@@ -46,11 +46,11 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "explicit_content")
     val explicitContent: Boolean,
 
-    /** Published date in milliseconds. */
+    /** The published date in milliseconds. */
     @ColumnInfo(name = "date")
     val date: Long,
 
-    /** The position where the episode was last stopped. */
+    /** The position where the episode was stopped last time. */
     @ColumnInfo(name = "position")
     val position: Long,
 
@@ -79,7 +79,7 @@ data class Episode @JvmOverloads constructor(
     @ColumnInfo(name = "added_to_bookmarks_date")
     val addedToBookmarksDate: Long,
 
-    /** Whether the episode is selected by the user to play. */
+    /** Whether the episode is the current episode of the player. */
     @Ignore
     val isSelected: Boolean = false,
 
@@ -87,7 +87,7 @@ data class Episode @JvmOverloads constructor(
     @Ignore
     val isBuffering: Boolean = false,
 
-    /** Whether the episode is playing right now. Makes sense only if the episode is selected. */
+    /** Whether the episode is playing right now. */
     @Ignore
     val isPlaying: Boolean = false,
 )

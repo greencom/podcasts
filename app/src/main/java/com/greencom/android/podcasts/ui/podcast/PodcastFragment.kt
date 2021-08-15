@@ -44,20 +44,18 @@ private const val SMOOTH_SCROLL_THRESHOLD = 50
 class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener,
     EpisodeOptionsDialog.EpisodeOptionsDialogListener {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentPodcastBinding? = null
     private val binding get() = _binding!!
 
-    /** PodcastViewModel. */
     private val viewModel: PodcastViewModel by viewModels()
 
     // Navigation arguments.
     private val args: PodcastFragmentArgs by navArgs()
 
-    /** ID of the podcast associated with this fragment. */
+    /** The ID of the podcast associated with this fragment. */
     private var podcastId = ""
 
-    /** Whether scrollToTop FAB is shown or not. */
+    /** Whether the scrollToTop FAB is shown or not. */
     private var isScrollToTopShown = false
 
     /** RecyclerView adapter. */
@@ -413,7 +411,7 @@ class PodcastFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener,
 
     companion object {
 
-        /** Key to retrieve `podcastId` SafeArg from outside. */
+        /** Key to retrieve an `podcastId` SafeArg from the outside. */
         const val SAFE_ARGS_PODCAST_ID = "podcastId"
     }
 }

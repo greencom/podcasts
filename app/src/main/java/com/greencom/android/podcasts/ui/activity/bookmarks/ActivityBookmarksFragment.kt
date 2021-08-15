@@ -36,13 +36,13 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
 
     private val viewModel: ActivityBookmarksViewModel by viewModels()
 
-    /** RecyclerView bookmarks adapter. */
+    /** RecyclerView adapter. */
     private val adapter by lazy {
         ActivityEpisodeAdapter(
             dateMode = ActivityEpisodeAdapter.MODE_PUB_DATE,
             navigateToEpisode = viewModel::navigateToEpisode,
             onInBookmarksChange = viewModel::onInBookmarksChange,
-            playEpisode = viewModel::setEpisode,
+            setEpisode = viewModel::setEpisode,
             play = viewModel::play,
             pause = viewModel::pause,
             showEpisodeOptions = viewModel::showEpisodeOptions
@@ -192,13 +192,15 @@ class ActivityBookmarksFragment : Fragment(), EpisodeOptionsDialog.EpisodeOption
     companion object {
 
         /**
-         * Key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
+         * Key used to pass data between
+         * [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
          * and [ActivityBookmarksFragment] about tab reselection.
          */
         private const val KEY_ON_TAB_RESELECTED = "ACTIVITY_BOOKMARKS_ON_TAB_RESELECTED"
 
         /**
-         * Return key used to pass data between [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
+         * Return key used to pass data between
+         * [ActivityFragment][com.greencom.android.podcasts.ui.activity.ActivityFragment]
          * and [ActivityBookmarksFragment] about tab reselection.
          */
         fun createOnTabReselectedKey(): String = KEY_ON_TAB_RESELECTED

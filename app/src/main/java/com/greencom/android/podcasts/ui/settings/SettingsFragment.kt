@@ -22,6 +22,7 @@ import com.greencom.android.podcasts.utils.extensions.revealImmediately
 import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTransitions
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -121,7 +122,11 @@ class SettingsFragment : Fragment() {
                 showSubscriptionTitlesCheckbox.isChecked = !showSubscriptionTitlesCheckbox.isChecked
             }
             showSubscriptionTitlesCheckbox.setOnCheckedChangeListener { _, isChecked ->
-                val mode = if (isChecked) SUBSCRIPTION_MODE_GRID_WITH_TITLE else SUBSCRIPTION_MODE_GRID_COVER_ONLY
+                val mode = if (isChecked) {
+                    SUBSCRIPTION_MODE_GRID_WITH_TITLE
+                } else {
+                    SUBSCRIPTION_MODE_GRID_COVER_ONLY
+                }
                 viewModel.setSubscriptionMode(mode)
             }
 
@@ -164,7 +169,7 @@ class SettingsFragment : Fragment() {
 
                 // Observe theme mode.
                 launch {
-                    viewModel.getTheme().collectLatest { mode ->
+                    viewModel.getTheme().collect { mode ->
                         binding.apply {
                             when (mode ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM) {
                                 AppCompatDelegate.MODE_NIGHT_NO -> {
@@ -195,7 +200,7 @@ class SettingsFragment : Fragment() {
 
                 // Observe subscription presentation mode.
                 launch {
-                    viewModel.getSubscriptionMode().collectLatest { mode ->
+                    viewModel.getSubscriptionMode().collect { mode ->
                         val mMode = mode ?: SUBSCRIPTION_MODE_GRID_WITH_TITLE
                         binding.showSubscriptionTitlesCheckbox.isChecked =
                             mMode == SUBSCRIPTION_MODE_GRID_WITH_TITLE

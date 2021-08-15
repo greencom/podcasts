@@ -7,14 +7,13 @@ import androidx.media2.player.MediaPlayer
 import com.google.android.exoplayer2.Player
 import com.greencom.android.podcasts.R
 import com.greencom.android.podcasts.data.domain.PodcastWithEpisodes
-import com.greencom.android.podcasts.di.DispatcherModule.DefaultDispatcher
-import com.greencom.android.podcasts.player.CurrentEpisode
+import com.greencom.android.podcasts.player.MediaItemEpisode
 import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.SortOrder
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -26,29 +25,33 @@ import javax.inject.Inject
 class PodcastViewModel @Inject constructor(
     private val playerServiceConnection: PlayerServiceConnection,
     private val repository: Repository,
-    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     /** ID of the podcast associated with the fragment and ViewModel. */
     var podcastId = ""
 
     private val _uiState = MutableStateFlow<PodcastState>(PodcastState.Loading)
+
     /** StateFlow of UI state. States are presented by [PodcastState]. */
     val uiState = _uiState.asStateFlow()
 
     private val _event = Channel<PodcastEvent>(Channel.BUFFERED)
+
     /** Flow of events represented by [PodcastEvent]. */
     val event = _event.receiveAsFlow()
 
     private val _sortOrder = MutableStateFlow(SortOrder.RECENT_FIRST)
+
     /** StateFlow with the current [SortOrder] value. Defaults to [SortOrder.RECENT_FIRST]. */
     val sortOrder = _sortOrder.asStateFlow()
 
     private val _showCompleted = MutableStateFlow(true)
+
     /** StateFlow that indicates whether or not completed episodes should be filtered. */
     val showCompleted = _showCompleted.asStateFlow()
 
     private val _isAppBarExpanded = MutableStateFlow(true)
+
     /**
      * StateFlow with the current [PodcastFragment]'s app bar state. `true` means the app bar
      * is expanded. Otherwise `false`.
@@ -65,34 +68,7 @@ class PodcastViewModel @Inject constructor(
      * Is the currently selected episode one of the episodes of this podcast. If not,
      * [setCurrentEpisodeState] function will skip its body to save resources.
      */
-    private var isCurrentEpisodeHere = false
-
-    // TODO
-    fun setEpisode(episodeId: String) {
-        playerServiceConnection.setEpisode(episodeId)
-    }
-
-    // TODO
-    fun play() {
-        playerServiceConnection.play()
-    }
-
-    // TODO
-    fun pause() {
-        playerServiceConnection.pause()
-    }
-
-    /** Reverse the [sortOrder] value and init episodes fetching. */
-    fun changeSortOrder() {
-        _sortOrder.value = sortOrder.value.reverse()
-        // Initiate a new process of loading episodes.
-        fetchEpisodes()
-    }
-
-    /** Change [showCompleted] value. */
-    fun changeShowCompleted(showCompleted: Boolean) {
-        _showCompleted.value = showCompleted
-    }
+    private var isCurrentEpisodePresented = false
 
     /** Load a podcast with episodes. The result will be posted to [uiState]. */
     fun getPodcastWithEpisodes() = viewModelScope.launch {
@@ -102,7 +78,6 @@ class PodcastViewModel @Inject constructor(
                 filterCompleted(flowState, showCompleted)
             }
             .onEach(::checkBottomEpisodes)
-            .flowOn(defaultDispatcher)
             .combine(playerServiceConnection.currentEpisode) { flowState, currentEpisode ->
                 setCurrentEpisode(flowState, currentEpisode)
             }
@@ -112,6 +87,7 @@ class PodcastViewModel @Inject constructor(
             .combine(playerServiceConnection.isPlaying) { flowState, isPlaying ->
                 setCurrentEpisodeIsPlaying(flowState, isPlaying)
             }
+            .flowOn(Dispatchers.Default)
             .collectLatest { state ->
                 when (state) {
                     is State.Loading -> _uiState.value = PodcastState.Loading
@@ -167,6 +143,33 @@ class PodcastViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    /** Reverse the [sortOrder] value and init episodes fetching. */
+    fun changeSortOrder() {
+        _sortOrder.value = sortOrder.value.reverse()
+        // Initiate a new process of loading episodes.
+        fetchEpisodes()
+    }
+
+    /** Change [showCompleted] value. */
+    fun changeShowCompleted(showCompleted: Boolean) {
+        _showCompleted.value = showCompleted
+    }
+
+    /** Send `Play` command to the player. */
+    fun play() {
+        playerServiceConnection.play()
+    }
+
+    /** Send `Pause` command to the player. */
+    fun pause() {
+        playerServiceConnection.pause()
+    }
+
+    /** Set an episode to the player by episode ID and play. */
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
     }
 
     /**
@@ -262,18 +265,18 @@ class PodcastViewModel @Inject constructor(
     /** Check if there is the episode that is currently selected in the player. */
     private fun setCurrentEpisode(
         flowState: State<PodcastWithEpisodes>,
-        currentEpisode: CurrentEpisode
+        currentEpisode: MediaItemEpisode
     ): State<PodcastWithEpisodes> {
         if (flowState is State.Success) {
-            var mIsCurrentEpisodeHere = false
+            var mIsCurrentEpisodePresented = false
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.id == currentEpisode.id) {
-                    mIsCurrentEpisodeHere = true
+                    mIsCurrentEpisodePresented = true
                     return@map episode.copy(isSelected = true)
                 }
                 episode
             }
-            isCurrentEpisodeHere = mIsCurrentEpisodeHere
+            isCurrentEpisodePresented = mIsCurrentEpisodePresented
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState
@@ -284,7 +287,7 @@ class PodcastViewModel @Inject constructor(
         flowState: State<PodcastWithEpisodes>,
         exoPlayerState: Int,
     ): State<PodcastWithEpisodes> {
-        if (flowState is State.Success && isCurrentEpisodeHere) {
+        if (flowState is State.Success && isCurrentEpisodePresented) {
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.isSelected && exoPlayerState == Player.STATE_BUFFERING) {
                     episode.copy(isBuffering = true)
@@ -302,7 +305,7 @@ class PodcastViewModel @Inject constructor(
         flowState: State<PodcastWithEpisodes>,
         isPlaying: Boolean,
     ): State<PodcastWithEpisodes> {
-        if (flowState is State.Success && isCurrentEpisodeHere) {
+        if (flowState is State.Success && isCurrentEpisodePresented) {
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.isSelected && isPlaying) {
                     episode.copy(isPlaying = true)
@@ -324,7 +327,7 @@ class PodcastViewModel @Inject constructor(
         flowState: State<PodcastWithEpisodes>,
         playerState: Int
     ): State<PodcastWithEpisodes> {
-        if (flowState is State.Success && isCurrentEpisodeHere) {
+        if (flowState is State.Success && isCurrentEpisodePresented) {
             val episodes = flowState.data.episodes.map { episode ->
                 if (episode.isSelected && playerState == MediaPlayer.PLAYER_STATE_PLAYING) {
                     episode.copy(isPlaying = true)

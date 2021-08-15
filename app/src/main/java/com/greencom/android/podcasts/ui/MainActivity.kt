@@ -71,6 +71,9 @@ private const val PLAYER_ANIMATION_DURATION = 300L
 
 private const val POSITIONS_SKIPPED_THRESHOLD = 10
 
+private const val SEEK_BACKWARD_VALUE = -10_000L
+private const val SEEK_FORWARD_VALUE = 30_000L
+
 /**
  * Max duration to be set to the player slider and progress bar in case of duration of
  * [Long.MAX_VALUE] got from the MediaController. This value is equivalent to
@@ -123,8 +126,8 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     /**
      * Whether the cover of the current episode was successfully loaded or not. If not,
-     * a new attempt will be made when the [MainActivityViewModel.forceCoverUpdate] trigger
-     * is received.
+     * a new attempt will be made when the [MainActivityViewModel.isPlaying] StateFlow sends
+     * `true`.
      */
     private var isCurrentCoverLoaded = false
 
@@ -144,7 +147,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private var navigationBarColorChanged = TypedValue()
 
     /** Current player episode. */
-    private var currentEpisode: CurrentEpisode? = null
+    private var currentEpisode: MediaItemEpisode? = null
 
     /** ServiceConnection for [PlayerService] binding. */
     private val serviceConnection: ServiceConnection by lazy {
@@ -219,6 +222,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        volumeControlStream = AudioManager.STREAM_MUSIC
 
         // Set app theme.
         lifecycleScope.launch {
@@ -226,9 +230,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 viewModel.getTheme().first() ?: AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             )
         }
-
-        volumeControlStream = AudioManager.STREAM_MUSIC
-        startService(playerServiceIntent)
 
         initViews()
         initNavigation()
@@ -485,16 +486,16 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     duration = slider.valueTo.toLong(),
                 )
             } else {
-                Symbol.infinity.toString()
+                Symbols.infinity.toString()
             }
         }
 
         // Skip backward of forward through the track.
         expandedPlayer.skipBackward.setOnClickListener {
-            viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_BACKWARD_VALUE)
+            viewModel.updateSkipBackwardOrForwardValue(SEEK_BACKWARD_VALUE)
         }
         expandedPlayer.skipForward.setOnClickListener {
-            viewModel.updateSkipBackwardOrForwardValue(PLAYER_SKIP_FORWARD_VALUE)
+            viewModel.updateSkipBackwardOrForwardValue(SEEK_FORWARD_VALUE)
         }
 
         expandedPlayer.cover.setOnClickListener {
@@ -668,23 +669,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // Update the cover of the current episode in case it was not loaded due
-                // during the previous attempt.
-                launch {
-                    viewModel.forceCoverUpdate.collect {
-                        if (!isCurrentCoverLoaded) {
-                            collapsedPlayer.cover.load(currentEpisode?.image) {
-                                coilCoverBuilder(this@MainActivity)
-                                listener(currentCoverListener)
-                            }
-                            expandedPlayer.cover.load(currentEpisode?.image) {
-                                coilCoverBuilder(this@MainActivity)
-                                listener(currentCoverListener)
-                            }
-                        }
-                    }
-                }
-
                 // Observe current episode duration.
                 launch {
                     viewModel.duration.collect { duration ->
@@ -706,6 +690,19 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                         if (isPlaying) {
                             collapsedPlayer.playPause.setImageResource(R.drawable.ic_pause_24)
                             expandedPlayer.playPause.setImageResource(R.drawable.ic_pause_circle_24)
+
+                            // Update the cover of the current episode in case it was not loaded
+                            // during the previous attempt.
+                            if (!isCurrentCoverLoaded) {
+                                collapsedPlayer.cover.load(currentEpisode?.image) {
+                                    coilCoverBuilder(this@MainActivity)
+                                    listener(currentCoverListener)
+                                }
+                                expandedPlayer.cover.load(currentEpisode?.image) {
+                                    coilCoverBuilder(this@MainActivity)
+                                    listener(currentCoverListener)
+                                }
+                            }
                         } else {
                             collapsedPlayer.playPause.setImageResource(R.drawable.ic_play_outline_24)
                             expandedPlayer.playPause.setImageResource(R.drawable.ic_play_circle_24)

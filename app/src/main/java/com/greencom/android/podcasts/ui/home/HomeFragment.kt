@@ -32,15 +32,13 @@ const val SUBSCRIPTION_MODE_GRID_WITH_TITLE = 2
 // Saving instance state.
 private const val SAVED_STATE_IS_APP_BAR_EXPANDED = "IS_APP_BAR_EXPANDED"
 
-// TODO
+/** Represents a list of the user subscriptions. */
 @AndroidEntryPoint
 class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
-    /** Nullable View binding. Only for inflating and cleaning. Use [binding] instead. */
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    /** HomeViewModel. */
     private val viewModel: HomeViewModel by viewModels()
 
     /** RecyclerView adapter used in the [SUBSCRIPTION_MODE_GRID_COVER_ONLY] mode. */
@@ -176,7 +174,7 @@ class HomeFragment : Fragment(), UnsubscribeDialog.UnsubscribeDialogListener {
 
                 // Observe subscription presentation mode.
                 launch {
-                    viewModel.getSubscriptionMode().collectLatest { mode ->
+                    viewModel.getSubscriptionMode().collect { mode ->
                         handleSubscriptionMode(mode ?: SUBSCRIPTION_MODE_GRID_WITH_TITLE)
                     }
                 }

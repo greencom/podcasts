@@ -8,6 +8,7 @@ import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.utils.State
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,35 +21,17 @@ class EpisodeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<EpisodeState>(EpisodeState.Loading)
+
     /** StateFlow of UI state. States are presented by [EpisodeState]. */
     val uiState = _uiState.asStateFlow()
 
     private val _isAppBarExpanded = MutableStateFlow(true)
+
     /**
      * StateFlow with the current [EpisodeFragment]'s app bar state. `true` means the app bar
      * is expanded. Otherwise `false`.
      */
     val isAppBarExpanded = _isAppBarExpanded.asStateFlow()
-
-    // TODO
-    fun setEpisode(episodeId: String) {
-        playerServiceConnection.setEpisode(episodeId)
-    }
-
-    // TODO
-    fun play() {
-        playerServiceConnection.play()
-    }
-
-    // TODO
-    fun pause() {
-        playerServiceConnection.pause()
-    }
-
-    // TODO
-    fun playFromTimecode(episodeId: String, timecode: Long) {
-        playerServiceConnection.playFromTimecode(episodeId, timecode)
-    }
 
     /** Load an episode for a given ID. The result will be posted to [uiState]. */
     fun getEpisode(episodeId: String) = viewModelScope.launch {
@@ -82,6 +65,7 @@ class EpisodeViewModel @Inject constructor(
                     flowState
                 }
             }
+            .flowOn(Dispatchers.Default)
             .collectLatest { state ->
                 when (state) {
                     is State.Loading -> _uiState.value = EpisodeState.Loading
@@ -91,12 +75,32 @@ class EpisodeViewModel @Inject constructor(
             }
     }
 
+    /** Send `Play` command to the player. */
+    fun play() {
+        playerServiceConnection.play()
+    }
+
+    /** Send `Pause` command to the player. */
+    fun pause() {
+        playerServiceConnection.pause()
+    }
+
+    /** Set an episode to the player by episode ID and play. */
+    fun setEpisode(episodeId: String) {
+        playerServiceConnection.setEpisode(episodeId)
+    }
+
+    /** Play the episode from given [timecode]. */
+    fun playFromTimecode(episodeId: String, timecode: Long) {
+        playerServiceConnection.playFromTimecode(episodeId, timecode)
+    }
+
     /** Add the episode to the bookmarks or remove from there. */
     fun onInBookmarksChange(episodeId: String, inBookmarks: Boolean) = viewModelScope.launch {
         repository.onEpisodeInBookmarksChange(episodeId, inBookmarks)
     }
 
-    /** Mark an episode as completed or uncompleted by ID. */
+    /** Mark an episode as completed or reset its progress by ID. */
     fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         viewModelScope.launch {
             repository.onEpisodeIsCompletedChange(episodeId, isCompleted)

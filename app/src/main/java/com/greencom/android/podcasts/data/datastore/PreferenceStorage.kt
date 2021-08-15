@@ -14,16 +14,16 @@ interface PreferenceStorage {
     /** Save player playback speed. */
     suspend fun setPlaybackSpeed(playbackSpeed: Float)
 
-    /** Get a Flow with a player playback speed. */
+    /** Get a Flow with the player playback speed. */
     fun getPlaybackSpeed(): Flow<Float?>
 
-    /** Save last played episode ID. */
+    /** Save the ID of the last played episode. */
     suspend fun setLastEpisodeId(episodeId: String)
 
-    /** Get a Flow with the last played episode ID. */
+    /** Get a Flow with the ID of the last played episode. */
     fun getLastEpisodeId(): Flow<String?>
 
-    /** Save subscription presentation mode. */
+    /** Save the subscription presentation mode. */
     suspend fun setSubscriptionMode(mode: Int)
 
     /** Get a Flow with a subscription presentation mode. */
