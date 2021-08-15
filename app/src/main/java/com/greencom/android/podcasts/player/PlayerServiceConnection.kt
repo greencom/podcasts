@@ -141,6 +141,22 @@ class PlayerServiceConnection @Inject constructor(
         controller?.seekTo(position.coerceIn(0..duration.value))
     }
 
+    fun playFromTimecode(episodeId: String, timecode: Long) {
+        // Episodes explicitly set by the user should start playing.
+        resetCurrentPositionAndPlay = true
+        if (episodeId == currentEpisode.value.id) {
+            controller?.seekTo(timecode)
+        } else {
+            controller?.sendCustomCommand(
+                SessionCommand(CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE, null),
+                bundleOf(
+                    CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE_EPISODE_ID_KEY to episodeId,
+                    CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE_TIMECODE_KEY to timecode
+                )
+            )
+        }
+    }
+
     fun changePlaybackSpeed() {
         scope?.launch(Dispatchers.Default) {
             val speed = when (playerRepository.getPlaybackSpeed().first() ?: 1.0F) {

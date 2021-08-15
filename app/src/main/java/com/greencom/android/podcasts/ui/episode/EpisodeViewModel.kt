@@ -47,8 +47,7 @@ class EpisodeViewModel @Inject constructor(
 
     // TODO
     fun playFromTimecode(episodeId: String, timecode: Long) {
-        // TODO
-//        playerServiceConnection.playFromTimecode(episodeId, timecode)
+        playerServiceConnection.playFromTimecode(episodeId, timecode)
     }
 
     /** Load an episode for a given ID. The result will be posted to [uiState]. */

@@ -152,7 +152,6 @@ class PlayerService : MediaSessionService() {
 
                 playWhenReady = true
                 startPosition = episode.position
-
                 createMedia2MediaItem(episode)
             }
             .setPostConnectCallback { _, _ ->
@@ -223,6 +222,16 @@ class PlayerService : MediaSessionService() {
                 args: Bundle?
             ): SessionResult {
                 return when (customCommand.customAction) {
+                    CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE -> {
+                        val episodeId = args?.getString(
+                            CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE_EPISODE_ID_KEY
+                        ) ?: ""
+                        val timecode = args?.getLong(
+                            CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE_TIMECODE_KEY
+                        ) ?: 0L
+                        setEpisodeAndPlayFromTimecode(episodeId, timecode)
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
                     CustomSessionCommand.SET_SLEEP_TIMER -> {
                         val duration = args?.getLong(CustomSessionCommand.SET_SLEEP_TIMER_DURATION_KEY)
                             ?: Long.MIN_VALUE
@@ -242,6 +251,7 @@ class PlayerService : MediaSessionService() {
                 controllerInfo: MediaSession.ControllerInfo
             ): SessionCommandGroup {
                 return SessionCommandGroup.Builder()
+                    .addCommand(SessionCommand(CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE, null))
                     .addCommand(SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null))
                     .addCommand(SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null))
                     .build()
@@ -387,6 +397,17 @@ class PlayerService : MediaSessionService() {
         if (startPosition > 0) {
             exoPlayer.seekTo(startPosition)
             startPosition = 0
+        }
+    }
+
+    private fun setEpisodeAndPlayFromTimecode(episodeId: String, timecode: Long) {
+        scope?.launch {
+            val episode = playerRepository.getEpisode(episodeId) ?: return@launch
+            val media2MediaItem = createMedia2MediaItem(episode)
+            val exoPlayerMediaItem = mediaItemConverter.convertToExoPlayerMediaItem(media2MediaItem)
+            playWhenReady = true
+            startPosition = timecode
+            exoPlayer.setMediaItem(exoPlayerMediaItem)
         }
     }
 
