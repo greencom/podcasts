@@ -64,11 +64,11 @@ class PlayerService : MediaSessionService() {
 
     private lateinit var mediaControlReceiver: MediaControlReceiver
 
-    private var sleepTimer: CountDownTimer? = null
-
     private var scope: CoroutineScope? = null
 
     private var notificationJob: Job? = null
+
+    private var sleepTimerJob: Job? = null
 
     private val _sleepTimerRemainingTime = MutableStateFlow(Long.MIN_VALUE)
 
@@ -226,9 +226,7 @@ class PlayerService : MediaSessionService() {
                     CustomSessionCommand.SET_SLEEP_TIMER -> {
                         val duration = args?.getLong(CustomSessionCommand.SET_SLEEP_TIMER_DURATION_KEY)
                             ?: Long.MIN_VALUE
-                        scope?.launch {
-                            setSleepTimer(duration)
-                        }
+                        setSleepTimer(duration)
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
                     CustomSessionCommand.REMOVE_SLEEP_TIMER -> {
@@ -364,8 +362,6 @@ class PlayerService : MediaSessionService() {
         exoPlayer.removeListener(exoPlayerListener)
         sessionPlayerConnector.close()
         unregisterReceiver(mediaControlReceiver)
-        sleepTimer?.cancel()
-        sleepTimer = null
         scope?.cancel()
     }
 
@@ -398,21 +394,25 @@ class PlayerService : MediaSessionService() {
         removeSleepTimer()
         if (duration <= 0) return
 
-        sleepTimer = object : CountDownTimer(duration, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-                _sleepTimerRemainingTime.value = millisUntilFinished
+        sleepTimerJob = scope?.launch(Dispatchers.Default) {
+            var remainingTime = duration
+            _sleepTimerRemainingTime.value = remainingTime
+            while (remainingTime > 0) {
+                ensureActive()
+                delay(1000)
+                remainingTime -= 1000
+                _sleepTimerRemainingTime.value = remainingTime
             }
 
-            override fun onFinish() {
+            Handler(exoPlayer.applicationLooper).post {
                 exoPlayer.pause()
-                _sleepTimerRemainingTime.value = Long.MIN_VALUE
             }
-        }.start()
+            removeSleepTimer()
+        }
     }
 
     private fun removeSleepTimer() {
-        sleepTimer?.cancel()
-        sleepTimer = null
+        sleepTimerJob?.cancel()
         _sleepTimerRemainingTime.value = Long.MIN_VALUE
     }
 
