@@ -330,11 +330,12 @@ class PlayerService : MediaSessionService() {
             .setSeekBackIncrementMs(10_000L)
             .setSeekForwardIncrementMs(30_000L)
             .build()
-            .apply { addListener(exoPlayerListener) }
-
-        scope?.launch {
-            exoPlayer.setPlaybackSpeed(playerRepository.getPlaybackSpeed().first() ?: 1.0F)
-        }
+            .apply {
+                addListener(exoPlayerListener)
+                scope?.launch {
+                    setPlaybackSpeed(playerRepository.getPlaybackSpeed().first() ?: 1.0F)
+                }
+            }
 
         sessionPlayerConnector = SessionPlayerConnector(exoPlayer)
 
