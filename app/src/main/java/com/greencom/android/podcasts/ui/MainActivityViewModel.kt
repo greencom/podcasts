@@ -63,8 +63,12 @@ class MainActivityViewModel @Inject constructor(
         playerServiceConnection.seekTo(position)
     }
 
-    fun changePlaybackSpeed() {
-        playerServiceConnection.changePlaybackSpeed()
+    fun increasePlaybackSpeed() {
+        playerServiceConnection.increasePlaybackSpeed()
+    }
+
+    fun decreasePlaybackSpeed() {
+        playerServiceConnection.decreasePlaybackSpeed()
     }
 
     @ExperimentalTime

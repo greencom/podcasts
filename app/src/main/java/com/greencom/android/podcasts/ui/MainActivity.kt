@@ -516,9 +516,19 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             viewModel.navigateToPodcast(currentEpisode?.podcastId)
         }
 
+        // Control playback speed.
         expandedPlayer.playbackSpeed.setOnClickListener {
-            viewModel.changePlaybackSpeed()
+            viewModel.increasePlaybackSpeed()
         }
+        expandedPlayer.playbackSpeed.setOnTouchListener(object : OnSwipeListener(this) {
+            override fun onSwipeLeft() {
+                viewModel.decreasePlaybackSpeed()
+            }
+
+            override fun onSwipeRight() {
+                viewModel.increasePlaybackSpeed()
+            }
+        })
 
         expandedPlayer.options.setOnClickListener {
             viewModel.showPlayerOptionsDialog(currentEpisode?.id)

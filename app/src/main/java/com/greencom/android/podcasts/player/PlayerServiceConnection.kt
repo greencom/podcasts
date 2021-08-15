@@ -157,13 +157,26 @@ class PlayerServiceConnection @Inject constructor(
         }
     }
 
-    fun changePlaybackSpeed() {
+    fun increasePlaybackSpeed() {
         scope?.launch(Dispatchers.Default) {
             val speed = when (playerRepository.getPlaybackSpeed().first() ?: 1.0F) {
                 1.0F -> 1.2F
                 1.2F -> 1.5F
                 1.5F -> 2.0F
                 else -> 1.0F
+            }
+            controller?.playbackSpeed = speed
+            playerRepository.setPlaybackSpeed(speed)
+        }
+    }
+
+    fun decreasePlaybackSpeed() {
+        scope?.launch(Dispatchers.Default) {
+            val speed = when (playerRepository.getPlaybackSpeed().first() ?: 1.0F) {
+                2.0F -> 1.5F
+                1.5F -> 1.2F
+                1.2F -> 1.0F
+                else -> 2.0F
             }
             controller?.playbackSpeed = speed
             playerRepository.setPlaybackSpeed(speed)
