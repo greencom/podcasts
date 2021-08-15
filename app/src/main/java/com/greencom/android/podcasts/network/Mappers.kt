@@ -20,10 +20,10 @@ fun SearchPodcastWrapper.toDomain(query: String, offset: Int): PodcastSearchResu
     podcasts = podcasts.map { podcast ->
         Podcast(
             id = podcast.id,
-            title = podcast.title,
-            description = podcast.description,
+            title = podcast.title.trim(),
+            description = podcast.description.trim(),
             image = podcast.image,
-            publisher = podcast.publisher,
+            publisher = podcast.publisher.trim(),
             explicitContent = podcast.explicitContent,
             episodeCount = podcast.episodeCount,
             latestPubDate = podcast.latestPubDate,
@@ -37,10 +37,10 @@ fun SearchPodcastWrapper.toDomain(query: String, offset: Int): PodcastSearchResu
 fun SearchPodcastWrapper.podcastsToDatabase(): List<PodcastEntityPartial> = podcasts.map { podcast ->
     PodcastEntityPartial(
         id = podcast.id,
-        title = podcast.title,
-        description = podcast.description,
+        title = podcast.title.trim(),
+        description = podcast.description.trim(),
         image = podcast.image,
-        publisher = podcast.publisher,
+        publisher = podcast.publisher.trim(),
         explicitContent = podcast.explicitContent,
         episodeCount = podcast.episodeCount,
         latestPubDate = podcast.latestPubDate,
@@ -70,7 +70,7 @@ fun PodcastWrapper.episodesToDatabase(): List<EpisodeEntity> = episodes.map {
         title = it.title.trim(),
         description = it.description.trim(),
         podcastTitle = title.trim(),
-        publisher = publisher,
+        publisher = publisher.trim(),
         image = it.image,
         audio = it.audio,
         audioLength = it.audioLength,
