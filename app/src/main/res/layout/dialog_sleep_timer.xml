@@ -15,10 +15,11 @@
     <TextView
         android:id="@+id/title"
         style="@style/TextAppearance.MaterialComponents.Headline6"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="48dp"
         android:layout_marginTop="24dp"
-        android:paddingHorizontal="48dp"
+        android:gravity="center_horizontal"
         android:text="@string/sleep_timer_title"
         android:textColor="?attr/colorOnSurfaceMedium"
         app:layout_constraintEnd_toEndOf="parent"
