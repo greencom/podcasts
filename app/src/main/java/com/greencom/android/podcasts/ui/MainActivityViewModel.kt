@@ -76,6 +76,10 @@ class MainActivityViewModel @Inject constructor(
         playerServiceConnection.removeSleepTimer()
     }
 
+    fun markCurrentEpisodeCompleted() {
+        playerServiceConnection.markCurrentEpisodeCompleted()
+    }
+
     fun setPlayerBottomSheetState(isExpanded: Boolean) {
         _isPlayerBottomSheetExpanded.value = isExpanded
     }

@@ -242,6 +242,14 @@ class PlayerService : MediaSessionService() {
                         removeSleepTimer()
                         SessionResult(SessionResult.RESULT_SUCCESS, null)
                     }
+                    CustomSessionCommand.MARK_CURRENT_EPISODE_COMPLETED -> {
+                        Handler(exoPlayer.applicationLooper).post {
+                            if (exoPlayer.currentMediaItem == null) return@post
+                            exoPlayer.removeMediaItem(0)
+                        }
+                        removePlayerNotification()
+                        SessionResult(SessionResult.RESULT_SUCCESS, null)
+                    }
                     else -> SessionResult(SessionResult.RESULT_ERROR_UNKNOWN, null)
                 }
             }
@@ -254,6 +262,7 @@ class PlayerService : MediaSessionService() {
                     .addCommand(SessionCommand(CustomSessionCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE, null))
                     .addCommand(SessionCommand(CustomSessionCommand.SET_SLEEP_TIMER, null))
                     .addCommand(SessionCommand(CustomSessionCommand.REMOVE_SLEEP_TIMER, null))
+                    .addCommand(SessionCommand(CustomSessionCommand.MARK_CURRENT_EPISODE_COMPLETED, null))
                     .build()
             }
         }

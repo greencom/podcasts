@@ -39,4 +39,7 @@ object CustomSessionCommand {
 
     /** Action for 'REMOVE_SLEEP_TIMER' custom command. */
     const val REMOVE_SLEEP_TIMER = "CUSTOM_COMMAND_REMOVE_SLEEP_TIMER"
+
+    /** Action for 'MARK_CURRENT_EPISODE_COMPLETED' custom command. */
+    const val MARK_CURRENT_EPISODE_COMPLETED = "MARK_CURRENT_EPISODE_COMPLETED"
 }

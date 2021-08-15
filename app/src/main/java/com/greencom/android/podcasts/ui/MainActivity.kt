@@ -306,8 +306,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     // Mark an episode as completed in the PlayerOptionsDialog.
     override fun onPlayerOptionsMarkCompleted(episodeId: String) {
-        // TODO
-//        viewModel.markCompleted(episodeId)
+        viewModel.markCurrentEpisodeCompleted()
     }
 
     // Set a sleep timer in the SleepTimerDialog.
