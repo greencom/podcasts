@@ -155,9 +155,7 @@ class PlayerService : MediaSessionService() {
     private var startPosition = 0L
 
     /** The instance of [Handler] that uses [exoPlayer]'s application [Looper]. */
-    private val exoPlayerHandler: Handler by lazy {
-        Handler(exoPlayer.applicationLooper)
-    }
+    private var exoPlayerHandler: Handler? = null
 
     /** The [Intent] used for starting [PlayerService]. */
     private val playerServiceIntent: Intent by lazy {
@@ -310,13 +308,13 @@ class PlayerService : MediaSessionService() {
                 when (command.commandCode) {
                     SessionCommand.COMMAND_CODE_PLAYER_PLAY -> {
                         // Handle PLAY commands by yourself.
-                        exoPlayerHandler.post {
+                        exoPlayerHandler?.post {
                             safePlay()
                         }
                         return SessionResult.RESULT_ERROR_UNKNOWN
                     }
                     SessionCommand.COMMAND_CODE_PLAYER_SET_MEDIA_ITEM -> {
-                        exoPlayerHandler.post {
+                        exoPlayerHandler?.post {
                             // Update the state of the previous episode before setting a new one.
                             updateEpisodeState()
 
@@ -351,7 +349,7 @@ class PlayerService : MediaSessionService() {
                 return when (customCommand.customAction) {
                     CustomCommand.SET_EPISODE_AND_PLAY_FROM_TIMECODE -> {
                         // Update the previous episode state first.
-                        exoPlayerHandler.post {
+                        exoPlayerHandler?.post {
                             updateEpisodeState()
                         }
                         val episodeId = args?.getString(
@@ -375,7 +373,7 @@ class PlayerService : MediaSessionService() {
                     }
                     CustomCommand.MARK_CURRENT_EPISODE_COMPLETED -> {
                         // Remove the current media item and player notification.
-                        exoPlayerHandler.post {
+                        exoPlayerHandler?.post {
                             if (exoPlayer.currentMediaItem != null) {
                                 exoPlayer.removeMediaItem(0)
                             }
@@ -460,6 +458,8 @@ class PlayerService : MediaSessionService() {
                 }
             }
 
+        exoPlayerHandler = Handler(exoPlayer.applicationLooper)
+
         sessionPlayerConnector = SessionPlayerConnector(exoPlayer)
 
         mediaSession = MediaSession.Builder(this, sessionPlayerConnector)
@@ -475,7 +475,7 @@ class PlayerService : MediaSessionService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         isServiceStarted = true
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -498,6 +498,7 @@ class PlayerService : MediaSessionService() {
         super.onDestroy()
         mediaSession.close()
         sessionPlayerConnector.close()
+        exoPlayerHandler = null
         exoPlayer.removeListener(exoPlayerListener)
         exoPlayer.release()
         unregisterReceiver(mediaControlReceiver)
@@ -550,7 +551,7 @@ class PlayerService : MediaSessionService() {
             val exoPlayerMediaItem = mediaItemConverter.convertToExoPlayerMediaItem(media2MediaItem)
             playWhenReady = true
             startPosition = timecode
-            exoPlayerHandler.post {
+            exoPlayerHandler?.post {
                 exoPlayer.setMediaItem(exoPlayerMediaItem)
             }
         }
@@ -576,7 +577,7 @@ class PlayerService : MediaSessionService() {
                 _sleepTimerRemainingTime.value = remainingTime
             }
 
-            exoPlayerHandler.post {
+            exoPlayerHandler?.post {
                 exoPlayer.pause()
             }
             removeSleepTimer()
@@ -642,7 +643,7 @@ class PlayerService : MediaSessionService() {
                 val exoPlayerMediaItem = mediaItemConverter.convertToExoPlayerMediaItem(media2MediaItem)
                 playWhenReady = false
                 startPosition = episode.position
-                exoPlayerHandler.post {
+                exoPlayerHandler?.post {
                     exoPlayer.setMediaItem(exoPlayerMediaItem)
                 }
             } else {
@@ -771,8 +772,8 @@ class PlayerService : MediaSessionService() {
         notificationManager.cancel(PLAYER_NOTIFICATION_ID)
         stopForeground(false)
         isServiceForeground = false
-        stopSelf()
         isServiceStarted = false
+        stopSelf()
     }
 
     /** Creates a notification channel for the player media notifications. */
@@ -816,8 +817,8 @@ class PlayerService : MediaSessionService() {
                 PLAYER_ACTION_SEEK_BACKWARD -> exoPlayer.seekBack()
                 PLAYER_ACTION_SEEK_FORWARD -> exoPlayer.seekForward()
                 PLAYER_ACTION_CLOSE -> {
-                    stopSelf()
                     isServiceStarted = false
+                    stopSelf()
                 }
             }
         }
