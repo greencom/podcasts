@@ -23,7 +23,6 @@ import com.greencom.android.podcasts.utils.extensions.setupMaterialSharedAxisTra
 import com.greencom.android.podcasts.utils.setAppBarLayoutCanDrag
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /** Contains app settings. */

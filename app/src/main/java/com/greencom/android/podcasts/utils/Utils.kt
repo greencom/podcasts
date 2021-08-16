@@ -27,9 +27,6 @@ import kotlin.time.ExperimentalTime
 /** Global tag for logging. */
 const val GLOBAL_TAG = "global___"
 
-/** Tag for player-specific logging. */
-const val PLAYER_TAG = "PlayerTag"
-
 /** Duration used to create crossfade animations. */
 const val DURATION_CROSSFADE_ANIMATION = 150L
 

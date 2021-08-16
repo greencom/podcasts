@@ -25,7 +25,6 @@
 
 
     <!-- Player start -->
-    <string name="player_error">В работе плеера приложения Подкасты произошла ошибка. Плеер был закрыт.</string>
     <string name="player_sleep_timer">Таймер</string>
 
     <string name="player_description_play_pause">Играть и пауза</string>

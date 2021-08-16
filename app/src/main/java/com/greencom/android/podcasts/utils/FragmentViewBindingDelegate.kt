@@ -1,6 +1,5 @@
 package com.greencom.android.podcasts.utils
 
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
