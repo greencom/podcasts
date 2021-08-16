@@ -455,11 +455,8 @@ class PlayerService : MediaSessionService() {
             .apply {
                 addListener(exoPlayerListener)
                 // Restore playback speed.
-                scope?.launch(Dispatchers.IO) {
-                    val speed = playerRepository.getPlaybackSpeed().first() ?: 1.0F
-                    exoPlayerHandler.post {
-                        setPlaybackSpeed(speed)
-                    }
+                scope?.launch {
+                    setPlaybackSpeed(playerRepository.getPlaybackSpeed().first() ?: 1.0F)
                 }
             }
 
@@ -500,9 +497,9 @@ class PlayerService : MediaSessionService() {
     override fun onDestroy() {
         super.onDestroy()
         mediaSession.close()
-        exoPlayer.release()
-        exoPlayer.removeListener(exoPlayerListener)
         sessionPlayerConnector.close()
+        exoPlayer.removeListener(exoPlayerListener)
+        exoPlayer.release()
         unregisterReceiver(mediaControlReceiver)
         scope?.cancel()
     }
