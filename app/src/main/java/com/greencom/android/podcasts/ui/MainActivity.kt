@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.ColorUtils
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -208,6 +209,9 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Enable Jetpack SplashScreen.
+        installSplashScreen()
+
         // View binding setup.
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

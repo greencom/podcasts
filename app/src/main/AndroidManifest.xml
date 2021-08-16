@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/icon_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Podcasts"
+        android:theme="@style/Theme.Podcasts.Staring"
         android:usesCleartextTraffic="true">
 
         <activity

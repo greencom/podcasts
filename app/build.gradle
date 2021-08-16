@@ -7,13 +7,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.greencom.android.podcasts"
         minSdkVersion 23
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -56,6 +56,9 @@ configurations.all {
 }
 
 dependencies {
+
+    // Jetpack SplashScreen
+    implementation "androidx.core:core-splashscreen:$splashScreen_version"
 
     // DataStore
     implementation "androidx.datastore:datastore-preferences:$dataStore_version"
