@@ -46,13 +46,13 @@ class RepositoryImpl @Inject constructor(
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : Repository {
 
-    // TODO: Test code.
+    /** Clear the whole app database. */
     override suspend fun deleteAll() {
         podcastDao.clear()
         episodeDao.clear()
     }
 
-    // TODO: Test code.
+    /** Clear the whole `episodes` table in the database. */
     override suspend fun deleteEpisodes() = episodeDao.clear()
 
     /**

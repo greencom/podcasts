@@ -10,7 +10,6 @@ import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
-import android.util.Log
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
@@ -60,16 +59,12 @@ import kotlin.math.roundToInt
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-private const val MAIN_ACTIVITY_TAG = "MAIN_ACTIVITY_TAG"
-
 // Saving instance state.
 private const val SAVED_STATE_PLAYER_BEHAVIOR_STATE = "PLAYER_BEHAVIOR_STATE"
 
 private const val SLIDER_THUMB_ANIMATION_DURATION = 120L
-private const val SKIP_HINT_BACKGROUND_ALPHA = 0.5F
+private const val SEEK_HINT_BACKGROUND_ALPHA = 0.5F
 private const val PLAYER_ANIMATION_DURATION = 300L
-
-private const val POSITIONS_SKIPPED_THRESHOLD = 10
 
 private const val SEEK_BACKWARD_VALUE = -10_000L
 private const val SEEK_FORWARD_VALUE = 30_000L
@@ -138,9 +133,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
      */
     private var updatePosition = true
 
-    /** Whether the sleep timer is set or not. */
-    private var isSleepTimerSet = false
-
     // App bar colors.
     private var statusBarColor = 0
     private var navigationBarColorDefault = TypedValue()
@@ -153,7 +145,6 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     private val serviceConnection: ServiceConnection by lazy {
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                Log.d(MAIN_ACTIVITY_TAG, "serviceConnection: onServiceConnected()")
                 val playerServiceBinder = service as PlayerService.PlayerServiceBinder
                 val sessionToken = playerServiceBinder.sessionToken
                 viewModel.connectToPlayer(this@MainActivity, sessionToken)
@@ -191,9 +182,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 }
             }
 
-            override fun onServiceDisconnected(name: ComponentName?) {
-                Log.d(PLAYER_TAG, "serviceConnection: onServiceDisconnected()")
-            }
+            override fun onServiceDisconnected(name: ComponentName?) {  }
         }
     }
 
@@ -343,11 +332,11 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         // Set expanded content alpha to zero.
         expandedPlayer.root.alpha = 0F
 
-        // Initialize player skip hint views.
-        expandedPlayer.skipHintBackground.load(R.drawable.skip_hint_background_forward_300px) {
+        // Initialize player seek hint views.
+        expandedPlayer.seekHintBackground.load(R.drawable.seek_hint_background_forward_300px) {
             coilCoverBuilder(this@MainActivity)
         }
-        hideSkipHints(true)
+        hideSeekHints(true)
 
         // Set slider's label formatter.
         expandedPlayer.slider.setLabelFormatter { position ->
@@ -490,12 +479,12 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
             }
         }
 
-        // Skip backward of forward through the track.
-        expandedPlayer.skipBackward.setOnClickListener {
-            viewModel.updateSkipBackwardOrForwardValue(SEEK_BACKWARD_VALUE)
+        // Seek backward of forward through the track.
+        expandedPlayer.seekBackward.setOnClickListener {
+            viewModel.updateSeekBackwardOrForwardValue(SEEK_BACKWARD_VALUE)
         }
-        expandedPlayer.skipForward.setOnClickListener {
-            viewModel.updateSkipBackwardOrForwardValue(SEEK_FORWARD_VALUE)
+        expandedPlayer.seekForward.setOnClickListener {
+            viewModel.updateSeekBackwardOrForwardValue(SEEK_FORWARD_VALUE)
         }
 
         expandedPlayer.cover.setOnClickListener {
@@ -633,10 +622,10 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                     }
                 }
 
-                // Collect skip value and control skip process.
+                // Collect seek value and control seek process.
                 launch {
-                    viewModel.skipBackwardOrForwardValue.collectLatest { value ->
-                        skipBackwardOrForward(value)
+                    viewModel.seekBackwardOrForwardValue.collectLatest { value ->
+                        seekBackwardOrForward(value)
                     }
                 }
 
@@ -644,10 +633,7 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
                 launch {
                     viewModel.currentEpisode.collect { episode ->
                         currentEpisode = episode
-
                         showPlayer(episode.isNotEmpty())
-
-                        viewModel.resetPlayerBottomSheetState()
 
                         collapsedPlayer.apply {
                             progressBar.progress = 0
@@ -942,32 +928,32 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
     }
 
     /**
-     * Skip backward or forward depending on the given value. Show UI hint to the user with the
-     * current skip value and direction at first and then delay for a second before the actual
-     * skip. Delay allows the user to control the skip process properly and gives them time to
-     * adjust skip value.
+     * Seek backward or forward depending on the given value. Show UI hint to the user with the
+     * current seek value and direction at first and then delay for a second before the actual
+     * seek. Delay allows the user to control the seek process properly and gives them time to
+     * adjust seek value.
      *
      * Note: use this function only with [collectLatest].
      */
-    private suspend fun skipBackwardOrForward(value: Long) {
+    private suspend fun seekBackwardOrForward(value: Long) {
         if (value == 0L) {
-            hideSkipHints()
+            hideSeekHints()
             return
         }
 
         expandedPlayer.apply {
             if (value > 0) {
-                skipHintBackward.hideImmediately()
-                skipHintBackground.rotation = 0F
-                skipHintForward.text = getSkipHint(value)
-                skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
-                skipHintForward.revealCrossfade()
+                seekHintBackward.hideImmediately()
+                seekHintBackground.rotation = 0F
+                seekHintForward.text = getSeekHint(value)
+                seekHintBackground.revealCrossfade(SEEK_HINT_BACKGROUND_ALPHA)
+                seekHintForward.revealCrossfade()
             } else {
-                skipHintForward.hideImmediately()
-                skipHintBackground.rotation = 180F
-                skipHintBackward.text = getSkipHint(value)
-                skipHintBackground.revealCrossfade(SKIP_HINT_BACKGROUND_ALPHA)
-                skipHintBackward.revealCrossfade()
+                seekHintForward.hideImmediately()
+                seekHintBackground.rotation = 180F
+                seekHintBackward.text = getSeekHint(value)
+                seekHintBackground.revealCrossfade(SEEK_HINT_BACKGROUND_ALPHA)
+                seekHintBackward.revealCrossfade()
             }
         }
 
@@ -975,34 +961,34 @@ class MainActivity : AppCompatActivity(), PlayerOptionsDialog.PlayerOptionsDialo
         val position = viewModel.currentPosition.value + value
         viewModel.seekTo(position)
 
-        hideSkipHints()
-        viewModel.resetSkipBackwardOrForwardValue()
+        hideSeekHints()
+        viewModel.resetSeekBackwardOrForwardValue()
     }
 
-    /** Hide all player skip hints. */
-    private fun hideSkipHints(immediately: Boolean = false) {
+    /** Hide all player seek hints. */
+    private fun hideSeekHints(immediately: Boolean = false) {
         expandedPlayer.apply {
             if (immediately) {
-                skipHintBackground.hideImmediatelyWithAnimation()
-                skipHintBackward.hideImmediatelyWithAnimation()
-                skipHintForward.hideImmediatelyWithAnimation()
+                seekHintBackground.hideImmediatelyWithAnimation()
+                seekHintBackward.hideImmediatelyWithAnimation()
+                seekHintForward.hideImmediatelyWithAnimation()
             } else {
-                skipHintBackground.hideCrossfade()
-                skipHintBackward.hideCrossfade()
-                skipHintForward.hideCrossfade()
+                seekHintBackground.hideCrossfade()
+                seekHintBackward.hideCrossfade()
+                seekHintForward.hideCrossfade()
             }
         }
     }
 
-    /** Get a skip hint text for a given value. */
-    private fun getSkipHint(value: Long): String {
+    /** Get a seek hint text for a given value. */
+    private fun getSeekHint(value: Long): String {
         val valueInSeconds = abs(value / 1000)
         val minutes = valueInSeconds / 60
         val seconds = valueInSeconds % 60
         return if (minutes == 0L) {
-            getString(R.string.player_skip_hint_format_s, seconds)
+            getString(R.string.player_seek_hint_format_s, seconds)
         } else {
-            getString(R.string.player_skip_hint_format_m_s, minutes, seconds)
+            getString(R.string.player_seek_hint_format_m_s, minutes, seconds)
         }
     }
 

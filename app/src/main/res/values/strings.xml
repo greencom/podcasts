@@ -25,8 +25,8 @@
 
 
     <!-- Player start -->
-    <string name="player_skip_hint_format_s" translatable="false">0:%02d</string>
-    <string name="player_skip_hint_format_m_s" translatable="false">%d:%02d</string>
+    <string name="player_seek_hint_format_s" translatable="false">0:%02d</string>
+    <string name="player_seek_hint_format_m_s" translatable="false">%d:%02d</string>
     <string name="player_time_stamp_current_format_m_s" translatable="false">%d:%02d</string>
     <string name="player_time_stamp_current_format_h_m_s" translatable="false">%d:%02d:%02d</string>
     <string name="player_time_stamp_left_format_m_s" translatable="false">-%d:%02d</string>
