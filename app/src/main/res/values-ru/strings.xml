@@ -190,7 +190,7 @@
 
     <!-- EpisodeOptionsDialog start -->
     <string name="episode_options_mark_completed">Отметить завершённым</string>
-    <string name="episode_options_mark_uncompleted">Отметить не прослушанным</string>
+    <string name="episode_options_mark_uncompleted">Сбросить прогресс</string>
     <!-- EpisodeOptionsDialog end -->
 
 

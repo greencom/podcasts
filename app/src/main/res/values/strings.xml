@@ -198,7 +198,7 @@
 
     <!-- EpisodeOptionsDialog start -->
     <string name="episode_options_mark_completed">Mark completed</string>
-    <string name="episode_options_mark_uncompleted">Mark uncompleted</string>
+    <string name="episode_options_mark_uncompleted">Reset progress</string>
     <!-- EpisodeOptionsDialog end -->
 
 
