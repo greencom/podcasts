@@ -208,6 +208,15 @@ class PodcastViewModel @Inject constructor(
             repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
         }
 
+    /**
+     * Set a new value to the [isAppBarExpanded] StateFlow.
+     *
+     * @param isExpanded whether the app bar is expanded or not.
+     */
+    fun setAppBarState(isExpanded: Boolean) {
+        _isAppBarExpanded.value = isExpanded
+    }
+
     /** Navigate to EpisodeFragment with a given episode ID. */
     fun navigateToEpisode(episodeId: String) = viewModelScope.launch {
         _event.send(PodcastEvent.NavigateToEpisode(episodeId))
@@ -338,15 +347,6 @@ class PodcastViewModel @Inject constructor(
             return State.Success(PodcastWithEpisodes(flowState.data.podcast, episodes))
         }
         return flowState
-    }
-
-    /**
-     * Set a new value to the [isAppBarExpanded] StateFlow.
-     *
-     * @param isExpanded whether the app bar is expanded or not.
-     */
-    fun setAppBarState(isExpanded: Boolean) {
-        _isAppBarExpanded.value = isExpanded
     }
 
     /** Sealed class that represents the UI state of the [PodcastFragment]. */
