@@ -117,10 +117,9 @@ class ActivityBookmarksViewModel @Inject constructor(
     }
 
     /** Mark an episode as completed or reset its progress by ID. */
-    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
-        viewModelScope.launch {
-            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
-        }
+    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) {
+        playerServiceConnection.onEpisodeIsCompletedChange(episodeId, isCompleted)
+    }
 
     /** Sealed class that represents the UI state of the [ActivityBookmarksFragment]. */
     sealed class ActivityBookmarksState {

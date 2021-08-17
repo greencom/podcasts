@@ -87,23 +87,35 @@ class PlayerRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun onEpisodeCompleted(episodeId: String) {
-        val episodeState = EpisodeEntityState(
-            id = episodeId,
-            position = 0L,
-            lastPlayedDate = System.currentTimeMillis(),
-            isCompleted = true,
-            completionDate = System.currentTimeMillis()
-        )
+    override suspend fun onEpisodeIsCompletedChange(episodeId: String, isCompleted: Boolean) {
+        val episodeState = if (isCompleted) {
+            EpisodeEntityState(
+                id = episodeId,
+                position = 0L,
+                lastPlayedDate = System.currentTimeMillis(),
+                isCompleted = true,
+                completionDate = System.currentTimeMillis()
+            )
+        } else {
+            EpisodeEntityState(
+                id = episodeId,
+                position = 0L,
+                lastPlayedDate = System.currentTimeMillis(),
+                isCompleted = false,
+                completionDate = 0L
+            )
+        }
         episodeDao.update(episodeState)
 
-        // Remove the episode from the bookmarks.
-        episodeDao.update(
-            EpisodeEntityBookmark(
-                id = episodeId,
-                inBookmarks = false,
-                addedToBookmarksDate = episodeState.completionDate
+        // Remove the episode from the bookmarks if it is completed.
+        if (isCompleted) {
+            episodeDao.update(
+                EpisodeEntityBookmark(
+                    id = episodeId,
+                    inBookmarks = false,
+                    addedToBookmarksDate = episodeState.completionDate
+                )
             )
-        )
+        }
     }
 }

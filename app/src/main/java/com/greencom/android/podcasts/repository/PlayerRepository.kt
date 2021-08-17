@@ -27,6 +27,6 @@ interface PlayerRepository {
     /** Update the episode state (position, isCompleted) depending on the last position. */
     suspend fun updateEpisodeState(episodeId: String, position: Long, duration: Long)
 
-    /** Mark episode completed by ID. */
-    suspend fun onEpisodeCompleted(episodeId: String)
+    /** Mark an episode as completed or reset its progress by ID. */
+    suspend fun onEpisodeIsCompletedChange(episodeId: String, isCompleted: Boolean)
 }

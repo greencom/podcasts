@@ -136,7 +136,4 @@ interface Repository {
 
     /** Add the episode to the bookmarks or remove from there. */
     suspend fun onEpisodeInBookmarksChange(episodeId: String, inBookmarks: Boolean)
-
-    /** Mark an episode as completed or uncompleted by ID. */
-    suspend fun onEpisodeIsCompletedChange(episodeId: String, isCompleted: Boolean)
 }

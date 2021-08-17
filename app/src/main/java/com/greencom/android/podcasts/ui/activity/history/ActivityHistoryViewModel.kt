@@ -3,6 +3,7 @@ package com.greencom.android.podcasts.ui.activity.history
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greencom.android.podcasts.data.domain.Episode
+import com.greencom.android.podcasts.player.PlayerServiceConnection
 import com.greencom.android.podcasts.repository.Repository
 import com.greencom.android.podcasts.ui.podcast.PodcastViewModel.PodcastEvent.EpisodeOptionsDialog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 /** ViewModel used by [ActivityHistoryFragment]. */
 @HiltViewModel
 class ActivityHistoryViewModel @Inject constructor(
+    private val playerServiceConnection: PlayerServiceConnection,
     private val repository: Repository
 ) : ViewModel() {
 
@@ -52,10 +54,9 @@ class ActivityHistoryViewModel @Inject constructor(
         }
 
     /** Mark an episode as completed or reset its progress by ID. */
-    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
-        viewModelScope.launch {
-            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
-        }
+    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) {
+        playerServiceConnection.onEpisodeIsCompletedChange(episodeId, isCompleted)
+    }
 
     /** Sealed class that represents the UI state of the [ActivityHistoryFragment]. */
     sealed class ActivityHistoryState {

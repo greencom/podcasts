@@ -309,21 +309,28 @@ class PlayerServiceConnection @Inject constructor(
         )
     }
 
-    /** Mark the current episode as completed and close the player. */
-    fun markCurrentEpisodeCompleted() {
-        controller?.sendCustomCommand(
-            SessionCommand(CustomCommand.MARK_CURRENT_EPISODE_COMPLETED, null),
-            null
-        )
+    /**
+     * Update the state of the episode when its `isCompleted` property change. If the episode
+     * is marked as completed while being the current media item of the player, remove it
+     * from the player.
+     */
+    fun onEpisodeIsCompletedChange(episodeId: String, isCompleted: Boolean) =
         scope?.launch(Dispatchers.IO) {
-            // When the player removes the current media item, `isPlaying` state updates
-            // and triggers the update of the media item state. So delay a bit to ensure
-            // that onEpisodeCompleted will not be overwritten.
-            delay(250)
-            playerRepository.onEpisodeCompleted(currentEpisode.value.id)
-            _currentEpisode.value = MediaItemEpisode.empty()
+            if (isCompleted && episodeId == currentEpisode.value.id) {
+                controller?.sendCustomCommand(
+                    SessionCommand(CustomCommand.MARK_CURRENT_EPISODE_COMPLETED, null),
+                    null
+                )
+                // When the player removes the current media item, `isPlaying` state updates
+                // and triggers the update of the media item state. So delay a bit to ensure
+                // that onEpisodeCompleted will not be overwritten.
+                delay(250)
+                playerRepository.onEpisodeIsCompletedChange(episodeId, isCompleted)
+                _currentEpisode.value = MediaItemEpisode.empty()
+            } else {
+                playerRepository.onEpisodeIsCompletedChange(episodeId, isCompleted)
+            }
         }
-    }
 
     /**
      * Used to update [exoPlayerState] value that needs to be updated from the outside.

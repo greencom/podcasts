@@ -117,8 +117,8 @@ class MainActivityViewModel @Inject constructor(
     }
 
     /** Mark the current episode as completed and close the player. */
-    fun markCurrentEpisodeCompleted() {
-        playerServiceConnection.markCurrentEpisodeCompleted()
+    fun markCurrentEpisodeCompleted(episodeId: String) {
+        playerServiceConnection.onEpisodeIsCompletedChange(episodeId, true)
     }
 
     /** Update [isPlayerBottomSheetExpanded] with a given value. */

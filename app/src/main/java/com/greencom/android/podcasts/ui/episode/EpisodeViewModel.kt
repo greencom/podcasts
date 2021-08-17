@@ -101,10 +101,9 @@ class EpisodeViewModel @Inject constructor(
     }
 
     /** Mark an episode as completed or reset its progress by ID. */
-    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) =
-        viewModelScope.launch {
-            repository.onEpisodeIsCompletedChange(episodeId, isCompleted)
-        }
+    fun onIsCompletedChange(episodeId: String, isCompleted: Boolean) {
+        playerServiceConnection.onEpisodeIsCompletedChange(episodeId, isCompleted)
+    }
 
     /**
      * Set a new value to the [isAppBarExpanded] StateFlow.
