@@ -101,6 +101,12 @@ class PlayerService : MediaSessionService() {
     private var playerNotificationJob: Job? = null
 
     /**
+     * The [Job] that keeps [PlayerService] alive while being removed from the foreground.
+     * See [keepServiceAlive] for details.
+     */
+    private var keepServiceAliveJob: Job? = null
+
+    /**
      * The [Job] that runs the sleep timer. See [_sleepTimerRemainingTime], [setSleepTimer]
      * and [removeSleepTimer].
      */
@@ -746,20 +752,24 @@ class PlayerService : MediaSessionService() {
      * [MediaControlReceiver].
      */
     private fun setPlayerNotification(notification: Notification) {
-        notificationManager.notify(PLAYER_NOTIFICATION_ID, notification)
         if (!isServiceStarted) {
             startService(playerServiceIntent)
             isServiceStarted = true
         }
 
+        // Cancel previous call to `keepServiceAlive()`.
+        keepServiceAliveJob?.cancel()
+
         if (_isPlaying.value) {
-            if (!isServiceForeground) {
-                startForeground(PLAYER_NOTIFICATION_ID, notification)
-                isServiceForeground = true
-            }
+            startForeground(PLAYER_NOTIFICATION_ID, notification)
+            isServiceForeground = true
         } else {
+            notificationManager.notify(PLAYER_NOTIFICATION_ID, notification)
             stopForeground(false)
             isServiceForeground = false
+
+            // Keep the service alive.
+            keepServiceAlive(notification)
         }
     }
 
@@ -785,6 +795,27 @@ class PlayerService : MediaSessionService() {
             .setVibrationEnabled(false)
             .build()
         notificationManager.createNotificationChannel(channel)
+    }
+
+    /**
+     * Keeps [PlayerService] alive while being removed from the foreground by calling
+     * [stopForeground]. By default the service will be destroyed in one minute after
+     * calling [stopForeground], this method allows to bypass this limitation by putting
+     * the service in the foreground every 45 seconds for 1 second.
+     *
+     * Note: uses [keepServiceAliveJob] under the hood. Do not forget to call
+     * `keepServiceAliveJob.cancel()` in the appropriate time.
+     */
+    private fun keepServiceAlive(notification: Notification) {
+        keepServiceAliveJob = scope?.launch(Dispatchers.Default) {
+            while (true) {
+                delay(45_000)
+                ensureActive()
+                startForeground(PLAYER_NOTIFICATION_ID, notification)
+                delay(1_000)
+                stopForeground(false)
+            }
+        }
     }
 
     /**
